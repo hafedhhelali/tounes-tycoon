@@ -1,0 +1,13 @@
+{
+  "name": "tounes-tycoon",
+  "version": "0.1.0",
+  "description": "Tounes Tycoon - Casual Idle Game Mobile F2P Dédié Tunisie",
+  "main": "engine.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["tycoon", "idle", "tunisie", "game"],
+  "author": "EOLabs",
+  "license": "Proprietary"
+}

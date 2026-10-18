@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tounes Tycoon (تونسي و راسي عالي)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #e11d48;
+      --gold: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    #app {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+    }
+    header {
+      background: var(--card-bg);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      text-align: center;
+    }
+    .dinars-counter {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--gold);
+      margin: 8px 0;
+    }
+    .business-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .biz-card {
+      background: var(--card-bg);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .biz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .biz-title { font-weight: 700; font-size: 15px; }
+    .biz-level { font-size: 13px; color: var(--gold); }
+    .progress-bar {
+      height: 10px;
+      background: #0f172a;
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+    .biz-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    button {
+      background: #334155;
+      color: var(--text);
+      border: none;
+      padding: 10px 8px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    button:active { transform: scale(0.97); }
+    button.action-btn { background: var(--accent); }
+    button.buy-btn { background: #2563eb; }
+    button.manager-btn { background: #059669; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Tounes Tycoon 🇹🇳</h1>
+      <div class="dinars-counter" id="dinarsDisplay">0.00 DT</div>
+      <div id="eventBanner" style="display: none; background: #854d0e; border: 1px solid #eab308; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: left;">
+        <div style="font-weight: 800; color: #fef08a;" id="eventTitle">Événement</div>
+        <div style="font-size: 12px; margin: 4px 0;" id="eventDesc">Description</div>
+        <div style="font-size: 11px; color: #fef9c3; font-weight: bold;" id="eventTimer">Temps restant : 0s</div>
+      </div>
+      <div style="margin-top: 10px; display: flex; gap: 8px;">
+        <button id="adBoostBtn" style="flex: 1; background: #059669; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 13px;">
+          📺 Boost Revenus x2 (AdMob)
+          <span id="adBoostStatus" style="font-size: 11px; font-weight: normal; opacity: 0.9;">Inactif</span>
+        </button>
+      </div>
+      <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">© EOLabs 2026 - Moteur Monotonique Sans Lag</div>
+    </header>
+
+    <div class="business-list" id="businessList"></div>
+  </div>
+
+  <script type="module">
+    import { TycoonEngine } from './engine.js';
+
+    // Persistance locale avec calcul offline progress automatique
+    const saved = localStorage.getItem('tounes_tycoon_save');
+    const engine = new TycoonEngine(saved ? JSON.parse(saved) : null);
+
+    const offlineGain = engine.processOfflineProgress();
+    if (offlineGain > 0) {
+      alert(`3ala slamtek ! Revenu en ton absence : +${offlineGain.toFixed(2)} DT`);
+    }
+
+    const dinarsDisplay = document.getElementById('dinarsDisplay');
+    const businessList = document.getElementById('businessList');
+
+    function renderDOM() {
+      businessList.innerHTML = '';
+      engine.businesses.forEach(biz => {
+        const card = document.createElement('div');
+        card.className = 'biz-card';
+        card.id = `card-${biz.id}`;
+
+        const cost = engine.getCost(biz);
+        const rev = engine.getRevenue(biz);
+
+        card.innerHTML = `
+          <div class="biz-header">
+            <span class="biz-title">${biz.name}</span>
+            <span class="biz-level">Niv. ${biz.level}</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted);">
+            Revenu : ${rev > 0 ? '+' + rev.toFixed(2) + ' DT' : '0.00 DT'} (${(biz.cycleDurationMs/1000).toFixed(1)}s)
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="prog-${biz.id}"></div>
+          </div>
+          <div class="biz-actions">
+            <button class="action-btn" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
+              ${biz.hasManager ? 'Automatique (Géré)' : 'Taper / Servir'}
+            </button>
+            <button class="buy-btn" id="buy-${biz.id}">
+              Améliorer (${cost.toFixed(2)} DT)
+            </button>
+          </div>
+          ${!biz.hasManager ? `
+            <button class="manager-btn" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
+              Recruter ${biz.managerName} (${biz.managerCost.toFixed(0)} DT)
+            </button>
+          ` : ''}
+        `;
+
+        businessList.appendChild(card);
+
+        // Events
+        card.querySelector(`#buy-${biz.id}`).onclick = () => {
+          if (engine.buyBusiness(biz.id)) renderDOM();
+        };
+        const prodBtn = card.querySelector(`#produce-${biz.id}`);
+        if (prodBtn) {
+          prodBtn.onclick = () => engine.startProduction(biz.id);
+        }
+        const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
+        if (mgrBtn) {
+          mgrBtn.onclick = () => {
+            if (engine.hireManager(biz.id)) renderDOM();
+          };
+        }
+      });
+    }
+
+    renderDOM();
+
+    // Google Ads Service
+    const adBoostBtn = document.getElementById('adBoostBtn');
+    const adBoostStatus = document.getElementById('adBoostStatus');
+    adBoostBtn.onclick = () => {
+      // Simule la récompense d'une vidéo AdMob (+4 heures x2)
+      engine.addAdBoost(4 * 3600 * 1000);
+      renderDOM();
+    };
+
+    // Game loop 60 FPS découplée avec deltaTime
+    let lastSave = Date.now();
+    function tick() {
+      const now = Date.now();
+      engine.update(now);
+
+      dinarsDisplay.innerText = engine.dinars.toFixed(2) + ' DT';
+
+      // Statut du Boost AdMob
+      if (engine.isAdBoostActive(now)) {
+        const remainingHours = Math.floor((engine.adBoostEndsAt - now) / 3600000);
+        const remainingMins = Math.floor(((engine.adBoostEndsAt - now) % 3600000) / 60000);
+        adBoostStatus.innerText = `Actif (${remainingHours}h ${remainingMins}m)`;
+        adBoostBtn.style.background = '#d97706'; // Ambre quand actif
+      } else {
+        adBoostStatus.innerText = 'Inactif (+4h x2)';
+        adBoostBtn.style.background = '#059669'; // Vert prêt
+      }
+
+      // Affichage de l'événement en cours
+      const eventBanner = document.getElementById('eventBanner');
+      if (engine.activeEvent) {
+        eventBanner.style.display = 'block';
+        document.getElementById('eventTitle').innerText = engine.activeEvent.event.title;
+        document.getElementById('eventDesc').innerText = engine.activeEvent.event.description;
+        const remainingSec = Math.max(0, Math.ceil((engine.activeEvent.endsAt - now) / 1000));
+        document.getElementById('eventTimer').innerText = `Temps restant : ${remainingSec}s`;
+      } else {
+        eventBanner.style.display = 'none';
+      }
+
+      // Mise à jour continue des jauges sans re-render complet du DOM
+      engine.businesses.forEach(biz => {
+        const bar = document.getElementById(`prog-${biz.id}`);
+        if (bar && biz.level > 0) {
+          const pct = Math.min(100, (biz.progressMs / biz.cycleDurationMs) * 100);
+          bar.style.width = pct + '%';
+        }
+      });
+
+      // Auto-save toutes les 5 secondes
+      if (now - lastSave > 5000) {
+        localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
+        lastSave = now;
+      }
+
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
