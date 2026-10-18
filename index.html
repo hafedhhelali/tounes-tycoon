@@ -9,21 +9,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: #131b2e;
-      --card-border: #222f4c;
+      --bg: #070a12;
+      --card-bg: #111827;
+      --card-border: #1f2937;
       --red-tn: #e11d48;
-      --red-glow: rgba(225, 29, 72, 0.4);
+      --red-glow: rgba(225, 29, 72, 0.45);
       --gold: #fbbf24;
       --gold-dark: #b45309;
       --green: #10b981;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     body {
       background: var(--bg);
-      background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+      background-image: radial-gradient(circle at 50% -10%, #1e1b4b 0%, var(--bg) 75%);
       color: var(--text-main);
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       display: flex;
@@ -33,26 +33,26 @@
     }
     #app {
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       display: flex;
       flex-direction: column;
-      padding: 14px;
-      gap: 14px;
+      padding: 12px;
+      gap: 12px;
       min-height: 100vh;
     }
 
-    /* HEADER TYCOON */
+    /* HEADER TYCOON - COMPACT & IMMERSIF */
     header {
-      background: linear-gradient(180deg, #182238 0%, #0f172a 100%);
-      border: 1px solid var(--card-border);
-      padding: 16px;
-      border-radius: 20px;
+      background: linear-gradient(180deg, #162032 0%, #0d131f 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px;
+      border-radius: 18px;
       text-align: center;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
       position: sticky;
-      top: 10px;
+      top: 6px;
       z-index: 50;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
     }
     .brand-bar {
       display: flex;
@@ -61,45 +61,45 @@
       margin-bottom: 8px;
     }
     .brand-title {
-      font-size: 14px;
-      font-weight: 800;
+      font-size: 13px;
+      font-weight: 900;
       letter-spacing: 0.5px;
-      color: #cbd5e1;
+      color: #e2e8f0;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .badge-tn {
-      background: var(--red-tn);
+      background: linear-gradient(135deg, var(--red-tn) 0%, #be123c 100%);
       color: white;
       font-size: 10px;
       font-weight: 900;
-      padding: 2px 6px;
+      padding: 2px 7px;
       border-radius: 6px;
-      box-shadow: 0 0 10px var(--red-glow);
+      box-shadow: 0 0 12px var(--red-glow);
     }
     .balance-box {
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      padding: 10px 16px;
       border-radius: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
     }
     .balance-label {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 800;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
     }
     .balance-val {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 900;
       color: var(--gold);
-      text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+      text-shadow: 0 0 18px rgba(251, 191, 36, 0.45);
       letter-spacing: -0.5px;
     }
 
@@ -112,7 +112,7 @@
     .ad-card-btn {
       border: none;
       border-radius: 12px;
-      padding: 10px 8px;
+      padding: 9px 8px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -120,60 +120,60 @@
       justify-content: center;
       gap: 2px;
       font-weight: 800;
-      transition: all 0.15s ease;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
       color: white;
     }
     .ad-card-btn:active { transform: scale(0.96); }
     .ad-btn-cash {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35);
-      border: 1px solid #10b981;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+      border: 1px solid rgba(16, 185, 129, 0.5);
     }
     .ad-btn-boost {
       background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-      box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
-      border: 1px solid #f59e0b;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+      border: 1px solid rgba(245, 158, 11, 0.5);
     }
     .ad-btn-title { font-size: 12px; font-weight: 900; display: flex; align-items: center; gap: 4px; }
-    .ad-btn-sub { font-size: 10px; opacity: 0.85; font-weight: 600; }
+    .ad-btn-sub { font-size: 10px; opacity: 0.9; font-weight: 700; }
 
     /* BANDEAU ÉVÉNEMENT */
     #eventBanner {
       display: none;
       background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
       border: 1px solid var(--gold);
-      padding: 12px;
-      border-radius: 14px;
-      box-shadow: 0 8px 20px rgba(180, 83, 9, 0.4);
+      padding: 10px 14px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(180, 83, 9, 0.45);
       margin-top: 8px;
       animation: pulse 2s infinite ease-in-out;
     }
     @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
-      50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); }
+      0%, 100% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.25); }
+      50% { box-shadow: 0 0 22px rgba(251, 191, 36, 0.65); }
     }
 
-    /* LISTE COMMERCES */
+    /* LISTE COMMERCES & CARTES LISIBLES */
     .business-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       overflow-y: auto;
       padding-bottom: 24px;
     }
     .biz-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 14px;
+      background: linear-gradient(180deg, #131b2e 0%, #0f172a 100%);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition: border-color 0.2s ease;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
     }
-    .biz-card.active { border-color: #3b82f6; }
-    .biz-card.locked { opacity: 0.75; filter: grayscale(0.2); }
+    .biz-card.active { border-color: rgba(59, 130, 246, 0.35); }
+    .biz-card.locked { opacity: 0.8; filter: grayscale(0.15); }
 
     .biz-main-row {
       display: flex;
@@ -181,16 +181,16 @@
       gap: 12px;
     }
     .biz-avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid #334155;
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1e293b 0%, #090d16 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 26px;
-      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.08);
       flex-shrink: 0;
       position: relative;
     }
@@ -203,7 +203,8 @@
       font-size: 10px;
       font-weight: 900;
       padding: 1px 5px;
-      border-radius: 6px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     }
     .biz-info {
       flex: 1;
@@ -214,7 +215,7 @@
     .biz-title {
       font-weight: 800;
       font-size: 14px;
-      color: #f1f5f9;
+      color: #f8fafc;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -226,8 +227,11 @@
     }
     .biz-income {
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 900;
       color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     /* BARRE DE PROGRESSION JAUGE & EFFET SHIMMER */
