@@ -230,21 +230,92 @@
       color: #38bdf8;
     }
 
-    /* BARRE DE PROGRESSION JAUGE */
+    /* BARRE DE PROGRESSION JAUGE & EFFET SHIMMER */
     .progress-track {
-      height: 8px;
+      height: 10px;
       background: #090d16;
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
       position: relative;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
     }
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+      background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
       width: 0%;
-      border-radius: 4px;
-      box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+      position: relative;
+      overflow: hidden;
+      transition: width 0.08s linear;
+    }
+    .progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.75) 50%, transparent 100%);
+      transform: skewX(-25deg);
+      animation: barShimmer 1.3s infinite linear;
+    }
+    @keyframes barShimmer {
+      0% { left: -60%; }
+      100% { left: 160%; }
+    }
+
+    /* SQUASH & REBOND TACTILE SUR L'AVATAR */
+    .biz-avatar {
+      transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+    .biz-avatar:active, .biz-avatar.squashed {
+      transform: scale(1.22, 0.82) !important;
+    }
+
+    /* PARTICULES FLOTTANTES AU TAP (+X د.ت) */
+    .floating-coin-text {
+      position: fixed;
+      pointer-events: none;
+      user-select: none;
+      z-index: 9999;
+      font-weight: 900;
+      font-size: 18px;
+      color: #fbbf24;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(251, 191, 36, 0.6);
+      will-change: transform, opacity;
+      animation: floatUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate3d(var(--tx, 0), 0, 0) scale(0.7);
+      }
+      40% {
+        opacity: 1;
+        transform: translate3d(var(--tx, 0), -35px, 0) scale(1.25);
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--tx, 0), -80px, 0) scale(0.9);
+      }
+    }
+
+    /* BOUTON D'AMÉLIORATION ABORDABLE (PULSE ATTRACTIF) */
+    .btn-upgrade.can-afford {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.6) !important;
+      animation: pulseAffordable 1.6s ease-in-out infinite;
+    }
+    @keyframes pulseAffordable {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+      50% { transform: scale(1.025); box-shadow: 0 0 16px rgba(16, 185, 129, 0.8); }
+    }
+    .btn-upgrade.holding {
+      transform: scale(0.95) !important;
+      filter: brightness(1.25);
     }
 
     /* BOUTONS D'INTERACTION */
@@ -487,6 +558,29 @@
     const modalRewardAmount = document.getElementById('modalRewardAmount');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
 
+    // Formateur compact de grands nombres (K, M, B, T, Qa...)
+    function formatCurrency(num, decimals = 2) {
+      if (num === null || num === undefined || isNaN(num)) return "0.00 د.ت";
+      if (num < 1000) return `${num.toFixed(decimals)} د.ت`;
+      const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi"];
+      const i = Math.floor(Math.log10(num) / 3);
+      const formatted = (num / Math.pow(10, i * 3)).toFixed(decimals);
+      return `${formatted}${suffixes[i] || ''} د.ت`;
+    }
+
+    // Particules volantes au tap (+X د.ت)
+    function spawnFloatText(x, y, text) {
+      const el = document.createElement('div');
+      el.className = 'floating-coin-text';
+      el.innerText = text;
+      const rx = (Math.random() - 0.5) * 40;
+      el.style.setProperty('--tx', `${rx}px`);
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      document.body.appendChild(el);
+      el.addEventListener('animationend', () => el.remove(), { once: true });
+    }
+
     // UI Helper: Toast de notification solde insuffisant
     let toastTimeout = null;
     function triggerBalanceAlert(msg = 'فلوس الكاسة ما تكفّيش ! سربّي ولا دبّر تفتوفة 💰') {
@@ -554,11 +648,12 @@
         const rev = engine.getRevenue(biz);
 
         // Règle Niveau 0 : "اشري الحانوت" / Si déjà acheté (Niv > 0) : "طوّر"
-        const buyLabel = biz.level === 0 ? `🛒 اشري (${cost.toFixed(2)} د.ت)` : `⬆️ طوّر (${cost.toFixed(2)} د.ت)`;
+        const buyLabel = biz.level === 0 ? `🛒 اشري (${formatCurrency(cost)})` : `⬆️ طوّر (${formatCurrency(cost)})`;
+        const canAfford = engine.dinars >= cost;
 
         card.innerHTML = `
           <div class="biz-main-row">
-            <div class="biz-avatar">
+            <div class="biz-avatar" id="avatar-${biz.id}">
               ${biz.icon}
               <div class="biz-lvl-tag">مستوى ${biz.level}</div>
             </div>
@@ -568,7 +663,7 @@
               </div>
               <div class="biz-ar">${biz.tagline}</div>
               <div class="biz-income">
-                ${rev > 0 ? '+' + rev.toFixed(2) + ' د.ت' : '0.00 د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ ${(biz.cycleDurationMs/1000).toFixed(1)} ثانية</span>
+                ${rev > 0 ? '+' + formatCurrency(rev) : '0.00 د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ ${(biz.cycleDurationMs/1000).toFixed(1)} ثانية</span>
               </div>
             </div>
           </div>
@@ -581,12 +676,12 @@
             <button class="btn-game btn-serve" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
               ${biz.hasManager ? '⚡ يمشي وحدو' : 'سربّي ! ⚡'}
             </button>
-            <button class="btn-game btn-upgrade" id="buy-${biz.id}">
+            <button class="btn-game btn-upgrade ${canAfford ? 'can-afford' : ''}" id="buy-${biz.id}">
               ${buyLabel}
             </button>
             ${!biz.hasManager ? `
               <button class="btn-game btn-manager" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
-                ${biz.managerAvatar} حط جيرون (${biz.managerName} - ${biz.managerCost.toFixed(0)} د.ت)
+                ${biz.managerAvatar} حط جيرون (${biz.managerName} - ${formatCurrency(biz.managerCost, 0)})
               </button>
             ` : ''}
           </div>
@@ -606,8 +701,8 @@
             return true;
           } else {
             const currentCost = engine.getCost(biz);
-            const manque = (currentCost - engine.dinars).toFixed(2);
-            triggerBalanceAlert(`ناقصتك ${manque} د.ت ! سربّي ولا دبّر تفتوفة 💰`);
+            const manque = (currentCost - engine.dinars);
+            triggerBalanceAlert(`ناقصتك ${formatCurrency(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
             stopHold();
             return false;
           }
@@ -618,17 +713,19 @@
           clearInterval(holdInterval);
           holdTimeout = null;
           holdInterval = null;
+          buyBtn.classList.remove('holding');
         };
 
         buyBtn.addEventListener('pointerdown', (e) => {
           e.preventDefault();
+          buyBtn.classList.add('holding');
           if (performBuy()) {
             holdTimeout = setTimeout(() => {
               // Répétition rapide successive jusqu'à fin du solde
               holdInterval = setInterval(() => {
                 if (!performBuy()) stopHold();
-              }, 120);
-            }, 350);
+              }, 110);
+            }, 300);
           }
         });
 
@@ -636,16 +733,35 @@
         buyBtn.addEventListener('pointerleave', stopHold);
         buyBtn.addEventListener('pointercancel', stopHold);
 
+        // Squashing avatar au tap
+        const avatarEl = card.querySelector(`#avatar-${biz.id}`);
         const prodBtn = card.querySelector(`#produce-${biz.id}`);
+
+        const triggerServe = (clientX, clientY) => {
+          if (engine.startProduction(biz.id)) {
+            if (biz.id === 'kahwa') soundEngine.playTeaCup();
+            else if (biz.id === 'louage') soundEngine.playHorn();
+            else soundEngine.playCoin();
+
+            // Particule flottante de gain au point de contact
+            spawnFloatText(clientX, clientY, `+${formatCurrency(rev)}`);
+
+            // Animation squash
+            avatarEl.classList.add('squashed');
+            setTimeout(() => avatarEl.classList.remove('squashed'), 150);
+          }
+        };
+
         if (prodBtn) {
-          prodBtn.onclick = () => {
-            if (engine.startProduction(biz.id)) {
-              if (biz.id === 'kahwa') soundEngine.playTeaCup();
-              else if (biz.id === 'louage') soundEngine.playHorn();
-              else soundEngine.playCoin();
-            }
+          prodBtn.onpointerdown = (e) => {
+            triggerServe(e.clientX || (window.innerWidth / 2), e.clientY || (window.innerHeight / 2));
           };
         }
+        avatarEl.onpointerdown = (e) => {
+          if (!biz.hasManager && biz.level > 0) {
+            triggerServe(e.clientX, e.clientY);
+          }
+        };
 
         const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
         if (mgrBtn) {
@@ -670,13 +786,13 @@
       const now = Date.now();
       engine.update(now);
 
-      dinarsDisplay.innerText = engine.dinars.toFixed(2) + ' د.ت';
+      dinarsDisplay.innerText = formatCurrency(engine.dinars);
 
       // Mise à jour hint cadeau AdMob
       let currentRate = 0;
       engine.businesses.forEach(b => { if (b.level > 0) currentRate += (engine.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
       const potentialCash = Math.max(25.0, Math.floor(currentRate * 600));
-      cashRewardHint.innerText = `+${potentialCash.toFixed(0)} DT Immédiat`;
+      cashRewardHint.innerText = `+${formatCurrency(potentialCash, 0)} حالا`;
 
       // Statut Boost 2x AdMob
       if (engine.isAdBoostActive(now)) {

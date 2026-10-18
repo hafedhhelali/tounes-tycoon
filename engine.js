@@ -9,84 +9,84 @@ export const BUSINESS_CONFIGS = [
     name: 'كشك فريكاسي وبمبلوني',
     tagline: 'سخون يكوي وزيت جديد !',
     icon: '🥪',
-    baseCost: 4.0, // en Dinars (TND)
-    baseRevenue: 1.0,
+    baseCost: 2.0, // 2 Dinars pour démarrer
+    baseRevenue: 0.5, // 500 millimes par vente
     costMultiplier: 1.07,
     cycleDurationMs: 600, // 0.6s
     managerName: 'عمك صالح',
     managerRole: 'شاف الطبلية',
     managerAvatar: '👨‍🍳',
-    managerCost: 100.0,
+    managerCost: 15.0, // 15 DT
   },
   {
     id: 'kahwa',
     name: 'قهوة شعبية',
     tagline: 'كابوسين إكسبريس وشيشة تفاح',
     icon: '☕',
-    baseCost: 60.0,
-    baseRevenue: 20.0,
-    costMultiplier: 1.15,
-    cycleDurationMs: 3000, // 3s
+    baseCost: 20.0,
+    baseRevenue: 3.0,
+    costMultiplier: 1.10,
+    cycleDurationMs: 2500, // 2.5s
     managerName: 'الناصر Garçon',
     managerRole: 'سرباي توربو',
     managerAvatar: '🤵',
-    managerCost: 1000.0,
+    managerCost: 80.0,
   },
   {
     id: 'machmoum',
     name: 'بارفان ومشاميم فل',
     tagline: 'فل وياسمين وريحة تدوّخ',
     icon: '🌸',
-    baseCost: 720.0,
-    baseRevenue: 90.0,
-    costMultiplier: 1.14,
-    cycleDurationMs: 6000, // 6s
+    baseCost: 120.0,
+    baseRevenue: 15.0,
+    costMultiplier: 1.11,
+    cycleDurationMs: 5000, // 5s
     managerName: 'الشيخة لطيفة',
     managerRole: 'سلطانة الفل',
     managerAvatar: '🧕',
-    managerCost: 12000.0,
+    managerCost: 350.0,
   },
   {
     id: 'louage',
     name: 'محطة لواج وتاكسي جماعي',
     tagline: 'البلاصة لخرة ونتوكلو على ربي !',
     icon: '🚐',
-    baseCost: 8640.0,
-    baseRevenue: 720.0,
-    costMultiplier: 1.13,
-    cycleDurationMs: 12000, // 12s
+    baseCost: 650.0,
+    baseRevenue: 60.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 10000, // 10s
     managerName: 'شكري كلاج',
     managerRole: 'شوفير كورسّات',
     managerAvatar: '🕶️',
-    managerCost: 100000.0,
+    managerCost: 1500.0,
   },
   {
     id: 'makroudh',
     name: 'حلويات مقروض وبقلاوة',
     tagline: 'لوز حر وسمن عربي أصيل',
     icon: '🍯',
-    baseCost: 103680.0,
-    baseRevenue: 4320.0,
+    baseCost: 2800.0,
+    baseRevenue: 240.0,
     costMultiplier: 1.12,
-    cycleDurationMs: 24000, // 24s
+    cycleDurationMs: 20000, // 20s
     managerName: 'الحاج عمر',
     managerRole: 'معلّم الحرفة',
     managerAvatar: '👳',
-    managerCost: 1200000.0,
+    managerCost: 6000.0,
   },
   {
     id: 'lac2_lounge',
     name: 'صالون شاي VIP في البحيرة',
     tagline: 'كليماتيزور يخدم وكعبات موخيتو',
     icon: '✨',
-    baseCost: 1244160.0,
-    baseRevenue: 25920.0,
-    costMultiplier: 1.11,
-    cycleDurationMs: 96000, // 96s
+    baseCost: 12000.0,
+    baseRevenue: 950.0,
+    costMultiplier: 1.13,
+    cycleDurationMs: 45000, // 45s
     managerName: 'سي المهدي',
     managerRole: 'رئيس مجلس الإدارة',
     managerAvatar: '💼',
-    managerCost: 10000000.0,
+    managerCost: 25000.0,
   }
 ];
 
@@ -157,7 +157,7 @@ export class TycoonEngine {
     this.adBoostEndsAt = Math.min(start + durationMs, now + (24 * 60 * 60 * 1000));
   }
 
-  // Google Ads Rewarded Cash : offre 10 minutes de production instantanée (ou min 20 TND)
+  // Google Ads Rewarded Cash : offre 3 minutes de production (ou min 5 TND)
   claimAdCashReward(now = Date.now()) {
     let totalPerSecond = 0;
     for (const biz of this.businesses) {
@@ -165,8 +165,8 @@ export class TycoonEngine {
         totalPerSecond += (this.getRevenue(biz, now) / (biz.cycleDurationMs / 1000));
       }
     }
-    // 10 minutes (600s) de revenus cumulés, avec minimum garanti de 25 DT
-    const cashReward = Math.max(25.0, Math.floor(totalPerSecond * 600));
+    // 3 minutes (180s) de revenus cumulés, avec minimum garanti de 5 DT pour débloquer
+    const cashReward = Math.max(5.0, Math.floor(totalPerSecond * 180));
     this.dinars += cashReward;
     return cashReward;
   }
