@@ -129,6 +129,7 @@
 
   <script type="module">
     import { TycoonEngine } from './engine.js';
+    import { soundEngine } from './audio.js';
 
     // Persistance locale avec calcul offline progress automatique
     const saved = localStorage.getItem('tounes_tycoon_save');
@@ -180,18 +181,30 @@
 
         businessList.appendChild(card);
 
-        // Events
+        // Events avec sons procéduraux
         card.querySelector(`#buy-${biz.id}`).onclick = () => {
-          if (engine.buyBusiness(biz.id)) renderDOM();
+          if (engine.buyBusiness(biz.id)) {
+            soundEngine.playUpgrade();
+            renderDOM();
+          }
         };
         const prodBtn = card.querySelector(`#produce-${biz.id}`);
         if (prodBtn) {
-          prodBtn.onclick = () => engine.startProduction(biz.id);
+          prodBtn.onclick = () => {
+            if (engine.startProduction(biz.id)) {
+              if (biz.id === 'kahwa') soundEngine.playTeaCup();
+              else if (biz.id === 'louage') soundEngine.playHorn();
+              else soundEngine.playCoin();
+            }
+          };
         }
         const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
         if (mgrBtn) {
           mgrBtn.onclick = () => {
-            if (engine.hireManager(biz.id)) renderDOM();
+            if (engine.hireManager(biz.id)) {
+              soundEngine.playEventFanfare();
+              renderDOM();
+            }
           };
         }
       });
@@ -205,6 +218,7 @@
     adBoostBtn.onclick = () => {
       // Simule la récompense d'une vidéo AdMob (+4 heures x2)
       engine.addAdBoost(4 * 3600 * 1000);
+      soundEngine.playEventFanfare();
       renderDOM();
     };
 
