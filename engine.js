@@ -9,84 +9,84 @@ export const BUSINESS_CONFIGS = [
     name: 'كشك فريكاسي وبمبلوني',
     tagline: 'سخون يكوي وزيت جديد !',
     icon: '🥪',
-    baseCost: 2.0, // 2 Dinars pour démarrer
-    baseRevenue: 0.5, // 500 millimes par vente
-    costMultiplier: 1.07,
-    cycleDurationMs: 600, // 0.6s
+    baseCost: 10.0, // 10 Dinars pour monter son kiosque
+    baseRevenue: 1.5, // 1.5 DT par fournée
+    costMultiplier: 1.08,
+    cycleDurationMs: 800, // 0.8s
     managerName: 'عمك صالح',
     managerRole: 'شاف الطبلية',
     managerAvatar: '👨‍🍳',
-    managerCost: 15.0, // 15 DT
+    managerCost: 50.0,
   },
   {
     id: 'kahwa',
     name: 'قهوة شعبية',
     tagline: 'كابوسين إكسبريس وشيشة تفاح',
     icon: '☕',
-    baseCost: 20.0,
-    baseRevenue: 3.0,
+    baseCost: 80.0, // 80 Dinars
+    baseRevenue: 10.0,
     costMultiplier: 1.10,
-    cycleDurationMs: 2500, // 2.5s
+    cycleDurationMs: 3000, // 3s
     managerName: 'الناصر Garçon',
     managerRole: 'سرباي توربو',
     managerAvatar: '🤵',
-    managerCost: 80.0,
+    managerCost: 300.0,
   },
   {
     id: 'machmoum',
     name: 'بارفان ومشاميم فل',
     tagline: 'فل وياسمين وريحة تدوّخ',
     icon: '🌸',
-    baseCost: 120.0,
-    baseRevenue: 15.0,
-    costMultiplier: 1.11,
-    cycleDurationMs: 5000, // 5s
+    baseCost: 450.0, // 450 Dinars
+    baseRevenue: 45.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 6000, // 6s
     managerName: 'الشيخة لطيفة',
     managerRole: 'سلطانة الفل',
     managerAvatar: '🧕',
-    managerCost: 350.0,
+    managerCost: 1500.0,
   },
   {
     id: 'louage',
     name: 'محطة لواج وتاكسي جماعي',
     tagline: 'البلاصة لخرة ونتوكلو على ربي !',
     icon: '🚐',
-    baseCost: 650.0,
-    baseRevenue: 60.0,
+    baseCost: 2200.0, // 2 200 Dinars
+    baseRevenue: 180.0,
     costMultiplier: 1.12,
-    cycleDurationMs: 10000, // 10s
+    cycleDurationMs: 12000, // 12s
     managerName: 'شكري كلاج',
     managerRole: 'شوفير كورسّات',
     managerAvatar: '🕶️',
-    managerCost: 1500.0,
+    managerCost: 6500.0,
   },
   {
     id: 'makroudh',
     name: 'حلويات مقروض وبقلاوة',
     tagline: 'لوز حر وسمن عربي أصيل',
     icon: '🍯',
-    baseCost: 2800.0,
-    baseRevenue: 240.0,
-    costMultiplier: 1.12,
-    cycleDurationMs: 20000, // 20s
+    baseCost: 9500.0, // 9 500 Dinars
+    baseRevenue: 750.0,
+    costMultiplier: 1.13,
+    cycleDurationMs: 24000, // 24s
     managerName: 'الحاج عمر',
     managerRole: 'معلّم الحرفة',
     managerAvatar: '👳',
-    managerCost: 6000.0,
+    managerCost: 25000.0,
   },
   {
     id: 'lac2_lounge',
     name: 'صالون شاي VIP في البحيرة',
     tagline: 'كليماتيزور يخدم وكعبات موخيتو',
     icon: '✨',
-    baseCost: 12000.0,
-    baseRevenue: 950.0,
+    baseCost: 45000.0, // 45 000 Dinars
+    baseRevenue: 3200.0,
     costMultiplier: 1.13,
-    cycleDurationMs: 45000, // 45s
+    cycleDurationMs: 60000, // 60s
     managerName: 'سي المهدي',
     managerRole: 'رئيس مجلس الإدارة',
     managerAvatar: '💼',
-    managerCost: 25000.0,
+    managerCost: 120000.0,
   }
 ];
 
@@ -132,7 +132,7 @@ export class TycoonEngine {
     }));
 
     // Économie
-    this.dinars = 4.0; // Don de départ (pour acheter le 1er fricassé)
+    this.dinars = 10.0; // Don de départ (pour acheter le 1er kiosque fricassé à 10 DT)
     this.prestigePoints = 0; // Ma3rouf / Réputation
     this.lastTimestamp = Date.now();
 
