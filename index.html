@@ -346,6 +346,16 @@
     .btn-game:active { transform: scale(0.97); }
     .btn-game:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
+    .btn-upgrade.shake-btn, .btn-manager.shake-btn, .btn-serve.shake-btn {
+      animation: btnShake 0.4s ease-in-out !important;
+      filter: brightness(1.2) contrast(1.2);
+    }
+    @keyframes btnShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
     .btn-serve {
       background: linear-gradient(135deg, var(--red-tn) 0%, #be123c 100%);
       box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
@@ -783,7 +793,7 @@
 
           <div class="biz-controls">
             <button class="btn-game btn-serve" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
-              ${biz.hasManager ? '⚡ يمشي وحدو' : 'سربّي ! ⚡'}
+              ${biz.hasManager ? '⚡ يمشي وحدو' : '!⚡ سربّي'}
             </button>
             <button class="btn-game btn-upgrade ${canAfford ? 'can-afford' : ''}" id="buy-${biz.id}">
               ${buyLabel}
@@ -811,6 +821,8 @@
           } else {
             const currentCost = engine.getCost(biz);
             const manque = (currentCost - engine.dinars);
+            buyBtn.classList.add('shake-btn');
+            setTimeout(() => buyBtn.classList.remove('shake-btn'), 420);
             triggerBalanceAlert(`ناقصتك ${formatCurrency(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
             stopHold();
             return false;
@@ -880,6 +892,8 @@
               renderDOM();
             } else {
               const manque = (biz.managerCost - engine.dinars).toFixed(2);
+              mgrBtn.classList.add('shake-btn');
+              setTimeout(() => mgrBtn.classList.remove('shake-btn'), 420);
               triggerBalanceAlert(`حق الجيرون ناقصتك ${manque} د.ت ! 👔`);
             }
           };
