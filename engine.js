@@ -14,7 +14,7 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.07,
     cycleDurationMs: 600, // 0.6s
     managers: [
-      { name: 'عم الصادق', role: 'شاف العيّاري', avatar: '👨‍🍳', cost: 25.0 }
+      { name: 'عم الصادق', role: 'معلّم الكسكروت', avatar: '👨‍🍳', cost: 25.0 }
     ],
   },
   {
@@ -41,7 +41,7 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 2500, // 2.5s
     managers: [
       { name: 'الناصر القارصون', role: 'سرباي الصالة', avatar: '🤵', cost: 250.0 },
-      { name: 'سي الهاشمي', role: 'شاف الكونتوار', avatar: '☕', cost: 500.0 }
+      { name: 'سي الهاشمي', role: 'معلّم الكونتوار', avatar: '☕', cost: 500.0 }
     ],
   },
   {
@@ -137,7 +137,7 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 90000, // 90.0s
     managers: [
       { name: 'المعلم مبروك', role: 'شاف الشواية والكانون', avatar: '🔥', cost: 2500000.0 },
-      { name: 'الشاف فتحي', role: 'سلطان الكوجينة والمذاق', avatar: '👨‍🍳', cost: 6000000.0 }
+      { name: 'الشاف فتحي', role: 'معلّم الكوجينة', avatar: '👨‍🍳', cost: 6000000.0 }
     ],
   },
   {
@@ -150,8 +150,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 105000, // 105.0s
     managers: [
-      { name: 'أنيس البييتري', role: 'مسؤول الحجوزات والتيكيات', avatar: '🎫', cost: 4500000.0 },
-      { name: 'سي منير اللقلاق', role: 'صاحب الوكالة والرحلات', avatar: '🧳', cost: 12000000.0 }
+      { name: 'أنيس البييتري', role: 'مسؤول الحجز والتيكيات', avatar: '🎫', cost: 4500000.0 },
+      { name: 'سي منير اللقلاق', role: 'صاحب الوكالة', avatar: '🧳', cost: 12000000.0 }
     ],
   },
   {
@@ -164,8 +164,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 120000, // 120.0s
     managers: [
-      { name: 'مدام سيرين', role: 'رئيسة الاستقبال والحجوزات', avatar: '👩‍💼', cost: 10000000.0 },
-      { name: 'ميسيو برهان', role: 'المدير العام والتشريفات', avatar: '🎩', cost: 30000000.0 }
+      { name: 'مدام سيرين', role: 'مسؤولة الاستقبال', avatar: '👩‍💼', cost: 10000000.0 },
+      { name: 'ميسيو برهان', role: 'المدير العام', avatar: '🎩', cost: 30000000.0 }
     ],
   },
   {
@@ -178,9 +178,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 180000, // 180.0s
     managers: [
-      { name: 'المهندس مراد', role: 'مدير الصيانة والسلامة', avatar: '👷', cost: 35000000.0 },
-      { name: 'مدام نادية', role: 'مديرة الماركات والمحلات', avatar: '👠', cost: 70000000.0 },
-      { name: 'سي خليل بن عمار', role: 'رئيس مجلس الإدارة', avatar: '👑', cost: 120000000.0 }
+      { name: 'المهندس مراد', role: 'مسؤول الصيانة', avatar: '👷', cost: 35000000.0 },
+      { name: 'مدام نادية', role: 'مسؤولة المحلات', avatar: '👠', cost: 70000000.0 },
+      { name: 'سي خليل بن عمار', role: 'الرئيس المدير العام', avatar: '👑', cost: 120000000.0 }
     ],
   },
   {
@@ -193,9 +193,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 240000, // 240.0s
     managers: [
-      { name: 'المهندس حمادي', role: 'مدير خطوط الإنتاج والتعليب', avatar: '🏭', cost: 150000000.0 },
-      { name: 'سي عبد السلام', role: 'مدير التصدير والموانئ', avatar: '🚢', cost: 350000000.0 },
-      { name: 'الحاج بلقاسم', role: 'كبير الصناعيين والكرتيل', avatar: '💼', cost: 600000000.0 }
+      { name: 'المهندس حمادي', role: 'مسؤول التعليب', avatar: '🏭', cost: 150000000.0 },
+      { name: 'سي عبد السلام', role: 'مسؤول التصدير', avatar: '🚢', cost: 350000000.0 },
+      { name: 'الحاج بلقاسم', role: 'كبير المعمل', avatar: '💼', cost: 600000000.0 }
     ],
   },
   {
@@ -208,9 +208,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 300000, // 300.0s (5min)
     managers: [
-      { name: 'ياسين كوميرسيال', role: 'كبير مسؤولي المبيعات والـ VIP', avatar: '🏎️', cost: 600000000.0 },
-      { name: 'مدام مريم الوكيل', role: 'الممثلة الرسمية للعلامات الكبرى', avatar: '💎', cost: 1500000000.0 },
-      { name: 'السيّد طارق قطوس', role: 'رئيس المجمّع الدولي للسيارات', avatar: '👑', cost: 3000000000.0 }
+      { name: 'ياسين كوميرسيال', role: 'مسؤول البيع والـ VIP', avatar: '🏎️', cost: 600000000.0 },
+      { name: 'مدام مريم الوكيل', role: 'مسؤولة الماركات', avatar: '💎', cost: 1500000000.0 },
+      { name: 'السيّد طارق قطوس', role: 'رئيس المجمّع', avatar: '👑', cost: 3000000000.0 }
     ],
   },
   {
@@ -223,9 +223,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 420000, // 420.0s (7min)
     managers: [
-      { name: 'الكابتن رمزي', role: 'كبير الطيارين والعمليات الجوية', avatar: '👨‍✈️', cost: 2500000000.0 },
-      { name: 'مدام سهام', role: 'مديرة الملاحة والخدمات الأرضية', avatar: '👩‍✈️', cost: 6000000000.0 },
-      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام للطيران المدني', avatar: '🦅', cost: 15000000000.0 }
+      { name: 'الكابتن رمزي', role: 'كبير الطيارين', avatar: '👨‍✈️', cost: 2500000000.0 },
+      { name: 'مدام سهام', role: 'مسؤولة الخدمات الأرضية', avatar: '👩‍✈️', cost: 6000000000.0 },
+      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام', avatar: '🦅', cost: 15000000000.0 }
     ],
   }
 ];
@@ -241,21 +241,21 @@ export const TUNISIAN_EVENTS = [
   {
     id: 'derby',
     title: '⚽ ليلة الدربي الكبير في رادس !',
-    description: 'العاصمة شاعلة والجمهور في الشارع ! الكساكروت والفريكاسي يطيرو طيران.',
+    description: 'العاصمة شاعلة والجمهور في الشارع ! الكسكروت والفريكاسي يطيرو طيران.',
     durationMs: 40000,
     multipliers: { kaskrout: 3.0, fricasse: 2.5, kahwa: 1.8 }
   },
   {
     id: 'aaras',
     title: '💐 موسم الأعراس والوطية !',
-    description: 'الزغاريت تعلّي والحلو يتفرّق ! الباتيسري والمطاعم مطلوبين بالصف.',
+    description: 'الزغاريت تعلّي والحلو يتوزّع ! الباتيسري والمطاعم عليهم الكرية.',
     durationMs: 35000,
     multipliers: { patisserie: 3.0, restaurant: 2.0 }
   },
   {
     id: 'embouteillage',
-    title: '🚗 سركيلاسيون باب سعدون واقْفة !',
-    description: 'التكاسي الجماعي تبلوكات والكيوسك يبيع للواقفين في الكارتاجة.',
+    title: '🚗 الزحمة في باب سعدون !',
+    description: 'التاكسيات الجماعية واقفة والكيوسك يبيع للي يستنّى.',
     durationMs: 25000,
     multipliers: { kaskrout: 2.5, taxi_collectif: 0.3 }
   }
@@ -264,7 +264,7 @@ export const TUNISIAN_EVENTS = [
 export const TUNISIAN_QUESTS = [
   {
     id: 'first_kiosk',
-    title: 'بداية الرحلة : حل أوّل حانوت عيّاري',
+    title: 'البداية : حلّ أوّل كسكروت',
     targetType: 'business_level',
     businessId: 'kaskrout',
     targetValue: 1,
@@ -273,7 +273,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'serve_kaskrout_10',
-    title: 'سرباي الحومة : سربّي 10 مرّات',
+    title: 'سربّي 10 مرّات',
     targetType: 'manual_serves',
     targetValue: 10,
     rewardDinars: 15.0,
@@ -281,7 +281,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'first_manager',
-    title: 'معلّم ومرتاح : دبّر أوّل جيرون',
+    title: 'معلّم ومرتاح : خدّم أوّل جيرون',
     targetType: 'hired_managers',
     targetValue: 1,
     rewardDinars: 40.0,
@@ -289,7 +289,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'open_coffee',
-    title: 'وسع المشروع : حل المقهى الشعبي',
+    title: 'كبّر : حلّ المقهى الشعبي',
     targetType: 'business_level',
     businessId: 'kahwa',
     targetValue: 1,
@@ -298,29 +298,29 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'open_taxi',
-    title: 'نقل العاصمة : حل محطة تاكسي جماعي',
+    title: 'حلّ محطة تاكسي جماعي',
     targetType: 'business_level',
     businessId: 'taxi_collectif',
     targetValue: 1,
     rewardDinars: 1500.0,
-    titleEarned: 'رايس التكاسي'
+    titleEarned: 'ريّس التاكسيات'
   },
   {
     id: 'open_mall',
-    title: 'إمبراطور تونس : حل المركّب التجاري الضخم',
+    title: 'حلّ المركّب التجاري (Mall)',
     targetType: 'business_level',
     businessId: 'centre_commercial',
     targetValue: 1,
     rewardDinars: 5000000.0,
-    titleEarned: 'إمبراطور التجارة'
+    titleEarned: 'ملك التجارة'
   },
   {
     id: 'wealth_1000',
-    title: 'عبي الكاسة : وصّل 1 000 د.ت في الكاسة',
+    title: 'عمّر الكاسة : وصّل 1 000 د.ت',
     targetType: 'accumulated_dinars',
     targetValue: 1000.0,
     rewardDinars: 250.0,
-    titleEarned: 'ملياردير الحومة'
+    titleEarned: 'غني الحومة'
   }
 ];
 
