@@ -7,7 +7,17 @@
   "scripts": {
     "test": "node --test"
   },
-  "keywords": ["tycoon", "idle", "tunisie", "game"],
+  "keywords": [
+    "tycoon",
+    "idle",
+    "tunisie",
+    "game"
+  ],
   "author": "EOLabs",
-  "license": "Proprietary"
+  "license": "Proprietary",
+  "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3"
+  }
 }

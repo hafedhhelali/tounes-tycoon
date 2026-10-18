@@ -1,0 +1,8 @@
+{
+  "appId": "tn.eolabs.tounestycoon",
+  "appName": "Tounes Tycoon",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
