@@ -45,15 +45,15 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build Android APK (Release / Debug)
+      - name: Build Android APK (Release Beta)
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug -PappVersionCode=${{ github.run_number }} -PappVersionName="1.0.${{ github.run_number }}-beta"
+          ./gradlew assembleRelease -PappVersionCode=${{ github.run_number }} -PappVersionName="1.0.${{ github.run_number }}-beta"
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tounes-tycoon-${{ github.run_number }}-debug.apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: tounes-tycoon-${{ github.run_number }}-beta.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 14

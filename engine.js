@@ -5,134 +5,204 @@
 
 export const BUSINESS_CONFIGS = [
   {
-    id: 'fricasse',
-    name: 'كشك فريكاسي وبمبلوني',
-    tagline: 'سخون يكوي وزيت جديد !',
-    icon: '🥪',
-    baseCost: 10.0, // 10 Dinars pour monter son kiosque
-    baseRevenue: 1.5, // 1.5 DT par fournée
-    costMultiplier: 1.08,
-    cycleDurationMs: 800, // 0.8s
-    managerName: 'عمك صالح',
-    managerRole: 'شاف الطبلية',
+    id: 'kaskrout',
+    name: 'كسكروت عيّاري سخون',
+    tagline: 'غطّس في الزيت وكبّر في الهريسة !',
+    icon: '🥖',
+    baseCost: 5.0, // Don de départ 5 DT permet l'achat immédiat
+    baseRevenue: 0.8,
+    costMultiplier: 1.07,
+    cycleDurationMs: 600, // 0.6s
+    managerName: 'عم الصادق',
+    managerRole: 'شاف العيّاري',
     managerAvatar: '👨‍🍳',
-    managerCost: 50.0,
+    managerCost: 25.0,
+  },
+  {
+    id: 'fricasse',
+    name: 'بمبلوني وفريكاسي',
+    tagline: 'سخون يكوّي ومن يدّو للفوّاي !',
+    icon: '🍩',
+    baseCost: 25.0,
+    baseRevenue: 3.5,
+    costMultiplier: 1.08,
+    cycleDurationMs: 1200, // 1.2s
+    managerName: 'الباجي بمبلوني',
+    managerRole: 'معلّم القلي',
+    managerAvatar: '🧑‍🍳',
+    managerCost: 100.0,
   },
   {
     id: 'kahwa',
-    name: 'قهوة شعبية',
-    tagline: 'كابوسين إكسبريس وشيشة تفاح',
+    name: 'مقهى شعبي',
+    tagline: 'كابوسين إكسبريس وطرح شكبة صبّاحي',
     icon: '☕',
-    baseCost: 80.0, // 80 Dinars
-    baseRevenue: 10.0,
-    costMultiplier: 1.10,
-    cycleDurationMs: 3000, // 3s
-    managerName: 'الناصر Garçon',
+    baseCost: 120.0,
+    baseRevenue: 14.0,
+    costMultiplier: 1.09,
+    cycleDurationMs: 2500, // 2.5s
+    managerName: 'سي الهاشمي',
     managerRole: 'سرباي توربو',
     managerAvatar: '🤵',
-    managerCost: 300.0,
+    managerCost: 450.0,
   },
   {
-    id: 'machmoum',
-    name: 'بارفان ومشاميم فل',
-    tagline: 'فل وياسمين وريحة تدوّخ',
-    icon: '🌸',
-    baseCost: 450.0, // 450 Dinars
-    baseRevenue: 45.0,
-    costMultiplier: 1.12,
-    cycleDurationMs: 6000, // 6s
-    managerName: 'الشيخة لطيفة',
-    managerRole: 'سلطانة الفل',
-    managerAvatar: '🧕',
-    managerCost: 1500.0,
+    id: 'attariya',
+    name: 'عطريّة الحومة',
+    tagline: 'من باكو حليب لخيط وإبرة وتقييد في الكرني',
+    icon: '🏪',
+    baseCost: 550.0,
+    baseRevenue: 50.0,
+    costMultiplier: 1.10,
+    cycleDurationMs: 5000, // 5.0s
+    managerName: 'منصف العطّار',
+    managerRole: 'سيّد الكرني',
+    managerAvatar: '🏬',
+    managerCost: 1800.0,
   },
   {
-    id: 'louage',
-    name: 'محطة لواج وتاكسي جماعي',
-    tagline: 'البلاصة لخرة ونتوكلو على ربي !',
-    icon: '🚐',
-    baseCost: 2200.0, // 2 200 Dinars
-    baseRevenue: 180.0,
-    costMultiplier: 1.12,
-    cycleDurationMs: 12000, // 12s
-    managerName: 'شكري كلاج',
-    managerRole: 'شوفير كورسّات',
-    managerAvatar: '🕶️',
-    managerCost: 6500.0,
-  },
-  {
-    id: 'makroudh',
-    name: 'حلويات مقروض وبقلاوة',
-    tagline: 'لوز حر وسمن عربي أصيل',
+    id: 'patisserie',
+    name: 'باتيسري وحلويات عربي',
+    tagline: 'عسل قطر، بقلاوة وكعبات مقروض يذوبو في الفم',
     icon: '🍯',
-    baseCost: 9500.0, // 9 500 Dinars
-    baseRevenue: 750.0,
-    costMultiplier: 1.13,
-    cycleDurationMs: 24000, // 24s
-    managerName: 'الحاج عمر',
-    managerRole: 'معلّم الحرفة',
-    managerAvatar: '👳',
-    managerCost: 25000.0,
+    baseCost: 2400.0,
+    baseRevenue: 190.0,
+    costMultiplier: 1.11,
+    cycleDurationMs: 10000, // 10.0s
+    managerName: 'خالتي زبيدة',
+    managerRole: 'شوافة الحلو',
+    managerAvatar: '👩‍🍳',
+    managerCost: 7000.0,
   },
   {
-    id: 'lac2_lounge',
-    name: 'صالون شاي VIP في البحيرة',
-    tagline: 'كليماتيزور يخدم وكعبات موخيتو',
-    icon: '✨',
-    baseCost: 45000.0, // 45 000 Dinars
-    baseRevenue: 3200.0,
+    id: 'taxi_collectif',
+    name: 'محطة تاكسي جماعي',
+    tagline: 'سكّر الباب بالقوي، وخمسة ومارش !',
+    icon: '🚐',
+    baseCost: 9800.0,
+    baseRevenue: 720.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 18000, // 18.0s
+    managerName: 'كمال تيربو',
+    managerRole: 'كلاج الديسك',
+    managerAvatar: '🕶️',
+    managerCost: 28000.0,
+  },
+  {
+    id: 'superette',
+    name: 'سوبيرات البركة',
+    tagline: 'كليماتيزور يخدم والكرّوسة تدور في الرّايونات',
+    icon: '🛒',
+    baseCost: 38000.0,
+    baseRevenue: 2600.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 30000, // 30.0s
+    managerName: 'سي رضا',
+    managerRole: 'كابو الرّفوف',
+    managerAvatar: '👔',
+    managerCost: 100000.0,
+  },
+  {
+    id: 'supermarche',
+    name: 'سوبرماركت المدينة',
+    tagline: 'بروموسيونات، كاسات سريعة وقضية الشهر',
+    icon: '🏢',
+    baseCost: 150000.0,
+    baseRevenue: 9500.0,
     costMultiplier: 1.13,
-    cycleDurationMs: 60000, // 60s
-    managerName: 'سي المهدي',
-    managerRole: 'رئيس مجلس الإدارة',
+    cycleDurationMs: 45000, // 45.0s
+    managerName: 'كريم الشريف',
+    managerRole: 'مدير العمليات',
     managerAvatar: '💼',
-    managerCost: 120000.0,
+    managerCost: 400000.0,
+  },
+  {
+    id: 'salon_de_the',
+    name: 'سالون دو ثي في اللاك',
+    tagline: 'موكا، موخيتو، كليماتيزور ودلال VIP',
+    icon: '🍹',
+    baseCost: 600000.0,
+    baseRevenue: 35000.0,
+    costMultiplier: 1.14,
+    cycleDurationMs: 60000, // 60.0s
+    managerName: 'رامي الباريستا',
+    managerRole: 'ماستر الكوكتيل',
+    managerAvatar: '🍸',
+    managerCost: 1500000.0,
+  },
+  {
+    id: 'restaurant',
+    name: 'مطعم مشوي وحوت',
+    tagline: 'تسطيرة وحوت كعب على الفحم، صحة وبالشفاء',
+    icon: '🥘',
+    baseCost: 2500000.0,
+    baseRevenue: 130000.0,
+    costMultiplier: 1.15,
+    cycleDurationMs: 90000, // 90.0s
+    managerName: 'الشاف فتحي',
+    managerRole: 'سلطان الكوجينة',
+    managerAvatar: '👨‍🍳',
+    managerCost: 6000000.0,
+  },
+  {
+    id: 'hotel',
+    name: 'أوتيل 5 نجوم',
+    tagline: 'بيسين، ريلاكس، وتورست ودلال الملوك',
+    icon: '🏨',
+    baseCost: 10000000.0,
+    baseRevenue: 500000.0,
+    costMultiplier: 1.15,
+    cycleDurationMs: 120000, // 120.0s
+    managerName: 'ميسيو برهان',
+    managerRole: 'المدير العام',
+    managerAvatar: '🎩',
+    managerCost: 25000000.0,
   }
 ];
 
 export const TUNISIAN_EVENTS = [
   {
-    id: 'canicule',
-    title: '☀️ شهيلي يكوي 48°C !',
-    description: 'الشمس عمودية والناس عطشانة ! المشروبات والقهاوي تخدم دز تخطف.',
+    id: 'chheli',
+    title: '☀️ شهيلي يكوّي 48°C !',
+    description: 'القهاوي وسالونات الشاي يعبّاو بالمشروبات الباردة والماء المثلّج.',
     durationMs: 30000,
-    multipliers: { kahwa: 3.0, louage: 0.5 }
+    multipliers: { kahwa: 2.0, salon_de_the: 2.5 }
   },
   {
     id: 'derby',
-    title: '⚽ ليلة الدربي الكبير !',
-    description: 'العاصمة مقلوبة والقهوة مبلعة ولاد الحومة ! القهاوي والفريكاسي يدخلو ذهب.',
+    title: '⚽ ليلة الدربي الكبير في رادس !',
+    description: 'العاصمة شاعلة والجمهور في الشارع ! الكساكروت والفريكاسي يطيرو طيران.',
     durationMs: 40000,
-    multipliers: { kahwa: 2.5, lac2_lounge: 2.0 }
+    multipliers: { kaskrout: 3.0, fricasse: 2.5, kahwa: 1.8 }
   },
   {
-    id: 'mariages',
+    id: 'aaras',
     title: '💐 موسم الأعراس والوطية !',
-    description: 'الزغاريت تعلّي والحلو يتفرّق ! المشاميم والبقلاوة مطلوبين بالصف.',
+    description: 'الزغاريت تعلّي والحلو يتفرّق ! الباتيسري والمطاعم مطلوبين بالصف.',
     durationMs: 35000,
-    multipliers: { machmoum: 3.0, makroudh: 2.5 }
+    multipliers: { patisserie: 3.0, restaurant: 2.0 }
   },
   {
     id: 'embouteillage',
     title: '🚗 سركيلاسيون باب سعدون واقْفة !',
-    description: 'التكاسي تبلوكات واللواجات واقفين ! الكيوسك يبيع للواقفين في الكارتاجة.',
+    description: 'التكاسي الجماعي تبلوكات والكيوسك يبيع للواقفين في الكارتاجة.',
     durationMs: 25000,
-    multipliers: { fricasse: 2.5, louage: 0.3 }
+    multipliers: { kaskrout: 2.5, taxi_collectif: 0.3 }
   }
 ];
 
 export const TUNISIAN_QUESTS = [
   {
     id: 'first_kiosk',
-    title: 'بداية الرحلة : حل أوّل حانوت',
+    title: 'بداية الرحلة : حل أوّل حانوت عيّاري',
     targetType: 'business_level',
-    businessId: 'fricasse',
+    businessId: 'kaskrout',
     targetValue: 1,
     rewardDinars: 5.0,
     titleEarned: 'تاجر مبتدئ'
   },
   {
-    id: 'serve_fricasse_10',
+    id: 'serve_kaskrout_10',
     title: 'سرباي الحومة : سربّي 10 مرّات',
     targetType: 'manual_serves',
     targetValue: 10,
@@ -149,12 +219,21 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'open_coffee',
-    title: 'وسع المشروع : حل القهوة الشعبية',
+    title: 'وسع المشروع : حل المقهى الشعبي',
     targetType: 'business_level',
     businessId: 'kahwa',
     targetValue: 1,
     rewardDinars: 100.0,
     titleEarned: 'صاحب قهوة'
+  },
+  {
+    id: 'open_taxi',
+    title: 'نقل العاصمة : حل محطة تاكسي جماعي',
+    targetType: 'business_level',
+    businessId: 'taxi_collectif',
+    targetValue: 1,
+    rewardDinars: 1500.0,
+    titleEarned: 'رايس التكاسي'
   },
   {
     id: 'wealth_1000',
@@ -177,8 +256,8 @@ export class TycoonEngine {
     }));
 
     // Économie
-    this.dinars = 10.0; // Don de départ (pour acheter le 1er kiosque fricassé à 10 DT)
-    this.totalDinarsEarned = 10.0;
+    this.dinars = 5.0; // Don de départ (pour acheter le 1er kiosque كسكروت عيّاري à 5 DT)
+    this.totalDinarsEarned = 5.0;
     this.prestigePoints = 0; // Ma3rouf / Réputation
     this.lastTimestamp = Date.now();
 

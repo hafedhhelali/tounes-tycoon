@@ -491,7 +491,7 @@
           <span>🇹🇳 تونس تايكون</span>
           <span class="badge-tn" id="playerTitleBadge">مواطن يلوّج على مشروع</span>
         </div>
-        <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026</div>
+        <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026 beta</div>
       </div>
 
       <div class="balance-box">
@@ -557,6 +557,7 @@
     // Restauration d'état et calcul gain hors ligne
     const saved = localStorage.getItem('tounes_tycoon_save');
     const engine = new TycoonEngine(saved ? JSON.parse(saved) : null);
+    const offlineGain = engine.processOfflineProgress();
 
     const dinarsDisplay = document.getElementById('dinarsDisplay');
     const businessList = document.getElementById('businessList');
@@ -755,7 +756,7 @@
         const triggerServe = (clientX, clientY) => {
           if (engine.startProduction(biz.id)) {
             if (biz.id === 'kahwa') soundEngine.playTeaCup();
-            else if (biz.id === 'louage') soundEngine.playHorn();
+            else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
             else soundEngine.playCoin();
 
             // Particule flottante de gain au point de contact
