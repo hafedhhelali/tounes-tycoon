@@ -1,127 +1,326 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Tounes Tycoon (تونسي و راسي عالي)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #e11d48;
-      --gold: #f59e0b;
-      --text: #f8fafc;
+      --bg: #090d16;
+      --card-bg: #131b2e;
+      --card-border: #222f4c;
+      --red-tn: #e11d48;
+      --red-glow: rgba(225, 29, 72, 0.4);
+      --gold: #fbbf24;
+      --gold-dark: #b45309;
+      --green: #10b981;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     body {
       background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       display: flex;
       justify-content: center;
       min-height: 100vh;
+      overflow-x: hidden;
     }
     #app {
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      gap: 16px;
+      padding: 14px;
+      gap: 14px;
+      min-height: 100vh;
     }
+
+    /* HEADER TYCOON */
     header {
-      background: var(--card-bg);
+      background: linear-gradient(180deg, #182238 0%, #0f172a 100%);
+      border: 1px solid var(--card-border);
       padding: 16px;
-      border-radius: 12px;
-      border: 1px solid #334155;
+      border-radius: 20px;
       text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: sticky;
+      top: 10px;
+      z-index: 50;
+      backdrop-filter: blur(10px);
     }
-    .dinars-counter {
-      font-size: 28px;
+    .brand-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .brand-title {
+      font-size: 14px;
       font-weight: 800;
-      color: var(--gold);
-      margin: 8px 0;
+      letter-spacing: 0.5px;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+    .badge-tn {
+      background: var(--red-tn);
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px var(--red-glow);
+    }
+    .balance-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 10px 14px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .balance-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .balance-val {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+      letter-spacing: -0.5px;
+    }
+
+    /* ACTION PUB DÉDIÉE (SOLDE & BOOST) */
+    .ads-hub {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .ad-card-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-weight: 800;
+      transition: all 0.15s ease;
+      color: white;
+    }
+    .ad-card-btn:active { transform: scale(0.96); }
+    .ad-btn-cash {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35);
+      border: 1px solid #10b981;
+    }
+    .ad-btn-boost {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      box-shadow: 0 4px 15px rgba(217, 119, 6, 0.35);
+      border: 1px solid #f59e0b;
+    }
+    .ad-btn-title { font-size: 12px; font-weight: 900; display: flex; align-items: center; gap: 4px; }
+    .ad-btn-sub { font-size: 10px; opacity: 0.85; font-weight: 600; }
+
+    /* BANDEAU ÉVÉNEMENT */
+    #eventBanner {
+      display: none;
+      background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+      border: 1px solid var(--gold);
+      padding: 12px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(180, 83, 9, 0.4);
+      margin-top: 8px;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+      50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); }
+    }
+
+    /* LISTE COMMERCES */
     .business-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
       overflow-y: auto;
-      flex: 1;
+      padding-bottom: 24px;
     }
     .biz-card {
       background: var(--card-bg);
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 12px;
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transition: border-color 0.2s ease;
     }
-    .biz-header {
+    .biz-card.active { border-color: #3b82f6; }
+    .biz-card.locked { opacity: 0.75; filter: grayscale(0.2); }
+
+    .biz-main-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .biz-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.05);
+      flex-shrink: 0;
+      position: relative;
+    }
+    .biz-lvl-tag {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      background: var(--gold);
+      color: #0f172a;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 6px;
+    }
+    .biz-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .biz-title {
+      font-weight: 800;
+      font-size: 14px;
+      color: #f1f5f9;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .biz-title { font-weight: 700; font-size: 15px; }
-    .biz-level { font-size: 13px; color: var(--gold); }
-    .progress-bar {
-      height: 10px;
-      background: #0f172a;
-      border-radius: 5px;
+    .biz-ar {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .biz-income {
+      font-size: 13px;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+
+    /* BARRE DE PROGRESSION JAUGE */
+    .progress-track {
+      height: 8px;
+      background: #090d16;
+      border-radius: 4px;
       overflow: hidden;
       position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .progress-fill {
+    .progress-bar-fill {
       height: 100%;
-      background: var(--accent);
+      background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
       width: 0%;
-      transition: width 0.05s linear;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
     }
-    .biz-actions {
+
+    /* BOUTONS D'INTERACTION */
+    .biz-controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
+      margin-top: 2px;
     }
-    button {
-      background: #334155;
-      color: var(--text);
+    .btn-game {
       border: none;
-      padding: 10px 8px;
-      border-radius: 8px;
-      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px 6px;
+      font-weight: 800;
       font-size: 12px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      transition: all 0.1s ease;
+      color: white;
     }
-    button:active { transform: scale(0.97); }
-    button.action-btn { background: var(--accent); }
-    button.buy-btn { background: #2563eb; }
-    button.manager-btn { background: #059669; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-game:active { transform: scale(0.97); }
+    .btn-game:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn-serve {
+      background: linear-gradient(135deg, var(--red-tn) 0%, #be123c 100%);
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+    }
+    .btn-upgrade {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+    .btn-manager {
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      grid-column: span 2;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      padding: 8px 6px;
+    }
   </style>
 </head>
 <body>
   <div id="app">
     <header>
-      <h1>Tounes Tycoon 🇹🇳</h1>
-      <div class="dinars-counter" id="dinarsDisplay">0.00 DT</div>
-      <div id="eventBanner" style="display: none; background: #854d0e; border: 1px solid #eab308; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: left;">
-        <div style="font-weight: 800; color: #fef08a;" id="eventTitle">Événement</div>
-        <div style="font-size: 12px; margin: 4px 0;" id="eventDesc">Description</div>
-        <div style="font-size: 11px; color: #fef9c3; font-weight: bold;" id="eventTimer">Temps restant : 0s</div>
+      <div class="brand-bar">
+        <div class="brand-title">
+          <span>🇹🇳 TOUNES TYCOON</span>
+          <span class="badge-tn">V1.0</span>
+        </div>
+        <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026</div>
       </div>
-      <div style="margin-top: 10px; display: flex; gap: 8px;">
-        <button id="adBoostBtn" style="flex: 1; background: #059669; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 13px;">
-          📺 Boost Revenus x2 (AdMob)
-          <span id="adBoostStatus" style="font-size: 11px; font-weight: normal; opacity: 0.9;">Inactif</span>
+
+      <div class="balance-box">
+        <div class="balance-label">Solde Caisse</div>
+        <div class="balance-val" id="dinarsDisplay">0.00 DT</div>
+      </div>
+
+      <!-- ADMOB REWARD HUB -->
+      <div class="ads-hub">
+        <button class="ad-card-btn ad-btn-cash" id="adCashBtn">
+          <div class="ad-btn-title">🎁 +Solde Gratuit</div>
+          <div class="ad-btn-sub" id="cashRewardHint">Regarder Vidéo (+30 DT)</div>
+        </button>
+        <button class="ad-card-btn ad-btn-boost" id="adBoostBtn">
+          <div class="ad-btn-title">⚡ Boost x2 (4h)</div>
+          <div class="ad-btn-sub" id="adBoostStatus">Inactif</div>
         </button>
       </div>
-      <div style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">© EOLabs 2026 - Moteur Monotonique Sans Lag</div>
+
+      <!-- BANDEAU ÉVÉNEMENT POP-CULTURE -->
+      <div id="eventBanner">
+        <div style="font-weight: 900; color: #fef08a; font-size: 14px;" id="eventTitle">Événement</div>
+        <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">Description</div>
+        <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">Temps restant : 0s</div>
+      </div>
     </header>
 
     <div class="business-list" id="businessList"></div>
@@ -131,63 +330,95 @@
     import { TycoonEngine } from './engine.js';
     import { soundEngine } from './audio.js';
 
-    // Persistance locale avec calcul offline progress automatique
+    // Restauration d'état et calcul gain hors ligne
     const saved = localStorage.getItem('tounes_tycoon_save');
     const engine = new TycoonEngine(saved ? JSON.parse(saved) : null);
 
     const offlineGain = engine.processOfflineProgress();
     if (offlineGain > 0) {
-      alert(`3ala slamtek ! Revenu en ton absence : +${offlineGain.toFixed(2)} DT`);
+      setTimeout(() => {
+        alert(`🎉 3ala slamtek !\nRevenu généré en ton absence : +${offlineGain.toFixed(2)} DT`);
+      }, 500);
     }
 
     const dinarsDisplay = document.getElementById('dinarsDisplay');
     const businessList = document.getElementById('businessList');
+    const adCashBtn = document.getElementById('adCashBtn');
+    const cashRewardHint = document.getElementById('cashRewardHint');
+    const adBoostBtn = document.getElementById('adBoostBtn');
+    const adBoostStatus = document.getElementById('adBoostStatus');
+
+    // Câblage Vidéo AdMob -> Solde Gratuit
+    adCashBtn.onclick = () => {
+      const reward = engine.claimAdCashReward();
+      soundEngine.playEventFanfare();
+      alert(`💰 Mabrouk ! Tu as reçu +${reward.toFixed(2)} DT immédiatement.`);
+      renderDOM();
+    };
+
+    // Câblage Vidéo AdMob -> Boost x2 4h
+    adBoostBtn.onclick = () => {
+      engine.addAdBoost(4 * 3600 * 1000);
+      soundEngine.playEventFanfare();
+      renderDOM();
+    };
 
     function renderDOM() {
       businessList.innerHTML = '';
       engine.businesses.forEach(biz => {
         const card = document.createElement('div');
-        card.className = 'biz-card';
+        card.className = `biz-card ${biz.level > 0 ? 'active' : 'locked'}`;
         card.id = `card-${biz.id}`;
 
         const cost = engine.getCost(biz);
         const rev = engine.getRevenue(biz);
 
         card.innerHTML = `
-          <div class="biz-header">
-            <span class="biz-title">${biz.name}</span>
-            <span class="biz-level">Niv. ${biz.level}</span>
+          <div class="biz-main-row">
+            <div class="biz-avatar">
+              ${biz.icon}
+              <div class="biz-lvl-tag">Niv.${biz.level}</div>
+            </div>
+            <div class="biz-info">
+              <div class="biz-title">
+                <span>${biz.name}</span>
+              </div>
+              <div class="biz-ar">${biz.arabicName}</div>
+              <div class="biz-income">
+                ${rev > 0 ? '+' + rev.toFixed(2) + ' DT' : '0.00 DT'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ ${(biz.cycleDurationMs/1000).toFixed(1)}s</span>
+              </div>
+            </div>
           </div>
-          <div style="font-size: 12px; color: var(--text-muted);">
-            Revenu : ${rev > 0 ? '+' + rev.toFixed(2) + ' DT' : '0.00 DT'} (${(biz.cycleDurationMs/1000).toFixed(1)}s)
+
+          <div class="progress-track">
+            <div class="progress-bar-fill" id="prog-${biz.id}"></div>
           </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="prog-${biz.id}"></div>
-          </div>
-          <div class="biz-actions">
-            <button class="action-btn" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
-              ${biz.hasManager ? 'Automatique (Géré)' : 'Taper / Servir'}
+
+          <div class="biz-controls">
+            <button class="btn-game btn-serve" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
+              ${biz.hasManager ? '🤖 Auto (Géré)' : '⚡ Servir'}
             </button>
-            <button class="buy-btn" id="buy-${biz.id}">
+            <button class="btn-game btn-upgrade" id="buy-${biz.id}">
               Améliorer (${cost.toFixed(2)} DT)
             </button>
+            ${!biz.hasManager ? `
+              <button class="btn-game btn-manager" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
+                ${biz.managerAvatar} Recruter ${biz.managerName} (${biz.managerCost.toFixed(0)} DT)
+              </button>
+            ` : ''}
           </div>
-          ${!biz.hasManager ? `
-            <button class="manager-btn" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
-              Recruter ${biz.managerName} (${biz.managerCost.toFixed(0)} DT)
-            </button>
-          ` : ''}
         `;
 
         businessList.appendChild(card);
 
-        // Events avec sons procéduraux
+        // Actions avec sons contextuels
         card.querySelector(`#buy-${biz.id}`).onclick = () => {
           if (engine.buyBusiness(biz.id)) {
             soundEngine.playUpgrade();
             renderDOM();
           }
         };
+
         const prodBtn = card.querySelector(`#produce-${biz.id}`);
         if (prodBtn) {
           prodBtn.onclick = () => {
@@ -198,6 +429,7 @@
             }
           };
         }
+
         const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
         if (mgrBtn) {
           mgrBtn.onclick = () => {
@@ -212,17 +444,7 @@
 
     renderDOM();
 
-    // Google Ads Service
-    const adBoostBtn = document.getElementById('adBoostBtn');
-    const adBoostStatus = document.getElementById('adBoostStatus');
-    adBoostBtn.onclick = () => {
-      // Simule la récompense d'une vidéo AdMob (+4 heures x2)
-      engine.addAdBoost(4 * 3600 * 1000);
-      soundEngine.playEventFanfare();
-      renderDOM();
-    };
-
-    // Game loop 60 FPS découplée avec deltaTime
+    // Boucle de rendu fluide 60 FPS
     let lastSave = Date.now();
     function tick() {
       const now = Date.now();
@@ -230,18 +452,22 @@
 
       dinarsDisplay.innerText = engine.dinars.toFixed(2) + ' DT';
 
-      // Statut du Boost AdMob
+      // Mise à jour hint cadeau AdMob
+      let currentRate = 0;
+      engine.businesses.forEach(b => { if (b.level > 0) currentRate += (engine.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
+      const potentialCash = Math.max(25.0, Math.floor(currentRate * 600));
+      cashRewardHint.innerText = `+${potentialCash.toFixed(0)} DT Immédiat`;
+
+      // Statut Boost 2x AdMob
       if (engine.isAdBoostActive(now)) {
         const remainingHours = Math.floor((engine.adBoostEndsAt - now) / 3600000);
         const remainingMins = Math.floor(((engine.adBoostEndsAt - now) % 3600000) / 60000);
         adBoostStatus.innerText = `Actif (${remainingHours}h ${remainingMins}m)`;
-        adBoostBtn.style.background = '#d97706'; // Ambre quand actif
       } else {
-        adBoostStatus.innerText = 'Inactif (+4h x2)';
-        adBoostBtn.style.background = '#059669'; // Vert prêt
+        adBoostStatus.innerText = 'Inactif (+4h)';
       }
 
-      // Affichage de l'événement en cours
+      // Événement temporaire en cours
       const eventBanner = document.getElementById('eventBanner');
       if (engine.activeEvent) {
         eventBanner.style.display = 'block';
@@ -253,7 +479,7 @@
         eventBanner.style.display = 'none';
       }
 
-      // Mise à jour continue des jauges sans re-render complet du DOM
+      // Progression continue des jauges
       engine.businesses.forEach(biz => {
         const bar = document.getElementById(`prog-${biz.id}`);
         if (bar && biz.level > 0) {
@@ -262,7 +488,7 @@
         }
       });
 
-      // Auto-save toutes les 5 secondes
+      // Sauvegarde automatique toutes les 5s
       if (now - lastSave > 5000) {
         localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
         lastSave = now;

@@ -7,61 +7,85 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'fricasse',
     name: 'Kiosque Fricassé & Bambalouni',
+    arabicName: 'فريكاسي و بمبلوني',
+    icon: '🥪',
     baseCost: 4.0, // en Dinars (TND)
     baseRevenue: 1.0,
     costMultiplier: 1.07,
     cycleDurationMs: 600, // 0.6s
     managerName: '3am Salah',
+    managerRole: 'Chef Tablier',
+    managerAvatar: '👨‍🍳',
     managerCost: 100.0,
   },
   {
     id: 'kahwa',
     name: '9ahwa Cha3biya (Direct / Express)',
+    arabicName: 'قهوة شعبية و تاي بالنعناع',
+    icon: '☕',
     baseCost: 60.0,
     baseRevenue: 20.0,
     costMultiplier: 1.15,
     cycleDurationMs: 3000, // 3s
     managerName: 'Naceur Garçon',
+    managerRole: 'Plateau Turbo',
+    managerAvatar: '🤵',
     managerCost: 1000.0,
   },
   {
     id: 'machmoum',
-    name: 'Parfumerie & Machmoum Express',
+    name: 'Parfumerie & Machmoum Jasmin',
+    arabicName: 'مشموم و عطر الفل',
+    icon: '🌸',
     baseCost: 720.0,
     baseRevenue: 90.0,
     costMultiplier: 1.14,
     cycleDurationMs: 6000, // 6s
     managerName: 'Chikha Latifa',
+    managerRole: 'Reine du Jasmin',
+    managerAvatar: '🧕',
     managerCost: 12000.0,
   },
   {
     id: 'louage',
     name: 'Station Louage & Taxi Collectif',
+    arabicName: 'محطة اللواج و التاكسي الجماعي',
+    icon: '🚐',
     baseCost: 8640.0,
     baseRevenue: 720.0,
     costMultiplier: 1.13,
     cycleDurationMs: 12000, // 12s
     managerName: 'Chokri Taxi',
+    managerRole: 'Pilote Grand Confort',
+    managerAvatar: '🕶️',
     managerCost: 100000.0,
   },
   {
     id: 'makroudh',
     name: 'Pâtisserie Makroudh & Baklawa',
+    arabicName: 'حلويات المقروض و البقلاوة',
+    icon: '🍯',
     baseCost: 103680.0,
     baseRevenue: 4320.0,
     costMultiplier: 1.12,
     cycleDurationMs: 24000, // 24s
     managerName: 'Hadj Amor',
+    managerRole: 'Maître Artisan',
+    managerAvatar: '👳',
     managerCost: 1200000.0,
   },
   {
     id: 'lac2_lounge',
     name: 'Salon de Thé VIP Lac 2',
+    arabicName: 'صالون شاي فخم ضفاف البحيرة',
+    icon: '✨',
     baseCost: 1244160.0,
     baseRevenue: 25920.0,
     costMultiplier: 1.11,
     cycleDurationMs: 96000, // 96s
     managerName: 'Si Mehdi',
+    managerRole: 'Directeur Général',
+    managerAvatar: '💼',
     managerCost: 10000000.0,
   }
 ];
@@ -131,6 +155,20 @@ export class TycoonEngine {
   addAdBoost(durationMs = 4 * 60 * 60 * 1000, now = Date.now()) {
     const start = Math.max(now, this.adBoostEndsAt);
     this.adBoostEndsAt = Math.min(start + durationMs, now + (24 * 60 * 60 * 1000));
+  }
+
+  // Google Ads Rewarded Cash : offre 10 minutes de production instantanée (ou min 20 TND)
+  claimAdCashReward(now = Date.now()) {
+    let totalPerSecond = 0;
+    for (const biz of this.businesses) {
+      if (biz.level > 0) {
+        totalPerSecond += (this.getRevenue(biz, now) / (biz.cycleDurationMs / 1000));
+      }
+    }
+    // 10 minutes (600s) de revenus cumulés, avec minimum garanti de 25 DT
+    const cashReward = Math.max(25.0, Math.floor(totalPerSecond * 600));
+    this.dinars += cashReward;
+    return cashReward;
   }
 
   getCost(business) {

@@ -103,4 +103,15 @@ test('Ad rewarded boost doubles production revenue', () => {
   assert.equal(engine.getRevenue(engine.businesses[1], tExpired), 20.0);
 });
 
+test('Ad rewarded cash grants instant dinars', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 10.0;
+  engine.buyBusiness('fricasse'); // 1 DT par 0.6s -> ~1.66 DT/s
+
+  const reward = engine.claimAdCashReward();
+  assert.ok(reward >= 25.0);
+  assert.equal(engine.dinars, 6.0 + reward);
+});
+
+
 
