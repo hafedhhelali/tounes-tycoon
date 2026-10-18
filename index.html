@@ -14,7 +14,7 @@
       --card-border: #1f2937;
       --red-tn: #e11d48;
       --red-glow: rgba(225, 29, 72, 0.45);
-      --gold: #fbbf24;
+      --gold: #f59e0b;
       --gold-dark: #b45309;
       --green: #10b981;
       --text-main: #f9fafb;
@@ -201,13 +201,14 @@
       position: absolute;
       bottom: -4px;
       right: -4px;
-      background: var(--gold);
-      color: #0f172a;
+      background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+      color: #1c1003;
       font-size: 10px;
       font-weight: 900;
-      padding: 1px 5px;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+      padding: 1px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 8px rgba(245, 158, 11, 0.45);
     }
     .biz-info {
       flex: 1;
@@ -256,28 +257,30 @@
     }
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+      background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 55%, #d97706 100%);
       width: 0%;
       border-radius: 6px;
-      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.45);
       position: relative;
       overflow: hidden;
       transition: width 0.08s linear;
+      will-change: width;
     }
     .progress-bar-fill::after {
       content: '';
       position: absolute;
       top: 0;
-      left: -100%;
+      left: 0;
       width: 60%;
       height: 100%;
       background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.75) 50%, transparent 100%);
-      transform: skewX(-25deg);
+      transform: translate3d(-120%, 0, 0) skewX(-25deg);
       animation: barShimmer 1.3s infinite linear;
+      will-change: transform;
     }
     @keyframes barShimmer {
-      0% { left: -60%; }
-      100% { left: 160%; }
+      0% { transform: translate3d(-120%, 0, 0) skewX(-25deg); }
+      100% { transform: translate3d(260%, 0, 0) skewX(-25deg); }
     }
 
     /* SQUASH & REBOND TACTILE SUR L'AVATAR */
@@ -349,8 +352,12 @@
       transition: all 0.1s ease;
       color: white;
     }
-    .btn-game:active { transform: scale(0.97); }
-    .btn-game:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-game { touch-action: manipulation; min-height: 44px; will-change: transform; box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 3px 0 rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); }
+    .btn-game:active { transform: translate3d(0, 2px, 0) scale(0.97); filter: brightness(1.15); }
+    .btn-game:disabled { opacity: 0.45; cursor: not-allowed; transform: none; filter: grayscale(0.4); }
+    .ad-card-btn { touch-action: manipulation; min-height: 44px; }
+    .biz-card.active { box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 0 1px rgba(245,158,11,0.25); }
+    @media (prefers-reduced-motion: reduce) { *, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
 
     .btn-upgrade.shake-btn, .btn-manager.shake-btn, .btn-serve.shake-btn {
       animation: btnShake 0.4s ease-in-out !important;
@@ -507,7 +514,7 @@
       <div class="brand-bar">
         <div class="brand-title">
           <span>🇹🇳 تونس تايكون</span>
-          <span class="badge-tn" id="playerTitleBadge">مواطن يلوّج على مشروع</span>
+          <span class="badge-tn" id="playerTitleBadge">مواطن يلوّج على خدمة</span>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <button id="soundToggleBtn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #f8fafc; font-size: 14px; padding: 3px 8px; cursor: pointer;">🔊</button>
@@ -550,7 +557,7 @@
           <button id="eventMiniGameBtn" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border: 1px solid #f87171; color: white; border-radius: 8px; padding: 4px 10px; font-weight: 900; font-size: 11px; cursor: pointer; animation: bounce 1s infinite alternate;">🔥 العب واربح x5 !</button>
         </div>
         <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">تفاصيل</div>
-        <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">الوقت المتبقي : 0 ثانية</div>
+        <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">باقي : 0 ثانية</div>
       </div>
     </header>
 
@@ -568,7 +575,7 @@
     <div class="modal-card" style="border-color: #ef4444;">
       <div class="modal-icon-glow" style="font-size: 48px;">🥁</div>
       <div class="modal-title" id="minigameTitle">🔥 جوّ الحومة سخون !</div>
-      <div class="modal-subtitle" style="font-size: 13px; color: #fecaca;">انزل بالقوي وعاون الحومة قد ما تنجم في 10 ثواني !</div>
+      <div class="modal-subtitle" style="font-size: 13px; color: #fecaca;">اضرب بالقوة وعاون الحومة قدّ ما تنجّم في 10 ثواني !</div>
       <div style="display: flex; justify-content: space-between; width: 100%; font-weight: 800; font-size: 14px; margin-top: 4px;">
         <span style="color: #fbbf24;" id="minigameCountdown">الوقت : 10s</span>
         <span style="color: #38bdf8;" id="minigameScore">النقاط : 0</span>
@@ -576,7 +583,7 @@
       <button id="minigameTapBtn" style="width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, #ef4444 0%, #991b1b 100%); border: 4px solid #fecaca; color: white; font-size: 40px; cursor: pointer; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); display: flex; align-items: center; justify-content: center; margin: 10px 0; transition: transform 0.08s;">
         🥁
       </button>
-      <div style="font-size: 12px; color: #94a3b8;">اضغط بسرعة لتجميع الغلّة !</div>
+      <div style="font-size: 12px; color: #94a3b8;">دقّ بسرعة وجمّع الغلّة !</div>
     </div>
   </div>
 
@@ -585,7 +592,7 @@
     <div class="modal-card">
       <div class="modal-icon-glow" id="modalEmoji">🎉</div>
       <div class="modal-title" id="modalTitle">صحّة وفرحة !</div>
-      <div class="modal-subtitle" id="modalSub">زادت الكاسة تعبّات</div>
+      <div class="modal-subtitle" id="modalSub">الكاسة تعمّرت</div>
       <div class="modal-reward-badge" id="modalRewardAmount">+30.00 د.ت</div>
       <button class="modal-btn" id="modalCloseBtn">جَمّع الصّابة 💰</button>
     </div>
@@ -668,7 +675,7 @@
           engine.totalDinarsEarned += bonus;
 
           soundEngine.playEventFanfare();
-          showRewardModalUI('🥁', 'عطاك الوقت وصحّة ليك !', `جمّعت ${minigameTaps} ضربة دربوكة في جوّ الحومة :`, `+${formatCurrency(bonus)}`);
+          showRewardModalUI('🥁', 'عطّاك الصحّة !', `جمّعت ${minigameTaps} ضربة دربوكة في جوّ الحومة :`, `+${formatCurrency(bonus)}`);
           renderDOM();
         }
       }, 1000);
@@ -742,7 +749,7 @@
     if (offlineGain > 0) {
       setTimeout(() => {
         soundEngine.playEventFanfare();
-        showRewardModalUI('☕', 'على سلامتكم ! نوّرت الحومة', 'هذي غلّة خدمتك والشركاء وإنت غايب :', `+${offlineGain.toFixed(2)} د.ت`);
+        showRewardModalUI('☕', 'على سلامتكم ! نوّرت الحومة', 'هذي غلّة خدمتك وإنت غايب :', `+${offlineGain.toFixed(2)} د.ت`);
       }, 400);
     }
 
@@ -751,7 +758,7 @@
       await adsService.showRewardedBoost();
       const reward = engine.claimAdCashReward();
       soundEngine.playEventFanfare();
-      showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش', 'زادت الكاسة تعبّات من عند المستشهر :', `+${reward.toFixed(2)} د.ت`);
+      showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش', 'الكاسة تعمّرت من عند المستشهر :', `+${reward.toFixed(2)} د.ت`);
       renderDOM();
     };
 
@@ -760,7 +767,7 @@
       await adsService.showRewardedBoost();
       engine.addAdBoost(4 * 3600 * 1000);
       soundEngine.playEventFanfare();
-      showRewardModalUI('🚀', 'التيربو مشعول x2 !', 'المدخول مدوبل لمدة 4 سوايع كاملين', 'سرعة x2');
+      showRewardModalUI('🚀', 'التيربو مشعول x2 !', 'المدخول مضاعف 4 سوايع كاملين', 'سرعة x2');
       renderDOM();
     };
 
@@ -782,7 +789,7 @@
           <div class="biz-main-row">
             <div class="biz-avatar" id="avatar-${biz.id}">
               ${biz.icon}
-              <div class="biz-lvl-tag">مستوى ${biz.level}</div>
+              <div class="biz-lvl-tag">نيفو ${biz.level}</div>
             </div>
             <div class="biz-info">
               <div class="biz-title">
@@ -813,13 +820,13 @@
               if (nextMgr) {
                 return `
                   <button class="btn-game btn-manager" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
-                    ${nextMgr.avatar} انتداب (${nextMgr.name} - ${nextMgr.role}) : ${formatCurrency(nextMgr.cost, 0)} ${total > 1 ? `[${hired + 1}/${total}]` : ''}
+                    ${nextMgr.avatar} خدّم (${nextMgr.name} - ${nextMgr.role}) : ${formatCurrency(nextMgr.cost, 0)} ${total > 1 ? `[${hired + 1}/${total}]` : ''}
                   </button>
                 `;
               } else {
                 return `
                   <div style="grid-column: span 2; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 6px; text-align: center; font-size: 11px; font-weight: 800; color: #34d399;">
-                    👔 فريق الإدارة مكتمل (${total}/${total}) • إنتاج أوتوماتيكي +${(total - 1) * 25}%
+                    👔 الفريق كامل (${total}/${total}) • خدمة أوتوماتيك +${(total - 1) * 25}%
                   </div>
                 `;
               }
@@ -840,7 +847,7 @@
             const manque = (currentCost - engine.dinars);
             buyBtn.classList.add('shake-btn');
             setTimeout(() => buyBtn.classList.remove('shake-btn'), 420);
-            triggerBalanceAlert(`ناقصتك ${formatCurrency(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
+            triggerBalanceAlert(`ناقصك ${formatCurrency(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
           }
         };
 
@@ -881,13 +888,13 @@
             const hired = engine.hireManager(biz.id);
             if (hired) {
               soundEngine.playEventFanfare();
-              showRewardModalUI('👔', 'مبروك الانتداب !', `التحق بفريق العمل : ${hired.name} (${hired.role})`, '⚡ خدمة أوتوماتيك');
+              showRewardModalUI('👔', 'مبروك التخدام !', `دخل للفريق : ${hired.name} (${hired.role})`, '⚡ خدمة أوتوماتيك');
               renderDOM();
             } else if (nextMgr) {
               const manque = (nextMgr.cost - engine.dinars);
               mgrBtn.classList.add('shake-btn');
               setTimeout(() => mgrBtn.classList.remove('shake-btn'), 420);
-              triggerBalanceAlert(`حق الانتداب ناقصتك ${formatCurrency(manque)} ! 👔`);
+              triggerBalanceAlert(`ناقصك باش تخدّم ${formatCurrency(manque)} ! 👔`);
             }
           };
         }
@@ -922,7 +929,7 @@
           const claimed = engine.claimQuest(topQuest.id);
           if (claimed) {
             soundEngine.playEventFanfare();
-            showRewardModalUI('🏆', 'مبروك التحدّي !', `ربحت لقب : ${claimed.titleEarned}`, `+${formatCurrency(claimed.rewardDinars, 0)}`);
+            showRewardModalUI('🏆', 'بارك الله فيك !', `ربحت لقب : ${claimed.titleEarned}`, `+${formatCurrency(claimed.rewardDinars, 0)}`);
             renderDOM();
           }
         };
@@ -934,7 +941,7 @@
       let currentRate = 0;
       engine.businesses.forEach(b => { if (b.level > 0) currentRate += (engine.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
       const potentialCash = Math.max(5.0, Math.floor(currentRate * 180));
-      cashRewardHint.innerText = `+${formatCurrency(potentialCash, 0)} حالا`;
+      cashRewardHint.innerText = `+${formatCurrency(potentialCash, 0)} توّا`;
 
       // Statut Boost 2x AdMob
       if (engine.isAdBoostActive(now)) {

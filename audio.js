@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tounes Tycoon - Moteur Audio Procédural
  * © EOLabs 2026. Pur Web Audio API - Zéro asset lourd, zéro latence.
  */
@@ -191,145 +191,47 @@ class SoundEngine {
     if (this.bgmTimer || this.muted) return;
     this.init();
 
-    const bpm = 114;
-    const stepDuration = 60 / bpm / 4; // 16ème note (~131ms)
+    // Musique simple et douce : arpège calme (Am - F - C - G) + basse chaude, sans percussion.
+    const bpm = 76;
+    const stepDuration = 60 / bpm / 2; // croche
     let bgmStep = 0;
 
-    const notes = {
-      D3: 146.83,
-      Ed3: 159.00,
-      F3: 174.61,
-      G3: 196.00,
-      A3: 220.00,
-      Bb3: 233.08,
-      C4: 261.63,
-      D4: 293.66,
-      Ed4: 318.00,
-      F4: 349.23,
-      G4: 392.00,
-      A4: 440.00
-    };
-
-    const melodyPattern = [
-      notes.D4, null, notes.Ed4, notes.F4,
-      notes.G4, notes.F4, notes.Ed4, notes.D4,
-      notes.Ed4, notes.D4, notes.C4, notes.D4,
-      notes.A3, null, notes.D4, null,
-      notes.F4, notes.G4, notes.A4, notes.G4,
-      notes.F4, notes.Ed4, notes.D4, notes.Ed4,
-      notes.F4, notes.Ed4, notes.D4, notes.C4,
-      notes.D4, null, notes.D4, null
+    const chords = [
+      { bass: 110.00, arp: [220.00, 261.63, 329.63] },
+      { bass: 87.31, arp: [174.61, 220.00, 261.63] },
+      { bass: 130.81, arp: [261.63, 329.63, 392.00] },
+      { bass: 98.00, arp: [196.00, 246.94, 293.66] }
     ];
+    const arpOrder = [0, 1, 2, 1, 2, 1, 0, 1];
 
-    const percPattern = [
-      'D', null, 'T', 'T', null, 'D', 'T', null,
-      'D', 'T', 'T', null, 'T', 'D', 'T', 'T',
-      'D', null, 'T', 'T', null, 'D', 'T', null,
-      'D', 'T', 'T', 'T', 'D', 'D', 'T', null
-    ];
-
-    const bassPattern = [
-      notes.D3, null, null, null, notes.A3 / 2, null, null, null,
-      notes.D3, null, null, null, notes.A3 / 2, null, notes.D3, null,
-      notes.D3, null, null, null, notes.A3 / 2, null, null, null,
-      notes.G3 / 2, null, notes.A3 / 2, null, notes.D3, null, null, null
-    ];
-
-    const playPerc = (type, time) => {
-      if (!type || this.muted || !this.ctx) return;
-      if (type === 'D') {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(110, time);
-        osc.frequency.exponentialRampToValueAtTime(55, time + 0.12);
-        gain.gain.setValueAtTime(0.35, time);
-        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(time);
-        osc.stop(time + 0.25);
-      } else if (type === 'T') {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(800, time);
-        osc.frequency.exponentialRampToValueAtTime(1800, time + 0.04);
-        gain.gain.setValueAtTime(0.12, time);
-        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(time);
-        osc.stop(time + 0.07);
-      }
-    };
-
-    const playMelodyNote = (freq, time, duration) => {
+    const playSoft = (freq, time, duration, peak, type, cutoff) => {
       if (!freq || this.muted || !this.ctx) return;
       const osc = this.ctx.createOscillator();
-      const sub = this.ctx.createOscillator();
       const filter = this.ctx.createBiquadFilter();
       const gain = this.ctx.createGain();
-
-      osc.type = 'triangle';
-      sub.type = 'sine';
-      osc.frequency.setValueAtTime(freq, time);
-      sub.frequency.setValueAtTime(freq * 0.5, time);
-
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1150, time);
-      filter.Q.setValueAtTime(1.8, time);
-
-      gain.gain.setValueAtTime(0.001, time);
-      gain.gain.linearRampToValueAtTime(0.06, time + 0.025);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + duration * 0.95);
-
-      osc.connect(filter);
-      sub.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(time);
-      sub.start(time);
-      osc.stop(time + duration);
-      sub.stop(time + duration);
-    };
-
-    const playBassNote = (freq, time, duration) => {
-      if (!freq || this.muted || !this.ctx) return;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
-
-      osc.type = 'sine';
+      osc.type = type;
       osc.frequency.setValueAtTime(freq, time);
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(320, time);
-
+      filter.frequency.setValueAtTime(cutoff, time);
       gain.gain.setValueAtTime(0.001, time);
-      gain.gain.linearRampToValueAtTime(0.08, time + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + duration * 0.9);
-
+      gain.gain.linearRampToValueAtTime(peak, time + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(this.ctx.destination);
-
       osc.start(time);
-      osc.stop(time + duration);
+      osc.stop(time + duration + 0.05);
     };
 
     let nextNoteTime = this.ctx.currentTime + 0.05;
     this.bgmTimer = setInterval(() => {
       if (this.muted || !this.ctx) return;
       while (nextNoteTime < this.ctx.currentTime + 0.25) {
-        const curStep = bgmStep % 32;
-        playPerc(percPattern[curStep], nextNoteTime);
-        if (bassPattern[curStep]) {
-          playBassNote(bassPattern[curStep], nextNoteTime, stepDuration * 2.2);
-        }
-        if (melodyPattern[curStep]) {
-          playMelodyNote(melodyPattern[curStep], nextNoteTime, stepDuration * 1.8);
-        }
+        const bar = Math.floor(bgmStep / 8) % chords.length;
+        const pos = bgmStep % 8;
+        const chord = chords[bar];
+        if (pos === 0) playSoft(chord.bass, nextNoteTime, stepDuration * 7, 0.07, 'sine', 300);
+        playSoft(chord.arp[arpOrder[pos]], nextNoteTime, stepDuration * 2.5, 0.035, 'triangle', 1400);
         nextNoteTime += stepDuration;
         bgmStep++;
       }

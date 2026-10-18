@@ -7,7 +7,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'kaskrout',
     name: 'كسكروت عيّاري سخون',
-    tagline: 'غطّس في الزيت وكبّر في الهريسة !',
+    tagline: 'غطّس في الزيت وزيد الهريسة !',
     icon: '🥖',
     baseCost: 5.0, // Don de départ 5 DT permet l'achat immédiat
     baseRevenue: 0.8,
@@ -20,7 +20,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'fricasse',
     name: 'بمبلوني وفريكاسي',
-    tagline: 'سخون يكوّي ومن يدّو للفوّاي !',
+    tagline: 'سخون يكوي، من يدّو للفوّاي !',
     icon: '🍩',
     baseCost: 25.0,
     baseRevenue: 3.5,
@@ -33,21 +33,21 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'kahwa',
     name: 'مقهى شعبي',
-    tagline: 'كابوسين إكسبريس وطرح شكبة صبّاحي',
+    tagline: 'كابوسين وإكسبراس وقعدة الصباح',
     icon: '☕',
     baseCost: 120.0,
     baseRevenue: 14.0,
     costMultiplier: 1.09,
     cycleDurationMs: 2500, // 2.5s
     managers: [
-      { name: 'الناصر Garçon', role: 'سرباي الصالة', avatar: '🤵', cost: 250.0 },
+      { name: 'الناصر القارصون', role: 'سرباي الصالة', avatar: '🤵', cost: 250.0 },
       { name: 'سي الهاشمي', role: 'شاف الكونتوار', avatar: '☕', cost: 500.0 }
     ],
   },
   {
     id: 'attariya',
     name: 'عطريّة الحومة',
-    tagline: 'من باكو حليب لخيط وإبرة وتقييد في الكرني',
+    tagline: 'من الحليب للخيط والإبرة، وكتبها في الكرني',
     icon: '🏪',
     baseCost: 550.0,
     baseRevenue: 50.0,
@@ -74,7 +74,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'taxi_collectif',
     name: 'محطة تاكسي جماعي',
-    tagline: 'سكّر الباب بالقوي، وخمسة ومارش !',
+    tagline: 'سكّر الباب بالقوة وطلّق !',
     icon: '🚐',
     baseCost: 9800.0,
     baseRevenue: 720.0,
@@ -87,14 +87,14 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'superette',
     name: 'سوبيرات البركة',
-    tagline: 'كليماتيزور يخدم والكرّوسة تدور في الرّايونات',
+    tagline: 'المكيّف يخدم والشاريو يدور في الرّايونات',
     icon: '🛒',
     baseCost: 38000.0,
     baseRevenue: 2600.0,
     costMultiplier: 1.12,
     cycleDurationMs: 30000, // 30.0s
     managers: [
-      { name: 'منير الكيسييه', role: 'مسؤول الكاسات', avatar: '💳', cost: 40000.0 },
+      { name: 'منير الكيسييه', role: 'مسؤول الكاسة', avatar: '💳', cost: 40000.0 },
       { name: 'سي رضا', role: 'كابو الرّفوف والتوريد', avatar: '👔', cost: 100000.0 }
     ],
   },
@@ -109,7 +109,7 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 45000, // 45.0s
     managers: [
       { name: 'طارق ريسبونسابل', role: 'رئيس قسم المبيعات', avatar: '📋', cost: 150000.0 },
-      { name: 'كريم الشريف', role: 'مدير العمليات واللوجستيك', avatar: '💼', cost: 400000.0 }
+      { name: 'كريم الشريف', role: 'مدير الخدمة واللوجستيك', avatar: '💼', cost: 400000.0 }
     ],
   },
   {
@@ -129,7 +129,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'restaurant',
     name: 'مطعم مشوي وحوت',
-    tagline: 'تسطيرة وحوت كعب على الفحم، صحة وبالشفاء',
+    tagline: 'مشوي وحوت على الفحم، بالصحة والشفاء',
     icon: '🥘',
     baseCost: 2500000.0,
     baseRevenue: 130000.0,
@@ -143,7 +143,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'agence_voyages',
     name: 'وكالة أسفار اللقلاق (Ella9la9)',
-    tagline: 'عمرة، وتيكيات وطيارات ودور العالم مرتاح',
+    tagline: 'عمرة وتيكيات وطيارات، ودور العالم وإنت مرتاح',
     icon: '✈️',
     baseCost: 5500000.0,
     baseRevenue: 280000.0,
@@ -157,7 +157,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'hotel',
     name: 'أوتيل 5 نجوم',
-    tagline: 'بيسين، ريلاكس، وتورست ودلال الملوك',
+    tagline: 'بيسين وريلاكس وسيّاح، ودلال الملوك',
     icon: '🏨',
     baseCost: 12000000.0,
     baseRevenue: 600000.0,
@@ -171,7 +171,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'centre_commercial',
     name: 'المركّب التجاري (Mall)',
-    tagline: 'ماركات عالمية، إسكالاتور، وسينما وملاين تدور',
+    tagline: 'ماركات عالمية وإسكالاتور وسينما، والملاين تدور',
     icon: '🛍️',
     baseCost: 45000000.0,
     baseRevenue: 2200000.0,
@@ -186,7 +186,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'usine_conserves',
     name: 'معمل مصبرات الهريسة والتن',
-    tagline: 'فلاحة، تصدير، وحكك هريسة عربي تعبّي الكونتوارات',
+    tagline: 'فلاحة وتصدير، وهريسة عربي تعمّر الكونتوارات',
     icon: '🥫',
     baseCost: 200000000.0,
     baseRevenue: 10000000.0,
@@ -201,7 +201,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'showroom_auto',
     name: 'صالة عرض سيارات فاخرة (Showroom Auto)',
-    tagline: 'أحدث الموديلات، كراهب 0 كم ودلال رجال الأعمال',
+    tagline: 'آخر الموديلات، كراهب 0 كم ودلال رجال الأعمال',
     icon: '🏎️',
     baseCost: 800000000.0,
     baseRevenue: 42000000.0,
@@ -216,7 +216,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'tayaran_el_ghzela',
     name: 'شركة طيران الغزالة (Tayaran El Ghzéla)',
-    tagline: 'أسطول طيارات، خطوط دولية وعلم تونس يرفرف في العالم',
+    tagline: 'أسطول طيارات، خطوط دولية وعلم تونس يرفرف في الدنيا',
     icon: '🛫',
     baseCost: 3500000000.0,
     baseRevenue: 190000000.0,
@@ -234,7 +234,7 @@ export const TUNISIAN_EVENTS = [
   {
     id: 'chheli',
     title: '☀️ شهيلي يكوّي 48°C !',
-    description: 'القهاوي وسالونات الشاي يعبّاو بالمشروبات الباردة والماء المثلّج.',
+    description: 'القهاوي وسالونات الشاي تتعبّى بالمشروبات الباردة والماء المثلّج.',
     durationMs: 30000,
     multipliers: { kahwa: 2.0, salon_de_the: 2.5 }
   },
