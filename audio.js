@@ -140,6 +140,28 @@ class SoundEngine {
       osc.stop(t + 0.15);
     });
   }
+
+  // Son d'erreur / Solde insuffisant (Buzzer doux)
+  playBuzzer() {
+    if (this.muted) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.linearRampToValueAtTime(110, now + 0.18);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.18);
+  }
 }
 
 export const soundEngine = new SoundEngine();

@@ -285,6 +285,127 @@
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
       padding: 8px 6px;
     }
+
+    /* TOAST DE NOTIFICATION SOLDE INSUFFISANT */
+    .toast-box {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+      border: 1px solid #ef4444;
+      color: #fef2f2;
+      padding: 12px 18px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(239, 68, 68, 0.4);
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .toast-box.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .shake-balance {
+      animation: shake 0.4s ease-in-out;
+      border-color: #ef4444 !important;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* MODAL DE CÉLÉBRATION TYCOON */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border: 2px solid var(--gold);
+      border-radius: 24px;
+      padding: 28px 20px;
+      text-align: center;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.3);
+      transform: scale(0.85);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+    .modal-icon-glow {
+      font-size: 54px;
+      filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.6));
+      animation: bounce 1.5s infinite alternate ease-in-out;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+    .modal-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #f8fafc;
+      letter-spacing: -0.5px;
+    }
+    .modal-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .modal-reward-badge {
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 26px;
+      font-weight: 900;
+      padding: 8px 24px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+      margin: 8px 0;
+    }
+    .modal-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      border: 1px solid #10b981;
+      color: white;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+      transition: transform 0.1s ease;
+    }
+    .modal-btn:active { transform: scale(0.97); }
   </style>
 </head>
 <body>
@@ -292,38 +413,55 @@
     <header>
       <div class="brand-bar">
         <div class="brand-title">
-          <span>🇹🇳 TOUNES TYCOON</span>
-          <span class="badge-tn">V1.0</span>
+          <span>🇹🇳 تونس تايكون</span>
+          <span class="badge-tn">ملياردير الحومة</span>
         </div>
         <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026</div>
       </div>
 
       <div class="balance-box">
-        <div class="balance-label">Solde Caisse</div>
-        <div class="balance-val" id="dinarsDisplay">0.00 DT</div>
+        <div class="balance-label">الكاسة</div>
+        <div class="balance-val" id="dinarsDisplay">0.00 د.ت</div>
       </div>
 
       <!-- ADMOB REWARD HUB -->
       <div class="ads-hub">
         <button class="ad-card-btn ad-btn-cash" id="adCashBtn">
-          <div class="ad-btn-title">🎁 +Solde Gratuit</div>
-          <div class="ad-btn-sub" id="cashRewardHint">Regarder Vidéo (+30 DT)</div>
+          <div class="ad-btn-title">🎁 دبّر تفتوفة بلاش</div>
+          <div class="ad-btn-sub" id="cashRewardHint">تفرّج في فيديو (+30 د.ت)</div>
         </button>
         <button class="ad-card-btn ad-btn-boost" id="adBoostBtn">
-          <div class="ad-btn-title">⚡ Boost x2 (4h)</div>
-          <div class="ad-btn-sub" id="adBoostStatus">Inactif</div>
+          <div class="ad-btn-title">🚀 تيربو x2 (4 سوايع)</div>
+          <div class="ad-btn-sub" id="adBoostStatus">طافي</div>
         </button>
       </div>
 
       <!-- BANDEAU ÉVÉNEMENT POP-CULTURE -->
       <div id="eventBanner">
-        <div style="font-weight: 900; color: #fef08a; font-size: 14px;" id="eventTitle">Événement</div>
-        <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">Description</div>
-        <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">Temps restant : 0s</div>
+        <div style="font-weight: 900; color: #fef08a; font-size: 14px;" id="eventTitle">حدث في الحومة</div>
+        <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">تفاصيل</div>
+        <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">الوقت المتبقي : 0 ثانية</div>
       </div>
     </header>
 
     <div class="business-list" id="businessList"></div>
+  </div>
+
+  <!-- TOAST NOTIFICATION SOLDE INSUFFISANT -->
+  <div class="toast-box" id="errorToast">
+    <span style="font-size: 20px;">⚠️</span>
+    <span id="toastMsg">فلوس الكاسة ما تكفّيش ! سربّي ولا دبّر تفتوفة 💰</span>
+  </div>
+
+  <!-- MODAL EXPERT TYCOON REWARD (AdMob / Offline) -->
+  <div class="modal-overlay" id="rewardModal">
+    <div class="modal-card">
+      <div class="modal-icon-glow" id="modalEmoji">🎉</div>
+      <div class="modal-title" id="modalTitle">صحّة وفرحة !</div>
+      <div class="modal-subtitle" id="modalSub">زادت الكاسة تعبّات</div>
+      <div class="modal-reward-badge" id="modalRewardAmount">+30.00 د.ت</div>
+      <button class="modal-btn" id="modalCloseBtn">جَمّع الصّابة 💰</button>
+    </div>
   </div>
 
   <script type="module">
@@ -334,25 +472,66 @@
     const saved = localStorage.getItem('tounes_tycoon_save');
     const engine = new TycoonEngine(saved ? JSON.parse(saved) : null);
 
-    const offlineGain = engine.processOfflineProgress();
-    if (offlineGain > 0) {
-      setTimeout(() => {
-        alert(`🎉 3ala slamtek !\nRevenu généré en ton absence : +${offlineGain.toFixed(2)} DT`);
-      }, 500);
-    }
-
     const dinarsDisplay = document.getElementById('dinarsDisplay');
     const businessList = document.getElementById('businessList');
     const adCashBtn = document.getElementById('adCashBtn');
     const cashRewardHint = document.getElementById('cashRewardHint');
     const adBoostBtn = document.getElementById('adBoostBtn');
     const adBoostStatus = document.getElementById('adBoostStatus');
+    const errorToast = document.getElementById('errorToast');
+    const toastMsg = document.getElementById('toastMsg');
+    const rewardModal = document.getElementById('rewardModal');
+    const modalEmoji = document.getElementById('modalEmoji');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSub = document.getElementById('modalSub');
+    const modalRewardAmount = document.getElementById('modalRewardAmount');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    // UI Helper: Toast de notification solde insuffisant
+    let toastTimeout = null;
+    function triggerBalanceAlert(msg = 'فلوس الكاسة ما تكفّيش ! سربّي ولا دبّر تفتوفة 💰') {
+      soundEngine.playBuzzer();
+      toastMsg.innerText = msg;
+      errorToast.classList.add('show');
+
+      // Effet Shake sur le solde
+      const balanceBox = document.querySelector('.balance-box');
+      balanceBox.classList.add('shake-balance');
+      setTimeout(() => balanceBox.classList.remove('shake-balance'), 450);
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        errorToast.classList.remove('show');
+      }, 2600);
+    }
+
+    // UI Helper: Fenêtre de célébration Tycoon (sans alert() navigateur)
+    function showRewardModalUI(emoji, title, subtitle, amount) {
+      modalEmoji.innerText = emoji;
+      modalTitle.innerText = title;
+      modalSub.innerText = subtitle;
+      modalRewardAmount.innerText = amount;
+      rewardModal.classList.add('active');
+    }
+
+    modalCloseBtn.onclick = () => {
+      soundEngine.playCoin();
+      rewardModal.classList.remove('active');
+    };
+
+    // Gain hors ligne élégant
+    if (offlineGain > 0) {
+      setTimeout(() => {
+        soundEngine.playEventFanfare();
+        showRewardModalUI('☕', 'على سلامتكم ! نوّرت الحومة', 'هذي غلّة خدمتك والشركاء وإنت غايب :', `+${offlineGain.toFixed(2)} د.ت`);
+      }, 400);
+    }
 
     // Câblage Vidéo AdMob -> Solde Gratuit
     adCashBtn.onclick = () => {
       const reward = engine.claimAdCashReward();
       soundEngine.playEventFanfare();
-      alert(`💰 Mabrouk ! Tu as reçu +${reward.toFixed(2)} DT immédiatement.`);
+      showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش', 'زادت الكاسة تعبّات من عند المستشهر :', `+${reward.toFixed(2)} د.ت`);
       renderDOM();
     };
 
@@ -360,6 +539,7 @@
     adBoostBtn.onclick = () => {
       engine.addAdBoost(4 * 3600 * 1000);
       soundEngine.playEventFanfare();
+      showRewardModalUI('🚀', 'التيربو مشعول x2 !', 'المدخول مدوبل لمدة 4 سوايع كاملين', 'سرعة x2');
       renderDOM();
     };
 
@@ -373,19 +553,22 @@
         const cost = engine.getCost(biz);
         const rev = engine.getRevenue(biz);
 
+        // Règle Niveau 0 : "اشري الحانوت" / Si déjà acheté (Niv > 0) : "طوّر"
+        const buyLabel = biz.level === 0 ? `🛒 اشري (${cost.toFixed(2)} د.ت)` : `⬆️ طوّر (${cost.toFixed(2)} د.ت)`;
+
         card.innerHTML = `
           <div class="biz-main-row">
             <div class="biz-avatar">
               ${biz.icon}
-              <div class="biz-lvl-tag">Niv.${biz.level}</div>
+              <div class="biz-lvl-tag">مستوى ${biz.level}</div>
             </div>
             <div class="biz-info">
               <div class="biz-title">
                 <span>${biz.name}</span>
               </div>
-              <div class="biz-ar">${biz.arabicName}</div>
+              <div class="biz-ar">${biz.tagline}</div>
               <div class="biz-income">
-                ${rev > 0 ? '+' + rev.toFixed(2) + ' DT' : '0.00 DT'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ ${(biz.cycleDurationMs/1000).toFixed(1)}s</span>
+                ${rev > 0 ? '+' + rev.toFixed(2) + ' د.ت' : '0.00 د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ ${(biz.cycleDurationMs/1000).toFixed(1)} ثانية</span>
               </div>
             </div>
           </div>
@@ -396,14 +579,14 @@
 
           <div class="biz-controls">
             <button class="btn-game btn-serve" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
-              ${biz.hasManager ? '🤖 Auto (Géré)' : '⚡ Servir'}
+              ${biz.hasManager ? '⚡ يمشي وحدو' : 'سربّي ! ⚡'}
             </button>
             <button class="btn-game btn-upgrade" id="buy-${biz.id}">
-              Améliorer (${cost.toFixed(2)} DT)
+              ${buyLabel}
             </button>
             ${!biz.hasManager ? `
               <button class="btn-game btn-manager" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
-                ${biz.managerAvatar} Recruter ${biz.managerName} (${biz.managerCost.toFixed(0)} DT)
+                ${biz.managerAvatar} حط جيرون (${biz.managerName} - ${biz.managerCost.toFixed(0)} د.ت)
               </button>
             ` : ''}
           </div>
@@ -411,13 +594,47 @@
 
         businessList.appendChild(card);
 
-        // Actions avec sons contextuels
-        card.querySelector(`#buy-${biz.id}`).onclick = () => {
+        // Actions avec amélioration successive en continu au maintien (Hold to Buy)
+        const buyBtn = card.querySelector(`#buy-${biz.id}`);
+        let holdInterval = null;
+        let holdTimeout = null;
+
+        const performBuy = () => {
           if (engine.buyBusiness(biz.id)) {
             soundEngine.playUpgrade();
             renderDOM();
+            return true;
+          } else {
+            const currentCost = engine.getCost(biz);
+            const manque = (currentCost - engine.dinars).toFixed(2);
+            triggerBalanceAlert(`ناقصتك ${manque} د.ت ! سربّي ولا دبّر تفتوفة 💰`);
+            stopHold();
+            return false;
           }
         };
+
+        const stopHold = () => {
+          clearTimeout(holdTimeout);
+          clearInterval(holdInterval);
+          holdTimeout = null;
+          holdInterval = null;
+        };
+
+        buyBtn.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          if (performBuy()) {
+            holdTimeout = setTimeout(() => {
+              // Répétition rapide successive jusqu'à fin du solde
+              holdInterval = setInterval(() => {
+                if (!performBuy()) stopHold();
+              }, 120);
+            }, 350);
+          }
+        });
+
+        buyBtn.addEventListener('pointerup', stopHold);
+        buyBtn.addEventListener('pointerleave', stopHold);
+        buyBtn.addEventListener('pointercancel', stopHold);
 
         const prodBtn = card.querySelector(`#produce-${biz.id}`);
         if (prodBtn) {
@@ -436,6 +653,9 @@
             if (engine.hireManager(biz.id)) {
               soundEngine.playEventFanfare();
               renderDOM();
+            } else {
+              const manque = (biz.managerCost - engine.dinars).toFixed(2);
+              triggerBalanceAlert(`حق الجيرون ناقصتك ${manque} د.ت ! 👔`);
             }
           };
         }
@@ -450,7 +670,7 @@
       const now = Date.now();
       engine.update(now);
 
-      dinarsDisplay.innerText = engine.dinars.toFixed(2) + ' DT';
+      dinarsDisplay.innerText = engine.dinars.toFixed(2) + ' د.ت';
 
       // Mise à jour hint cadeau AdMob
       let currentRate = 0;
