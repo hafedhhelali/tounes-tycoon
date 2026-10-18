@@ -162,6 +162,84 @@ class SoundEngine {
     osc.start(now);
     osc.stop(now + 0.18);
   }
+
+  // Son de tambour darbouka / derbouka au tap de mini-jeu
+  playDarbouka(accent = false) {
+    if (this.muted) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    const startFreq = accent ? 220 : 130;
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(45, now + 0.08);
+
+    gain.gain.setValueAtTime(accent ? 0.35 : 0.22, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.1);
+  }
+
+  // Musique d'ambiance procédurale (Mélodie orientale douce en boucle)
+  startBGM() {
+    if (this.bgmTimer || this.muted) return;
+    this.init();
+
+    // Gamme Bayati / Hijaz douce (D, Eb, F#, G, A, Bb, C, D)
+    const notes = [
+      293.66, 311.13, 369.99, 392.00, 440.00, 466.16, 523.25, 587.33,
+      466.16, 440.00, 392.00, 369.99, 311.13, 293.66
+    ];
+    let noteIdx = 0;
+
+    const playStep = () => {
+      if (this.muted || !this.ctx) return;
+      const now = this.ctx.currentTime;
+      const freq = notes[noteIdx % notes.length];
+      noteIdx++;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+
+      // Volume très doux en fond sonore (background music non agressive)
+      gain.gain.setValueAtTime(0.025, now);
+      gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.35);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.35);
+    };
+
+    this.bgmTimer = setInterval(playStep, 400); // 150 BPM rythme shaabi posé
+  }
+
+  stopBGM() {
+    if (this.bgmTimer) {
+      clearInterval(this.bgmTimer);
+      this.bgmTimer = null;
+    }
+  }
+
+  toggleSound() {
+    this.muted = !this.muted;
+    if (this.muted) {
+      this.stopBGM();
+    } else {
+      this.startBGM();
+    }
+    return !this.muted;
+  }
 }
 
 export const soundEngine = new SoundEngine();

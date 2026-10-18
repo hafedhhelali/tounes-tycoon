@@ -491,7 +491,10 @@
           <span>🇹🇳 تونس تايكون</span>
           <span class="badge-tn" id="playerTitleBadge">مواطن يلوّج على مشروع</span>
         </div>
-        <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026 beta</div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button id="soundToggleBtn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #f8fafc; font-size: 14px; padding: 3px 8px; cursor: pointer;">🔊</button>
+          <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026 beta</div>
+        </div>
       </div>
 
       <div class="balance-box">
@@ -524,7 +527,10 @@
 
       <!-- BANDEAU ÉVÉNEMENT POP-CULTURE -->
       <div id="eventBanner">
-        <div style="font-weight: 900; color: #fef08a; font-size: 14px;" id="eventTitle">حدث في الحومة</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: 900; color: #fef08a; font-size: 14px;" id="eventTitle">حدث في الحومة</div>
+          <button id="eventMiniGameBtn" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border: 1px solid #f87171; color: white; border-radius: 8px; padding: 4px 10px; font-weight: 900; font-size: 11px; cursor: pointer; animation: bounce 1s infinite alternate;">🔥 العب واربح x5 !</button>
+        </div>
         <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">تفاصيل</div>
         <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">الوقت المتبقي : 0 ثانية</div>
       </div>
@@ -537,6 +543,23 @@
   <div class="toast-box" id="errorToast">
     <span style="font-size: 20px;">⚠️</span>
     <span id="toastMsg">فلوس الكاسة ما تكفّيش ! سربّي ولا دبّر تفتوفة 💰</span>
+  </div>
+
+  <!-- MINI-GAME INTERACTIF 10s "جوّ الدربي والشهيلي" -->
+  <div class="modal-overlay" id="minigameModal">
+    <div class="modal-card" style="border-color: #ef4444;">
+      <div class="modal-icon-glow" style="font-size: 48px;">🥁</div>
+      <div class="modal-title" id="minigameTitle">🔥 جوّ الحومة سخون !</div>
+      <div class="modal-subtitle" style="font-size: 13px; color: #fecaca;">انزل بالقوي وعاون الحومة قد ما تنجم في 10 ثواني !</div>
+      <div style="display: flex; justify-content: space-between; width: 100%; font-weight: 800; font-size: 14px; margin-top: 4px;">
+        <span style="color: #fbbf24;" id="minigameCountdown">الوقت : 10s</span>
+        <span style="color: #38bdf8;" id="minigameScore">النقاط : 0</span>
+      </div>
+      <button id="minigameTapBtn" style="width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, #ef4444 0%, #991b1b 100%); border: 4px solid #fecaca; color: white; font-size: 40px; cursor: pointer; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); display: flex; align-items: center; justify-content: center; margin: 10px 0; transition: transform 0.08s;">
+        🥁
+      </button>
+      <div style="font-size: 12px; color: #94a3b8;">اضغط بسرعة لتجميع الغلّة !</div>
+    </div>
   </div>
 
   <!-- MODAL EXPERT TYCOON REWARD (AdMob / Offline) -->
@@ -553,6 +576,19 @@
   <script type="module">
     import { TycoonEngine } from './engine.js';
     import { soundEngine } from './audio.js';
+    import { AdsService } from './ads_service.js';
+
+    const adsService = new AdsService();
+    adsService.initialize();
+
+    // Démarrage doux de la musique d'ambiance tunisienne au 1er clic utilisateur
+    let bgmStarted = false;
+    window.addEventListener('pointerdown', () => {
+      if (!bgmStarted) {
+        soundEngine.startBGM();
+        bgmStarted = true;
+      }
+    }, { once: true });
 
     // Restauration d'état et calcul gain hors ligne
     const saved = localStorage.getItem('tounes_tycoon_save');
@@ -561,6 +597,7 @@
 
     const dinarsDisplay = document.getElementById('dinarsDisplay');
     const businessList = document.getElementById('businessList');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
     const adCashBtn = document.getElementById('adCashBtn');
     const cashRewardHint = document.getElementById('cashRewardHint');
     const adBoostBtn = document.getElementById('adBoostBtn');
@@ -573,6 +610,60 @@
     const modalSub = document.getElementById('modalSub');
     const modalRewardAmount = document.getElementById('modalRewardAmount');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    // Bouton ON/OFF Son et BGM
+    soundToggleBtn.onclick = () => {
+      const active = soundEngine.toggleSound();
+      soundToggleBtn.innerText = active ? '🔊' : '🔇';
+    };
+
+    // MINI-JEU ÉVÉNEMENTIEL (10s Tap Challenge)
+    const eventMiniGameBtn = document.getElementById('eventMiniGameBtn');
+    const minigameModal = document.getElementById('minigameModal');
+    const minigameCountdown = document.getElementById('minigameCountdown');
+    const minigameScore = document.getElementById('minigameScore');
+    const minigameTapBtn = document.getElementById('minigameTapBtn');
+    let minigameTimer = null;
+    let minigameSecLeft = 10;
+    let minigameTaps = 0;
+
+    eventMiniGameBtn.onclick = () => {
+      minigameSecLeft = 10;
+      minigameTaps = 0;
+      minigameScore.innerText = `النقاط : 0`;
+      minigameCountdown.innerText = `الوقت : 10s`;
+      minigameModal.classList.add('active');
+
+      clearInterval(minigameTimer);
+      minigameTimer = setInterval(() => {
+        minigameSecLeft--;
+        minigameCountdown.innerText = `الوقت : ${minigameSecLeft}s`;
+        if (minigameSecLeft <= 0) {
+          clearInterval(minigameTimer);
+          minigameModal.classList.remove('active');
+
+          // Calcul de la récompense x5
+          let totalPerSecond = 0;
+          engine.businesses.forEach(b => { if (b.level > 0) totalPerSecond += (engine.getRevenue(b)/(b.cycleDurationMs/1000)); });
+          const bonus = Math.max(10.0, Math.floor(totalPerSecond * 25 * (minigameTaps / 15)));
+          engine.dinars += bonus;
+          engine.totalDinarsEarned += bonus;
+
+          soundEngine.playEventFanfare();
+          showRewardModalUI('🥁', 'عطاك الوقت وصحّة ليك !', `جمّعت ${minigameTaps} ضربة دربوكة في جوّ الحومة :`, `+${formatCurrency(bonus)}`);
+          renderDOM();
+        }
+      }, 1000);
+    };
+
+    minigameTapBtn.onpointerdown = (e) => {
+      minigameTaps++;
+      minigameScore.innerText = `النقاط : ${minigameTaps}`;
+      soundEngine.playDarbouka(minigameTaps % 4 === 0);
+      minigameTapBtn.style.transform = 'scale(0.9)';
+      setTimeout(() => minigameTapBtn.style.transform = 'scale(1)', 80);
+      spawnFloatText(e.clientX || (window.innerWidth / 2), e.clientY || (window.innerHeight / 2), `+1 🥁`);
+    };
 
     // Formateur compact de grands nombres (K, M, B, T, Qa...)
     function formatCurrency(num, decimals = 2) {
@@ -638,7 +729,8 @@
     }
 
     // Câblage Vidéo AdMob -> Solde Gratuit
-    adCashBtn.onclick = () => {
+    adCashBtn.onclick = async () => {
+      await adsService.showRewardedBoost();
       const reward = engine.claimAdCashReward();
       soundEngine.playEventFanfare();
       showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش', 'زادت الكاسة تعبّات من عند المستشهر :', `+${reward.toFixed(2)} د.ت`);
@@ -646,7 +738,8 @@
     };
 
     // Câblage Vidéo AdMob -> Boost x2 4h
-    adBoostBtn.onclick = () => {
+    adBoostBtn.onclick = async () => {
+      await adsService.showRewardedBoost();
       engine.addAdBoost(4 * 3600 * 1000);
       soundEngine.playEventFanfare();
       showRewardModalUI('🚀', 'التيربو مشعول x2 !', 'المدخول مدوبل لمدة 4 سوايع كاملين', 'سرعة x2');
