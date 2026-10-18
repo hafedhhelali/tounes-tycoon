@@ -112,5 +112,27 @@ test('Ad rewarded cash grants instant dinars', () => {
   assert.equal(engine.dinars, 10.0 + reward);
 });
 
+test('Quests can be achieved and claimed with title upgrades', () => {
+  const engine = new TycoonEngine();
+  assert.equal(engine.playerTitle, 'مواطن يلوّج على مشروع');
+
+  // Pas de quête validée au début
+  assert.equal(engine.checkQuests().length, 0);
+
+  // Achat du premier kiosque -> déclenche la quête first_kiosk
+  engine.buyBusiness('fricasse');
+  const claimable = engine.checkQuests();
+  assert.equal(claimable.length, 1);
+  assert.equal(claimable[0].id, 'first_kiosk');
+
+  // Réclamation de la quête
+  const claimed = engine.claimQuest('first_kiosk');
+  assert.ok(claimed);
+  assert.equal(engine.dinars, 5.0); // 0 + 5 DT
+  assert.equal(engine.playerTitle, 'تاجر مبتدئ');
+  assert.equal(engine.checkQuests().length, 0);
+});
+
+
 
 

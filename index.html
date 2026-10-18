@@ -489,7 +489,7 @@
       <div class="brand-bar">
         <div class="brand-title">
           <span>🇹🇳 تونس تايكون</span>
-          <span class="badge-tn">ملياردير الحومة</span>
+          <span class="badge-tn" id="playerTitleBadge">مواطن يلوّج على مشروع</span>
         </div>
         <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026</div>
       </div>
@@ -508,6 +508,17 @@
         <button class="ad-card-btn ad-btn-boost" id="adBoostBtn">
           <div class="ad-btn-title">🚀 تيربو x2 (4 سوايع)</div>
           <div class="ad-btn-sub" id="adBoostStatus">طافي</div>
+        </button>
+      </div>
+
+      <!-- DÉFIS MTA3 EL HOUMA (QUÊTES & SUCCÈS) -->
+      <div id="questBox" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 10px; margin-top: 8px; display: none; align-items: center; justify-content: space-between;">
+        <div style="text-align: right; flex: 1;">
+          <div style="font-size: 10px; font-weight: 900; color: #34d399;">🎯 تحدّي الحومة جاهز !</div>
+          <div style="font-size: 12px; font-weight: 800; color: #ecfdf5;" id="questTitle">عنوان التحدي</div>
+        </div>
+        <button id="claimQuestBtn" style="background: #10b981; border: none; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; cursor: pointer; margin-right: 8px;">
+          اقبض الجائزة 🎁
         </button>
       </div>
 
@@ -792,10 +803,36 @@
 
       dinarsDisplay.innerText = formatCurrency(engine.dinars);
 
+      // Titre honorifique du joueur
+      const titleBadge = document.getElementById('playerTitleBadge');
+      if (titleBadge) titleBadge.innerText = engine.playerTitle;
+
+      // Vérification des quêtes achevées
+      const claimableQuests = engine.checkQuests();
+      const questBox = document.getElementById('questBox');
+      const questTitle = document.getElementById('questTitle');
+      const claimQuestBtn = document.getElementById('claimQuestBtn');
+
+      if (claimableQuests.length > 0) {
+        const topQuest = claimableQuests[0];
+        questBox.style.display = 'flex';
+        questTitle.innerText = `${topQuest.title} (+${formatCurrency(topQuest.rewardDinars, 0)})`;
+        claimQuestBtn.onclick = () => {
+          const claimed = engine.claimQuest(topQuest.id);
+          if (claimed) {
+            soundEngine.playEventFanfare();
+            showRewardModalUI('🏆', 'مبروك التحدّي !', `ربحت لقب : ${claimed.titleEarned}`, `+${formatCurrency(claimed.rewardDinars, 0)}`);
+            renderDOM();
+          }
+        };
+      } else {
+        questBox.style.display = 'none';
+      }
+
       // Mise à jour hint cadeau AdMob
       let currentRate = 0;
       engine.businesses.forEach(b => { if (b.level > 0) currentRate += (engine.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
-      const potentialCash = Math.max(25.0, Math.floor(currentRate * 600));
+      const potentialCash = Math.max(5.0, Math.floor(currentRate * 180));
       cashRewardHint.innerText = `+${formatCurrency(potentialCash, 0)} حالا`;
 
       // Statut Boost 2x AdMob

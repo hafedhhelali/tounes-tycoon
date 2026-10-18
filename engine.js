@@ -121,6 +121,51 @@ export const TUNISIAN_EVENTS = [
   }
 ];
 
+export const TUNISIAN_QUESTS = [
+  {
+    id: 'first_kiosk',
+    title: 'بداية الرحلة : حل أوّل حانوت',
+    targetType: 'business_level',
+    businessId: 'fricasse',
+    targetValue: 1,
+    rewardDinars: 5.0,
+    titleEarned: 'تاجر مبتدئ'
+  },
+  {
+    id: 'serve_fricasse_10',
+    title: 'سرباي الحومة : سربّي 10 مرّات',
+    targetType: 'manual_serves',
+    targetValue: 10,
+    rewardDinars: 15.0,
+    titleEarned: 'سرباي نشيط'
+  },
+  {
+    id: 'first_manager',
+    title: 'معلّم ومرتاح : دبّر أوّل جيرون',
+    targetType: 'hired_managers',
+    targetValue: 1,
+    rewardDinars: 40.0,
+    titleEarned: 'شاف خدمة'
+  },
+  {
+    id: 'open_coffee',
+    title: 'وسع المشروع : حل القهوة الشعبية',
+    targetType: 'business_level',
+    businessId: 'kahwa',
+    targetValue: 1,
+    rewardDinars: 100.0,
+    titleEarned: 'صاحب قهوة'
+  },
+  {
+    id: 'wealth_1000',
+    title: 'عبي الكاسة : وصّل 1 000 د.ت في الكاسة',
+    targetType: 'accumulated_dinars',
+    targetValue: 1000.0,
+    rewardDinars: 250.0,
+    titleEarned: 'ملياردير الحومة'
+  }
+];
+
 export class TycoonEngine {
   constructor(initialState = null) {
     this.businesses = BUSINESS_CONFIGS.map(cfg => ({
@@ -133,8 +178,14 @@ export class TycoonEngine {
 
     // Économie
     this.dinars = 10.0; // Don de départ (pour acheter le 1er kiosque fricassé à 10 DT)
+    this.totalDinarsEarned = 10.0;
     this.prestigePoints = 0; // Ma3rouf / Réputation
     this.lastTimestamp = Date.now();
+
+    // Statistiques pour les quêtes
+    this.manualServesCount = 0;
+    this.completedQuestIds = [];
+    this.playerTitle = 'مواطن يلوّج على مشروع';
 
     // Événement actif
     this.activeEvent = null; // { event: TUNISIAN_EVENTS[i], endsAt: timestamp }
@@ -146,6 +197,46 @@ export class TycoonEngine {
     if (initialState) {
       this.loadState(initialState);
     }
+  }
+
+  checkQuests() {
+    const claimable = [];
+    for (const q of TUNISIAN_QUESTS) {
+      if (this.completedQuestIds.includes(q.id)) continue;
+
+      let achieved = false;
+      if (q.targetType === 'business_level') {
+        const biz = this.businesses.find(b => b.id === q.businessId);
+        if (biz && biz.level >= q.targetValue) achieved = true;
+      } else if (q.targetType === 'manual_serves') {
+        if (this.manualServesCount >= q.targetValue) achieved = true;
+      } else if (q.targetType === 'hired_managers') {
+        const mgrCount = this.businesses.filter(b => b.hasManager).length;
+        if (mgrCount >= q.targetValue) achieved = true;
+      } else if (q.targetType === 'accumulated_dinars') {
+        if (this.totalDinarsEarned >= q.targetValue) achieved = true;
+      }
+
+      if (achieved) {
+        claimable.push(q);
+      }
+    }
+    return claimable;
+  }
+
+  claimQuest(questId) {
+    const q = TUNISIAN_QUESTS.find(item => item.id === questId);
+    if (!q || this.completedQuestIds.includes(questId)) return null;
+
+    const claimable = this.checkQuests();
+    if (!claimable.some(item => item.id === questId)) return null;
+
+    this.completedQuestIds.push(questId);
+    this.dinars += q.rewardDinars;
+    this.totalDinarsEarned += q.rewardDinars;
+    if (q.titleEarned) this.playerTitle = q.titleEarned;
+
+    return q;
   }
 
   isAdBoostActive(now = Date.now()) {
@@ -214,6 +305,7 @@ export class TycoonEngine {
     const biz = this.businesses.find(b => b.id === id);
     if (!biz || biz.level === 0 || biz.isProducing) return false;
     biz.isProducing = true;
+    this.manualServesCount += 1;
     return true;
   }
 
@@ -270,6 +362,7 @@ export class TycoonEngine {
     }
 
     this.dinars += revenueEarned;
+    this.totalDinarsEarned += revenueEarned;
     return revenueEarned;
   }
 
@@ -282,6 +375,10 @@ export class TycoonEngine {
   exportState() {
     return {
       dinars: this.dinars,
+      totalDinarsEarned: this.totalDinarsEarned,
+      manualServesCount: this.manualServesCount,
+      completedQuestIds: this.completedQuestIds,
+      playerTitle: this.playerTitle,
       prestigePoints: this.prestigePoints,
       lastTimestamp: this.lastTimestamp,
       activeEvent: this.activeEvent,
@@ -299,6 +396,10 @@ export class TycoonEngine {
   loadState(state) {
     if (!state) return;
     this.dinars = state.dinars ?? this.dinars;
+    this.totalDinarsEarned = state.totalDinarsEarned ?? this.totalDinarsEarned;
+    this.manualServesCount = state.manualServesCount ?? 0;
+    this.completedQuestIds = Array.isArray(state.completedQuestIds) ? state.completedQuestIds : [];
+    this.playerTitle = state.playerTitle ?? this.playerTitle;
     this.prestigePoints = state.prestigePoints ?? 0;
     this.lastTimestamp = state.lastTimestamp ?? Date.now();
     this.activeEvent = state.activeEvent ?? null;
