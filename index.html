@@ -327,10 +327,6 @@
       0%, 100% { transform: scale(1); box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
       50% { transform: scale(1.025); box-shadow: 0 0 16px rgba(16, 185, 129, 0.8); }
     }
-    .btn-upgrade.holding {
-      transform: scale(0.95) !important;
-      filter: brightness(1.25);
-    }
 
     /* BOUTONS D'INTERACTION */
     .biz-controls {
@@ -820,51 +816,20 @@
 
         businessList.appendChild(card);
 
-        // Actions avec amélioration successive en continu au maintien (Hold to Buy)
+        // Achat / Amélioration : Clic unique (1 clic = 1 amélioration)
         const buyBtn = card.querySelector(`#buy-${biz.id}`);
-        let holdInterval = null;
-        let holdTimeout = null;
-
-        const performBuy = () => {
+        buyBtn.onclick = () => {
           if (engine.buyBusiness(biz.id)) {
             soundEngine.playUpgrade();
             renderDOM();
-            return true;
           } else {
             const currentCost = engine.getCost(biz);
             const manque = (currentCost - engine.dinars);
             buyBtn.classList.add('shake-btn');
             setTimeout(() => buyBtn.classList.remove('shake-btn'), 420);
             triggerBalanceAlert(`ناقصتك ${formatCurrency(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
-            stopHold();
-            return false;
           }
         };
-
-        const stopHold = () => {
-          clearTimeout(holdTimeout);
-          clearInterval(holdInterval);
-          holdTimeout = null;
-          holdInterval = null;
-          buyBtn.classList.remove('holding');
-        };
-
-        buyBtn.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          buyBtn.classList.add('holding');
-          if (performBuy()) {
-            holdTimeout = setTimeout(() => {
-              // Répétition rapide successive jusqu'à fin du solde
-              holdInterval = setInterval(() => {
-                if (!performBuy()) stopHold();
-              }, 110);
-            }, 300);
-          }
-        });
-
-        buyBtn.addEventListener('pointerup', stopHold);
-        buyBtn.addEventListener('pointerleave', stopHold);
-        buyBtn.addEventListener('pointercancel', stopHold);
 
         // Squashing avatar au tap
         const avatarEl = card.querySelector(`#avatar-${biz.id}`);
