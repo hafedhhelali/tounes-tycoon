@@ -41,7 +41,7 @@ test('Manager automation and offline progress calculation without timer drift', 
   // Embauche du gérant 3am Sadok (25 TND)
   engine.dinars = 35.0;
   const hired = engine.hireManager('kaskrout');
-  assert.equal(hired, true);
+  assert.ok(hired);
   assert.equal(engine.dinars, 10.0);
   assert.equal(engine.businesses[0].hasManager, true);
 

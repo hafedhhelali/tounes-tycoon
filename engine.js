@@ -13,10 +13,9 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 0.8,
     costMultiplier: 1.07,
     cycleDurationMs: 600, // 0.6s
-    managerName: 'عم الصادق',
-    managerRole: 'شاف العيّاري',
-    managerAvatar: '👨‍🍳',
-    managerCost: 25.0,
+    managers: [
+      { name: 'عم الصادق', role: 'شاف العيّاري', avatar: '👨‍🍳', cost: 25.0 }
+    ],
   },
   {
     id: 'fricasse',
@@ -27,10 +26,9 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 3.5,
     costMultiplier: 1.08,
     cycleDurationMs: 1200, // 1.2s
-    managerName: 'الباجي بمبلوني',
-    managerRole: 'معلّم القلي',
-    managerAvatar: '🧑‍🍳',
-    managerCost: 100.0,
+    managers: [
+      { name: 'الباجي بمبلوني', role: 'معلّم القلي', avatar: '🧑‍🍳', cost: 100.0 }
+    ],
   },
   {
     id: 'kahwa',
@@ -41,10 +39,10 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 14.0,
     costMultiplier: 1.09,
     cycleDurationMs: 2500, // 2.5s
-    managerName: 'سي الهاشمي',
-    managerRole: 'سرباي توربو',
-    managerAvatar: '🤵',
-    managerCost: 450.0,
+    managers: [
+      { name: 'الناصر Garçon', role: 'سرباي الصالة', avatar: '🤵', cost: 250.0 },
+      { name: 'سي الهاشمي', role: 'شاف الكونتوار', avatar: '☕', cost: 500.0 }
+    ],
   },
   {
     id: 'attariya',
@@ -55,10 +53,9 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 50.0,
     costMultiplier: 1.10,
     cycleDurationMs: 5000, // 5.0s
-    managerName: 'منصف العطّار',
-    managerRole: 'سيّد الكرني',
-    managerAvatar: '🏬',
-    managerCost: 1800.0,
+    managers: [
+      { name: 'منصف العطّار', role: 'أمين الصندوق والكرني', avatar: '🏬', cost: 1800.0 }
+    ],
   },
   {
     id: 'patisserie',
@@ -69,10 +66,10 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 190.0,
     costMultiplier: 1.11,
     cycleDurationMs: 10000, // 10.0s
-    managerName: 'خالتي زبيدة',
-    managerRole: 'شوافة الحلو',
-    managerAvatar: '👩‍🍳',
-    managerCost: 7000.0,
+    managers: [
+      { name: 'الحاج عمر', role: 'معلّم الفور والقطر', avatar: '👳', cost: 3500.0 },
+      { name: 'خالتي زبيدة', role: 'شوافة الحلو والتوزيع', avatar: '👩‍🍳', cost: 7000.0 }
+    ],
   },
   {
     id: 'taxi_collectif',
@@ -83,10 +80,9 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 720.0,
     costMultiplier: 1.12,
     cycleDurationMs: 18000, // 18.0s
-    managerName: 'كمال تيربو',
-    managerRole: 'كلاج الديسك',
-    managerAvatar: '🕶️',
-    managerCost: 28000.0,
+    managers: [
+      { name: 'كمال تيربو', role: 'كلاج الديسك والشوفيرية', avatar: '🕶️', cost: 28000.0 }
+    ],
   },
   {
     id: 'superette',
@@ -97,10 +93,10 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 2600.0,
     costMultiplier: 1.12,
     cycleDurationMs: 30000, // 30.0s
-    managerName: 'سي رضا',
-    managerRole: 'كابو الرّفوف',
-    managerAvatar: '👔',
-    managerCost: 100000.0,
+    managers: [
+      { name: 'منير الكيسييه', role: 'مسؤول الكاسات', avatar: '💳', cost: 40000.0 },
+      { name: 'سي رضا', role: 'كابو الرّفوف والتوريد', avatar: '👔', cost: 100000.0 }
+    ],
   },
   {
     id: 'supermarche',
@@ -111,10 +107,10 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 9500.0,
     costMultiplier: 1.13,
     cycleDurationMs: 45000, // 45.0s
-    managerName: 'كريم الشريف',
-    managerRole: 'مدير العمليات',
-    managerAvatar: '💼',
-    managerCost: 400000.0,
+    managers: [
+      { name: 'طارق ريسبونسابل', role: 'رئيس قسم المبيعات', avatar: '📋', cost: 150000.0 },
+      { name: 'كريم الشريف', role: 'مدير العمليات واللوجستيك', avatar: '💼', cost: 400000.0 }
+    ],
   },
   {
     id: 'salon_de_the',
@@ -125,10 +121,10 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 35000.0,
     costMultiplier: 1.14,
     cycleDurationMs: 60000, // 60.0s
-    managerName: 'رامي الباريستا',
-    managerRole: 'ماستر الكوكتيل',
-    managerAvatar: '🍸',
-    managerCost: 1500000.0,
+    managers: [
+      { name: 'وسيم الكابتن', role: 'شاف صالة الـ VIP', avatar: '🤵', cost: 600000.0 },
+      { name: 'رامي الباريستا', role: 'ماستر الكوكتيل والبار', avatar: '🍸', cost: 1500000.0 }
+    ],
   },
   {
     id: 'restaurant',
@@ -139,24 +135,83 @@ export const BUSINESS_CONFIGS = [
     baseRevenue: 130000.0,
     costMultiplier: 1.15,
     cycleDurationMs: 90000, // 90.0s
-    managerName: 'الشاف فتحي',
-    managerRole: 'سلطان الكوجينة',
-    managerAvatar: '👨‍🍳',
-    managerCost: 6000000.0,
+    managers: [
+      { name: 'المعلم مبروك', role: 'شاف الشواية والكانون', avatar: '🔥', cost: 2500000.0 },
+      { name: 'الشاف فتحي', role: 'سلطان الكوجينة والمذاق', avatar: '👨‍🍳', cost: 6000000.0 }
+    ],
+  },
+  {
+    id: 'agence_voyages',
+    name: 'وكالة أسفار اللقلاق (Ella9la9)',
+    tagline: 'عمرة، وتيكيات وطيارات ودور العالم مرتاح',
+    icon: '✈️',
+    baseCost: 5500000.0,
+    baseRevenue: 280000.0,
+    costMultiplier: 1.15,
+    cycleDurationMs: 105000, // 105.0s
+    managers: [
+      { name: 'أنيس البييتري', role: 'مسؤول الحجوزات والتيكيات', avatar: '🎫', cost: 4500000.0 },
+      { name: 'سي منير اللقلاق', role: 'صاحب الوكالة والرحلات', avatar: '🧳', cost: 12000000.0 }
+    ],
   },
   {
     id: 'hotel',
     name: 'أوتيل 5 نجوم',
     tagline: 'بيسين، ريلاكس، وتورست ودلال الملوك',
     icon: '🏨',
-    baseCost: 10000000.0,
-    baseRevenue: 500000.0,
+    baseCost: 12000000.0,
+    baseRevenue: 600000.0,
     costMultiplier: 1.15,
     cycleDurationMs: 120000, // 120.0s
-    managerName: 'ميسيو برهان',
-    managerRole: 'المدير العام',
-    managerAvatar: '🎩',
-    managerCost: 25000000.0,
+    managers: [
+      { name: 'مدام سيرين', role: 'رئيسة الاستقبال والحجوزات', avatar: '👩‍💼', cost: 10000000.0 },
+      { name: 'ميسيو برهان', role: 'المدير العام والتشريفات', avatar: '🎩', cost: 30000000.0 }
+    ],
+  },
+  {
+    id: 'centre_commercial',
+    name: 'المركّب التجاري (Mall)',
+    tagline: 'ماركات عالمية، إسكالاتور، وسينما وملاين تدور',
+    icon: '🛍️',
+    baseCost: 45000000.0,
+    baseRevenue: 2200000.0,
+    costMultiplier: 1.15,
+    cycleDurationMs: 180000, // 180.0s
+    managers: [
+      { name: 'المهندس مراد', role: 'مدير الصيانة والسلامة', avatar: '👷', cost: 35000000.0 },
+      { name: 'مدام نادية', role: 'مديرة الماركات والمحلات', avatar: '👠', cost: 70000000.0 },
+      { name: 'سي خليل بن عمار', role: 'رئيس مجلس الإدارة', avatar: '👑', cost: 120000000.0 }
+    ],
+  },
+  {
+    id: 'usine_conserves',
+    name: 'معمل مصبرات الهريسة والتن',
+    tagline: 'فلاحة، تصدير، وحكك هريسة عربي تعبّي الكونتوارات',
+    icon: '🥫',
+    baseCost: 200000000.0,
+    baseRevenue: 10000000.0,
+    costMultiplier: 1.15,
+    cycleDurationMs: 240000, // 240.0s
+    managers: [
+      { name: 'المهندس حمادي', role: 'مدير خطوط الإنتاج والتعليب', avatar: '🏭', cost: 150000000.0 },
+      { name: 'سي عبد السلام', role: 'مدير التصدير والموانئ', avatar: '🚢', cost: 350000000.0 },
+      { name: 'الحاج بلقاسم', role: 'كبير الصناعيين والكرتيل', avatar: '💼', cost: 600000000.0 }
+    ],
+  },
+  {
+    id: 'showroom_auto',
+    name: 'صالة عرض سيارات فاخرة (Showroom Auto)',
+    tagline: 'أحدث الموديلات، كراهب 0 كم ودلال رجال الأعمال',
+    icon: '🏎️',
+    baseCost: 800000000.0,
+    baseRevenue: 42000000.0,
+    costMultiplier: 1.15,
+    cycleDurationMs: 300000, // 300.0s (5min)
+    managers: [
+      { name: 'ياسين كوميرسيال', role: 'كبير مسؤولي المبيعات والـ VIP', avatar: '🏎️', cost: 600000000.0 },
+      { name: 'مدام مريم الوكيل', role: 'الممثلة الرسمية للعلامات الكبرى', avatar: '💎', cost: 1500000000.0 },
+      { name: 'السيّد طارق قطوس', role: 'رئيس المجمّع الدولي للسيارات', avatar: '👑', cost: 3000000000.0 }
+    ],
   }
 ];
 
@@ -236,6 +291,15 @@ export const TUNISIAN_QUESTS = [
     titleEarned: 'رايس التكاسي'
   },
   {
+    id: 'open_mall',
+    title: 'إمبراطور تونس : حل المركّب التجاري الضخم',
+    targetType: 'business_level',
+    businessId: 'centre_commercial',
+    targetValue: 1,
+    rewardDinars: 5000000.0,
+    titleEarned: 'إمبراطور التجارة'
+  },
+  {
     id: 'wealth_1000',
     title: 'عبي الكاسة : وصّل 1 000 د.ت في الكاسة',
     targetType: 'accumulated_dinars',
@@ -250,6 +314,7 @@ export class TycoonEngine {
     this.businesses = BUSINESS_CONFIGS.map(cfg => ({
       ...cfg,
       level: 0,
+      hiredManagersCount: 0,
       hasManager: false,
       progressMs: 0,
       isProducing: false
@@ -353,7 +418,10 @@ export class TycoonEngine {
       eventMultiplier = this.activeEvent.event.multipliers[business.id];
     }
     const adMultiplier = this.isAdBoostActive(now) ? 2.0 : 1.0;
-    return business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier;
+    // Chaque recrutement au-delà du 1er gérant apporte un bonus d'encadrement (+25% par cadre additionnel)
+    const extraStaff = Math.max(0, (business.hiredManagersCount || (business.hasManager ? 1 : 0)) - 1);
+    const staffMultiplier = 1.0 + (extraStaff * 0.25);
+    return business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier;
   }
 
   buyBusiness(id) {
@@ -368,14 +436,26 @@ export class TycoonEngine {
     return false;
   }
 
+  getNextManager(biz) {
+    if (!biz || !Array.isArray(biz.managers)) return null;
+    const count = biz.hiredManagersCount ?? (biz.hasManager ? biz.managers.length : 0);
+    if (count >= biz.managers.length) return null;
+    return biz.managers[count];
+  }
+
   hireManager(id) {
     const biz = this.businesses.find(b => b.id === id);
-    if (!biz || biz.hasManager || biz.level === 0) return false;
-    if (this.dinars >= biz.managerCost) {
-      this.dinars -= biz.managerCost;
+    if (!biz || biz.level === 0) return false;
+    const nextMgr = this.getNextManager(biz);
+    if (!nextMgr) return false;
+
+    if (this.dinars >= nextMgr.cost) {
+      this.dinars -= nextMgr.cost;
+      biz.hiredManagersCount = (biz.hiredManagersCount || 0) + 1;
+      // Automatisation dès le 1er recrutement, et chaque cadre supplémentaire booste la productivité
       biz.hasManager = true;
       biz.isProducing = true;
-      return true;
+      return nextMgr;
     }
     return false;
   }
@@ -465,6 +545,7 @@ export class TycoonEngine {
       businesses: this.businesses.map(b => ({
         id: b.id,
         level: b.level,
+        hiredManagersCount: b.hiredManagersCount ?? (b.hasManager ? 1 : 0),
         hasManager: b.hasManager,
         progressMs: b.progressMs,
         isProducing: b.isProducing
@@ -489,7 +570,8 @@ export class TycoonEngine {
         const biz = this.businesses.find(b => b.id === saved.id);
         if (biz) {
           biz.level = saved.level ?? 0;
-          biz.hasManager = saved.hasManager ?? false;
+          biz.hiredManagersCount = saved.hiredManagersCount ?? (saved.hasManager ? 1 : 0);
+          biz.hasManager = saved.hasManager ?? (biz.hiredManagersCount > 0);
           biz.progressMs = saved.progressMs ?? 0;
           biz.isProducing = saved.isProducing ?? false;
         }

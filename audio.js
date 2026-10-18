@@ -191,37 +191,149 @@ class SoundEngine {
     if (this.bgmTimer || this.muted) return;
     this.init();
 
-    // Gamme Bayati / Hijaz douce (D, Eb, F#, G, A, Bb, C, D)
-    const notes = [
-      293.66, 311.13, 369.99, 392.00, 440.00, 466.16, 523.25, 587.33,
-      466.16, 440.00, 392.00, 369.99, 311.13, 293.66
+    const bpm = 114;
+    const stepDuration = 60 / bpm / 4; // 16ème note (~131ms)
+    let bgmStep = 0;
+
+    const notes = {
+      D3: 146.83,
+      Ed3: 159.00,
+      F3: 174.61,
+      G3: 196.00,
+      A3: 220.00,
+      Bb3: 233.08,
+      C4: 261.63,
+      D4: 293.66,
+      Ed4: 318.00,
+      F4: 349.23,
+      G4: 392.00,
+      A4: 440.00
+    };
+
+    const melodyPattern = [
+      notes.D4, null, notes.Ed4, notes.F4,
+      notes.G4, notes.F4, notes.Ed4, notes.D4,
+      notes.Ed4, notes.D4, notes.C4, notes.D4,
+      notes.A3, null, notes.D4, null,
+      notes.F4, notes.G4, notes.A4, notes.G4,
+      notes.F4, notes.Ed4, notes.D4, notes.Ed4,
+      notes.F4, notes.Ed4, notes.D4, notes.C4,
+      notes.D4, null, notes.D4, null
     ];
-    let noteIdx = 0;
 
-    const playStep = () => {
-      if (this.muted || !this.ctx) return;
-      const now = this.ctx.currentTime;
-      const freq = notes[noteIdx % notes.length];
-      noteIdx++;
+    const percPattern = [
+      'D', null, 'T', 'T', null, 'D', 'T', null,
+      'D', 'T', 'T', null, 'T', 'D', 'T', 'T',
+      'D', null, 'T', 'T', null, 'D', 'T', null,
+      'D', 'T', 'T', 'T', 'D', 'D', 'T', null
+    ];
 
+    const bassPattern = [
+      notes.D3, null, null, null, notes.A3 / 2, null, null, null,
+      notes.D3, null, null, null, notes.A3 / 2, null, notes.D3, null,
+      notes.D3, null, null, null, notes.A3 / 2, null, null, null,
+      notes.G3 / 2, null, notes.A3 / 2, null, notes.D3, null, null, null
+    ];
+
+    const playPerc = (type, time) => {
+      if (!type || this.muted || !this.ctx) return;
+      if (type === 'D') {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(110, time);
+        osc.frequency.exponentialRampToValueAtTime(55, time + 0.12);
+        gain.gain.setValueAtTime(0.35, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(time);
+        osc.stop(time + 0.25);
+      } else if (type === 'T') {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(800, time);
+        osc.frequency.exponentialRampToValueAtTime(1800, time + 0.04);
+        gain.gain.setValueAtTime(0.12, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(time);
+        osc.stop(time + 0.07);
+      }
+    };
+
+    const playMelodyNote = (freq, time, duration) => {
+      if (!freq || this.muted || !this.ctx) return;
       const osc = this.ctx.createOscillator();
+      const sub = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
       const gain = this.ctx.createGain();
 
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, now);
+      sub.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time);
+      sub.frequency.setValueAtTime(freq * 0.5, time);
 
-      // Volume très doux en fond sonore (background music non agressive)
-      gain.gain.setValueAtTime(0.025, now);
-      gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.35);
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1150, time);
+      filter.Q.setValueAtTime(1.8, time);
 
-      osc.connect(gain);
+      gain.gain.setValueAtTime(0.001, time);
+      gain.gain.linearRampToValueAtTime(0.06, time + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration * 0.95);
+
+      osc.connect(filter);
+      sub.connect(filter);
+      filter.connect(gain);
       gain.connect(this.ctx.destination);
 
-      osc.start(now);
-      osc.stop(now + 0.35);
+      osc.start(time);
+      sub.start(time);
+      osc.stop(time + duration);
+      sub.stop(time + duration);
     };
 
-    this.bgmTimer = setInterval(playStep, 400); // 150 BPM rythme shaabi posé
+    const playBassNote = (freq, time, duration) => {
+      if (!freq || this.muted || !this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time);
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(320, time);
+
+      gain.gain.setValueAtTime(0.001, time);
+      gain.gain.linearRampToValueAtTime(0.08, time + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration * 0.9);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(time);
+      osc.stop(time + duration);
+    };
+
+    let nextNoteTime = this.ctx.currentTime + 0.05;
+    this.bgmTimer = setInterval(() => {
+      if (this.muted || !this.ctx) return;
+      while (nextNoteTime < this.ctx.currentTime + 0.25) {
+        const curStep = bgmStep % 32;
+        playPerc(percPattern[curStep], nextNoteTime);
+        if (bassPattern[curStep]) {
+          playBassNote(bassPattern[curStep], nextNoteTime, stepDuration * 2.2);
+        }
+        if (melodyPattern[curStep]) {
+          playMelodyNote(melodyPattern[curStep], nextNoteTime, stepDuration * 1.8);
+        }
+        nextNoteTime += stepDuration;
+        bgmStep++;
+      }
+    }, 50);
   }
 
   stopBGM() {

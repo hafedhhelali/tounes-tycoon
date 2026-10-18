@@ -806,11 +806,24 @@
             <button class="btn-game btn-upgrade ${canAfford ? 'can-afford' : ''}" id="buy-${biz.id}">
               ${buyLabel}
             </button>
-            ${!biz.hasManager ? `
-              <button class="btn-game btn-manager" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
-                ${biz.managerAvatar} حط جيرون (${biz.managerName} - ${formatCurrency(biz.managerCost, 0)})
-              </button>
-            ` : ''}
+            ${(() => {
+              const nextMgr = engine.getNextManager(biz);
+              const hired = biz.hiredManagersCount || (biz.hasManager ? 1 : 0);
+              const total = Array.isArray(biz.managers) ? biz.managers.length : 1;
+              if (nextMgr) {
+                return `
+                  <button class="btn-game btn-manager" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
+                    ${nextMgr.avatar} انتداب (${nextMgr.name} - ${nextMgr.role}) : ${formatCurrency(nextMgr.cost, 0)} ${total > 1 ? `[${hired + 1}/${total}]` : ''}
+                  </button>
+                `;
+              } else {
+                return `
+                  <div style="grid-column: span 2; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 6px; text-align: center; font-size: 11px; font-weight: 800; color: #34d399;">
+                    👔 فريق الإدارة مكتمل (${total}/${total}) • إنتاج أوتوماتيكي +${(total - 1) * 25}%
+                  </div>
+                `;
+              }
+            })()}
           </div>
         `;
 
@@ -864,14 +877,17 @@
         const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
         if (mgrBtn) {
           mgrBtn.onclick = () => {
-            if (engine.hireManager(biz.id)) {
+            const nextMgr = engine.getNextManager(biz);
+            const hired = engine.hireManager(biz.id);
+            if (hired) {
               soundEngine.playEventFanfare();
+              showRewardModalUI('👔', 'مبروك الانتداب !', `التحق بفريق العمل : ${hired.name} (${hired.role})`, '⚡ خدمة أوتوماتيك');
               renderDOM();
-            } else {
-              const manque = (biz.managerCost - engine.dinars).toFixed(2);
+            } else if (nextMgr) {
+              const manque = (nextMgr.cost - engine.dinars);
               mgrBtn.classList.add('shake-btn');
               setTimeout(() => mgrBtn.classList.remove('shake-btn'), 420);
-              triggerBalanceAlert(`حق الجيرون ناقصتك ${manque} د.ت ! 👔`);
+              triggerBalanceAlert(`حق الانتداب ناقصتك ${formatCurrency(manque)} ! 👔`);
             }
           };
         }
