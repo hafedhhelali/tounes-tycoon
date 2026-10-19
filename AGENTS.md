@@ -26,3 +26,5 @@
 - Hook `.githooks/pre-commit` bloque tout commit de code sans HANDOFF.md+CHANGELOG.md. Activer: `git config core.hooksPath .githooks`.
 - Fin de tâche: HANDOFF.md doit permettre une reprise par un autre agent/modèle sans contexte. Ne jamais annoncer "poussé" sans preuve `git status -sb`.
 
+
+- Mode GitHub-only: commiter via API GitHub, inclure HANDOFF.md + CHANGELOG.md dans le même commit; la CI `docs-guard` + `build-apk` valide.

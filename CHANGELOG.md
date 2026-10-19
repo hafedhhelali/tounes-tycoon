@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- ci(docs): docs-guard workflow + GitHub-only mode documented
 - chore(docs): changelog cleanup
 - chore(docs): dedupe changelog
 - docs(process): auto-update MD via ship.ps1 + pre-commit hook

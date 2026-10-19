@@ -44,3 +44,10 @@ Style télégraphique; diffs minimaux; copyright `© EOLabs 2026 beta`; APK vers
 3. `npx cap sync android` + build APK + purge ancien APK.
 4. Mini-jeu: timer basé sur timestamps.
 5. Écoute réelle de la BGM, ajuster volume/tempo selon retour.
+
+## Mode GitHub-only (sans copie locale)
+- Repo: https://github.com/hafedhhelali/tounes-tycoon (branche main). Aucune copie locale requise.
+- Éditer: github.dev (touche `.`), Codespaces, ou agent via API GitHub (commits directs / PR).
+- CI auto à chaque push: `build-apk.yml` (npm test, copie vers www, cap sync, APK release beta, artifact 14 j) et `docs-guard.yml` (échoue si code modifié sans HANDOFF.md + CHANGELOG.md).
+- Donc: tout commit de code DOIT inclure HANDOFF.md + CHANGELOG.md dans le même commit. `www/` et `scripts/ship.ps1` ne sont utiles qu'en local.
+- APK: onglet Actions > dernier run > Artifacts.

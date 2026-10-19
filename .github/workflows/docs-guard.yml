@@ -1,0 +1,32 @@
+name: Docs Guard
+run-name: Docs Guard (${{ github.ref_name }})
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  docs:
+    name: HANDOFF + CHANGELOG à jour
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Vérifier MD si le code change
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+          fi
+          case "$BASE" in ""|0000000000000000000000000000000000000000) BASE="HEAD~1";; esac
+          CHANGED=$(git diff --name-only "$BASE" HEAD || true)
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -Eq '^(engine|audio|ads_service)\.js$|^index\.html$'; then
+            for f in HANDOFF.md CHANGELOG.md; do
+              echo "$CHANGED" | grep -qx "$f" || { echo "::error::$f non mis à jour alors que le code a changé"; exit 1; }
+            done
+          fi
