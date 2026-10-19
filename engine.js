@@ -6,241 +6,241 @@
 export const BUSINESS_CONFIGS = [
   {
     id: 'kaskrout',
-    name: 'كسكروت عيّاري سخون',
-    tagline: 'غطّس في الزيت وزيد الهريسة !',
+    name: 'كشك كسكروت عيّاري',
+    tagline: 'سخون يحرق بالزيت والهريسة العربي، كول وتفرهد !',
     icon: '🥖',
     baseCost: 5.0, // Don de départ 5 DT permet l'achat immédiat
     baseRevenue: 0.8,
     costMultiplier: 1.07,
     cycleDurationMs: 600, // 0.6s
     managers: [
-      { name: 'عم الصادق', role: 'معلّم الكسكروت', avatar: '👨‍🍳', cost: 25.0 }
+      { name: 'عمّك الصادق', role: 'صنايعي الكسكروت', avatar: '👨‍🍳', cost: 25.0 }
     ],
   },
   {
     id: 'fricasse',
-    name: 'بمبلوني وفريكاسي',
-    tagline: 'سخون يكوي، من يدّو للفوّاي !',
+    name: 'فريكاسي وبمبلوني سخون',
+    tagline: 'من الطنجرة للفوّاي، كعبة تقرمش تسكت الجوع !',
     icon: '🍩',
-    baseCost: 25.0,
+    baseCost: 30.0,
     baseRevenue: 3.5,
     costMultiplier: 1.08,
-    cycleDurationMs: 1200, // 1.2s
+    cycleDurationMs: 1400, // 1.4s
     managers: [
-      { name: 'الباجي بمبلوني', role: 'معلّم القلي', avatar: '🧑‍🍳', cost: 100.0 }
+      { name: 'الباجي البمبلوني', role: 'معلّم القلي والتغميس', avatar: '🧑‍🍳', cost: 150.0 }
     ],
   },
   {
     id: 'kahwa',
-    name: 'مقهى شعبي',
-    tagline: 'كابوسين وإكسبراس وقعدة الصباح',
+    name: 'قهوة شعبية وطرح شكبة',
+    tagline: 'كابوسين تروّق المخ وطرح كارطة مع ولاد الحومة',
     icon: '☕',
     baseCost: 120.0,
     baseRevenue: 14.0,
     costMultiplier: 1.09,
     cycleDurationMs: 2500, // 2.5s
     managers: [
-      { name: 'الناصر القارصون', role: 'سرباي الصالة', avatar: '🤵', cost: 250.0 },
-      { name: 'سي الهاشمي', role: 'معلّم الكونتوار', avatar: '☕', cost: 500.0 }
+      { name: 'الناصر القارصون', role: 'سرباي الصالة والضحكة', avatar: '🤵', cost: 600.0 },
+      { name: 'سي الهاشمي', role: 'صاحب القهوة والكونتوار', avatar: '☕', cost: 1800.0 }
     ],
   },
   {
     id: 'attariya',
-    name: 'عطريّة الحومة',
-    tagline: 'من الحليب للخيط والإبرة، وكتبها في الكرني',
+    name: 'عطريّة ولد الحومة',
+    tagline: 'باكو حليب، طماطم وخيط وإبرة، وقيّد في الكرني',
     icon: '🏪',
-    baseCost: 550.0,
-    baseRevenue: 50.0,
+    baseCost: 800.0,
+    baseRevenue: 55.0,
     costMultiplier: 1.10,
     cycleDurationMs: 5000, // 5.0s
     managers: [
-      { name: 'منصف العطّار', role: 'أمين الصندوق والكرني', avatar: '🏬', cost: 1800.0 }
+      { name: 'منصف العطّار', role: 'مولى الحانوت والكرني', avatar: '🏬', cost: 4000.0 }
     ],
   },
   {
     id: 'patisserie',
-    name: 'باتيسري وحلويات عربي',
-    tagline: 'عسل قطر، بقلاوة وكعبات مقروض يذوبو في الفم',
+    name: 'حلويات عربي وبقلاوة',
+    tagline: 'مقروض القيروان وبقلاوة بالعسل الحر تذوب في الفم',
     icon: '🍯',
-    baseCost: 2400.0,
-    baseRevenue: 190.0,
+    baseCost: 4500.0,
+    baseRevenue: 220.0,
     costMultiplier: 1.11,
     cycleDurationMs: 10000, // 10.0s
     managers: [
-      { name: 'الحاج عمر', role: 'معلّم الفور والقطر', avatar: '👳', cost: 3500.0 },
-      { name: 'خالتي زبيدة', role: 'شوافة الحلو والتوزيع', avatar: '👩‍🍳', cost: 7000.0 }
+      { name: 'الحاج عمر', role: 'حلواني الفور والعسل', avatar: '👳', cost: 20000.0 },
+      { name: 'خالتي زبيدة', role: 'شوافة الحلو والتوزيع', avatar: '👩‍🍳', cost: 50000.0 }
     ],
   },
   {
     id: 'taxi_collectif',
     name: 'محطة تاكسي جماعي',
-    tagline: 'سكّر الباب بالقوة وطلّق !',
+    tagline: 'سكّر الباب بالسياسة، خمسة ومارش وطيران للبلاد !',
     icon: '🚐',
-    baseCost: 9800.0,
-    baseRevenue: 720.0,
+    baseCost: 25000.0,
+    baseRevenue: 950.0,
     costMultiplier: 1.12,
     cycleDurationMs: 18000, // 18.0s
     managers: [
-      { name: 'كمال تيربو', role: 'كلاج الديسك والشوفيرية', avatar: '🕶️', cost: 28000.0 }
+      { name: 'كمال تيربو', role: 'كلاج الديسك والشوفيرية', avatar: '🕶️', cost: 120000.0 }
     ],
   },
   {
     id: 'superette',
-    name: 'سوبيرات البركة',
-    tagline: 'المكيّف يخدم والشاريو يدور في الرّايونات',
+    name: 'سوبيرات الحومة المليانة',
+    tagline: 'كليماتيزور بارد وشاريوات تجري وقضية سريعة',
     icon: '🛒',
-    baseCost: 38000.0,
-    baseRevenue: 2600.0,
+    baseCost: 150000.0,
+    baseRevenue: 3800.0,
     costMultiplier: 1.12,
     cycleDurationMs: 30000, // 30.0s
     managers: [
-      { name: 'منير الكاشير', role: 'كاشير', avatar: '💳', cost: 40000.0 },
-      { name: 'سي رضا', role: 'كابو الرّفوف والتوريد', avatar: '👔', cost: 100000.0 }
+      { name: 'منير الكاشير', role: 'كاشير الكاسة', avatar: '💳', cost: 600000.0 },
+      { name: 'سي رضا', role: 'شاف الرّفوف والسلعة', avatar: '👔', cost: 1500000.0 }
     ],
   },
   {
     id: 'supermarche',
-    name: 'سوبرماركت المدينة',
-    tagline: 'بروموسيونات، كاسات سريعة وقضية الشهر',
+    name: 'مغازة ومارشي كبير',
+    tagline: 'بروموسيونات وقضية الشهر بالكردونة، العز والحطة',
     icon: '🏢',
-    baseCost: 150000.0,
-    baseRevenue: 9500.0,
+    baseCost: 900000.0,
+    baseRevenue: 15000.0,
     costMultiplier: 1.13,
     cycleDurationMs: 45000, // 45.0s
     managers: [
-      { name: 'طارق الشاف', role: 'كابو البيع', avatar: '📋', cost: 150000.0 },
-      { name: 'كريم الشريف', role: 'معلّم الليفريزون', avatar: '💼', cost: 400000.0 }
+      { name: 'طارق الشاف', role: 'كابو السلعة والبيع', avatar: '📋', cost: 3500000.0 },
+      { name: 'كريم الشريف', role: 'معلّم الليفريزون والسطوك', avatar: '💼', cost: 9000000.0 }
     ],
   },
   {
     id: 'salon_de_the',
-    name: 'صالون تاي البحيرة',
-    tagline: 'موكا، موخيتو، كليماتيزور ودلال VIP',
+    name: 'صالون تاي وقهوة في البحيرة',
+    tagline: 'موخيتو منعنع ودلال على البحر وقعدة رجال أعمال',
     icon: '🍹',
-    baseCost: 600000.0,
-    baseRevenue: 35000.0,
+    baseCost: 5500000.0,
+    baseRevenue: 55000.0,
     costMultiplier: 1.14,
     cycleDurationMs: 60000, // 60.0s
     managers: [
-      { name: 'وسيم الكابتن', role: 'شاف صالة الـ VIP', avatar: '🤵', cost: 600000.0 },
-      { name: 'رامي الباريستا', role: 'ماستر الكوكتيل والبار', avatar: '🍸', cost: 1500000.0 }
+      { name: 'وسيم الكابتن', role: 'شاف صالة الصالون', avatar: '🤵', cost: 20000000.0 },
+      { name: 'رامي الباريستا', role: 'فنّان العصير والكوكتيل', avatar: '🍸', cost: 50000000.0 }
     ],
   },
   {
     id: 'restaurant',
-    name: 'مطعم مشوي وحوت',
-    tagline: 'مشوي وحوت على الفحم، بالصحة والشفاء',
+    name: 'مطعم دريدكة ومشوي ع الفحم',
+    tagline: 'كسكسي بالحوت وسلاطة مشوية، بنّة دياري تشيّخ',
     icon: '🥘',
-    baseCost: 2500000.0,
-    baseRevenue: 130000.0,
-    costMultiplier: 1.15,
+    baseCost: 32000000.0,
+    baseRevenue: 220000.0,
+    costMultiplier: 1.14,
     cycleDurationMs: 90000, // 90.0s
     managers: [
-      { name: 'المعلم مبروك', role: 'شاف الشواية والكانون', avatar: '🔥', cost: 2500000.0 },
-      { name: 'الشاف فتحي', role: 'معلّم الكوجينة', avatar: '👨‍🍳', cost: 6000000.0 }
+      { name: 'المعلم مبروك', role: 'صنايعي الكانون والشواية', avatar: '🔥', cost: 110000000.0 },
+      { name: 'الشاف فتحي', role: 'معلّم الكوجينة والطياب', avatar: '👨‍🍳', cost: 280000000.0 }
     ],
   },
   {
     id: 'agence_voyages',
     name: 'وكالة أسفار اللقلاق (Ella9la9)',
-    tagline: 'عمرة وتيكيات وطيارات، ودور العالم وإنت مرتاح',
+    tagline: 'فويّاجات وعمرات وتيكيات طيارة، حوّس وتفرّه في العالم',
     icon: '✈️',
-    baseCost: 5500000.0,
-    baseRevenue: 280000.0,
-    costMultiplier: 1.15,
-    cycleDurationMs: 105000, // 105.0s
+    baseCost: 180000000.0,
+    baseRevenue: 850000.0,
+    costMultiplier: 1.14,
+    cycleDurationMs: 120000, // 120.0s
     managers: [
-      { name: 'أنيس التيكي', role: 'شاف التيكيات', avatar: '🎫', cost: 4500000.0 },
-      { name: 'سي منير اللقلاق', role: 'الباترون', avatar: '🧳', cost: 12000000.0 }
+      { name: 'أنيس التيكي', role: 'شاف التيكيات والفيزا', avatar: '🎫', cost: 600000000.0 },
+      { name: 'سي منير اللقلاق', role: 'الباترون الكبير', avatar: '🧳', cost: 1500000000.0 }
     ],
   },
   {
     id: 'hotel',
-    name: 'أوتيل 5 نجوم',
-    tagline: 'بيسين وريلاكس وسيّاح، ودلال الملوك',
+    name: 'نزل وفندق 5 نجوم',
+    tagline: 'بيسين شاسعة وسوّاح من كل بلاد، فخامة ودلال ملكي',
     icon: '🏨',
-    baseCost: 12000000.0,
-    baseRevenue: 600000.0,
+    baseCost: 900000000.0,
+    baseRevenue: 3200000.0,
     costMultiplier: 1.15,
-    cycleDurationMs: 120000, // 120.0s
+    cycleDurationMs: 150000, // 150.0s
     managers: [
-      { name: 'مدام سيرين', role: 'شوافة الاستقبال', avatar: '👩‍💼', cost: 10000000.0 },
-      { name: 'ميسيو برهان', role: 'الباترون', avatar: '🎩', cost: 30000000.0 }
+      { name: 'مدام سيرين', role: 'شوافة الريسبسيون والدلال', avatar: '👩‍💼', cost: 3000000000.0 },
+      { name: 'ميسيو برهان', role: 'مدير الفندق والباترون', avatar: '🎩', cost: 8000000000.0 }
     ],
   },
   {
     id: 'centre_commercial',
-    name: 'المركّب التجاري (Mall)',
-    tagline: 'ماركات عالمية وإسكالاتور وسينما، والملاين تدور',
+    name: 'المول والمركّب التجاري الكبير',
+    tagline: 'إسكالاتور وماركات ودور سينما، الدنيا تغلي والفلوس تصبّ',
     icon: '🛍️',
-    baseCost: 45000000.0,
-    baseRevenue: 2200000.0,
+    baseCost: 4500000000.0,
+    baseRevenue: 12000000.0,
     costMultiplier: 1.15,
-    cycleDurationMs: 180000, // 180.0s
+    cycleDurationMs: 200000, // 200.0s
     managers: [
-      { name: 'المهندس مراد', role: 'معلّم الصيانة', avatar: '👷', cost: 35000000.0 },
-      { name: 'مدام نادية', role: 'شوافة المحلات', avatar: '👠', cost: 70000000.0 },
-      { name: 'سي خليل بن عمار', role: 'الباترون الكبير', avatar: '👑', cost: 120000000.0 }
+      { name: 'المهندس مراد', role: 'كابو التكنيك والضوّ', avatar: '👷', cost: 15000000000.0 },
+      { name: 'مدام نادية', role: 'شوافة البوتيكات والماركات', avatar: '👠', cost: 35000000000.0 },
+      { name: 'سي خليل بن عمار', role: 'الباترون الكبير وصاحب المول', avatar: '👑', cost: 90000000000.0 }
     ],
   },
   {
     id: 'usine_conserves',
-    name: 'معمل مصبرات الهريسة والتن',
-    tagline: 'فلاحة وتصدير، وهريسة عربي تعمّر الكونتوارات',
+    name: 'معمل مصبّرات الهريسة والتن',
+    tagline: 'حكك هريسة عربي وتصدير لفرنسا وإيطاليا، صابة تونس الحرة',
     icon: '🥫',
-    baseCost: 200000000.0,
-    baseRevenue: 10000000.0,
+    baseCost: 22000000000.0,
+    baseRevenue: 45000000.0,
     costMultiplier: 1.15,
-    cycleDurationMs: 240000, // 240.0s
+    cycleDurationMs: 260000, // 260.0s
     managers: [
-      { name: 'المهندس حمادي', role: 'كابو التعليب', avatar: '🏭', cost: 150000000.0 },
-      { name: 'سي عبد السلام', role: 'كابو التصدير', avatar: '🚢', cost: 350000000.0 },
-      { name: 'الحاج بلقاسم', role: 'كبير المعمل', avatar: '💼', cost: 600000000.0 }
+      { name: 'المهندس حمادي', role: 'كابو الآلات والتعليب', avatar: '🏭', cost: 70000000000.0 },
+      { name: 'سي عبد السلام', role: 'شاف التصدير والديوانة', avatar: '🚢', cost: 180000000000.0 },
+      { name: 'الحاج بلقاسم', role: 'صاحب المعامل والهنشرات', avatar: '💼', cost: 450000000000.0 }
     ],
   },
   {
     id: 'showroom_auto',
-    name: 'صالة عرض سيارات فاخرة (Showroom Auto)',
-    tagline: 'آخر الموديلات، كراهب 0 كم ودلال رجال الأعمال',
+    name: 'قصر السيارات الفاخرة (Showroom Auto)',
+    tagline: 'كراهب زيرو كم آخر عيطة ومحركات تفور، شياكة أصحاب الملاين',
     icon: '🏎️',
-    baseCost: 800000000.0,
-    baseRevenue: 42000000.0,
+    baseCost: 110000000000.0,
+    baseRevenue: 180000000.0,
     costMultiplier: 1.15,
-    cycleDurationMs: 300000, // 300.0s (5min)
+    cycleDurationMs: 320000, // 320.0s
     managers: [
-      { name: 'ياسين كوميرسيال', role: 'كابو البيع والـVIP', avatar: '🏎️', cost: 600000000.0 },
-      { name: 'مدام مريم الوكيل', role: 'شوافة الماركات', avatar: '💎', cost: 1500000000.0 },
-      { name: 'سي طارق قطوس', role: 'الباترون الكبير', avatar: '👑', cost: 3000000000.0 }
+      { name: 'ياسين كوميرسيال', role: 'بياع كراهب الـVIP', avatar: '🏎️', cost: 350000000000.0 },
+      { name: 'مدام مريم الوكيل', role: 'شوافة الدار والماركات', avatar: '💎', cost: 850000000000.0 },
+      { name: 'سي طارق قطوس', role: 'الباترون الكبير', avatar: '👑', cost: 2000000000000.0 }
     ],
   },
   {
     id: 'promoteur_immobilier',
-    name: 'شركة تطوير عقاري (Promoteur Immobilier)',
-    tagline: 'فيلات، رزيدونسات وكراء على الكريدي، والأرض تذهّب',
+    name: 'شركة الترقية العقارية والبني',
+    tagline: 'عمارات وفيلات فاخرة في قمرت والحمامات، والتراب يجيب الذهب',
     icon: '🏗️',
-    baseCost: 1600000000.0,
-    baseRevenue: 90000000.0,
+    baseCost: 550000000000.0,
+    baseRevenue: 700000000.0,
     costMultiplier: 1.15,
-    cycleDurationMs: 360000, // 360.0s (6min)
+    cycleDurationMs: 380000, // 380.0s
     managers: [
-      { name: 'سي لطفي المهندس', role: 'كابو الشانطي', avatar: '👷', cost: 1200000000.0 },
-      { name: 'مدام وفاء السمسارة', role: 'شوافة العقارات والكراء', avatar: '🏘️', cost: 3000000000.0 },
-      { name: 'الحاج بوبكر', role: 'الباترون الكبير', avatar: '🏢', cost: 6000000000.0 }
+      { name: 'سي لطفي المهندس', role: 'معلّم الشوانط والبني', avatar: '👷', cost: 1800000000000.0 },
+      { name: 'مدام وفاء السمسارة', role: 'شوافة العقار والصفقات', avatar: '🏘️', cost: 4500000000000.0 },
+      { name: 'الحاج بوبكر', role: 'الباترون الكبير وصاحب الرزيدونسات', avatar: '🏢', cost: 10000000000000.0 }
     ],
   },
   {
     id: 'tayaran_el_ghzela',
-    name: 'شركة طيران الغزالة (Tayaran El Ghzéla)',
-    tagline: 'طيّارات برشا، وعلم تونس يرفرف في الدنيا',
+    name: 'أسطول طيران الغزالة (Tayaran El Ghzéla)',
+    tagline: 'طيارات تجوب السماء وعلم تونس يرفرف فوق السحاب، قمّة المجد !',
     icon: '🛫',
-    baseCost: 3500000000.0,
-    baseRevenue: 190000000.0,
+    baseCost: 2800000000000.0,
+    baseRevenue: 2800000000.0,
     costMultiplier: 1.15,
-    cycleDurationMs: 420000, // 420.0s (7min)
+    cycleDurationMs: 450000, // 450.0s
     managers: [
-      { name: 'الكابتن رمزي', role: 'كبير الطيارين', avatar: '👨‍✈️', cost: 2500000000.0 },
-      { name: 'مدام سهام', role: 'شوافة المطار', avatar: '👩‍✈️', cost: 6000000000.0 },
-      { name: 'سي المنصف البكوش', role: 'الباترون الكبير', avatar: '🦅', cost: 15000000000.0 }
+      { name: 'الكابتن رمزي', role: 'قائد الأسطول وكبير الطيّارين', avatar: '👨‍✈️', cost: 8000000000000.0 },
+      { name: 'مدام سهام', role: 'شوافة المطار والملاحة', avatar: '👩‍✈️', cost: 20000000000000.0 },
+      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام وصاحب الأسطول', avatar: '🦅', cost: 50000000000000.0 }
     ],
   }
 ];
@@ -248,29 +248,29 @@ export const BUSINESS_CONFIGS = [
 export const TUNISIAN_EVENTS = [
   {
     id: 'chheli',
-    title: '☀️ شهيلي يكوّي 48°C !',
-    description: 'القهاوي تتعبّى والمشروب البارد يطير !',
+    title: '☀️ شهيلي يكوّي 48°C والدنيا تغلي !',
+    description: 'القهاوي معبّية بالملاين، الشقف البارد يطير طيران والعطش واكل العباد !',
     durationMs: 30000,
     multipliers: { kahwa: 2.0, salon_de_the: 2.5 }
   },
   {
     id: 'derby',
-    title: '⚽ ليلة الدربي الكبير في رادس !',
-    description: 'العاصمة شاعلة والجمهور في الشارع ! الكسكروت والفريكاسي يطيرو طيران.',
+    title: '⚽ ليلة الدربي وسهرية رادس شاعلة !',
+    description: 'البلاد مقلوبة والفيراج يغنّي ! الكساكروت والفريكاسي يطيرو مالطواول.',
     durationMs: 40000,
     multipliers: { kaskrout: 3.0, fricasse: 2.5, kahwa: 1.8 }
   },
   {
     id: 'aaras',
-    title: '💐 موسم الأعراس والوطية !',
-    description: 'الزغاريت تعلّي والحلو يتوزّع ! الباتيسري والمطاعم عليهم الكرية.',
+    title: '💐 موسم الصيف والأعراس والوطيات !',
+    description: 'الزغاريت تضرب والناس فرحانة ! الباتيسري والمطاعم خدامة ليل ونهار.',
     durationMs: 35000,
     multipliers: { patisserie: 3.0, restaurant: 2.0 }
   },
   {
     id: 'embouteillage',
-    title: '🚗 الزحمة في باب سعدون !',
-    description: 'التاكسيات الجماعية واقفة والكيوسك يبيع للي يستنّى.',
+    title: '🚗 زحمة خانقة وسركيلاسيو باب سعدون !',
+    description: 'التاكسيات واقفة والموتورات تزمّر ! الكشك يخدم بالواقفة والناس تستنّى.',
     durationMs: 25000,
     multipliers: { kaskrout: 2.5, taxi_collectif: 0.3 }
   }
@@ -279,7 +279,7 @@ export const TUNISIAN_EVENTS = [
 export const TUNISIAN_QUESTS = [
   {
     id: 'first_kiosk',
-    title: 'البداية : حلّ أوّل كسكروت',
+    title: 'ضربة البداية : حلّ أوّل كشك كسكروت',
     targetType: 'business_level',
     businessId: 'kaskrout',
     targetValue: 1,
@@ -288,7 +288,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'serve_kaskrout_10',
-    title: 'سربّي 10 مرّات',
+    title: 'سربّي الكليونات 10 مرّات بيديك',
     targetType: 'manual_serves',
     targetValue: 10,
     rewardDinars: 15.0,
@@ -296,7 +296,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'first_manager',
-    title: 'معلّم ومرتاح : خدّم أوّل جيرون',
+    title: 'ارتاح وتفرّج : خدّم أوّل معلّم يدير الحانوت',
     targetType: 'hired_managers',
     targetValue: 1,
     rewardDinars: 40.0,
@@ -304,7 +304,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'open_coffee',
-    title: 'كبّر : حلّ المقهى الشعبي',
+    title: 'وسّع المشروع : حلّ القهوة الشعبية',
     targetType: 'business_level',
     businessId: 'kahwa',
     targetValue: 1,
@@ -313,7 +313,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'open_taxi',
-    title: 'حلّ محطة تاكسي جماعي',
+    title: 'شياكة النقل : حلّ محطة تاكسي جماعي',
     targetType: 'business_level',
     businessId: 'taxi_collectif',
     targetValue: 1,
@@ -322,16 +322,16 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'open_mall',
-    title: 'حلّ المركّب التجاري (Mall)',
+    title: 'الفخامة : حلّ المول والمركّب التجاري الكبير',
     targetType: 'business_level',
     businessId: 'centre_commercial',
     targetValue: 1,
-    rewardDinars: 5000000.0,
+    rewardDinars: 50000000.0,
     titleEarned: 'ملك التجارة'
   },
   {
     id: 'wealth_1000',
-    title: 'عمّر الكاسة : وصّل 1 000 د.ت',
+    title: 'الكاسة مريڤلة : وصّل 1 000 د.ت',
     targetType: 'accumulated_dinars',
     targetValue: 1000.0,
     rewardDinars: 250.0,
@@ -431,7 +431,7 @@ export class TycoonEngine {
       }
     }
     // 3 minutes (180s) de revenus cumulés, avec minimum garanti de 5 DT pour débloquer
-    const cashReward = Math.max(5.0, Math.floor(totalPerSecond * 180));
+    const cashReward = Math.max(5.0, Math.floor(totalPerSecond * 60));
     this.dinars += cashReward;
     return cashReward;
   }

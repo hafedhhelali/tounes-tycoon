@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- feat(balance,derja): recalibrate economic curve & overhaul authentic street Derja
 - docs(agents): permanent autonomy rule
 - feat(businesses): add promoteur immobilier before Tayaran El Ghzela
 - ci(docs): docs-guard workflow + GitHub-only mode documented
