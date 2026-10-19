@@ -2,9 +2,9 @@
 MAJ: 2026-10-19 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Idle tycoon tunisien (Capacitor/Android, JS vanilla). 17 commerces progressifs, recrutement multi-gérants, événements, quêtes, pubs AdMob (stub), musique de fond procédurale simple.
-Formatage monétaire en arabe intégral : '14.66 ألف دينار', '14.66 مليون دينار', 'مليار دينار'. Bouton d'événement : 'العب و لمّ بزايد فلوس'. Bouton boost : '4 سوايع'.
-Tests: `npm test` = 7/7. CI GitHub Actions génère l'APK à chaque push.
+Idle tycoon tunisien (Capacitor/Android, JS vanilla). 17 commerces progressifs, synergies tunisiennes débloquables, nouveau défi 'طرح شكبة سريع' (réflexe et calcul de cartes populaires), système d'ascension/prestige ('رأس مال الحومة والخبرة'), et bulles flottantes de cadeaux ('تفتوفة في الكياس').
+Polish sonore et textuel : BGM feutrée chaleureuse (lounge méditerranéen relaxant, accords riches sans sons perçants), badges 'مستوى X' (ex: مستوى 2 au lieu de نيفو), format 'ألف دينار / مليون دينار' et 'العب و لمّ بزايد فلوس'.
+Tests: `npm test` = 10/10. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

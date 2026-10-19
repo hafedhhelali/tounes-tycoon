@@ -136,6 +136,71 @@ test('Quests can be achieved and claimed with title upgrades', () => {
   assert.equal(engine.checkQuests().length, 0);
 });
 
+test('Tunisian business combos trigger synergies and multiply revenue', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 1000.0;
+
+  // Achat du kiosque كسكروت عياري seul
+  engine.buyBusiness('kaskrout');
+  const kaskroutBiz = engine.businesses.find(b => b.id === 'kaskrout');
+  assert.equal(engine.getActiveCombos().length, 0);
+  assert.equal(engine.getRevenue(kaskroutBiz), 0.8);
+
+  // Achat du فريكاسي -> Débloque le combo 'سلسلة الماكلة التونسية' (x2)
+  engine.buyBusiness('fricasse');
+  const combos = engine.getActiveCombos();
+  assert.equal(combos.length, 1);
+  assert.equal(combos[0].id, 'combo_street_food');
+  assert.equal(engine.isComboActive('combo_street_food'), true);
+
+  // Le revenu de kaskrout est multiplié par 2
+  assert.equal(engine.getRevenue(kaskroutBiz), 1.6);
+});
+
+test('Floating lucky drop awards instant cash and turbo speed boost', () => {
+  const t0 = 1000000;
+  const engine = new TycoonEngine();
+  engine.lastTimestamp = t0;
+  engine.dinars = 100.0;
+  engine.buyBusiness('kaskrout');
+
+  // Lucky drop cash
+  const initialDinars = engine.dinars;
+  const cashDrop = engine.claimLuckyDrop('cash', t0);
+  assert.equal(cashDrop.type, 'cash');
+  assert.ok(cashDrop.amount >= 20.0);
+  assert.equal(engine.dinars, initialDinars + cashDrop.amount);
+
+  // Lucky drop speed boost (30s)
+  const speedDrop = engine.claimLuckyDrop('speed', t0);
+  assert.equal(speedDrop.type, 'speed');
+  assert.equal(engine.isSpeedBoostActive(t0 + 5000), true);
+  assert.equal(engine.isSpeedBoostActive(t0 + 35000), false);
+});
+
+test('Prestige ascension resets businesses and awards permanent multiplier', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 150000.0;
+  engine.totalDinarsEarned = 150000.0;
+  engine.buyBusiness('kaskrout');
+  engine.buyBusiness('fricasse');
+  assert.equal(engine.canPrestige(), true);
+
+  const pendingPoints = engine.calculatePendingPrestigePoints();
+  assert.ok(pendingPoints >= 3);
+
+  const prestigeResult = engine.executePrestige();
+  assert.ok(prestigeResult);
+  assert.equal(engine.prestigeLevel, 1);
+  assert.ok(engine.prestigePoints >= 3);
+  assert.ok(engine.getPrestigeMultiplier() > 1.0);
+  // Reset des commerces à 0
+  assert.equal(engine.businesses[0].level, 0);
+  assert.equal(engine.dinars, 5.0);
+  assert.equal(engine.playerTitle, 'ولد حومة مستثمر');
+});
+
+
 
 
 

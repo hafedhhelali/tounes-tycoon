@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Tounes Tycoon - Moteur Audio Procédural
  * © EOLabs 2026. Pur Web Audio API - Zéro asset lourd, zéro latence.
  */
@@ -186,56 +186,72 @@ class SoundEngine {
     osc.stop(now + 0.1);
   }
 
-  // Musique d'ambiance procédurale (Mélodie orientale douce en boucle)
+  // Musique d'ambiance feutrée, chaleureuse et relaxante (Warm Mediterranean Lounge)
   startBGM() {
     if (this.bgmTimer || this.muted) return;
     this.init();
 
-    // Musique simple et douce : arpège calme (Am - F - C - G) + basse chaude, sans percussion.
-    const bpm = 76;
-    const stepDuration = 60 / bpm / 2; // croche
+    // Rythme doux 68 BPM : accords riches et tamisés (D min9 - G 13 - C maj7 - A 7alt)
+    // Son style piano Rhodes feutré avec filtre passe-bas doux
+    const bpm = 64;
+    const stepDuration = 60 / bpm / 2; // croche = ~470ms
     let bgmStep = 0;
 
     const chords = [
-      { bass: 110.00, arp: [220.00, 261.63, 329.63] },
-      { bass: 87.31, arp: [174.61, 220.00, 261.63] },
-      { bass: 130.81, arp: [261.63, 329.63, 392.00] },
-      { bass: 98.00, arp: [196.00, 246.94, 293.66] }
+      { bass: 73.42, notes: [220.00, 261.63, 329.63, 392.00] }, // Dm7/9
+      { bass: 98.00, notes: [196.00, 246.94, 293.66, 349.23] }, // G7
+      { bass: 65.41, notes: [196.00, 246.94, 261.63, 329.63] }, // Cmaj7
+      { bass: 110.00, notes: [220.00, 277.18, 329.63, 392.00] } // A7
     ];
-    const arpOrder = [0, 1, 2, 1, 2, 1, 0, 1];
+    const sequence = [0, 2, 1, 3, 1, 2, 0, 1];
 
-    const playSoft = (freq, time, duration, peak, type, cutoff) => {
+    const playWarmNote = (freq, time, duration, peakVol) => {
       if (!freq || this.muted || !this.ctx) return;
       const osc = this.ctx.createOscillator();
       const filter = this.ctx.createBiquadFilter();
       const gain = this.ctx.createGain();
-      osc.type = type;
+
+      osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, time);
+
+      // Filtre chaleureux passe-bas pour éviter tout son perçant ou agressif
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(cutoff, time);
-      gain.gain.setValueAtTime(0.001, time);
-      gain.gain.linearRampToValueAtTime(peak, time + 0.06);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+      filter.frequency.setValueAtTime(450, time);
+      filter.frequency.exponentialRampToValueAtTime(180, time + duration);
+
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(peakVol, time + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(this.ctx.destination);
+
       osc.start(time);
-      osc.stop(time + duration + 0.05);
+      osc.stop(time + duration + 0.1);
     };
 
-    let nextNoteTime = this.ctx.currentTime + 0.05;
+    let nextNoteTime = this.ctx.currentTime + 0.1;
     this.bgmTimer = setInterval(() => {
       if (this.muted || !this.ctx) return;
-      while (nextNoteTime < this.ctx.currentTime + 0.25) {
-        const bar = Math.floor(bgmStep / 8) % chords.length;
+      while (nextNoteTime < this.ctx.currentTime + 0.3) {
+        const chordIdx = Math.floor(bgmStep / 8) % chords.length;
         const pos = bgmStep % 8;
-        const chord = chords[bar];
-        if (pos === 0) playSoft(chord.bass, nextNoteTime, stepDuration * 7, 0.07, 'sine', 300);
-        playSoft(chord.arp[arpOrder[pos]], nextNoteTime, stepDuration * 2.5, 0.035, 'triangle', 1400);
+        const chord = chords[chordIdx];
+
+        // Basse feutrée
+        if (pos === 0) {
+          playWarmNote(chord.bass, nextNoteTime, stepDuration * 6, 0.045);
+        }
+
+        // Note mélodique douce
+        const noteFreq = chord.notes[sequence[pos]];
+        playWarmNote(noteFreq, nextNoteTime, stepDuration * 2.8, 0.022);
+
         nextNoteTime += stepDuration;
         bgmStep++;
       }
-    }, 50);
+    }, 60);
   }
 
   stopBGM() {
@@ -243,6 +259,52 @@ class SoundEngine {
       clearInterval(this.bgmTimer);
       this.bgmTimer = null;
     }
+  }
+
+  // Son de carte de chkobba
+  playCardFlip() {
+    if (this.muted) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.06);
+  }
+
+  // Son de réussite Chkobba !
+  playChkobbaWin() {
+    if (this.muted) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = now + (idx * 0.06);
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+
+      gain.gain.setValueAtTime(0.18, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.12);
+    });
   }
 
   toggleSound() {
@@ -257,3 +319,4 @@ class SoundEngine {
 }
 
 export const soundEngine = new SoundEngine();
+

@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- feat(gameplay): add business synergies, chkobba reflex challenge, prestige ascension, warm lounge BGM, and niveau to mostawa
 - fix(ui): arabic currency format (ألف دينار, مليون دينار), 4 سوايع, العب و لمّ بزايد فلوس
 - fix(ui): balance button bidi numbers, remove paren spaces, compact event button
 - fix(ui): balance button bidi numbers, remove paren spaces, compact event button

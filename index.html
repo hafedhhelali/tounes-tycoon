@@ -543,6 +543,184 @@
       transition: transform 0.1s ease;
     }
     .modal-btn:active { transform: scale(0.97); }
+
+    /* BARRE DE PRESTIGE & ASCENSION */
+    .prestige-bar-box {
+      background: linear-gradient(135deg, rgba(120, 53, 15, 0.4) 0%, rgba(69, 26, 3, 0.6) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .prestige-btn {
+      background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+      border: 1px solid #fde68a;
+      color: #1a0f02;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 6px 12px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+      transition: all 0.15s ease;
+    }
+    .prestige-btn:active { transform: scale(0.95); }
+    .prestige-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.6);
+      transform: none;
+    }
+
+    /* BADGES DE SYNERGIES & COMBOS TUNISIENS */
+    .synergies-container {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      margin-top: 6px;
+      scrollbar-width: none;
+    }
+    .synergies-container::-webkit-scrollbar { display: none; }
+    .synergy-chip {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-muted);
+      opacity: 0.6;
+      transition: all 0.2s ease;
+    }
+    .synergy-chip.unlocked {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.15) 100%);
+      border-color: rgba(245, 158, 11, 0.6);
+      color: #fde68a;
+      opacity: 1;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+      animation: comboGlow 2s infinite alternate;
+    }
+    @keyframes comboGlow {
+      0% { border-color: rgba(245, 158, 11, 0.4); }
+      100% { border-color: rgba(253, 230, 138, 0.9); }
+    }
+
+    /* FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) */
+    .lucky-drop-floating {
+      position: fixed;
+      z-index: 150;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #f59e0b 0%, #b45309 80%);
+      border: 2px solid #fef08a;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 24px;
+      color: white;
+      animation: floatDrop 3s infinite ease-in-out, pulseDrop 1s infinite alternate;
+      touch-action: manipulation;
+    }
+    .lucky-drop-sub {
+      font-size: 9px;
+      font-weight: 900;
+      color: #1e1b4b;
+      background: #fde68a;
+      padding: 1px 4px;
+      border-radius: 4px;
+      margin-top: -2px;
+    }
+    @keyframes floatDrop {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(8deg); }
+    }
+    @keyframes pulseDrop {
+      from { transform: scale(1); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6)); }
+      to { transform: scale(1.08); filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.9)); }
+    }
+
+    /* CHKOBBA MINI-GAME STYLES */
+    .chkobba-table {
+      background: radial-gradient(circle, #065f46 0%, #064e3b 80%, #022c22 100%);
+      border: 3px solid #059669;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+      margin: 8px 0;
+    }
+    .chkobba-target-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px dashed #34d399;
+      border-radius: 12px;
+      padding: 8px 16px;
+      text-align: center;
+    }
+    .chkobba-card-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
+    .chkobba-card {
+      width: 72px;
+      height: 96px;
+      background: white;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+    }
+    .chkobba-card:active {
+      transform: scale(0.92);
+    }
+    .chkobba-card.correct {
+      border-color: #10b981;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.8);
+      transform: scale(1.08);
+    }
+    .chkobba-card.wrong {
+      border-color: #ef4444;
+      animation: shakeCard 0.3s ease-in-out;
+    }
+    @keyframes shakeCard {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    .card-val {
+      font-size: 16px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1;
+    }
+    .card-suit {
+      font-size: 26px;
+      line-height: 1;
+    }
   </style>
 </head>
 <body>
@@ -562,6 +740,22 @@
       <div class="balance-box">
         <div class="balance-label">الكاسة</div>
         <div class="balance-val" id="dinarsDisplay">0.00 د.ت</div>
+      </div>
+
+      <!-- BANDEAU PRESTIGE & INVESTISSEMENT -->
+      <div class="prestige-bar-box" id="prestigeBarBox">
+        <div style="text-align: right;">
+          <div style="font-size: 11px; font-weight: 900; color: #fde68a;">🌟 رأس مال الحومة والخبرة</div>
+          <div style="font-size: 10px; color: #cbd5e1;" id="prestigeInfoLabel">مضروب القوّة : x1.00</div>
+        </div>
+        <button class="prestige-btn" id="prestigeOpenBtn">
+          👑 بيع واستثمر (+0)
+        </button>
+      </div>
+
+      <!-- SYNERGIES & COMBOS TUNISIENS -->
+      <div class="synergies-container" id="synergiesContainer">
+        <!-- Rempli dynamiquement -->
       </div>
 
       <!-- ADMOB REWARD HUB -->
@@ -591,7 +785,7 @@
       <div id="eventBanner">
         <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
           <div style="font-weight: 900; color: #fef08a; font-size: 13px;" id="eventTitle">فزعة في الحومة !</div>
-          <button id="eventMiniGameBtn">🔥 العب و لمّ بزايد فلوس</button>
+          <button id="eventMiniGameBtn">🔥 العب و لمّ بزايد فلوس (شكبة 🃏)</button>
         </div>
         <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">تفاصيل</div>
         <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">باقي : 0 ثانية</div>
@@ -601,26 +795,78 @@
     <div class="business-list" id="businessList"></div>
   </div>
 
+  <!-- FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) -->
+  <div id="luckyDropEl" class="lucky-drop-floating" style="display: none;">
+    <span id="luckyDropIcon">💰</span>
+    <span class="lucky-drop-sub">تفتوفة !</span>
+  </div>
+
   <!-- TOAST NOTIFICATION SOLDE INSUFFISANT -->
   <div class="toast-box" id="errorToast">
     <span style="font-size: 20px;">⚠️</span>
     <span id="toastMsg">الكاسة فارغة ! سربّي بيديك ولا دبّر تفتوفة 💰</span>
   </div>
 
-  <!-- MINI-GAME INTERACTIF 10s "جوّ الدربي والشهيلي" -->
+  <!-- MINI-GAME INTERACTIF "طرح شكبة سريع" (Défi Réflexe & Calcul Populaire) -->
   <div class="modal-overlay" id="minigameModal">
-    <div class="modal-card" style="border-color: #ef4444;">
-      <div class="modal-icon-glow" style="font-size: 48px;">🥁</div>
-      <div class="modal-title" id="minigameTitle">🔥 جوّ الحومة شاعل !</div>
-      <div class="modal-subtitle" style="font-size: 13px; color: #fecaca;">خبّط في الدربوكة قدّ ما تنجّم في 10 ثواني !</div>
-      <div style="display: flex; justify-content: space-between; width: 100%; font-weight: 800; font-size: 14px; margin-top: 4px;">
-        <span style="color: #fbbf24;" id="minigameCountdown">الوقت مازال : <span class="num-ltr">10s</span></span>
-        <span style="color: #38bdf8;" id="minigameScore">الضربات : 0</span>
+    <div class="modal-card" style="border-color: #10b981; max-width: 380px;">
+      <div class="modal-icon-glow" style="font-size: 40px;">🃏</div>
+      <div class="modal-title" id="minigameTitle">طرح شكبة سريع في القهوة !</div>
+      <div class="modal-subtitle" id="minigameDesc" style="font-size: 13px; color: #a7f3d0;">
+        القا الكارطة الصحيحة باش تاكل طاولة الشكبة قبل ما يوفى الوقت !
       </div>
-      <button id="minigameTapBtn" style="width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, #ef4444 0%, #991b1b 100%); border: 4px solid #fecaca; color: white; font-size: 40px; cursor: pointer; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); display: flex; align-items: center; justify-content: center; margin: 10px 0; transition: transform 0.08s;">
-        🥁
+
+      <div style="display: flex; justify-content: space-between; width: 100%; font-weight: 800; font-size: 13px; margin: 4px 0;">
+        <span style="color: #fbbf24;" id="minigameCountdown">الوقت : <span class="num-ltr">15s</span></span>
+        <span style="color: #38bdf8;" id="minigameScore">النقاط : 0 شكبة</span>
+      </div>
+
+      <!-- TABLE DE JEU CHKOBBA -->
+      <div class="chkobba-table">
+        <div class="chkobba-target-box">
+          <div style="font-size: 10px; color: #a7f3d0; font-weight: 800;">الورقة المرميّة في الطاولة :</div>
+          <div style="font-size: 22px; font-weight: 900; color: #fbbf24; margin-top: 2px;" id="tableCardDisplay">🂡 7 ديناري</div>
+          <div style="font-size: 11px; color: #fef08a;" id="tableTargetHint">لازم تكمّلها للعشرة (10) !</div>
+        </div>
+
+        <div style="font-size: 11px; color: #ecfdf5; font-weight: 700;">اختار الكارطة الرابحة من يدك :</div>
+        <div class="chkobba-card-row" id="chkobbaHandRow">
+          <!-- 3 cartes interactives générées dynamiquement -->
+        </div>
+      </div>
+
+      <div style="font-size: 11px; color: #94a3b8;">كل شكبة تجيبلك بونيس كبير في الكاسة ! 💰</div>
+    </div>
+  </div>
+
+  <!-- MODAL DE PRESTIGE (بيع واخرج مستثمر كبير) -->
+  <div class="modal-overlay" id="prestigeModal">
+    <div class="modal-card" style="border-color: #f59e0b;">
+      <div class="modal-icon-glow">👑</div>
+      <div class="modal-title">رأس مال الحومة والخبرة</div>
+      <div class="modal-subtitle">بيع كل مشاريعك الحالية، وارجع مستثمر كبير برأس مال وخبرة مضاعفة !</div>
+      
+      <div style="background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; width: 100%; text-align: right; margin: 6px 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+          <span style="color: #94a3b8;">النقاط الحالية :</span>
+          <span style="font-weight: 900; color: #f8fafc;" id="currentPrestigePts">0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+          <span style="color: #94a3b8;">نقاط إضافية رابحها :</span>
+          <span style="font-weight: 900; color: #34d399;" id="gainedPrestigePts">+0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
+          <span style="color: #fbbf24;">المضروب الجديد الدائم :</span>
+          <span style="color: #fbbf24;" id="newPrestigeMult">x1.00</span>
+        </div>
+      </div>
+
+      <button class="modal-btn" id="confirmPrestigeBtn" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); border-color: #f59e0b;">
+        🚀 صَحّح العقد وارجع معلّم
       </button>
-      <div style="font-size: 12px; color: #94a3b8;">انزل فيسع ولمّ الصّابة !</div>
+      <button id="cancelPrestigeBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; font-weight: 800; cursor: pointer; padding: 6px;">
+        مازلت نحبّ نلمّ بزايد فلوس
+      </button>
     </div>
   </div>
 
@@ -679,52 +925,223 @@
       soundToggleBtn.innerText = active ? '🔊' : '🔇';
     };
 
-    // MINI-JEU ÉVÉNEMENTIEL (10s Tap Challenge)
+    // --- SYNERGIES & COMBOS TUNISIENS RENDER ---
+    const synergiesContainer = document.getElementById('synergiesContainer');
+    function updateSynergiesUI() {
+      if (!synergiesContainer) return;
+      const activeCombos = engine.getActiveCombos();
+      const allCombos = [
+        { id: 'combo_street_food', name: 'سلسلة الماكلة التونسية', icon: '🥖🍩', bonus: 'x2' },
+        { id: 'combo_kahwa_salle', name: 'سلطان القهاوي', icon: '☕🍹', bonus: 'x2.5' },
+        { id: 'combo_commerce_houma', name: 'عمدة تجارة الحومة', icon: '🏪🛒', bonus: 'x3' },
+        { id: 'combo_nacer_sahriya', name: 'شارع النصر سهرية', icon: '🥘🍹', bonus: 'x2.2' },
+        { id: 'combo_carthage_holding', name: 'هولدينغ قرطاج', icon: '🏗️🛫', bonus: 'x4' }
+      ];
+
+      synergiesContainer.innerHTML = '';
+      allCombos.forEach(c => {
+        const isUnlocked = activeCombos.some(a => a.id === c.id);
+        const chip = document.createElement('div');
+        chip.className = `synergy-chip ${isUnlocked ? 'unlocked' : ''}`;
+        chip.innerHTML = `<span>${c.icon}</span> <span>${c.name}</span> <span style="font-weight:900; color:${isUnlocked ? '#fbbf24':'#64748b'};">${c.bonus}</span>`;
+        chip.title = isUnlocked ? 'كومبو نشيط ويخدم !' : 'اشري المحلات المربوطة باش تفعل الكومبو';
+        synergiesContainer.appendChild(chip);
+      });
+    }
+
+    // --- PRESTIGE / ASCENSION UI & INTERACTION ---
+    const prestigeOpenBtn = document.getElementById('prestigeOpenBtn');
+    const prestigeInfoLabel = document.getElementById('prestigeInfoLabel');
+    const prestigeModal = document.getElementById('prestigeModal');
+    const currentPrestigePts = document.getElementById('currentPrestigePts');
+    const gainedPrestigePts = document.getElementById('gainedPrestigePts');
+    const newPrestigeMult = document.getElementById('newPrestigeMult');
+    const confirmPrestigeBtn = document.getElementById('confirmPrestigeBtn');
+    const cancelPrestigeBtn = document.getElementById('cancelPrestigeBtn');
+
+    prestigeOpenBtn.onclick = () => {
+      currentPrestigePts.innerText = `${engine.prestigePoints} نقطة (x${engine.getPrestigeMultiplier().toFixed(2)})`;
+      const pending = engine.calculatePendingPrestigePoints();
+      gainedPrestigePts.innerText = `+${pending} نقطة خبرة`;
+      const projectedMult = 1.0 + ((engine.prestigePoints + pending) * 0.05);
+      newPrestigeMult.innerText = `x${projectedMult.toFixed(2)}`;
+
+      confirmPrestigeBtn.disabled = !engine.canPrestige();
+      confirmPrestigeBtn.innerText = engine.canPrestige() 
+        ? `🚀 صَحّح العقد وارجع معلّم (+${pending} نقطة)` 
+        : `🔒 لازمك تلمّ ${formatCurrency(engine.getPrestigeThreshold())} على الأقل`;
+
+      prestigeModal.classList.add('active');
+    };
+
+    cancelPrestigeBtn.onclick = () => {
+      prestigeModal.classList.remove('active');
+    };
+
+    confirmPrestigeBtn.onclick = () => {
+      if (!engine.canPrestige()) return;
+      const res = engine.executePrestige();
+      if (res) {
+        soundEngine.playChkobbaWin();
+        prestigeModal.classList.remove('active');
+        showRewardModalUI('👑', 'مبروك الصعود لطبقة رجال الأعمال !', `ربحت ${res.pointsEarned} نقطة خبرة ومضروب دائم x${res.newMultiplier.toFixed(2)} :`, res.title);
+        renderDOM();
+        updateSynergiesUI();
+      }
+    };
+
+    // --- MINI-JEU CHKOBBA POPULAIRE "طرح شكبة سريع" (Défi Réflexe & Calcul) ---
     const eventMiniGameBtn = document.getElementById('eventMiniGameBtn');
     const minigameModal = document.getElementById('minigameModal');
     const minigameCountdown = document.getElementById('minigameCountdown');
     const minigameScore = document.getElementById('minigameScore');
-    const minigameTapBtn = document.getElementById('minigameTapBtn');
-    let minigameTimer = null;
-    let minigameSecLeft = 10;
-    let minigameTaps = 0;
+    const tableCardDisplay = document.getElementById('tableCardDisplay');
+    const tableTargetHint = document.getElementById('tableTargetHint');
+    const chkobbaHandRow = document.getElementById('chkobbaHandRow');
+
+    let chkobbaTimer = null;
+    let chkobbaSecLeft = 15;
+    let chkobbaScore = 0;
+    let currentTargetSum = 10;
+    let currentTableCardVal = 7;
+
+    const CHKOBBA_SUITS = ['♦️ ديناري', '♠️ سيوف', '♣️ زلباط', '♥️ كبوس'];
+    const SUIT_ICONS = { '♦️ ديناري': '♦️', '♠️ سيوف': '♠️', '♣️ زلباط': '♣️', '♥️ كبوس': '♥️' };
+
+    function generateChkobbaRound() {
+      // Choix de la carte sur la table (valeur 1 à 9)
+      currentTableCardVal = Math.floor(Math.random() * 8) + 1; // 1 à 8
+      currentTargetSum = 10;
+      const neededVal = currentTargetSum - currentTableCardVal;
+
+      const randomSuit = CHKOBBA_SUITS[Math.floor(Math.random() * CHKOBBA_SUITS.length)];
+      tableCardDisplay.innerHTML = `${SUIT_ICONS[randomSuit]} <span class="num-ltr">${currentTableCardVal}</span> ${randomSuit}`;
+      tableTargetHint.innerHTML = `لازم تكمّلها للـ <span class="num-ltr">10</span> ! (لوّج على ورقة قيمتها <span class="num-ltr">${neededVal}</span>)`;
+
+      // Génération de 3 cartes dans la main (1 bonne, 2 fausses)
+      const cards = [{ val: neededVal, correct: true, suit: '♦️ ديناري' }];
+      while (cards.length < 3) {
+        const fakeVal = Math.floor(Math.random() * 9) + 1;
+        if (fakeVal !== neededVal && !cards.some(c => c.val === fakeVal)) {
+          const fakeSuit = CHKOBBA_SUITS[Math.floor(Math.random() * CHKOBBA_SUITS.length)];
+          cards.push({ val: fakeVal, correct: false, suit: fakeSuit });
+        }
+      }
+      // Mélange
+      cards.sort(() => Math.random() - 0.5);
+
+      chkobbaHandRow.innerHTML = '';
+      cards.forEach(c => {
+        const cardBtn = document.createElement('div');
+        cardBtn.className = 'chkobba-card';
+        cardBtn.innerHTML = `
+          <div class="card-val">${c.val}</div>
+          <div class="card-suit">${SUIT_ICONS[c.suit] || '🃏'}</div>
+          <div style="font-size: 10px; font-weight: 800; color: #64748b;">${c.suit.split(' ')[1] || ''}</div>
+        `;
+
+        cardBtn.onclick = (e) => {
+          if (c.correct) {
+            soundEngine.playCardFlip();
+            cardBtn.classList.add('correct');
+            chkobbaScore++;
+            minigameScore.innerText = `النقاط : ${chkobbaScore} شكبة 🔥`;
+            spawnFloatText(e.clientX || (window.innerWidth / 2), e.clientY || (window.innerHeight / 2), `شكبة ! 🃏`);
+            setTimeout(() => {
+              if (chkobbaSecLeft > 0) generateChkobbaRound();
+            }, 180);
+          } else {
+            soundEngine.playBuzzer();
+            cardBtn.classList.add('wrong');
+            setTimeout(() => cardBtn.classList.remove('wrong'), 350);
+          }
+        };
+
+        chkobbaHandRow.appendChild(cardBtn);
+      });
+    }
 
     eventMiniGameBtn.onclick = () => {
-      minigameSecLeft = 10;
-      minigameTaps = 0;
-      minigameScore.innerText = `الضربات : 0`;
-      minigameCountdown.innerText = `الوقت مازال : 10s`;
+      chkobbaSecLeft = 15;
+      chkobbaScore = 0;
+      minigameScore.innerText = `النقاط : 0 شكبة`;
+      minigameCountdown.innerText = `الوقت : 15s`;
       minigameModal.classList.add('active');
+      generateChkobbaRound();
 
-      clearInterval(minigameTimer);
-      minigameTimer = setInterval(() => {
-        minigameSecLeft--;
-        minigameCountdown.innerText = `الوقت مازال : ${minigameSecLeft}s`;
-        if (minigameSecLeft <= 0) {
-          clearInterval(minigameTimer);
+      clearInterval(chkobbaTimer);
+      chkobbaTimer = setInterval(() => {
+        chkobbaSecLeft--;
+        minigameCountdown.innerText = `الوقت : ${chkobbaSecLeft}s`;
+        if (chkobbaSecLeft <= 0) {
+          clearInterval(chkobbaTimer);
           minigameModal.classList.remove('active');
 
-          // Calcul de la récompense x5
+          // Calcul récompense proportionnelle au score de Chkobba
           let totalPerSecond = 0;
           engine.businesses.forEach(b => { if (b.level > 0) totalPerSecond += (engine.getRevenue(b)/(b.cycleDurationMs/1000)); });
-          const bonus = Math.max(10.0, Math.floor(totalPerSecond * 8 * Math.min(3, minigameTaps / 20)));
+          const rewardBase = Math.max(15.0, Math.floor(totalPerSecond * 12));
+          const bonus = Math.floor(rewardBase * (1 + (chkobbaScore * 0.75)));
+
           engine.dinars += bonus;
           engine.totalDinarsEarned += bonus;
 
-          soundEngine.playEventFanfare();
-          showRewardModalUI('🥁', 'يعطيك الصحة خويا !', `جمّعت ${minigameTaps} ضربة دربوكة في جوّ الحومة :`, `+${formatCurrency(bonus)}`);
+          soundEngine.playChkobbaWin();
+          showRewardModalUI('🃏', 'صحيت يا معلّم الشكبة !', `عملت ${chkobbaScore} شكبة صحيحة في القهوة :`, `+${formatCurrency(bonus)}`);
           renderDOM();
+          updateSynergiesUI();
         }
       }, 1000);
     };
 
-    minigameTapBtn.onpointerdown = (e) => {
-      minigameTaps++;
-      minigameScore.innerText = `الضربات : ${minigameTaps}`;
-      soundEngine.playDarbouka(minigameTaps % 4 === 0);
-      minigameTapBtn.style.transform = 'scale(0.9)';
-      setTimeout(() => minigameTapBtn.style.transform = 'scale(1)', 80);
-      spawnFloatText(e.clientX || (window.innerWidth / 2), e.clientY || (window.innerHeight / 2), `+1 🥁`);
+    // --- FLOATING LUCKY DROP SYSTEM (تفتوفة في الكياس / صندوق الحظ) ---
+    const luckyDropEl = document.getElementById('luckyDropEl');
+    const luckyDropIcon = document.getElementById('luckyDropIcon');
+    let luckyDropTimeout = null;
+    let nextLuckyDropAt = Date.now() + 12000; // Premier drop après 12s
+
+    function spawnLuckyDrop() {
+      if (!luckyDropEl) return;
+      const isSpeed = Math.random() < 0.35; // 35% de chance de boost vitesse
+      luckyDropEl.dataset.type = isSpeed ? 'speed' : 'cash';
+      luckyDropIcon.innerText = isSpeed ? '⚡' : '💰';
+
+      // Position aléatoire sur les 80% de l'écran
+      const maxX = window.innerWidth - 70;
+      const maxY = window.innerHeight - 150;
+      const randX = Math.max(15, Math.floor(Math.random() * maxX));
+      const randY = Math.max(120, Math.floor(Math.random() * maxY));
+
+      luckyDropEl.style.left = `${randX}px`;
+      luckyDropEl.style.top = `${randY}px`;
+      luckyDropEl.style.display = 'flex';
+
+      clearTimeout(luckyDropTimeout);
+      // Disparaît après 8 secondes si non cliqué
+      luckyDropTimeout = setTimeout(() => {
+        luckyDropEl.style.display = 'none';
+        nextLuckyDropAt = Date.now() + 25000 + Math.random() * 20000;
+      }, 8000);
+    }
+
+    luckyDropEl.onclick = (e) => {
+      luckyDropEl.style.display = 'none';
+      clearTimeout(luckyDropTimeout);
+      nextLuckyDropAt = Date.now() + 30000 + Math.random() * 25000;
+
+      const type = luckyDropEl.dataset.type;
+      const res = engine.claimLuckyDrop(type);
+
+      if (res.type === 'speed') {
+        soundEngine.playUpgrade();
+        spawnFloatText(e.clientX, e.clientY, `تيربو x2 ⚡`);
+        showRewardModalUI('⚡', 'تفتوفة تيربو سريعة !', 'سرعة الإنتاج تضاعفت x2 لمدّة 30 ثانية :', 'سرعة x2');
+      } else {
+        soundEngine.playCoin();
+        spawnFloatText(e.clientX, e.clientY, `+${formatCurrency(res.amount)}`);
+        showRewardModalUI('💰', 'تفتوفة طايحة في الكياس !', 'لقيت صرّة فلوس مريڤلة في الحومة :', `+${formatCurrency(res.amount)}`);
+      }
+      renderDOM();
     };
 
     // Formateur en dialecte et arabe tunisien (دينار, ألف دينار, مليون دينار, مليار دينار...)
@@ -828,7 +1245,7 @@
           <div class="biz-main-row">
             <div class="biz-avatar" id="avatar-${biz.id}">
               ${biz.icon}
-              <div class="biz-lvl-tag">نيفو <span class="num-ltr">${biz.level}</span></div>
+              <div class="biz-lvl-tag">مستوى <span class="num-ltr">${biz.level}</span></div>
             </div>
             <div class="biz-info">
               <div class="biz-title">
@@ -881,6 +1298,7 @@
           if (engine.buyBusiness(biz.id)) {
             soundEngine.playUpgrade();
             renderDOM();
+            updateSynergiesUI();
           } else {
             const currentCost = engine.getCost(biz);
             const manque = (currentCost - engine.dinars);
@@ -929,6 +1347,7 @@
               soundEngine.playEventFanfare();
               showRewardModalUI('👔', 'مبروك، خدّمت عامل !', `دخل للفريق : ${hired.name} (${hired.role})`, '⚡ يخدم وحدو');
               renderDOM();
+              updateSynergiesUI();
             } else if (nextMgr) {
               const manque = (nextMgr.cost - engine.dinars);
               mgrBtn.classList.add('shake-btn');
@@ -941,6 +1360,7 @@
     }
 
     renderDOM();
+    updateSynergiesUI();
 
     // Boucle de rendu fluide 60 FPS
     let lastSave = Date.now();
@@ -953,6 +1373,22 @@
       // Titre honorifique du joueur
       const titleBadge = document.getElementById('playerTitleBadge');
       if (titleBadge) titleBadge.innerText = engine.playerTitle;
+
+      // Prestige Button & Multiplier Info
+      if (prestigeInfoLabel) {
+        prestigeInfoLabel.innerText = `مضروب القوّة : x${engine.getPrestigeMultiplier().toFixed(2)} (${engine.prestigePoints} نقطة)`;
+      }
+      if (prestigeOpenBtn) {
+        const pendingPts = engine.calculatePendingPrestigePoints();
+        prestigeOpenBtn.innerText = engine.canPrestige() 
+          ? `👑 بيع واستثمر (+${pendingPts})` 
+          : `👑 بيع واستثمر (+0)`;
+      }
+
+      // Spawn conditionnel de Lucky Drop
+      if (now >= nextLuckyDropAt && luckyDropEl && luckyDropEl.style.display === 'none') {
+        spawnLuckyDrop();
+      }
 
       // Vérification des quêtes achevées
       const claimableQuests = engine.checkQuests();
@@ -970,6 +1406,7 @@
             soundEngine.playEventFanfare();
             showRewardModalUI('🏆', 'يعطيك الصحة، معلّم !', `ربحت لقب جديد : ${claimed.titleEarned}`, `+${formatCurrency(claimed.rewardDinars, 0)}`);
             renderDOM();
+            updateSynergiesUI();
           }
         };
       } else {

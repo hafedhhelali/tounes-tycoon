@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Tounes Tycoon - Core Idle Game Engine
  * © EOLabs 2026. Pur JavaScript, zéro dépendance, zéro dérive de timer.
  */
@@ -339,6 +339,63 @@ export const TUNISIAN_QUESTS = [
   }
 ];
 
+export const TUNISIAN_COMBOS = [
+  {
+    id: 'combo_street_food',
+    name: 'سلسلة الماكلة التونسية',
+    tagline: 'كسكروت عيّاري مع كعبة فريكاسي وبمبلوني، بنّة الشارع الأصيلة',
+    icon: '🥖🍩',
+    businessIds: ['kaskrout', 'fricasse'],
+    multiplier: 2.0,
+    bonusDesc: 'مداخيل الماكلة الشعبية x2'
+  },
+  {
+    id: 'combo_kahwa_salle',
+    name: 'سلطان القهاوي والقعدات',
+    tagline: 'من كابوسين الصباح لصالون الشاي والسهريات الرايقة',
+    icon: '☕🍹',
+    businessIds: ['kahwa', 'salon_de_the'],
+    multiplier: 2.5,
+    bonusDesc: 'مداخيل القهاوي x2.5'
+  },
+  {
+    id: 'combo_commerce_houma',
+    name: 'عمدة تجارة الحومة',
+    tagline: 'من عطريّة ولد الحومة للسوبيرات والمغازة الكبيرة، السلعة ما تقصّش',
+    icon: '🏪🛒🏢',
+    businessIds: ['attariya', 'superette', 'supermarche'],
+    multiplier: 3.0,
+    bonusDesc: 'مداخيل التجارة وقضية الدار x3'
+  },
+  {
+    id: 'combo_nacer_sahriya',
+    name: 'شارع النصر سهرية',
+    tagline: 'شاورما أبو علي مع قعدة رايقة في صالون الشاي، جوّ العاصمة',
+    icon: '🥘🍹',
+    businessIds: ['restaurant', 'salon_de_the'],
+    multiplier: 2.2,
+    bonusDesc: 'مداخيل المطاعم والصالونات x2.2'
+  },
+  {
+    id: 'combo_carthage_holding',
+    name: 'هولدينغ قرطاج الدولي',
+    tagline: 'العقار الفاخر مع أسطول الغزالة ووكالة الأسفار، إمبراطور تونس',
+    icon: '🏗️🛫✈️',
+    businessIds: ['promoteur_immobilier', 'tayaran_el_ghzela', 'agence_voyages'],
+    multiplier: 4.0,
+    bonusDesc: 'مداخيل الاستثمارات الكبرى x4'
+  }
+];
+
+export const PRESTIGE_RANKS = [
+  { minLevel: 0, title: 'مواطن يلوّج على مشروع', badge: 'مبتدئ' },
+  { minLevel: 1, title: 'ولد حومة مستثمر', badge: 'معلّم 1★' },
+  { minLevel: 2, title: 'رجل أعمال الحومة', badge: 'معلّم 2★' },
+  { minLevel: 3, title: 'ملياردير باب سويقة', badge: 'مستثمر 3★' },
+  { minLevel: 5, title: 'بارون التجارة والصناعة', badge: 'كابو 4★' },
+  { minLevel: 10, title: 'إمبراطور تونس الكبير', badge: 'أسطورة 5★' }
+];
+
 export class TycoonEngine {
   constructor(initialState = null) {
     this.businesses = BUSINESS_CONFIGS.map(cfg => ({
@@ -353,7 +410,9 @@ export class TycoonEngine {
     // Économie
     this.dinars = 5.0; // Don de départ (pour acheter le 1er kiosque كسكروت عيّاري à 5 DT)
     this.totalDinarsEarned = 5.0;
-    this.prestigePoints = 0; // Ma3rouf / Réputation
+    this.lifetimeDinarsEarned = 5.0; // Cumul tous prestiges confondus
+    this.prestigePoints = 0; // Ma3rouf / Réputation / Expérience
+    this.prestigeLevel = 0; // Nombre de prestiges effectués
     this.lastTimestamp = Date.now();
 
     // Statistiques pour les quêtes
@@ -368,9 +427,137 @@ export class TycoonEngine {
     // Google Ads Rewarded Boost (ex: x2 pendant 4 heures)
     this.adBoostEndsAt = 0;
 
+    // Mini boost temporaire rapide (ex: Drop تفتوفة تيربو 30s)
+    this.speedBoostEndsAt = 0;
+    this.speedBoostMultiplier = 1.0;
+
     if (initialState) {
       this.loadState(initialState);
     }
+  }
+
+  // --- SYNERGIES & COMBOS ---
+  getActiveCombos() {
+    return TUNISIAN_COMBOS.filter(combo => {
+      return combo.businessIds.every(id => {
+        const b = this.businesses.find(item => item.id === id);
+        return b && b.level > 0;
+      });
+    });
+  }
+
+  isComboActive(comboId) {
+    const combo = TUNISIAN_COMBOS.find(c => c.id === comboId);
+    if (!combo) return false;
+    return combo.businessIds.every(id => {
+      const b = this.businesses.find(item => item.id === id);
+      return b && b.level > 0;
+    });
+  }
+
+  getComboMultiplier(businessId) {
+    let mult = 1.0;
+    const active = this.getActiveCombos();
+    for (const combo of active) {
+      if (combo.businessIds.includes(businessId)) {
+        mult *= combo.multiplier;
+      }
+    }
+    return mult;
+  }
+
+  // --- PRESTIGE / ASCENSION SYSTEM (بيع واخرج مستثمر كبير) ---
+  // Seuil minimum pour faire le premier prestige : 100 000 دينار gagnés au total
+  getPrestigeThreshold() {
+    return 100000.0;
+  }
+
+  canPrestige() {
+    return this.totalDinarsEarned >= this.getPrestigeThreshold();
+  }
+
+  // Points de prestige gagnables selon la fortune accumulée dans la run
+  calculatePendingPrestigePoints() {
+    if (this.totalDinarsEarned < this.getPrestigeThreshold()) return 0;
+    // Formule classique idle tycoon : racine carrée du ratio fortune / seuil
+    const points = Math.floor(Math.sqrt(this.totalDinarsEarned / 10000));
+    return Math.max(1, points);
+  }
+
+  getPrestigeMultiplier() {
+    // 100% de base + 5% par point de Ma3rouf/Prestige
+    return 1.0 + (this.prestigePoints * 0.05);
+  }
+
+  executePrestige() {
+    if (!this.canPrestige()) return false;
+    const gainedPoints = this.calculatePendingPrestigePoints();
+    this.prestigePoints += gainedPoints;
+    this.prestigeLevel += 1;
+
+    // Reset des commerces et du cash courant
+    this.businesses.forEach(b => {
+      b.level = 0;
+      b.hiredManagersCount = 0;
+      b.hasManager = false;
+      b.progressMs = 0;
+      b.isProducing = false;
+    });
+
+    this.dinars = 5.0; // Nouveau don de démarrage
+    this.totalDinarsEarned = 5.0;
+    this.manualServesCount = 0;
+    this.activeEvent = null;
+
+    // Calcul du nouveau titre de prestige
+    this.updatePlayerPrestigeTitle();
+
+    return {
+      pointsEarned: gainedPoints,
+      totalPoints: this.prestigePoints,
+      prestigeLevel: this.prestigeLevel,
+      newMultiplier: this.getPrestigeMultiplier(),
+      title: this.playerTitle
+    };
+  }
+
+  updatePlayerPrestigeTitle() {
+    // Trouve le titre le plus élevé atteint
+    let currentRank = PRESTIGE_RANKS[0];
+    for (const rank of PRESTIGE_RANKS) {
+      if (this.prestigeLevel >= rank.minLevel) {
+        currentRank = rank;
+      }
+    }
+    this.playerTitle = currentRank.title;
+  }
+
+  // --- FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) ---
+  claimLuckyDrop(type = 'cash', now = Date.now()) {
+    if (type === 'speed') {
+      // Boost de vitesse x2 pendant 30 secondes
+      this.speedBoostEndsAt = Math.max(now, this.speedBoostEndsAt) + 30000;
+      this.speedBoostMultiplier = 2.0;
+      return { type: 'speed', durationSec: 30, multiplier: 2.0 };
+    }
+
+    // Type 'cash' : gain instantané basé sur les revenus / seconde
+    let totalPerSecond = 0;
+    for (const biz of this.businesses) {
+      if (biz.level > 0) {
+        totalPerSecond += (this.getRevenue(biz, now) / (biz.cycleDurationMs / 1000));
+      }
+    }
+    // Gain d'au moins 20 DT ou 90 secondes de production
+    const amount = Math.max(20.0, Math.floor(totalPerSecond * 90));
+    this.dinars += amount;
+    this.totalDinarsEarned += amount;
+    this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + amount;
+    return { type: 'cash', amount };
+  }
+
+  isSpeedBoostActive(now = Date.now()) {
+    return now < this.speedBoostEndsAt;
   }
 
   checkQuests() {
@@ -408,6 +595,7 @@ export class TycoonEngine {
     this.completedQuestIds.push(questId);
     this.dinars += q.rewardDinars;
     this.totalDinarsEarned += q.rewardDinars;
+    this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + q.rewardDinars;
     if (q.titleEarned) this.playerTitle = q.titleEarned;
 
     return q;
@@ -433,6 +621,8 @@ export class TycoonEngine {
     // 3 minutes (180s) de revenus cumulés, avec minimum garanti de 5 DT pour débloquer
     const cashReward = Math.max(5.0, Math.floor(totalPerSecond * 60));
     this.dinars += cashReward;
+    this.totalDinarsEarned += cashReward;
+    this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + cashReward;
     return cashReward;
   }
 
@@ -442,16 +632,21 @@ export class TycoonEngine {
 
   getRevenue(business, now = Date.now()) {
     if (business.level === 0) return 0;
-    const prestigeMultiplier = 1.0 + (this.prestigePoints * 0.05); // +5% par point de Ma3rouf
+    const prestigeMultiplier = this.getPrestigeMultiplier();
     let eventMultiplier = 1.0;
     if (this.activeEvent && this.activeEvent.event.multipliers[business.id]) {
       eventMultiplier = this.activeEvent.event.multipliers[business.id];
     }
     const adMultiplier = this.isAdBoostActive(now) ? 2.0 : 1.0;
+    // Multiplicateur de synergie / combos tunisiens
+    const comboMultiplier = this.getComboMultiplier(business.id);
+    // Multiplicateur lucky drop turbo speed
+    const luckySpeedMultiplier = this.isSpeedBoostActive(now) ? this.speedBoostMultiplier : 1.0;
+
     // Chaque recrutement au-delà du 1er gérant apporte un bonus d'encadrement (+25% par cadre additionnel)
     const extraStaff = Math.max(0, (business.hiredManagersCount || (business.hasManager ? 1 : 0)) - 1);
     const staffMultiplier = 1.0 + (extraStaff * 0.25);
-    return business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier;
+    return business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier;
   }
 
   buyBusiness(id) {
@@ -534,7 +729,7 @@ export class TycoonEngine {
         const totalMs = biz.progressMs + deltaMs;
         const cycles = Math.floor(totalMs / biz.cycleDurationMs);
         if (cycles > 0) {
-          revenueEarned += cycles * this.getRevenue(biz);
+          revenueEarned += cycles * this.getRevenue(biz, now);
           biz.progressMs = totalMs % biz.cycleDurationMs;
         } else {
           biz.progressMs = totalMs;
@@ -543,7 +738,7 @@ export class TycoonEngine {
         // Mode manuel (tap)
         biz.progressMs += deltaMs;
         if (biz.progressMs >= biz.cycleDurationMs) {
-          revenueEarned += this.getRevenue(biz);
+          revenueEarned += this.getRevenue(biz, now);
           biz.progressMs = 0;
           biz.isProducing = false;
         }
@@ -552,6 +747,7 @@ export class TycoonEngine {
 
     this.dinars += revenueEarned;
     this.totalDinarsEarned += revenueEarned;
+    this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + revenueEarned;
     return revenueEarned;
   }
 
@@ -565,13 +761,16 @@ export class TycoonEngine {
     return {
       dinars: this.dinars,
       totalDinarsEarned: this.totalDinarsEarned,
+      lifetimeDinarsEarned: this.lifetimeDinarsEarned || this.totalDinarsEarned,
       manualServesCount: this.manualServesCount,
       completedQuestIds: this.completedQuestIds,
       playerTitle: this.playerTitle,
       prestigePoints: this.prestigePoints,
+      prestigeLevel: this.prestigeLevel || 0,
       lastTimestamp: this.lastTimestamp,
       activeEvent: this.activeEvent,
       adBoostEndsAt: this.adBoostEndsAt,
+      speedBoostEndsAt: this.speedBoostEndsAt || 0,
       businesses: this.businesses.map(b => ({
         id: b.id,
         level: b.level,
@@ -587,13 +786,16 @@ export class TycoonEngine {
     if (!state) return;
     this.dinars = state.dinars ?? this.dinars;
     this.totalDinarsEarned = state.totalDinarsEarned ?? this.totalDinarsEarned;
+    this.lifetimeDinarsEarned = state.lifetimeDinarsEarned ?? this.totalDinarsEarned;
     this.manualServesCount = state.manualServesCount ?? 0;
     this.completedQuestIds = Array.isArray(state.completedQuestIds) ? state.completedQuestIds : [];
     this.playerTitle = state.playerTitle ?? this.playerTitle;
     this.prestigePoints = state.prestigePoints ?? 0;
+    this.prestigeLevel = state.prestigeLevel ?? 0;
     this.lastTimestamp = state.lastTimestamp ?? Date.now();
     this.activeEvent = state.activeEvent ?? null;
     this.adBoostEndsAt = state.adBoostEndsAt ?? 0;
+    this.speedBoostEndsAt = state.speedBoostEndsAt ?? 0;
 
     if (Array.isArray(state.businesses)) {
       for (const saved of state.businesses) {
