@@ -3,7 +3,7 @@ MAJ: 2026-10-19 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
 Idle tycoon tunisien (Capacitor/Android, JS vanilla). 17 commerces progressifs, recrutement multi-gérants, événements, quêtes, pubs AdMob (stub), musique de fond procédurale simple.
-Équilibrage calibré (progression longue et stimulante étalée sur plusieurs jours, gains AdMob et mini-jeu normalisés). Textes Derja 100% authentiques réécrits (street tunisien populaire et naturel, suppression du style scolaire).
+Identité visuelle complète (icônes HD générées : disque blanc, croissant carmin, étoile dorée et pièce DT 3D pour tous les formats mipmap Android et favicon). Noms de commerces authentiques et isolation bidi des chiffres/textes arabes.
 Tests: `npm test` = 7/7. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE
@@ -22,7 +22,7 @@ Tests: `npm test` = 7/7. CI GitHub Actions génère l'APK à chaque push.
 | `.github/workflows/build-apk.yml` | CI build APK. |
 
 ## Commerces (ordre = progression)
-kaskrout, fricasse, kahwa, attariya, patisserie, taxi_collectif, superette, supermarche, salon_de_the, restaurant, agence_voyages (Ella9la9), hotel, centre_commercial, usine_conserves, showroom_auto, promoteur_immobilier, tayaran_el_ghzela.
+kaskrout (نصبة كسكروت عياري), fricasse, kahwa, attariya, patisserie, taxi_collectif, superette (سوبيرات الحومة), supermarche (المغازة العامّة), salon_de_the (صالون شاي البحيرة), restaurant (مطعم ابو علي الشامي), agence_voyages (وكالة اسفار اللقلق), hotel, centre_commercial, usine_conserves, showroom_auto, promoteur_immobilier (الشركة العقارية اللجّ الازرق), tayaran_el_ghzela (شركة طيران الغزالة).
 Événements: chheli, derby, aaras, embouteillage. Chaque commerce: `managers[]` (plusieurs recrues, coût croissant), `getNextManager`, multiplicateur staff.
 
 ## Workflow livraison (obligatoire, automatique)

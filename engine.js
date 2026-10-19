@@ -6,7 +6,7 @@
 export const BUSINESS_CONFIGS = [
   {
     id: 'kaskrout',
-    name: 'كشك كسكروت عيّاري',
+    name: 'نصبة كسكروت عياري',
     tagline: 'سخون يحرق بالزيت والهريسة العربي، كول وتفرهد !',
     icon: '🥖',
     baseCost: 5.0, // Don de départ 5 DT permet l'achat immédiat
@@ -86,7 +86,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'superette',
-    name: 'سوبيرات الحومة المليانة',
+    name: 'سوبيرات الحومة',
     tagline: 'كليماتيزور بارد وشاريوات تجري وقضية سريعة',
     icon: '🛒',
     baseCost: 150000.0,
@@ -100,7 +100,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'supermarche',
-    name: 'مغازة ومارشي كبير',
+    name: 'المغازة العامّة',
     tagline: 'بروموسيونات وقضية الشهر بالكردونة، العز والحطة',
     icon: '🏢',
     baseCost: 900000.0,
@@ -114,7 +114,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'salon_de_the',
-    name: 'صالون تاي وقهوة في البحيرة',
+    name: 'صالون شاي البحيرة',
     tagline: 'موخيتو منعنع ودلال على البحر وقعدة رجال أعمال',
     icon: '🍹',
     baseCost: 5500000.0,
@@ -128,8 +128,8 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'restaurant',
-    name: 'مطعم دريدكة ومشوي ع الفحم',
-    tagline: 'كسكسي بالحوت وسلاطة مشوية، بنّة دياري تشيّخ',
+    name: 'مطعم ابو علي الشامي',
+    tagline: 'شاورما على أصولها ومشوي ومقبلات شامية، على كيف كيفك !',
     icon: '🥘',
     baseCost: 32000000.0,
     baseRevenue: 220000.0,
@@ -142,7 +142,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'agence_voyages',
-    name: 'وكالة أسفار اللقلاق (Ella9la9)',
+    name: 'وكالة اسفار اللقلق',
     tagline: 'فويّاجات وعمرات وتيكيات طيارة، حوّس وتفرّه في العالم',
     icon: '✈️',
     baseCost: 180000000.0,
@@ -215,7 +215,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'promoteur_immobilier',
-    name: 'شركة الترقية العقارية والبني',
+    name: 'الشركة العقارية اللجّ الازرق',
     tagline: 'عمارات وفيلات فاخرة في قمرت والحمامات، والتراب يجيب الذهب',
     icon: '🏗️',
     baseCost: 550000000000.0,
@@ -230,7 +230,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'tayaran_el_ghzela',
-    name: 'أسطول طيران الغزالة (Tayaran El Ghzéla)',
+    name: 'شركة طيران الغزالة',
     tagline: 'طيارات تجوب السماء وعلم تونس يرفرف فوق السحاب، قمّة المجد !',
     icon: '🛫',
     baseCost: 2800000000000.0,

@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- feat(branding,ui): add custom HD app icons, update business names & fix bidi numbers
 - feat(balance,derja): recalibrate economic curve & overhaul authentic street Derja
 - docs(agents): permanent autonomy rule
 - feat(businesses): add promoteur immobilier before Tayaran El Ghzela

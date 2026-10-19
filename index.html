@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Tounes Tycoon (تونسي وراسي عالي)</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -243,6 +245,19 @@
       align-items: center;
       gap: 4px;
       direction: rtl;
+    }
+
+    
+    /* ISOLATION BIDI POUR AFFICHAGE PROPRE CHIFFRES ET TEXTES ARABES */
+    .num-ltr {
+      display: inline-block;
+      direction: ltr;
+      unicode-bidi: isolate;
+    }
+    .balance-val, .biz-lvl-tag, .biz-income, .modal-reward-badge {
+      direction: ltr;
+      unicode-bidi: isolate;
+      text-align: center;
     }
 
     /* BARRE DE PROGRESSION JAUGE & EFFET SHIMMER */
@@ -534,7 +549,7 @@
           <div class="ad-btn-sub" id="cashRewardHint">تفرّج في فيديو (+30 د.ت)</div>
         </button>
         <button class="ad-card-btn ad-btn-boost" id="adBoostBtn">
-          <div class="ad-btn-title">🚀 تيربو x2 (4 سوايع)</div>
+          <div class="ad-btn-title">🚀 تيربو x2 (<span class="num-ltr">4</span> سوايع)</div>
           <div class="ad-btn-sub" id="adBoostStatus">طافي</div>
         </button>
       </div>
@@ -577,7 +592,7 @@
       <div class="modal-title" id="minigameTitle">🔥 جوّ الحومة شاعل !</div>
       <div class="modal-subtitle" style="font-size: 13px; color: #fecaca;">خبّط في الدربوكة قدّ ما تنجّم في 10 ثواني !</div>
       <div style="display: flex; justify-content: space-between; width: 100%; font-weight: 800; font-size: 14px; margin-top: 4px;">
-        <span style="color: #fbbf24;" id="minigameCountdown">الوقت مازال : 10s</span>
+        <span style="color: #fbbf24;" id="minigameCountdown">الوقت مازال : <span class="num-ltr">10s</span></span>
         <span style="color: #38bdf8;" id="minigameScore">الضربات : 0</span>
       </div>
       <button id="minigameTapBtn" style="width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, #ef4444 0%, #991b1b 100%); border: 4px solid #fecaca; color: white; font-size: 40px; cursor: pointer; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); display: flex; align-items: center; justify-content: center; margin: 10px 0; transition: transform 0.08s;">
@@ -692,12 +707,12 @@
 
     // Formateur compact de grands nombres (K, M, B, T, Qa...)
     function formatCurrency(num, decimals = 2) {
-      if (num === null || num === undefined || isNaN(num)) return "0.00 د.ت";
-      if (num < 1000) return `${num.toFixed(decimals)} د.ت`;
+      if (num === null || num === undefined || isNaN(num)) return '<span class="num-ltr">0.00</span> د.ت';
+      if (num < 1000) return `<span class="num-ltr">${num.toFixed(decimals)}</span> د.ت`;
       const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi"];
       const i = Math.floor(Math.log10(num) / 3);
       const formatted = (num / Math.pow(10, i * 3)).toFixed(decimals);
-      return `${formatted}${suffixes[i] || ''} د.ت`;
+      return `<span class="num-ltr">${formatted}${suffixes[i] || ''}</span> د.ت`;
     }
 
     // Particules volantes au tap (+X د.ت)
@@ -789,7 +804,7 @@
           <div class="biz-main-row">
             <div class="biz-avatar" id="avatar-${biz.id}">
               ${biz.icon}
-              <div class="biz-lvl-tag">نيفو ${biz.level}</div>
+              <div class="biz-lvl-tag">نيفو <span class="num-ltr">${biz.level}</span></div>
             </div>
             <div class="biz-info">
               <div class="biz-title">
@@ -797,7 +812,7 @@
               </div>
               <div class="biz-ar">${biz.tagline}</div>
               <div class="biz-income">
-                ${rev > 0 ? '+' + formatCurrency(rev) : '0.00 د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ ${(biz.cycleDurationMs/1000).toFixed(1)} ثانية</span>
+                ${rev > 0 ? '+' + formatCurrency(rev) : '0.00 د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ <span class="num-ltr">${(biz.cycleDurationMs/1000).toFixed(1)}</span> ثانية</span>
               </div>
             </div>
           </div>
@@ -826,7 +841,7 @@
               } else {
                 return `
                   <div style="grid-column: span 2; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 6px; text-align: center; font-size: 11px; font-weight: 800; color: #34d399;">
-                    👔 الفريق كامل (${total}/${total}) • يخدمو وحدهم +${(total - 1) * 25}%
+                    👔 الفريق كامل <span class="num-ltr">(${total}/${total})</span> • يخدمو وحدهم <span class="num-ltr">+${(total - 1) * 25}%</span>
                   </div>
                 `;
               }
@@ -909,7 +924,7 @@
       const now = Date.now();
       engine.update(now);
 
-      dinarsDisplay.innerText = formatCurrency(engine.dinars);
+      dinarsDisplay.innerHTML = formatCurrency(engine.dinars);
 
       // Titre honorifique du joueur
       const titleBadge = document.getElementById('playerTitleBadge');
@@ -941,13 +956,13 @@
       let currentRate = 0;
       engine.businesses.forEach(b => { if (b.level > 0) currentRate += (engine.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
       const potentialCash = Math.max(5.0, Math.floor(currentRate * 180));
-      cashRewardHint.innerText = `+${formatCurrency(potentialCash, 0)} توّا`;
+      cashRewardHint.innerHTML = `+${formatCurrency(potentialCash, 0)} توّا`;
 
       // Statut Boost 2x AdMob
       if (engine.isAdBoostActive(now)) {
         const remainingHours = Math.floor((engine.adBoostEndsAt - now) / 3600000);
         const remainingMins = Math.floor(((engine.adBoostEndsAt - now) % 3600000) / 60000);
-        adBoostStatus.innerText = `شاعل (${remainingHours}س ${remainingMins}د)`;
+        adBoostStatus.innerHTML = `شاعل (<span class="num-ltr">${remainingHours}</span>س <span class="num-ltr">${remainingMins}</span>د)`;
       } else {
         adBoostStatus.innerText = 'طافي (انزل واخدم 4h)';
       }
@@ -959,7 +974,7 @@
         document.getElementById('eventTitle').innerText = engine.activeEvent.event.title;
         document.getElementById('eventDesc').innerText = engine.activeEvent.event.description;
         const remainingSec = Math.max(0, Math.ceil((engine.activeEvent.endsAt - now) / 1000));
-        document.getElementById('eventTimer').innerText = `مازال على الفزعة : ${remainingSec} ثانية`;
+        document.getElementById('eventTimer').innerHTML = `مازال على الفزعة : <span class="num-ltr">${remainingSec}</span> ثانية`;
       } else {
         eventBanner.style.display = 'none';
       }
