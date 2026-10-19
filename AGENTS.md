@@ -28,3 +28,6 @@
 
 
 - Mode GitHub-only: commiter via API GitHub, inclure HANDOFF.md + CHANGELOG.md dans le même commit; la CI `docs-guard` + `build-apk` valide.
+
+## 4. AUTONOMIE
+- Autorisation PERMANENTE de modifier code/textes/docs, commiter et pousser sans demander. Ne pas poser de questions de confirmation. Stop uniquement si action destructive/irréversible ou demande réellement ambiguë.
