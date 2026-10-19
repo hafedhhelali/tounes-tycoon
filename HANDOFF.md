@@ -2,7 +2,7 @@
 MAJ: 2026-10-19 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Idle tycoon tunisien (Capacitor/Android, JS vanilla). 16 commerces progressifs, recrutement multi-gérants, événements, quêtes, pubs AdMob (stub), musique de fond procédurale simple.
+Idle tycoon tunisien (Capacitor/Android, JS vanilla). 17 commerces progressifs, recrutement multi-gérants, événements, quêtes, pubs AdMob (stub), musique de fond procédurale simple.
 UI/UX polie (palette or/émeraude/carmin). Textes derja réécrits en 3 passes — **le client juge encore beaucoup de textes non-tunisiens** → itérer avec ses exemples.
 Tests: `npm test` = 7/7. APK non reconstruit depuis ces changements.
 
@@ -13,7 +13,7 @@ Tests: `npm test` = 7/7. APK non reconstruit depuis ces changements.
 ## Fichiers
 | Fichier | Rôle |
 |---|---|
-| `engine.js` | Core: `TycoonEngine`, `BUSINESS_CONFIGS` (16), événements, quêtes. Pas d'UI. |
+| `engine.js` | Core: `TycoonEngine`, `BUSINESS_CONFIGS` (17), événements, quêtes. Pas d'UI. |
 | `index.html` | UI + CSS inline + câblage (tick rAF, save localStorage `tounes_tycoon_save`, modales, mini-jeu). |
 | `audio.js` | `SoundEngine`: SFX + `startBGM/stopBGM` (arpège Am-F-C-G, basse, sans percussion). |
 | `ads_service.js` | `AdPolicy`/`AdsService` (AdMob rewarded: solde gratuit, boost x2 4h). Stub web. |
@@ -22,7 +22,7 @@ Tests: `npm test` = 7/7. APK non reconstruit depuis ces changements.
 | `.github/workflows/build-apk.yml` | CI build APK. |
 
 ## Commerces (ordre = progression)
-kaskrout, fricasse, kahwa, attariya, patisserie, taxi_collectif, superette, supermarche, salon_de_the, restaurant, agence_voyages (Ella9la9), hotel, centre_commercial, usine_conserves, showroom_auto, tayaran_el_ghzela.
+kaskrout, fricasse, kahwa, attariya, patisserie, taxi_collectif, superette, supermarche, salon_de_the, restaurant, agence_voyages (Ella9la9), hotel, centre_commercial, usine_conserves, showroom_auto, promoteur_immobilier, tayaran_el_ghzela.
 Événements: chheli, derby, aaras, embouteillage. Chaque commerce: `managers[]` (plusieurs recrues, coût croissant), `getNextManager`, multiplicateur staff.
 
 ## Workflow livraison (obligatoire, automatique)

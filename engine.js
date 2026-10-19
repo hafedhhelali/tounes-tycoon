@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tounes Tycoon - Core Idle Game Engine
  * © EOLabs 2026. Pur JavaScript, zéro dépendance, zéro dérive de timer.
  */
@@ -211,6 +211,21 @@ export const BUSINESS_CONFIGS = [
       { name: 'ياسين كوميرسيال', role: 'كابو البيع والـVIP', avatar: '🏎️', cost: 600000000.0 },
       { name: 'مدام مريم الوكيل', role: 'شوافة الماركات', avatar: '💎', cost: 1500000000.0 },
       { name: 'سي طارق قطوس', role: 'الباترون الكبير', avatar: '👑', cost: 3000000000.0 }
+    ],
+  },
+  {
+    id: 'promoteur_immobilier',
+    name: 'شركة تطوير عقاري (Promoteur Immobilier)',
+    tagline: 'فيلات، رزيدونسات وكراء على الكريدي، والأرض تذهّب',
+    icon: '🏗️',
+    baseCost: 1600000000.0,
+    baseRevenue: 90000000.0,
+    costMultiplier: 1.15,
+    cycleDurationMs: 360000, // 360.0s (6min)
+    managers: [
+      { name: 'سي لطفي المهندس', role: 'كابو الشانطي', avatar: '👷', cost: 1200000000.0 },
+      { name: 'مدام وفاء السمسارة', role: 'شوافة العقارات والكراء', avatar: '🏘️', cost: 3000000000.0 },
+      { name: 'الحاج بوبكر', role: 'الباترون الكبير', avatar: '🏢', cost: 6000000000.0 }
     ],
   },
   {

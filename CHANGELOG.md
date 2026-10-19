@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- feat(businesses): add promoteur immobilier before Tayaran El Ghzela
 - ci(docs): docs-guard workflow + GitHub-only mode documented
 - chore(docs): changelog cleanup
 - chore(docs): dedupe changelog

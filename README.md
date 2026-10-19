@@ -1,5 +1,5 @@
-# Tounes Tycoon
-Idle tycoon tunisien : de kiosque à casse-croûte jusqu'à la compagnie aérienne *Tayaran El Ghzela*. 16 commerces, gérants à recruter, événements (chhili, derby, mariages, embouteillage), quêtes, pubs récompensées, musique d'ambiance.
+﻿# Tounes Tycoon
+Idle tycoon tunisien : de kiosque à casse-croûte jusqu'à la compagnie aérienne *Tayaran El Ghzela*. 17 commerces, gérants à recruter, événements (chhili, derby, mariages, embouteillage), quêtes, pubs récompensées, musique d'ambiance.
 
 Stack : JS vanilla (ES modules) + Capacitor Android. Textes en derja tunisienne.
 
