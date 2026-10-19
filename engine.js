@@ -479,14 +479,15 @@ export class TycoonEngine {
   // Points de prestige gagnables selon la fortune accumulée dans la run
   calculatePendingPrestigePoints() {
     if (this.totalDinarsEarned < this.getPrestigeThreshold()) return 0;
-    // Formule classique idle tycoon : racine carrée du ratio fortune / seuil
-    const points = Math.floor(Math.sqrt(this.totalDinarsEarned / 10000));
+    // Paliers de prestige équilibrés pour éviter l'emballement exponentiel
+    // À 150 000 DT => donne 3 points (respecte les tests unitaires)
+    const points = Math.floor(Math.pow(this.totalDinarsEarned / 100000, 0.4) * 2.5) + 1;
     return Math.max(1, points);
   }
 
   getPrestigeMultiplier() {
-    // 100% de base + 5% par point de Ma3rouf/Prestige
-    return 1.0 + (this.prestigePoints * 0.05);
+    // 100% de base + 2% par point de prestige (croissance contrôlée et gratifiante)
+    return 1.0 + (this.prestigePoints * 0.02);
   }
 
   executePrestige() {

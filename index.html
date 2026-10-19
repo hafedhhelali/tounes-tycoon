@@ -1106,11 +1106,12 @@
       luckyDropEl.dataset.type = isSpeed ? 'speed' : 'cash';
       luckyDropIcon.innerText = isSpeed ? '⚡' : '💰';
 
-      // Position aléatoire sur les 80% de l'écran
-      const maxX = window.innerWidth - 70;
-      const maxY = window.innerHeight - 150;
+      // Position aléatoire sécurisée au niveau de la liste des commerces (sans masquer le header/bannières)
+      const maxX = Math.max(20, window.innerWidth - 80);
+      const minY = 260;
+      const maxY = Math.max(minY + 50, window.innerHeight - 160);
       const randX = Math.max(15, Math.floor(Math.random() * maxX));
-      const randY = Math.max(120, Math.floor(Math.random() * maxY));
+      const randY = Math.floor(minY + Math.random() * (maxY - minY));
 
       luckyDropEl.style.left = `${randX}px`;
       luckyDropEl.style.top = `${randY}px`;
@@ -1172,7 +1173,7 @@
     let toastTimeout = null;
     function triggerBalanceAlert(msg = 'الكاسة فارغة ! سربّي بيديك ولا دبّر تفتوفة 💰') {
       soundEngine.playBuzzer();
-      toastMsg.innerText = msg;
+      toastMsg.innerHTML = msg;
       errorToast.classList.add('show');
 
       // Effet Shake sur le solde
