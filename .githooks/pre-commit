@@ -1,0 +1,7 @@
+#!/bin/sh
+# Bloque le commit si du code change sans MAJ de HANDOFF.md et CHANGELOG.md.
+staged=$(git diff --cached --name-only)
+echo "$staged" | grep -Eq '^(engine|audio|ads_service)\.js$|^index\.html$' || exit 0
+for f in HANDOFF.md CHANGELOG.md; do
+  echo "$staged" | grep -qx "$f" || { echo "BLOQUÉ: $f non mis à jour. Utiliser scripts/ship.ps1 ou éditer $f."; exit 1; }
+done

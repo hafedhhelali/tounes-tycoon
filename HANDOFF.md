@@ -1,5 +1,5 @@
-# HANDOFF — Tounes Tycoon
-MAJ: 2026-10-19 · dernier commit poussé: `be8a9b6` (main = origin/main)
+﻿# HANDOFF — Tounes Tycoon
+MAJ: 2026-10-19 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
 Idle tycoon tunisien (Capacitor/Android, JS vanilla). 16 commerces progressifs, recrutement multi-gérants, événements, quêtes, pubs AdMob (stub), musique de fond procédurale simple.
@@ -25,15 +25,9 @@ Tests: `npm test` = 7/7. APK non reconstruit depuis ces changements.
 kaskrout, fricasse, kahwa, attariya, patisserie, taxi_collectif, superette, supermarche, salon_de_the, restaurant, agence_voyages (Ella9la9), hotel, centre_commercial, usine_conserves, showroom_auto, tayaran_el_ghzela.
 Événements: chheli, derby, aaras, embouteillage. Chaque commerce: `managers[]` (plusieurs recrues, coût croissant), `getNextManager`, multiplicateur staff.
 
-## Workflow livraison (obligatoire)
-```
-npm test                      # 7/7 requis
-Copy-Item index.html,engine.js,audio.js,ads_service.js www -Force
-git add -A; git commit -m "<type>(<scope>): <msg>"; git push origin HEAD
-git status -sb ; git log -n1   # VÉRIFIER le push (sortie vide ≠ succès)
-npx cap sync android          # + build APK si demandé
-```
-`scripts/ship.sh` n'existe PAS dans ce repo (il est dans tunisie-quiz).
+## Workflow livraison (obligatoire, automatique)
+```n.\scripts\ship.ps1 "<type>(<scope>): <msg>"   # test, sync www, MAJ HANDOFF/CHANGELOG, commit, push, vérif
+```nHook `.githooks/pre-commit` (`git config core.hooksPath .githooks`) bloque un commit de code sans HANDOFF.md + CHANGELOG.md. Toute tâche = MD à jour AVANT livraison, sans qu'on le demande. APK: `npx cap sync android` + build à part.
 
 ## Règles (cf. AGENTS.md)
 Style télégraphique; diffs minimaux; copyright `© EOLabs 2026 beta`; APK versionné `<base>.<run>-beta`, un seul APK dans `dist/`.

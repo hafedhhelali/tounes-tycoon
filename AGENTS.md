@@ -19,3 +19,10 @@
 - IntÃ©gritÃ© & Ã‰conomie :
   - Formules exponentielles calibrÃ©es pour Ã©viter l'overflow (`BigInt` ou formatage compact `K`, `M`, `B`, `T`, `DT`).
   - RNG dÃ©terministe avec seed pour les Ã©vÃ©nements quotidiens.
+
+## 3. DOCS AUTO (OBLIGATOIRE, SANS DEMANDE)
+- Tout changement de code/texte/UI => MAJ immédiate de HANDOFF.md (état, TODO, pièges), CHANGELOG.md, et ARCH.md/README.md si impact.
+- Livrer UNIQUEMENT via `scripts/ship.ps1 "<type>(<scope>): <msg>"` (test, sync www, MD auto, commit, push, vérif).
+- Hook `.githooks/pre-commit` bloque tout commit de code sans HANDOFF.md+CHANGELOG.md. Activer: `git config core.hooksPath .githooks`.
+- Fin de tâche: HANDOFF.md doit permettre une reprise par un autre agent/modèle sans contexte. Ne jamais annoncer "poussé" sans preuve `git status -sb`.
+
