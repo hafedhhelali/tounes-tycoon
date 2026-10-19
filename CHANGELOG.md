@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- fix(ui): arabic currency format (ألف دينار, مليون دينار), 4 سوايع, العب و لمّ بزايد فلوس
 - fix(ui): balance button bidi numbers, remove paren spaces, compact event button
 - fix(ui): balance button bidi numbers, remove paren spaces, compact event button
 - fix(android): remove hyphenated ic_launcher-playstore from res folder
