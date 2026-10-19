@@ -94,7 +94,7 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.12,
     cycleDurationMs: 30000, // 30.0s
     managers: [
-      { name: 'منير الكيسييه', role: 'مسؤول الكاسة', avatar: '💳', cost: 40000.0 },
+      { name: 'منير الكاشير', role: 'كاشير', avatar: '💳', cost: 40000.0 },
       { name: 'سي رضا', role: 'كابو الرّفوف والتوريد', avatar: '👔', cost: 100000.0 }
     ],
   },
@@ -108,13 +108,13 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.13,
     cycleDurationMs: 45000, // 45.0s
     managers: [
-      { name: 'طارق ريسبونسابل', role: 'رئيس قسم المبيعات', avatar: '📋', cost: 150000.0 },
-      { name: 'كريم الشريف', role: 'مدير الخدمة واللوجستيك', avatar: '💼', cost: 400000.0 }
+      { name: 'طارق الشاف', role: 'كابو البيع', avatar: '📋', cost: 150000.0 },
+      { name: 'كريم الشريف', role: 'معلّم الليفريزون', avatar: '💼', cost: 400000.0 }
     ],
   },
   {
     id: 'salon_de_the',
-    name: 'سالون دو ثي في اللاك',
+    name: 'صالون تاي البحيرة',
     tagline: 'موكا، موخيتو، كليماتيزور ودلال VIP',
     icon: '🍹',
     baseCost: 600000.0,
@@ -150,8 +150,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 105000, // 105.0s
     managers: [
-      { name: 'أنيس البييتري', role: 'مسؤول الحجز والتيكيات', avatar: '🎫', cost: 4500000.0 },
-      { name: 'سي منير اللقلاق', role: 'صاحب الوكالة', avatar: '🧳', cost: 12000000.0 }
+      { name: 'أنيس التيكي', role: 'شاف التيكيات', avatar: '🎫', cost: 4500000.0 },
+      { name: 'سي منير اللقلاق', role: 'الباترون', avatar: '🧳', cost: 12000000.0 }
     ],
   },
   {
@@ -164,8 +164,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 120000, // 120.0s
     managers: [
-      { name: 'مدام سيرين', role: 'مسؤولة الاستقبال', avatar: '👩‍💼', cost: 10000000.0 },
-      { name: 'ميسيو برهان', role: 'المدير العام', avatar: '🎩', cost: 30000000.0 }
+      { name: 'مدام سيرين', role: 'شوافة الاستقبال', avatar: '👩‍💼', cost: 10000000.0 },
+      { name: 'ميسيو برهان', role: 'الباترون', avatar: '🎩', cost: 30000000.0 }
     ],
   },
   {
@@ -178,9 +178,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 180000, // 180.0s
     managers: [
-      { name: 'المهندس مراد', role: 'مسؤول الصيانة', avatar: '👷', cost: 35000000.0 },
-      { name: 'مدام نادية', role: 'مسؤولة المحلات', avatar: '👠', cost: 70000000.0 },
-      { name: 'سي خليل بن عمار', role: 'الرئيس المدير العام', avatar: '👑', cost: 120000000.0 }
+      { name: 'المهندس مراد', role: 'معلّم الصيانة', avatar: '👷', cost: 35000000.0 },
+      { name: 'مدام نادية', role: 'شوافة المحلات', avatar: '👠', cost: 70000000.0 },
+      { name: 'سي خليل بن عمار', role: 'الباترون الكبير', avatar: '👑', cost: 120000000.0 }
     ],
   },
   {
@@ -193,8 +193,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 240000, // 240.0s
     managers: [
-      { name: 'المهندس حمادي', role: 'مسؤول التعليب', avatar: '🏭', cost: 150000000.0 },
-      { name: 'سي عبد السلام', role: 'مسؤول التصدير', avatar: '🚢', cost: 350000000.0 },
+      { name: 'المهندس حمادي', role: 'كابو التعليب', avatar: '🏭', cost: 150000000.0 },
+      { name: 'سي عبد السلام', role: 'كابو التصدير', avatar: '🚢', cost: 350000000.0 },
       { name: 'الحاج بلقاسم', role: 'كبير المعمل', avatar: '💼', cost: 600000000.0 }
     ],
   },
@@ -208,15 +208,15 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 300000, // 300.0s (5min)
     managers: [
-      { name: 'ياسين كوميرسيال', role: 'مسؤول البيع والـ VIP', avatar: '🏎️', cost: 600000000.0 },
-      { name: 'مدام مريم الوكيل', role: 'مسؤولة الماركات', avatar: '💎', cost: 1500000000.0 },
-      { name: 'السيّد طارق قطوس', role: 'رئيس المجمّع', avatar: '👑', cost: 3000000000.0 }
+      { name: 'ياسين كوميرسيال', role: 'كابو البيع والـVIP', avatar: '🏎️', cost: 600000000.0 },
+      { name: 'مدام مريم الوكيل', role: 'شوافة الماركات', avatar: '💎', cost: 1500000000.0 },
+      { name: 'سي طارق قطوس', role: 'الباترون الكبير', avatar: '👑', cost: 3000000000.0 }
     ],
   },
   {
     id: 'tayaran_el_ghzela',
     name: 'شركة طيران الغزالة (Tayaran El Ghzéla)',
-    tagline: 'أسطول طيارات، خطوط دولية وعلم تونس يرفرف في الدنيا',
+    tagline: 'طيّارات برشا، وعلم تونس يرفرف في الدنيا',
     icon: '🛫',
     baseCost: 3500000000.0,
     baseRevenue: 190000000.0,
@@ -224,8 +224,8 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 420000, // 420.0s (7min)
     managers: [
       { name: 'الكابتن رمزي', role: 'كبير الطيارين', avatar: '👨‍✈️', cost: 2500000000.0 },
-      { name: 'مدام سهام', role: 'مسؤولة الخدمات الأرضية', avatar: '👩‍✈️', cost: 6000000000.0 },
-      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام', avatar: '🦅', cost: 15000000000.0 }
+      { name: 'مدام سهام', role: 'شوافة المطار', avatar: '👩‍✈️', cost: 6000000000.0 },
+      { name: 'سي المنصف البكوش', role: 'الباترون الكبير', avatar: '🦅', cost: 15000000000.0 }
     ],
   }
 ];
@@ -234,7 +234,7 @@ export const TUNISIAN_EVENTS = [
   {
     id: 'chheli',
     title: '☀️ شهيلي يكوّي 48°C !',
-    description: 'القهاوي وسالونات الشاي تتعبّى بالمشروبات الباردة والماء المثلّج.',
+    description: 'القهاوي تتعبّى والمشروب البارد يطير !',
     durationMs: 30000,
     multipliers: { kahwa: 2.0, salon_de_the: 2.5 }
   },

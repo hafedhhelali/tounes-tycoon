@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Tounes Tycoon (تونسي و راسي عالي)</title>
+  <title>Tounes Tycoon (تونسي وراسي عالي)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -575,7 +575,7 @@
     <div class="modal-card" style="border-color: #ef4444;">
       <div class="modal-icon-glow" style="font-size: 48px;">🥁</div>
       <div class="modal-title" id="minigameTitle">🔥 جوّ الحومة سخون !</div>
-      <div class="modal-subtitle" style="font-size: 13px; color: #fecaca;">اضرب بالقوة وعاون الحومة قدّ ما تنجّم في 10 ثواني !</div>
+      <div class="modal-subtitle" style="font-size: 13px; color: #fecaca;">دقّ بالقدّ في 10 ثواني !</div>
       <div style="display: flex; justify-content: space-between; width: 100%; font-weight: 800; font-size: 14px; margin-top: 4px;">
         <span style="color: #fbbf24;" id="minigameCountdown">الوقت : 10s</span>
         <span style="color: #38bdf8;" id="minigameScore">النقاط : 0</span>
@@ -758,7 +758,7 @@
       await adsService.showRewardedBoost();
       const reward = engine.claimAdCashReward();
       soundEngine.playEventFanfare();
-      showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش', 'الكاسة تعمّرت من عند المستشهر :', `+${reward.toFixed(2)} د.ت`);
+      showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش', 'الكاسة تعمّرت من عند الإشهار :', `+${reward.toFixed(2)} د.ت`);
       renderDOM();
     };
 
@@ -767,7 +767,7 @@
       await adsService.showRewardedBoost();
       engine.addAdBoost(4 * 3600 * 1000);
       soundEngine.playEventFanfare();
-      showRewardModalUI('🚀', 'التيربو مشعول x2 !', 'المدخول مضاعف 4 سوايع كاملين', 'سرعة x2');
+      showRewardModalUI('🚀', 'التيربو مشعول x2 !', 'الربح مضاعف 4 سوايع كاملين', 'سرعة x2');
       renderDOM();
     };
 
@@ -826,7 +826,7 @@
               } else {
                 return `
                   <div style="grid-column: span 2; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 6px; text-align: center; font-size: 11px; font-weight: 800; color: #34d399;">
-                    👔 الفريق كامل (${total}/${total}) • خدمة أوتوماتيك +${(total - 1) * 25}%
+                    👔 الفريق كامل (${total}/${total}) • يخدمو وحدهم +${(total - 1) * 25}%
                   </div>
                 `;
               }
@@ -888,13 +888,13 @@
             const hired = engine.hireManager(biz.id);
             if (hired) {
               soundEngine.playEventFanfare();
-              showRewardModalUI('👔', 'مبروك التخدام !', `دخل للفريق : ${hired.name} (${hired.role})`, '⚡ خدمة أوتوماتيك');
+              showRewardModalUI('👔', 'مبروك، خدّمت عامل !', `دخل للفريق : ${hired.name} (${hired.role})`, '⚡ يخدم وحدو');
               renderDOM();
             } else if (nextMgr) {
               const manque = (nextMgr.cost - engine.dinars);
               mgrBtn.classList.add('shake-btn');
               setTimeout(() => mgrBtn.classList.remove('shake-btn'), 420);
-              triggerBalanceAlert(`ناقصك باش تخدّم ${formatCurrency(manque)} ! 👔`);
+              triggerBalanceAlert(`ناقصك باش تخدّمو ${formatCurrency(manque)} ! 👔`);
             }
           };
         }
