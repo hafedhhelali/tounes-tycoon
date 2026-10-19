@@ -1,8 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- chore(docs): changelog cleanup
 - chore(docs): dedupe changelog
-- docs(process): auto-update MD via ship.ps1 + pre-commit hook
 - docs(process): auto-update MD via ship.ps1 + pre-commit hook
 - `be8a9b6` derja: réécriture (MSA → tunisien): rôles, noms, enseignes, messages.
 - `0ddaa65` derja: rôles de gérants, événements, quêtes.
