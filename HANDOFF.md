@@ -3,7 +3,7 @@ MAJ: 2026-10-19 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
 Idle tycoon tunisien (Capacitor/Android, JS vanilla). 17 commerces progressifs, recrutement multi-gérants, événements, quêtes, pubs AdMob (stub), musique de fond procédurale simple.
-Identité visuelle complète (icônes HD générées : disque blanc, croissant carmin, étoile dorée et pièce DT 3D pour tous les formats mipmap Android et favicon). Noms de commerces authentiques et isolation bidi des chiffres/textes arabes.
+Identité visuelle complète (icônes HD générées). Résolution des anomalies de boutons : ordre montant/monnaie arabe corrigé (ex: 113.60B د.ت), espaces parenthèses supprimés, bouton rouge d'événement redimensionné et proportionné.
 Tests: `npm test` = 7/7. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE

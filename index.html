@@ -153,6 +153,19 @@
       text-align: right;
       animation: pulse 2s infinite ease-in-out;
     }
+    #eventMiniGameBtn {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      border: 1px solid #f87171;
+      color: white;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-weight: 800;
+      font-size: 11px;
+      line-height: 1.2;
+      white-space: nowrap;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
     @keyframes pulse {
       0%, 100% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.25); }
       50% { box-shadow: 0 0 22px rgba(251, 191, 36, 0.65); }
@@ -254,10 +267,19 @@
       direction: ltr;
       unicode-bidi: isolate;
     }
-    .balance-val, .biz-lvl-tag, .biz-income, .modal-reward-badge {
+    .biz-lvl-tag {
       direction: ltr;
       unicode-bidi: isolate;
       text-align: center;
+    }
+    .balance-val {
+      direction: rtl;
+      unicode-bidi: isolate;
+      text-align: left;
+    }
+    .biz-income {
+      direction: rtl;
+      unicode-bidi: isolate;
     }
 
     /* BARRE DE PROGRESSION JAUGE & EFFET SHIMMER */
@@ -567,9 +589,9 @@
 
       <!-- BANDEAU ÉVÉNEMENT POP-CULTURE -->
       <div id="eventBanner">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="font-weight: 900; color: #fef08a; font-size: 14px;" id="eventTitle">فزعة في الحومة !</div>
-          <button id="eventMiniGameBtn" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); border: 1px solid #f87171; color: white; border-radius: 8px; padding: 4px 10px; font-weight: 900; font-size: 11px; cursor: pointer; animation: bounce 1s infinite alternate;">🔥 العب ولمّ الغلّة x5 !</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+          <div style="font-weight: 900; color: #fef08a; font-size: 13px;" id="eventTitle">فزعة في الحومة !</div>
+          <button id="eventMiniGameBtn">🔥 العب ولمّ الغلّة x5 !</button>
         </div>
         <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">تفاصيل</div>
         <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">باقي : 0 ثانية</div>
@@ -707,12 +729,12 @@
 
     // Formateur compact de grands nombres (K, M, B, T, Qa...)
     function formatCurrency(num, decimals = 2) {
-      if (num === null || num === undefined || isNaN(num)) return '<span class="num-ltr">0.00</span> د.ت';
-      if (num < 1000) return `<span class="num-ltr">${num.toFixed(decimals)}</span> د.ت`;
+      if (num === null || num === undefined || isNaN(num)) return '<span class="num-ltr">0.00</span>&nbsp;د.ت';
+      if (num < 1000) return `<span class="num-ltr">${num.toFixed(decimals)}</span>&nbsp;د.ت`;
       const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi"];
       const i = Math.floor(Math.log10(num) / 3);
       const formatted = (num / Math.pow(10, i * 3)).toFixed(decimals);
-      return `<span class="num-ltr">${formatted}${suffixes[i] || ''}</span> د.ت`;
+      return `<span class="num-ltr">${formatted}${suffixes[i] || ''}</span>&nbsp;د.ت`;
     }
 
     // Particules volantes au tap (+X د.ت)
@@ -751,7 +773,7 @@
       modalEmoji.innerText = emoji;
       modalTitle.innerText = title;
       modalSub.innerText = subtitle;
-      modalRewardAmount.innerText = amount;
+      modalRewardAmount.innerHTML = amount;
       rewardModal.classList.add('active');
     }
 
@@ -764,7 +786,7 @@
     if (offlineGain > 0) {
       setTimeout(() => {
         soundEngine.playEventFanfare();
-        showRewardModalUI('☕', 'على سلامتكم ! يا مرحبا بيك نوّرت', 'هذي غلّة خدمتك وإنت غاطس :', `+${offlineGain.toFixed(2)} د.ت`);
+        showRewardModalUI('☕', 'على سلامتكم ! يا مرحبا بيك نوّرت', 'هذي غلّة خدمتك وإنت غاطس :', `+${formatCurrency(offlineGain)}`);
       }, 400);
     }
 
@@ -773,7 +795,7 @@
       await adsService.showRewardedBoost();
       const reward = engine.claimAdCashReward();
       soundEngine.playEventFanfare();
-      showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش زرڤة', 'الكاسة تعمّرت بدعم الإشهار :', `+${reward.toFixed(2)} د.ت`);
+      showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش زرڤة', 'الكاسة تعمّرت بدعم الإشهار :', `+${formatCurrency(reward)}`);
       renderDOM();
     };
 
@@ -796,8 +818,9 @@
         const cost = engine.getCost(biz);
         const rev = engine.getRevenue(biz);
 
-        // Règle Niveau 0 : "اشري الحانوت" / Si déjà acheté (Niv > 0) : "طوّر"
-        const buyLabel = biz.level === 0 ? `🛒 اشري (${formatCurrency(cost)})` : `⬆️ طوّر (${formatCurrency(cost)})`;
+        // Bouton d'achat / amélioration clair et compact sans parenthèses cassées
+        const actionWord = biz.level === 0 ? '🛒 اشري' : '⬆️ طوّر';
+        const buyLabel = `<span>${actionWord}</span><span style="font-size: 11px; opacity: 0.95;">(${formatCurrency(cost)})</span>`;
         const canAfford = engine.dinars >= cost;
 
         card.innerHTML = `
@@ -812,7 +835,7 @@
               </div>
               <div class="biz-ar">${biz.tagline}</div>
               <div class="biz-income">
-                ${rev > 0 ? '+' + formatCurrency(rev) : '0.00 د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ <span class="num-ltr">${(biz.cycleDurationMs/1000).toFixed(1)}</span> ثانية</span>
+                ${rev > 0 ? '+' + formatCurrency(rev) : '0.00&nbsp;د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ <span class="num-ltr">${(biz.cycleDurationMs/1000).toFixed(1)}</span>&nbsp;ثانية</span>
               </div>
             </div>
           </div>

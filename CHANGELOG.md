@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-19
+- fix(ui): balance button bidi numbers, remove paren spaces, compact event button
+- fix(ui): balance button bidi numbers, remove paren spaces, compact event button
 - fix(android): remove hyphenated ic_launcher-playstore from res folder
 - feat(branding,ui): add custom HD app icons, update business names & fix bidi numbers
 - feat(balance,derja): recalibrate economic curve & overhaul authentic street Derja
