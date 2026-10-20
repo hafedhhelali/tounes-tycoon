@@ -711,21 +711,303 @@
       25% { transform: translateX(-6px); }
       75% { transform: translateX(6px); }
     }
-    .card-val {
-      font-size: 16px;
+    /* AMBIANCE RUE VIVANTE & NEON TUNISIEN */
+    .street-atmosphere-bar {
+      background: linear-gradient(90deg, rgba(30, 27, 75, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .street-crowd-layer {
+      position: absolute;
+      bottom: 2px;
+      left: 0;
+      right: 0;
+      height: 18px;
+      pointer-events: none;
+      display: flex;
+      gap: 16px;
+      opacity: 0.25;
+      animation: streetMove 20s linear infinite;
+    }
+    @keyframes streetMove {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .zone-badge-btn {
+      background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+      border: 1px solid #818cf8;
+      color: #e0e7ff;
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+      transition: all 0.15s ease;
+    }
+    .zone-badge-btn:active { transform: scale(0.95); }
+
+    /* MILESTONE BADGE SUR LES CARTES DE COMMERCES */
+    .milestone-badge {
+      font-size: 10px;
       font-weight: 900;
-      color: #0f172a;
-      line-height: 1;
+      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 2px 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
     }
-    .card-suit {
-      font-size: 26px;
-      line-height: 1;
+    .biz-card.milestone-boost {
+      animation: milestonePulse 1s ease-in-out 3;
     }
+    @keyframes milestonePulse {
+      0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+      50% { box-shadow: 0 0 25px rgba(251, 191, 36, 0.8), 0 0 5px #fff; }
+    }
+
+    /* DILEMME MORAL DU QUARTIER BANNER */
+    #dilemmaBanner {
+      background: linear-gradient(135deg, #1e1b4b 0%, #31104b 100%);
+      border: 2px solid #a855f7;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-top: 8px;
+      box-shadow: 0 8px 25px rgba(168, 85, 247, 0.35);
+      animation: dilemmaGlow 2.5s infinite alternate;
+      display: none;
+    }
+    @keyframes dilemmaGlow {
+      from { border-color: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.3); }
+      to { border-color: #c084fc; box-shadow: 0 0 24px rgba(192, 132, 252, 0.6); }
+    }
+    .dilemma-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .dilemma-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #f8fafc;
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      line-height: 1.3;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+    .dilemma-btn:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.18); }
+
+    /* ROUE DE LA FORTUNE FLOATING BUTTON */
+    .wheel-floating-btn {
+      position: fixed;
+      left: 16px;
+      bottom: 24px;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #e11d48 0%, #881337 100%);
+      border: 2px solid #fda4af;
+      box-shadow: 0 0 18px rgba(225, 29, 72, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 140;
+      animation: wheelPulse 2s infinite ease-in-out;
+      touch-action: manipulation;
+    }
+    @keyframes wheelPulse {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.08) rotate(15deg); }
+    }
+    .wheel-badge-ready {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: #10b981;
+      color: white;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 10px;
+      border: 1px solid white;
+    }
+
+    /* ROUE DE LA FORTUNE MODALE */
+    .wheel-spinner-disc {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 6px solid #f59e0b;
+      background: conic-gradient(
+        #ef4444 0deg 72deg,
+        #3b82f6 72deg 144deg,
+        #10b981 144deg 216deg,
+        #f59e0b 216deg 288deg,
+        #8b5cf6 288deg 360deg
+      );
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.6);
+      position: relative;
+      margin: 14px auto;
+      transition: transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .wheel-center-pointer {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 20px solid #f8fafc;
+      z-index: 10;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+    }
+    .wheel-center-cap {
+      width: 48px;
+      height: 48px;
+      background: #1e1b4b;
+      border: 3px solid #fbbf24;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      z-index: 5;
+    }
+
+    /* ONGLETS DU BAS / VUE QUARTIER ET AMÉLIORATIONS */
+    .view-tabs-hub {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .tab-btn {
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      padding: 8px 4px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: all 0.15s ease;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-color: #f59e0b;
+      color: #fef08a;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+    }
+    .tab-content-panel {
+      display: none;
+    }
+    .tab-content-panel.active {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* CARTES D'AMÉLIORATION TACTIQUE (UPGRADES) */
+    .tactical-upg-card {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      direction: rtl;
+      text-align: right;
+    }
+    .tactical-upg-card.bought {
+      border-color: #10b981;
+      opacity: 0.65;
+    }
+    .upg-icon-box {
+      font-size: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .upg-buy-btn {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border: 1px solid #60a5fa;
+      color: white;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .upg-buy-btn:disabled {
+      background: #334155;
+      border-color: #475569;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* THEMES DE QUARTIER TUNISIEN */
+    body.zone-bab-souika { background-image: radial-gradient(circle at 50% -10%, #311515 0%, #070a12 75%); }
+    body.zone-la-goulette { background-image: radial-gradient(circle at 50% -10%, #0c2a38 0%, #070a12 75%); }
+    body.zone-lac-2 { background-image: radial-gradient(circle at 50% -10%, #1e1b4b 0%, #070a12 75%); }
+    body.zone-hammamet { background-image: radial-gradient(circle at 50% -10%, #2e260c 0%, #070a12 75%); }
+    body.zone-djerba { background-image: radial-gradient(circle at 50% -10%, #31104b 0%, #070a12 75%); }
   </style>
 </head>
 <body>
   <div id="app">
     <header>
+      <!-- BARRE D'AMBIANCE DE QUARTIER & CONQUÊTE URBAINE -->
+      <div class="street-atmosphere-bar">
+        <div class="street-crowd-layer">
+          <span>🚶‍♂️</span><span>🚖</span><span>🧑‍🤝‍🧑</span><span>🛵</span><span>🚶‍♀️</span><span>🚐</span><span>👨‍🍳</span>
+        </div>
+        <div style="text-align: right; z-index: 2;">
+          <div style="font-size: 10px; color: #fbbf24; font-weight: 800;">📍 حيّ الاستثمار الحالي :</div>
+          <div style="font-size: 13px; font-weight: 900; color: #f8fafc;" id="currentZoneName">باب سويقة والمدينة العربي</div>
+        </div>
+        <button class="zone-badge-btn" id="openZoneMapBtn" style="z-index: 2;">
+          <span>🗺️ خريطة تونس</span>
+        </button>
+      </div>
+
       <div class="brand-bar">
         <div class="brand-title">
           <span>🇹🇳 تونس تايكون</span>
@@ -790,9 +1072,59 @@
         <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">تفاصيل</div>
         <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">باقي : 0 ثانية</div>
       </div>
+      <!-- DILEMME MORAL & DÉCISION DU QUARTIER -->
+      <div id="dilemmaBanner">
+        <div style="font-size: 13px; font-weight: 900; color: #fdf4ff;" id="dilemmaTitle">قرار في الحومة !</div>
+        <div style="font-size: 11px; color: #e9d5ff; margin-top: 4px;" id="dilemmaDesc">وصف القرار</div>
+        <div class="dilemma-btn-row">
+          <button class="dilemma-btn" id="dilemmaChoiceABtn">الخيار أ</button>
+          <button class="dilemma-btn" id="dilemmaChoiceBBtn">الخيار ب</button>
+        </div>
+      </div>
     </header>
 
-    <div class="business-list" id="businessList"></div>
+    <!-- ONGLETS DE NAVIGATION : COMMERCES / AMÉLIORATIONS TACTIQUES / QUARTIERS -->
+    <div class="view-tabs-hub">
+      <button class="tab-btn active" id="tabBtnBusinesses">
+        <span style="font-size: 15px;">🏪</span>
+        <span>المشاريع</span>
+      </button>
+      <button class="tab-btn" id="tabBtnTactics">
+        <span style="font-size: 15px;">⚡</span>
+        <span>أسرار الصنعة</span>
+      </button>
+      <button class="tab-btn" id="tabBtnZones">
+        <span style="font-size: 15px;">🗺️</span>
+        <span>غزو تونس</span>
+      </button>
+    </div>
+
+    <!-- PANNEAU 1 : LISTE DES COMMERCES (PAR DÉFAUT) -->
+    <div class="tab-content-panel active" id="panelBusinesses">
+      <div class="business-list" id="businessList"></div>
+    </div>
+
+    <!-- PANNEAU 2 : AMÉLIORATIONS TACTIQUES DU QUARTIER -->
+    <div class="tab-content-panel" id="panelTactics">
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #94a3b8; text-align: right;">
+        💡 <b>أسرار وتكتيكات تونسية :</b> اشري خلطات ونيونات وموتورات باش تضاعف مداخيل مشاريعك للأبد !
+      </div>
+      <div id="tacticalUpgradesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+    </div>
+
+    <!-- PANNEAU 3 : CONQUÊTE DES QUARTIERS ET VILLES TUNISIENNES -->
+    <div class="tab-content-panel" id="panelZones">
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #94a3b8; text-align: right;">
+        🗺️ <b>خريطة تونس :</b> افتح أحياء جديدة، كل حيّ عنده بونيس خاص ومحيط يعيّشك في قلب البلاد !
+      </div>
+      <div id="zonesListContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+    </div>
+  </div>
+
+  <!-- BOUTON FLOTTANT : ROUE DE LA FORTUNE ('عجلة الحظ التونسية') -->
+  <div class="wheel-floating-btn" id="wheelFloatingBtn">
+    <span>🎡</span>
+    <div class="wheel-badge-ready" id="wheelBadgeReady">بلاش !</div>
   </div>
 
   <!-- FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) -->
@@ -866,6 +1198,48 @@
       </button>
       <button id="cancelPrestigeBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; font-weight: 800; cursor: pointer; padding: 6px;">
         مازلت نحبّ نلمّ بزايد فلوس
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL ROUE DE LA FORTUNE ('عجلة الحظ التونسية') -->
+  <div class="modal-overlay" id="wheelModal">
+    <div class="modal-card" style="border-color: #e11d48; max-width: 360px;">
+      <div class="modal-icon-glow" style="font-size: 42px;">🎡</div>
+      <div class="modal-title">عجلة الحظ التونسية !</div>
+      <div class="modal-subtitle">دوّر العجلة ودبّر صابة فلوس، تيربو سريع، ولا كساكروت مجانية</div>
+
+      <div style="position: relative; width: 220px; height: 220px; margin: 10px auto;">
+        <div class="wheel-center-pointer"></div>
+        <div class="wheel-spinner-disc" id="wheelDisc">
+          <div class="wheel-center-cap">🇹🇳</div>
+        </div>
+      </div>
+
+      <div style="font-size: 13px; font-weight: 800; color: #fbbf24;" id="wheelResultLabel">
+        جرّب حظّك واربح بالوقت !
+      </div>
+
+      <button class="modal-btn" id="spinWheelBtn" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border-color: #fda4af;">
+        🎰 دوّر العجلة توّا !
+      </button>
+      <button id="closeWheelBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; font-weight: 800; cursor: pointer; padding: 6px;">
+        سكّر
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL CARTE DES QUARTIERS (غزو تونس) -->
+  <div class="modal-overlay" id="zonesModal">
+    <div class="modal-card" style="border-color: #6366f1; max-width: 390px;">
+      <div class="modal-icon-glow" style="font-size: 40px;">🗺️</div>
+      <div class="modal-title">خريطة تونس والاستثمار</div>
+      <div class="modal-subtitle">كل حيّ تفتحه يعطيك بونيس إنتاج وطابع تونسي فريد !</div>
+
+      <div id="modalZonesList" style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-height: 280px; overflow-y: auto; padding: 4px;"></div>
+
+      <button class="modal-btn" id="closeZonesModalBtn" style="background: #4f46e5; border-color: #818cf8; margin-top: 8px;">
+        رجوع للمشروع 💼
       </button>
     </div>
   </div>
@@ -1236,6 +1610,7 @@
 
         const cost = engine.getCost(biz);
         const rev = engine.getRevenue(biz);
+        const milestone = engine.getBusinessMilestones ? engine.getBusinessMilestones(biz) : { multiplier: 1, nextLevel: null, progress: 100 };
 
         // Bouton d'achat / amélioration clair et compact sans parenthèses cassées
         const actionWord = biz.level === 0 ? '🛒 اشري' : '⬆️ طوّر';
@@ -1251,6 +1626,13 @@
             <div class="biz-info">
               <div class="biz-title">
                 <span>${biz.name}</span>
+                ${milestone.nextLevel ? `
+                  <span class="milestone-badge" title="وصّل للمستوى ${milestone.nextLevel} باش تدوبل السرعة !">
+                    🎯 ${milestone.nextLevel} (x${milestone.nextMultiplier})
+                  </span>
+                ` : `
+                  <span class="milestone-badge" style="color: #34d399; border-color: #34d399;">👑 معلّم كامل</span>
+                `}
               </div>
               <div class="biz-ar">${biz.tagline}</div>
               <div class="biz-income">
@@ -1296,10 +1678,20 @@
         // Achat / Amélioration : Clic unique (1 clic = 1 amélioration)
         const buyBtn = card.querySelector(`#buy-${biz.id}`);
         buyBtn.onclick = () => {
+          const oldLevel = biz.level;
           if (engine.buyBusiness(biz.id)) {
-            soundEngine.playUpgrade();
+            // Détection de milestone franchi (25, 50, 100, 200)
+            if ([25, 50, 100, 200].includes(biz.level) && oldLevel < biz.level) {
+              soundEngine.playMilestoneFanfare();
+              showRewardModalUI('🎉', `مبروك المستوى ${biz.level} !`, `مشروع ${biz.name} دخل في مرحلة القوة والمداخيل تضاعفت !`, '🚀 تيربو دائم');
+              card.classList.add('milestone-boost');
+              setTimeout(() => card.classList.remove('milestone-boost'), 3000);
+            } else {
+              soundEngine.playUpgrade();
+            }
             renderDOM();
             updateSynergiesUI();
+            renderTacticalUpgradesUI();
           } else {
             const currentCost = engine.getCost(biz);
             const manque = (currentCost - engine.dinars);
@@ -1360,8 +1752,310 @@
       });
     }
 
+    // --- GESTION DES ONGLETS (COMMERCES / TACTIQUES / QUARTIERS) ---
+    const tabBtnBusinesses = document.getElementById('tabBtnBusinesses');
+    const tabBtnTactics = document.getElementById('tabBtnTactics');
+    const tabBtnZones = document.getElementById('tabBtnZones');
+    const panelBusinesses = document.getElementById('panelBusinesses');
+    const panelTactics = document.getElementById('panelTactics');
+    const panelZones = document.getElementById('panelZones');
+
+    function switchTab(tabName) {
+      tabBtnBusinesses.classList.toggle('active', tabName === 'businesses');
+      tabBtnTactics.classList.toggle('active', tabName === 'tactics');
+      tabBtnZones.classList.toggle('active', tabName === 'zones');
+
+      panelBusinesses.classList.toggle('active', tabName === 'businesses');
+      panelTactics.classList.toggle('active', tabName === 'tactics');
+      panelZones.classList.toggle('active', tabName === 'zones');
+
+      if (tabName === 'tactics') renderTacticalUpgradesUI();
+      if (tabName === 'zones') renderZonesUI();
+    }
+
+    tabBtnBusinesses.onclick = () => switchTab('businesses');
+    tabBtnTactics.onclick = () => switchTab('tactics');
+    tabBtnZones.onclick = () => switchTab('zones');
+
+    // --- RENDU DES AMÉLIORATIONS TACTIQUES ---
+    const tacticalUpgradesList = document.getElementById('tacticalUpgradesList');
+    function renderTacticalUpgradesUI() {
+      if (!tacticalUpgradesList) return;
+      tacticalUpgradesList.innerHTML = '';
+      const upgrades = engine.getTacticalUpgrades();
+      upgrades.forEach(u => {
+        const isBought = engine.isUpgradePurchased(u.id);
+        const canAfford = engine.dinars >= u.cost;
+        const biz = engine.businesses.find(b => b.id === u.businessId);
+
+        const card = document.createElement('div');
+        card.className = `tactical-upg-card ${isBought ? 'bought' : ''}`;
+        card.innerHTML = `
+          <div class="upg-icon-box">${u.icon}</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 900; font-size: 13px; color: #f8fafc;">${u.name}</div>
+            <div style="font-size: 11px; color: #94a3b8; margin: 2px 0;">${u.tagline}</div>
+            <div style="font-size: 11px; font-weight: 800; color: #fbbf24;">خاص بـ ${biz ? biz.name : ''} (مداخيل x${u.multiplier})</div>
+          </div>
+          <div>
+            ${isBought ? `
+              <div style="font-size: 11px; font-weight: 900; color: #34d399; background: rgba(16,185,129,0.15); padding: 4px 8px; border-radius: 8px; border: 1px solid #10b981;">
+                مفعّل ✓
+              </div>
+            ` : `
+              <button class="upg-buy-btn" id="buy-upg-${u.id}" ${canAfford ? '' : 'disabled'}>
+                🛒 اشري (${formatCurrency(u.cost, 0)})
+              </button>
+            `}
+          </div>
+        `;
+        tacticalUpgradesList.appendChild(card);
+
+        if (!isBought) {
+          const btn = card.querySelector(`#buy-upg-${u.id}`);
+          if (btn) {
+            btn.onclick = () => {
+              const bought = engine.buyTacticalUpgrade(u.id);
+              if (bought) {
+                soundEngine.playUpgrade();
+                showRewardModalUI(u.icon, 'صحّة الخلطة وسرّ الصنعة !', `فعّلت بنجاح : ${u.name}`, `مداخيل x${u.multiplier}`);
+                renderTacticalUpgradesUI();
+                renderDOM();
+              } else {
+                triggerBalanceAlert(`مازالت تخصّك ${formatCurrency(u.cost - engine.dinars)} باش تشري سرّ الصنعة !`);
+              }
+            };
+          }
+        }
+      });
+    }
+
+    // --- RENDU DE LA CONQUÊTE URBAINE (QUARTIERS DE TUNISIE) ---
+    const currentZoneName = document.getElementById('currentZoneName');
+    const zonesListContainer = document.getElementById('zonesListContainer');
+    const modalZonesList = document.getElementById('modalZonesList');
+    const openZoneMapBtn = document.getElementById('openZoneMapBtn');
+    const zonesModal = document.getElementById('zonesModal');
+    const closeZonesModalBtn = document.getElementById('closeZonesModalBtn');
+
+    openZoneMapBtn.onclick = () => {
+      renderZonesModalUI();
+      zonesModal.classList.add('active');
+    };
+    closeZonesModalBtn.onclick = () => {
+      zonesModal.classList.remove('active');
+    };
+
+    function applyZoneTheme() {
+      const current = engine.getCurrentZone();
+      if (currentZoneName) currentZoneName.innerText = current.name;
+      document.body.className = current.themeClass || 'zone-bab-souika';
+    }
+
+    function renderZonesUI() {
+      if (!zonesListContainer) return;
+      zonesListContainer.innerHTML = '';
+      const zones = engine.getZones();
+      const current = engine.getCurrentZone();
+
+      zones.forEach(z => {
+        const isCurrent = z.id === current.id;
+        const canUnlock = engine.prestigeLevel >= z.minPrestige && (engine.lifetimeDinarsEarned >= z.reqDinars || engine.totalDinarsEarned >= z.reqDinars);
+
+        const card = document.createElement('div');
+        card.className = `tactical-upg-card ${isCurrent ? 'bought' : ''}`;
+        card.innerHTML = `
+          <div class="upg-icon-box" style="font-size: 32px;">${z.icon}</div>
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 900; font-size: 14px; color: #f8fafc;">${z.name}</span>
+              ${isCurrent ? '<span style="font-size: 10px; background: #10b981; color: white; padding: 1px 6px; border-radius: 6px; font-weight: 900;">مستقرّ فيه حالياً</span>' : ''}
+            </div>
+            <div style="font-size: 11px; color: #94a3b8; margin: 2px 0;">${z.tagline}</div>
+            <div style="font-size: 11px; font-weight: 800; color: #38bdf8;">🎁 ${z.bonusDesc}</div>
+          </div>
+          <div>
+            ${isCurrent ? `
+              <div style="font-size: 11px; font-weight: 900; color: #34d399;">نشيط ✓</div>
+            ` : canUnlock ? `
+              <button class="upg-buy-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" id="zone-move-${z.id}">
+                🚀 انقل هوني
+              </button>
+            ` : `
+              <div style="font-size: 10px; font-weight: 800; color: #ef4444; text-align: center; line-height: 1.2;">
+                🔒 يتطلب ${z.minPrestige > 0 ? `معلّم ${z.minPrestige}★` : ''} ${z.reqDinars > 0 ? formatCurrency(z.reqDinars, 0) : ''}
+              </div>
+            `}
+          </div>
+        `;
+        zonesListContainer.appendChild(card);
+
+        const moveBtn = card.querySelector(`#zone-move-${z.id}`);
+        if (moveBtn) {
+          moveBtn.onclick = () => {
+            if (engine.unlockZone(z.id)) {
+              soundEngine.playMilestoneFanfare();
+              applyZoneTheme();
+              renderZonesUI();
+              renderDOM();
+              showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, `انتقلت بنجاح إلى الحيّ الجديد وتفعل البونيس :`, z.bonusDesc);
+            }
+          };
+        }
+      });
+    }
+
+    function renderZonesModalUI() {
+      if (!modalZonesList) return;
+      modalZonesList.innerHTML = '';
+      const zones = engine.getZones();
+      const current = engine.getCurrentZone();
+
+      zones.forEach(z => {
+        const isCurrent = z.id === current.id;
+        const canUnlock = engine.prestigeLevel >= z.minPrestige && (engine.lifetimeDinarsEarned >= z.reqDinars || engine.totalDinarsEarned >= z.reqDinars);
+        const item = document.createElement('div');
+        item.style.cssText = `background: rgba(15,23,42,0.8); border: 1px solid ${isCurrent ? '#10b981' : 'rgba(255,255,255,0.1)'}; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: space-between; direction: rtl; text-align: right;`;
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 900; color: #f8fafc; font-size: 13px;">${z.icon} ${z.name}</div>
+            <div style="font-size: 10px; color: #38bdf8;">${z.bonusDesc}</div>
+          </div>
+          <div>
+            ${isCurrent ? '<span style="font-size: 11px; font-weight: 900; color: #34d399;">الحيّ الحالي</span>' : canUnlock ? `
+              <button class="upg-buy-btn" style="padding: 4px 10px; font-size: 10px;" id="modal-zone-move-${z.id}">انقل 🚀</button>
+            ` : '<span style="font-size: 10px; color: #ef4444;">🔒 مقفول</span>'}
+          </div>
+        `;
+        modalZonesList.appendChild(item);
+
+        const moveBtn = item.querySelector(`#modal-zone-move-${z.id}`);
+        if (moveBtn) {
+          moveBtn.onclick = () => {
+            if (engine.unlockZone(z.id)) {
+              soundEngine.playMilestoneFanfare();
+              applyZoneTheme();
+              zonesModal.classList.remove('active');
+              renderDOM();
+              showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, 'انتقلت بنجاح وتفعل البونيس الخاص :', z.bonusDesc);
+            }
+          };
+        }
+      });
+    }
+
+    // --- ROUE DE LA FORTUNE INTERACTION ('عجلة الحظ التونسية') ---
+    const wheelFloatingBtn = document.getElementById('wheelFloatingBtn');
+    const wheelBadgeReady = document.getElementById('wheelBadgeReady');
+    const wheelModal = document.getElementById('wheelModal');
+    const wheelDisc = document.getElementById('wheelDisc');
+    const spinWheelBtn = document.getElementById('spinWheelBtn');
+    const closeWheelBtn = document.getElementById('closeWheelBtn');
+    const wheelResultLabel = document.getElementById('wheelResultLabel');
+
+    let currentWheelRotation = 0;
+    let isSpinningWheel = false;
+
+    wheelFloatingBtn.onclick = () => {
+      updateWheelBtnState();
+      wheelModal.classList.add('active');
+    };
+    closeWheelBtn.onclick = () => {
+      if (!isSpinningWheel) wheelModal.classList.remove('active');
+    };
+
+    function updateWheelBtnState() {
+      const canFree = engine.canSpinWheel();
+      wheelBadgeReady.style.display = canFree ? 'block' : 'none';
+      wheelBadgeReady.innerText = 'بلاش !';
+      spinWheelBtn.innerText = canFree ? '🎰 دوّر العجلة بلاش توّا !' : '🎬 تفرّج في إشهار ودوّر العجلة';
+    }
+
+    spinWheelBtn.onclick = async () => {
+      if (isSpinningWheel) return;
+      const canFree = engine.canSpinWheel();
+      if (!canFree) {
+        await adsService.showRewardedBoost();
+      }
+
+      isSpinningWheel = true;
+      spinWheelBtn.disabled = true;
+      wheelResultLabel.innerText = 'العجلة تدور... ربي يجيب في الصواب ! 🔥';
+
+      // Animation sonore de la roue qui tourne
+      const tickInterval = setInterval(() => soundEngine.playWheelTick(), 120);
+
+      // Rotation aléatoire (4 à 7 tours complets)
+      const extraRounds = 360 * (4 + Math.floor(Math.random() * 3));
+      const stopAngle = Math.floor(Math.random() * 360);
+      currentWheelRotation += extraRounds + stopAngle;
+      wheelDisc.style.transform = `rotate(${currentWheelRotation}deg)`;
+
+      setTimeout(() => {
+        clearInterval(tickInterval);
+        isSpinningWheel = false;
+        spinWheelBtn.disabled = false;
+
+        const result = engine.spinWheel(!canFree ? false : true);
+        soundEngine.playMilestoneFanfare();
+
+        wheelResultLabel.innerHTML = `مبروك ! ربحت <span style="color:#fde68a;">${result.prize.name}</span> (${result.prize.icon})`;
+        showRewardModalUI(result.prize.icon, 'صابة من عجلة الحظ !', `ربحت الجائزة التونسية : ${result.prize.name}`, result.value > 0 ? `+${formatCurrency(result.value)}` : 'بونيس شاعل');
+        
+        renderDOM();
+        updateWheelBtnState();
+      }, 3600);
+    };
+
+    // --- DILEMMES MORAUX & DÉCISIONS DU QUARTIER ---
+    const dilemmaBanner = document.getElementById('dilemmaBanner');
+    const dilemmaTitle = document.getElementById('dilemmaTitle');
+    const dilemmaDesc = document.getElementById('dilemmaDesc');
+    const dilemmaChoiceABtn = document.getElementById('dilemmaChoiceABtn');
+    const dilemmaChoiceBBtn = document.getElementById('dilemmaChoiceBBtn');
+
+    function checkDilemmasUI() {
+      if (!dilemmaBanner) return;
+      if (engine.activeDilemma) {
+        const d = engine.activeDilemma;
+        dilemmaBanner.style.display = 'block';
+        dilemmaTitle.innerText = d.title;
+        dilemmaDesc.innerText = d.desc;
+        dilemmaChoiceABtn.innerHTML = `${d.choiceA.text} ${d.choiceA.cost > 0 ? `(${formatCurrency(d.choiceA.cost, 0)})` : ''}`;
+        dilemmaChoiceBBtn.innerHTML = `${d.choiceB.text} ${d.choiceB.cost > 0 ? `(${formatCurrency(d.choiceB.cost, 0)})` : ''}`;
+
+        dilemmaChoiceABtn.onclick = () => {
+          const res = engine.resolveDilemma('A');
+          if (res && res.success) {
+            soundEngine.playDilemmaSuccess();
+            dilemmaBanner.style.display = 'none';
+            showRewardModalUI('📜', 'قرار صائب في الحومة !', res.choice.effectDesc, 'مريڤل 🤝');
+            renderDOM();
+          } else if (res && res.reason === 'insufficient_funds') {
+            triggerBalanceAlert(`مازالت تخصّك ${formatCurrency(res.cost - engine.dinars)} باش تنفّذ القرار !`);
+          }
+        };
+
+        dilemmaChoiceBBtn.onclick = () => {
+          const res = engine.resolveDilemma('B');
+          if (res && res.success) {
+            soundEngine.playDilemmaSuccess();
+            dilemmaBanner.style.display = 'none';
+            showRewardModalUI('📜', 'قرار صائب في الحومة !', res.choice.effectDesc, 'مريڤل 🤝');
+            renderDOM();
+          } else if (res && res.reason === 'insufficient_funds') {
+            triggerBalanceAlert(`مازالت تخصّك ${formatCurrency(res.cost - engine.dinars)} باش تنفّذ القرار !`);
+          }
+        };
+      } else {
+        dilemmaBanner.style.display = 'none';
+      }
+    }
+
     renderDOM();
     updateSynergiesUI();
+    applyZoneTheme();
+    updateWheelBtnState();
 
     // Boucle de rendu fluide 60 FPS
     let lastSave = Date.now();
@@ -1449,6 +2143,10 @@
           bar.style.width = pct + '%';
         }
       });
+
+      // Vérification des dilemmes moraux
+      checkDilemmasUI();
+      updateWheelBtnState();
 
       // Sauvegarde automatique toutes les 5s
       if (now - lastSave > 5000) {

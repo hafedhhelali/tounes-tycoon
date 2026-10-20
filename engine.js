@@ -431,9 +431,396 @@ export class TycoonEngine {
     this.speedBoostEndsAt = 0;
     this.speedBoostMultiplier = 1.0;
 
+    // Quartier actif (Zone de conquête urbaine)
+    this.currentZoneId = 'bab_souika';
+
+    // Améliorations tactiques achetées (Set d'IDs)
+    this.purchasedUpgrades = [];
+
+    // Roue de la fortune (عجلة الحظ التونسية)
+    this.lastFreeWheelSpin = 0;
+
+    // Décisions / Dilemmes moraux résolus
+    this.resolvedDilemmas = [];
+    this.nextDilemmaCheck = Date.now() + 25000; // Premier dilemme après 25s
+    this.activeDilemma = null;
+
     if (initialState) {
       this.loadState(initialState);
     }
+  }
+
+  // --- ZONES URBAINES DE CONQUÊTE TUNISIENNE ---
+  getZones() {
+    return [
+      {
+        id: 'bab_souika',
+        name: 'باب سويقة والمدينة العربي',
+        icon: '🕌',
+        tagline: 'أصل التجارة، نصبة، كسكروت، قهوة شعبية وجوّ الحومة العتيقة',
+        minPrestige: 0,
+        reqDinars: 0,
+        bonusDesc: 'مداخيل الماكلة الشعبية والقهاوي +25%',
+        themeClass: 'zone-bab-souika'
+      },
+      {
+        id: 'la_goulette',
+        name: 'حلق الوادي والكورنيش',
+        icon: '⚓',
+        tagline: 'ريحة البحر، السمك المشوي، ومحطة التاكسي الجماعي والباتيسري',
+        minPrestige: 0,
+        reqDinars: 10000,
+        bonusDesc: 'سرعة إنتاج التاكسي الجماعي والحلويات +30%',
+        themeClass: 'zone-la-goulette'
+      },
+      {
+        id: 'lac_2',
+        name: 'البحيرة 2 ولاك سنتر',
+        icon: '🏙️',
+        tagline: 'عمارات زجاجية، صالونات شاي فاخرة، وشركات ومحلات هاي كلاس',
+        minPrestige: 1,
+        reqDinars: 500000,
+        bonusDesc: 'مداخيل صالون الشاي والشركات +40%',
+        themeClass: 'zone-lac-2'
+      },
+      {
+        id: 'hammamet',
+        name: 'ياسمين الحمامات وقمرت',
+        icon: '🏖️',
+        tagline: 'نزل فخمة، سياحة، مطاعم ومولات كبرى، الفلوس بالعملة الصعبة',
+        minPrestige: 2,
+        reqDinars: 50000000,
+        bonusDesc: 'مداخيل النزل والمطاعم والمول +50%',
+        themeClass: 'zone-hammamet'
+      },
+      {
+        id: 'djerba_holding',
+        name: 'إمبراطورية تونس الدولية',
+        icon: '👑',
+        tagline: 'أسطول طيران الغزالة، المعامل الكبرى والشركات العقارية العالمية',
+        minPrestige: 3,
+        reqDinars: 1000000000,
+        bonusDesc: 'مداخيل جميع المشاريع الكبرى x2',
+        themeClass: 'zone-djerba'
+      }
+    ];
+  }
+
+  getCurrentZone() {
+    const zones = this.getZones();
+    return zones.find(z => z.id === this.currentZoneId) || zones[0];
+  }
+
+  unlockZone(zoneId) {
+    const zone = this.getZones().find(z => z.id === zoneId);
+    if (!zone) return false;
+    if (this.prestigeLevel < zone.minPrestige) return false;
+    if (this.lifetimeDinarsEarned < zone.reqDinars && this.totalDinarsEarned < zone.reqDinars) return false;
+    this.currentZoneId = zoneId;
+    return true;
+  }
+
+  getZoneMultiplier(businessId) {
+    const zone = this.getCurrentZone();
+    if (!zone || zone.id === 'bab_souika') return 1.0; // Zone par défaut neutre pour préserver les tests unitaires
+    if (zone.id === 'la_goulette' && ['taxi_collectif', 'patisserie'].includes(businessId)) return 1.30;
+    if (zone.id === 'lac_2' && ['salon_de_the', 'superette', 'supermarche'].includes(businessId)) return 1.40;
+    if (zone.id === 'hammamet' && ['hotel', 'restaurant', 'centre_commercial'].includes(businessId)) return 1.50;
+    if (zone.id === 'djerba_holding' && ['tayaran_el_ghzela', 'promoteur_immobilier', 'showroom_auto', 'usine_conserves'].includes(businessId)) return 2.0;
+    return 1.0;
+  }
+
+  // --- MILESTONES DE NIVEAU (x25, x50, x100, x200) ---
+  getBusinessMilestones(business) {
+    const milestones = [
+      { level: 25, mult: 2.0, name: 'دفعة المعلّم (x2)' },
+      { level: 50, mult: 2.0, name: 'صنعة الحريف (x2)' },
+      { level: 100, mult: 3.0, name: 'شهرية ذهبية (x3)' },
+      { level: 200, mult: 4.0, name: 'إمبراطور الصنعة (x4)' }
+    ];
+    let totalMult = 1.0;
+    let nextMilestone = null;
+    for (const m of milestones) {
+      if (business.level >= m.level) {
+        totalMult *= m.mult;
+      } else if (!nextMilestone) {
+        nextMilestone = m;
+      }
+    }
+    return {
+      multiplier: totalMult,
+      nextLevel: nextMilestone ? nextMilestone.level : null,
+      nextMultiplier: nextMilestone ? nextMilestone.mult : null,
+      progress: nextMilestone ? Math.min(100, (business.level / nextMilestone.level) * 100) : 100
+    };
+  }
+
+  // --- ARBRES D'AMÉLIORATIONS TACTIQUES (UPGRADES DU QUARTIER) ---
+  getTacticalUpgrades() {
+    return [
+      {
+        id: 'upg_hrissa_arbi',
+        businessId: 'kaskrout',
+        name: 'هريسة عربي بالثوم والكروية',
+        tagline: 'سرّ الخلطة اللي يخلّي الكليونات يشدّو الصف على الكسكروت',
+        cost: 45.0,
+        multiplier: 2.5,
+        icon: '🌶️'
+      },
+      {
+        id: 'upg_bambalouni_sidi_bou',
+        businessId: 'fricasse',
+        name: 'زيت صافي وسكر بمبلوني',
+        tagline: 'تقرميشة على طريقة سيدي بوسعيد، الريحة تجيب من آخر الشارع',
+        cost: 200.0,
+        multiplier: 2.5,
+        icon: '✨'
+      },
+      {
+        id: 'upg_zahr_direct',
+        businessId: 'kahwa',
+        name: 'ماء زهر وقرصة كستناء',
+        tagline: 'قعدة تروّق البال وتخلّي الطواول ما تفرغش',
+        cost: 800.0,
+        multiplier: 2.2,
+        icon: '🌸'
+      },
+      {
+        id: 'upg_carnet_credit',
+        businessId: 'attariya',
+        name: 'كرني الكريدي المورود',
+        tagline: 'الحومة كاملة تقيّد عندك والثقة عمياء',
+        cost: 4000.0,
+        multiplier: 2.0,
+        icon: '📖'
+      },
+      {
+        id: 'upg_neon_led',
+        businessId: 'patisserie',
+        name: 'بندار نيون وإضاءة سهرات',
+        tagline: 'المحل يشعل في الليل، الكل يوقف يشري حلو ودردشة',
+        cost: 25000.0,
+        multiplier: 2.2,
+        icon: '💡'
+      },
+      {
+        id: 'upg_turbo_diesel',
+        businessId: 'taxi_collectif',
+        name: 'تيربو موتور إيسيزو ديزل',
+        tagline: 'دوبلاج على اليمين وتوصيل في شطر الوقت !',
+        cost: 150000.0,
+        multiplier: 2.5,
+        icon: '🏎️'
+      },
+      {
+        id: 'upg_promo_vendredi',
+        businessId: 'superette',
+        name: 'بروموسيون الجمعة وتخفيضات',
+        tagline: 'الحوانيت تفرغ والناس تعبّي الشكائر',
+        cost: 800000.0,
+        multiplier: 2.0,
+        icon: '🏷️'
+      },
+      {
+        id: 'upg_vip_lounge',
+        businessId: 'salon_de_the',
+        name: 'صالون VIP وكليماتيزور ثلج',
+        tagline: 'رجال أعمال وصفقات كبرى على كاس تاي بالبندق',
+        cost: 25000000.0,
+        multiplier: 2.5,
+        icon: '🍸'
+      }
+    ];
+  }
+
+  buyTacticalUpgrade(upgradeId) {
+    if (this.purchasedUpgrades.includes(upgradeId)) return false;
+    const upg = this.getTacticalUpgrades().find(u => u.id === upgradeId);
+    if (!upg) return false;
+    if (this.dinars >= upg.cost) {
+      this.dinars -= upg.cost;
+      this.purchasedUpgrades.push(upgradeId);
+      return upg;
+    }
+    return false;
+  }
+
+  isUpgradePurchased(upgradeId) {
+    return this.purchasedUpgrades.includes(upgradeId);
+  }
+
+  getUpgradeMultiplier(businessId) {
+    let mult = 1.0;
+    const all = this.getTacticalUpgrades();
+    for (const upg of all) {
+      if (upg.businessId === businessId && this.isUpgradePurchased(upg.id)) {
+        mult *= upg.multiplier;
+      }
+    }
+    return mult;
+  }
+
+  // --- ROUE DE LA FORTUNE TUNISIENNE (عجلة الحظ التونسية) ---
+  canSpinWheel(now = Date.now()) {
+    // 1 tour gratuit toutes les 90 secondes (ou vidéo pub)
+    return (now - this.lastFreeWheelSpin) >= 90000;
+  }
+
+  spinWheel(isFree = true, now = Date.now()) {
+    if (isFree && !this.canSpinWheel(now)) return null;
+    this.lastFreeWheelSpin = now;
+
+    // Récompenses de la roue tunisienne
+    const prizes = [
+      { id: 'cash_mini', name: 'تفتوفة 50 د.ت', type: 'cash', amount: 50.0, weight: 30, icon: '💵' },
+      { id: 'cash_big', name: 'صابة باهية !', type: 'cash_rate', multiplier: 120, weight: 25, icon: '💰' }, // 2 min de prod
+      { id: 'turbo_60s', name: 'تيربو دقيقة x3', type: 'speed_boost', durationSec: 60, multiplier: 3.0, weight: 20, icon: '⚡' },
+      { id: 'gift_kaskrout', name: 'كسكروت الحظ بلاش', type: 'free_levels', businessId: 'kaskrout', levels: 5, weight: 15, icon: '🥖' },
+      { id: 'jackpot_dinar', name: 'الجائزة الكبرى !', type: 'cash_rate', multiplier: 360, weight: 10, icon: '👑' } // 6 min de prod
+    ];
+
+    // Tirage pondéré
+    const totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0);
+    let rand = Math.random() * totalWeight;
+    let chosen = prizes[0];
+    for (const p of prizes) {
+      if (rand < p.weight) {
+        chosen = p;
+        break;
+      }
+      rand -= p.weight;
+    }
+
+    // Application du gain
+    let rewardValue = 0;
+    if (chosen.type === 'cash') {
+      this.dinars += chosen.amount;
+      this.totalDinarsEarned += chosen.amount;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + chosen.amount;
+      rewardValue = chosen.amount;
+    } else if (chosen.type === 'cash_rate') {
+      let rate = 0;
+      this.businesses.forEach(b => { if (b.level > 0) rate += (this.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
+      const amount = Math.max(30.0, Math.floor(rate * chosen.multiplier));
+      this.dinars += amount;
+      this.totalDinarsEarned += amount;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + amount;
+      rewardValue = amount;
+    } else if (chosen.type === 'speed_boost') {
+      this.speedBoostEndsAt = Math.max(now, this.speedBoostEndsAt) + (chosen.durationSec * 1000);
+      this.speedBoostMultiplier = chosen.multiplier;
+    } else if (chosen.type === 'free_levels') {
+      const biz = this.businesses.find(b => b.id === chosen.businessId);
+      if (biz) biz.level += chosen.levels;
+    }
+
+    return { prize: chosen, value: rewardValue };
+  }
+
+  // --- MINI-DILEMMES POPULAIRES ET ÉVÉNEMENTS MORAUX ---
+  getDilemmas() {
+    return [
+      {
+        id: 'dil_controle_hygiene',
+        title: '👮 مراقبة حفظ الصحة والبلدية جات على غفلة !',
+        desc: 'شاف الكوجينة لقى الزيت يغلي والهريسة حارة. شنوّة تعمل ؟',
+        choiceA: {
+          text: '☕ ضيّفهم بكابوسين وكسكروت سخون وافرح بيهم',
+          cost: 15.0,
+          effectDesc: 'ربحت سمعة طيبة وتيربو x2 على الماكلة 45 ثانية !',
+          action: (engine, now) => {
+            engine.speedBoostEndsAt = Math.max(now, engine.speedBoostEndsAt) + 45000;
+            engine.speedBoostMultiplier = 2.0;
+          }
+        },
+        choiceB: {
+          text: '📜 ورّيهم الأوراق والرخص القانونية 100%',
+          cost: 0,
+          effectDesc: 'خرجوا مبهورين بنظافة المحل ! +40 د.ت بونيس بلدية',
+          action: (engine) => {
+            engine.dinars += 40.0;
+            engine.totalDinarsEarned += 40.0;
+          }
+        }
+      },
+      {
+        id: 'dil_aaras_houma',
+        title: '🎺 عرس ولد الحومة والفرقة الشعبية تضرب !',
+        desc: 'العريس جاء يطلب في كريدي باهي للحلويات والتاكسيات باش يوصّل العروسة.',
+        choiceA: {
+          text: '🤝 أعطيه مبروك وتخفيض 50% والكرني مفتوح',
+          cost: 25.0,
+          effectDesc: 'الحومة كاملة ولات تشري من عندك ! بونيس بركة مضاعفة',
+          action: (engine) => {
+            engine.dinars += 90.0;
+            engine.totalDinarsEarned += 90.0;
+          }
+        },
+        choiceB: {
+          text: '💼 التجارة تجارة : خلاص كاش مع هدية طبق بقلاوة',
+          cost: 0,
+          effectDesc: 'ربحت كاش فوري +60 د.ت بالوقت',
+          action: (engine) => {
+            engine.dinars += 60.0;
+            engine.totalDinarsEarned += 60.0;
+          }
+        }
+      },
+      {
+        id: 'dil_greve_transport',
+        title: '🚖 إضراب تاكسيات ومحطة اللواج واقفة !',
+        desc: 'الناس مكدسة في المحطة وكلها تحب تروّح لديارها فيسع.',
+        choiceA: {
+          text: '🚐 خرّج أسطولك كامل واخدم بتسعيرة شعبية رحيمة',
+          cost: 0,
+          effectDesc: 'التاكسي خدم بالواقفة ! تيربو مضاعف x2.5 لمدّة 40 ثانية',
+          action: (engine, now) => {
+            engine.speedBoostEndsAt = Math.max(now, engine.speedBoostEndsAt) + 40000;
+            engine.speedBoostMultiplier = 2.5;
+          }
+        },
+        choiceB: {
+          text: '🥖 حلّ نصبة كساكروت في المحطة ووكّل الناس العالقة',
+          cost: 10.0,
+          effectDesc: 'الصابة تغلي ! دخلت +110 د.ت في ربع ساعة',
+          action: (engine) => {
+            engine.dinars += 110.0;
+            engine.totalDinarsEarned += 110.0;
+          }
+        }
+      }
+    ];
+  }
+
+  triggerRandomDilemma(now = Date.now()) {
+    if (this.activeDilemma) return null;
+    const available = this.getDilemmas();
+    const chosen = available[Math.floor(Math.random() * available.length)];
+    this.activeDilemma = chosen;
+    return chosen;
+  }
+
+  resolveDilemma(choiceKey, now = Date.now()) {
+    if (!this.activeDilemma) return null;
+    const dilemma = this.activeDilemma;
+    const choice = choiceKey === 'A' ? dilemma.choiceA : dilemma.choiceB;
+
+    if (choice.cost > 0 && this.dinars < choice.cost) {
+      return { success: false, reason: 'insufficient_funds', cost: choice.cost };
+    }
+
+    if (choice.cost > 0) {
+      this.dinars -= choice.cost;
+    }
+
+    if (typeof choice.action === 'function') {
+      choice.action(this, now);
+    }
+
+    this.resolvedDilemmas.push(dilemma.id);
+    this.activeDilemma = null;
+    this.nextDilemmaCheck = now + 40000 + Math.random() * 30000; // Prochain dans 40-70s
+    return { success: true, choice, dilemma };
   }
 
   // --- SYNERGIES & COMBOS ---
@@ -647,7 +1034,18 @@ export class TycoonEngine {
     // Chaque recrutement au-delà du 1er gérant apporte un bonus d'encadrement (+25% par cadre additionnel)
     const extraStaff = Math.max(0, (business.hiredManagersCount || (business.hasManager ? 1 : 0)) - 1);
     const staffMultiplier = 1.0 + (extraStaff * 0.25);
-    return business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier;
+
+    // Multiplicateurs de conquête urbaine (Quartier)
+    const zoneMultiplier = this.getZoneMultiplier ? this.getZoneMultiplier(business.id) : 1.0;
+
+    // Multiplicateurs d'améliorations tactiques achetées
+    const upgradeMultiplier = this.getUpgradeMultiplier ? this.getUpgradeMultiplier(business.id) : 1.0;
+
+    // Multiplicateurs de Milestones (x25, x50, x100, x200)
+    const milestoneInfo = this.getBusinessMilestones ? this.getBusinessMilestones(business) : { multiplier: 1.0 };
+    const milestoneMultiplier = milestoneInfo.multiplier || 1.0;
+
+    return business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier;
   }
 
   buyBusiness(id) {
@@ -720,6 +1118,11 @@ export class TycoonEngine {
       this.triggerRandomEvent(now);
     }
 
+    // Déclenchement occasionnel de dilemmes moraux du quartier
+    if (!this.activeDilemma && now >= (this.nextDilemmaCheck || 0)) {
+      this.triggerRandomDilemma(now);
+    }
+
     let revenueEarned = 0;
 
     for (const biz of this.businesses) {
@@ -772,6 +1175,9 @@ export class TycoonEngine {
       activeEvent: this.activeEvent,
       adBoostEndsAt: this.adBoostEndsAt,
       speedBoostEndsAt: this.speedBoostEndsAt || 0,
+      currentZoneId: this.currentZoneId || 'bab_souika',
+      purchasedUpgrades: this.purchasedUpgrades || [],
+      lastFreeWheelSpin: this.lastFreeWheelSpin || 0,
       businesses: this.businesses.map(b => ({
         id: b.id,
         level: b.level,
@@ -797,6 +1203,9 @@ export class TycoonEngine {
     this.activeEvent = state.activeEvent ?? null;
     this.adBoostEndsAt = state.adBoostEndsAt ?? 0;
     this.speedBoostEndsAt = state.speedBoostEndsAt ?? 0;
+    this.currentZoneId = state.currentZoneId ?? 'bab_souika';
+    this.purchasedUpgrades = Array.isArray(state.purchasedUpgrades) ? state.purchasedUpgrades : [];
+    this.lastFreeWheelSpin = state.lastFreeWheelSpin ?? 0;
 
     if (Array.isArray(state.businesses)) {
       for (const saved of state.businesses) {

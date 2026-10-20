@@ -1,10 +1,10 @@
 ﻿# HANDOFF — Tounes Tycoon
-MAJ: 2026-10-19 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-10-20 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Idle tycoon tunisien (Capacitor/Android, JS vanilla). 17 commerces progressifs, synergies tunisiennes débloquables, nouveau défi 'طرح شكبة سريع' (réflexe et calcul de cartes populaires), système d'ascension/prestige ('رأس مال الحومة والخبرة'), et bulles flottantes de cadeaux ('تفتوفة في الكياس').
-Polish sonore et textuel : BGM feutrée chaleureuse (lounge méditerranéen relaxant), badges 'مستوى X' (au lieu de نيفو), format 'ألف دينار / مليون دينار' et 'العب و لمّ بزايد فلوس'.
-Corrections : rendu HTML toast corrigé (innerHTML au lieu de innerText pour afficher proprement les montants avec balises), rééquilibrage de l'économie pour éviter l'explosion exponentielle des gains, repositionnement sécurisé de la bulle flottante pour ne pas masquer les en-têtes. Tests: `npm test` = 10/10. CI GitHub Actions génère l'APK à chaque push.
+Idle tycoon tunisien immersif (Capacitor/Android, JS vanilla).
+Ajout majeur d'attractivité : Conquête des quartiers tunisiens (Bab Souika -> La Goulette -> Lac 2 -> Hammamet -> Djerba), arbres d'améliorations tactiques (recettes secrètes, néons, moteurs), milestones gratifiants (x25, x50, x100, x200 avec fanfares), roue de la fortune tunisienne ('عجلة الحظ'), et dilemmes moraux populaires interactifs.
+Tests: `npm test` = 10/10. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

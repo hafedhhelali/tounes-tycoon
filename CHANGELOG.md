@@ -1,6 +1,13 @@
 ﻿# CHANGELOG
 
-## 2026-10-19
+## 2026-10-20
+- feat(gameplay,immersion): major attractiveness overhaul with zones, tactical upgrades, milestones, lucky wheel, and street dilemmas
+- feat(gameplay,immersion): major attractiveness overhaul :
+  - 🗺️ Tunisian Urban Conquest: 5 iconic zones (Bab Souika, La Goulette, Lac 2, Hammamet, Djerba Holding) with dedicated bonuses and atmospheric backdrops.
+  - ⚡ Tactical Upgrades Tree: secret culinary recipes, neon signs, turbo engines multiplying business revenue permanently.
+  - 🎯 Level Milestones: x25, x50, x100, x200 multipliers with milestone fanfare and shiny visual effects.
+  - 🎡 Tunisian Lucky Wheel ('عجلة الحظ التونسية') with procedural ticking sound and instant dopamine rewards.
+  - 📜 Interactive Street Dilemmas: moral & comic local choices with immediate consequences.
 - fix(ui,balance): render toast HTML correctly, rebalance prestige & pacing, constrain lucky drop positioning
 - fix(ui,balance): render toast HTML correctly, rebalance prestige & pacing, constrain lucky drop positioning
 - feat(gameplay): add business synergies, chkobba reflex challenge, prestige ascension, warm lounge BGM, and niveau to mostawa
