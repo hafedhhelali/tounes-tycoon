@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-20
+- fix(ui,layout): streamline header compactness, prevent overlap, increase scroll padding and optimize fluid rendering
+- fix(ui,layout): streamline header compactness, prevent overlap, increase scroll padding & optimize fluid rendering
 - feat(gameplay,immersion): major attractiveness overhaul with zones, tactical upgrades, milestones, lucky wheel, and street dilemmas
 - feat(gameplay,immersion): major attractiveness overhaul :
   - 🗺️ Tunisian Urban Conquest: 5 iconic zones (Bab Souika, La Goulette, Lac 2, Hammamet, Djerba Holding) with dedicated bonuses and atmospheric backdrops.

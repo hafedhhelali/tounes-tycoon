@@ -3,8 +3,8 @@ MAJ: 2026-10-20 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
 Idle tycoon tunisien immersif (Capacitor/Android, JS vanilla).
-Ajout majeur d'attractivité : Conquête des quartiers tunisiens (Bab Souika -> La Goulette -> Lac 2 -> Hammamet -> Djerba), arbres d'améliorations tactiques (recettes secrètes, néons, moteurs), milestones gratifiants (x25, x50, x100, x200 avec fanfares), roue de la fortune tunisienne ('عجلة الحظ'), et dilemmes moraux populaires interactifs.
-Tests: `npm test` = 10/10. CI GitHub Actions génère l'APK à chaque push.
+Conquête des quartiers tunisiens (Bab Souika -> La Goulette -> Lac 2 -> Hammamet -> Djerba), arbres d'améliorations tactiques, milestones gratifiants (x25, x50, x100, x200 avec fanfares), roue de la fortune ('عجلة الحظ'), et dilemmes moraux.
+Design et layout épurés : header compact sans encombrement, sticky navigation propre, zéro chevauchement des éléments interactifs et fluidité 60 FPS. Tests: `npm test` = 10/10. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).
