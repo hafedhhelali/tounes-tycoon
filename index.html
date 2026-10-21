@@ -902,16 +902,18 @@
     /* ONGLETS DU BAS / VUE QUARTIER ET AMÉLIORATIONS */
     .view-tabs-hub {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       gap: 6px;
       margin-top: 4px;
       position: sticky;
-      top: 185px;
+      top: 136px;
       z-index: 45;
-      background: rgba(7, 10, 18, 0.85);
-      backdrop-filter: blur(8px);
-      padding: 4px 0;
-      border-radius: 12px;
+      background: rgba(7, 10, 18, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
     }
     .tab-btn {
       background: rgba(17, 24, 39, 0.85);
@@ -1089,19 +1091,23 @@
       </div>
     </header>
 
-    <!-- ONGLETS DE NAVIGATION : COMMERCES / AMÉLIORATIONS TACTIQUES / QUARTIERS -->
+    <!-- ONGLETS DE NAVIGATION : COMMERCES / AMÉLIORATIONS TACTIQUES / QUARTIERS / LIGUE -->
     <div class="view-tabs-hub">
       <button class="tab-btn active" id="tabBtnBusinesses">
-        <span style="font-size: 15px;">🏪</span>
+        <span style="font-size: 16px;">🏪</span>
         <span>المشاريع</span>
       </button>
       <button class="tab-btn" id="tabBtnTactics">
-        <span style="font-size: 15px;">⚡</span>
+        <span style="font-size: 16px;">⚡</span>
         <span>أسرار الصنعة</span>
       </button>
       <button class="tab-btn" id="tabBtnZones">
-        <span style="font-size: 15px;">🗺️</span>
+        <span style="font-size: 16px;">🗺️</span>
         <span>غزو تونس</span>
+      </button>
+      <button class="tab-btn" id="tabBtnLeague">
+        <span style="font-size: 16px;">🏆</span>
+        <span>البطولة والصابة</span>
       </button>
     </div>
 
@@ -1124,6 +1130,41 @@
         🗺️ <b>خريطة تونس :</b> افتح أحياء جديدة، كل حيّ عنده بونيس خاص ومحيط يعيّشك في قلب البلاد !
       </div>
       <div id="zonesListContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+    </div>
+
+    <!-- PANNEAU 4 : بطولة تجار تونس وصابة الأسبوع والتحديات -->
+    <div class="tab-content-panel" id="panelLeague">
+      <!-- صابة النهار (Daily Login) -->
+      <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.25) 100%); border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 16px; padding: 12px; text-align: right;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-weight: 900; color: #fde68a; font-size: 14px;">🌾 صابة النهار : الرزق المكتوب والبركة</span>
+          <button class="upg-buy-btn" id="claimDailyRewardBtn" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border-color: #34d399; padding: 5px 12px;">
+            🤲 اقبض الصابة !
+          </button>
+        </div>
+        <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 8px;" id="dailyLoginStatusLabel">كل نهار تطلّ فيه على حانوتك، الكاسة تفرح بيك وبهدية من قاع الخابية !</div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;" id="dailyStreakRow"></div>
+      </div>
+
+      <!-- تحدي اليوم (Daily Missions) -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 12px; text-align: right;">
+        <div style="font-weight: 900; color: #38bdf8; font-size: 13px; margin-bottom: 6px;">🎯 تحديات اليوم : اكبس السنتورة !</div>
+        <div id="dailyChallengesList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+      </div>
+
+      <!-- بطولة تجار تونس (Ligue Hebdomadaire) -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(99, 102, 241, 0.4); border-radius: 16px; padding: 12px; text-align: right;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div>
+            <div style="font-weight: 900; color: #f8fafc; font-size: 14px;" id="leagueTierTitle">🏆 بطولة تجار تونس</div>
+            <div style="font-size: 11px; color: #94a3b8;" id="leagueSeasonTimer">مازال 6 أيام على الترقية الأسبوعية</div>
+          </div>
+          <button class="upg-buy-btn" id="leaguePromoteBtn" style="display: none; background: #e11d48; border-color: #f43f5e;">
+            🚀 اطلع للدوري الأعلى !
+          </button>
+        </div>
+        <div id="leagueLeaderboardList" style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;"></div>
+      </div>
     </div>
   </div>
 
@@ -1758,30 +1799,164 @@
       });
     }
 
-    // --- GESTION DES ONGLETS (COMMERCES / TACTIQUES / QUARTIERS) ---
+    // --- GESTION DES ONGLETS (COMMERCES / TACTIQUES / QUARTIERS / LIGUE) ---
     const tabBtnBusinesses = document.getElementById('tabBtnBusinesses');
     const tabBtnTactics = document.getElementById('tabBtnTactics');
     const tabBtnZones = document.getElementById('tabBtnZones');
+    const tabBtnLeague = document.getElementById('tabBtnLeague');
     const panelBusinesses = document.getElementById('panelBusinesses');
     const panelTactics = document.getElementById('panelTactics');
     const panelZones = document.getElementById('panelZones');
+    const panelLeague = document.getElementById('panelLeague');
 
     function switchTab(tabName) {
       tabBtnBusinesses.classList.toggle('active', tabName === 'businesses');
       tabBtnTactics.classList.toggle('active', tabName === 'tactics');
       tabBtnZones.classList.toggle('active', tabName === 'zones');
+      if (tabBtnLeague) tabBtnLeague.classList.toggle('active', tabName === 'league');
 
       panelBusinesses.classList.toggle('active', tabName === 'businesses');
       panelTactics.classList.toggle('active', tabName === 'tactics');
       panelZones.classList.toggle('active', tabName === 'zones');
+      if (panelLeague) panelLeague.classList.toggle('active', tabName === 'league');
 
       if (tabName === 'tactics') renderTacticalUpgradesUI();
       if (tabName === 'zones') renderZonesUI();
+      if (tabName === 'league') renderLeagueTabUI();
     }
 
     tabBtnBusinesses.onclick = () => switchTab('businesses');
     tabBtnTactics.onclick = () => switchTab('tactics');
     tabBtnZones.onclick = () => switchTab('zones');
+    if (tabBtnLeague) tabBtnLeague.onclick = () => switchTab('league');
+
+    // --- RENDU DU PANNEAU LIGUE, صابة النهار & التحديات ---
+    function renderLeagueTabUI() {
+      renderDailyLoginUI();
+      renderDailyChallengesUI();
+      renderLeagueLeaderboardUI();
+    }
+
+    function renderDailyLoginUI() {
+      const status = engine.checkDailyLoginStatus();
+      const streakRow = document.getElementById('dailyStreakRow');
+      const claimBtn = document.getElementById('claimDailyRewardBtn');
+      const statusLabel = document.getElementById('dailyLoginStatusLabel');
+      if (!streakRow) return;
+
+      streakRow.innerHTML = '';
+      import('./engine.js').then(m => {
+        const rewards = m.DAILY_LOGIN_REWARDS;
+        rewards.forEach((r, idx) => {
+          const isDone = idx < (engine.dailyLogin.currentStreak % 7) && !status.available;
+          const isCurrent = idx === status.dayIndex;
+          const cell = document.createElement('div');
+          cell.style.cssText = `background: ${isCurrent ? 'rgba(245,158,11,0.3)' : 'rgba(0,0,0,0.4)'}; border: 1px solid ${isCurrent ? '#f59e0b' : 'rgba(255,255,255,0.1)'}; border-radius: 8px; padding: 4px 2px; text-align: center; font-size: 10px;`;
+          cell.innerHTML = `
+            <div style="font-weight: 800; color: #94a3b8;">ن${r.day}</div>
+            <div style="font-size: 16px;">${r.icon}</div>
+            <div style="color: ${isDone ? '#34d399' : '#f8fafc'}; font-size: 9px; font-weight: 900;">${isDone ? '✓' : isCurrent ? 'توّا' : ''}</div>
+          `;
+          streakRow.appendChild(cell);
+        });
+      });
+
+      if (claimBtn) {
+        claimBtn.disabled = !status.available;
+        claimBtn.style.opacity = status.available ? '1' : '0.5';
+        claimBtn.onclick = () => {
+          const res = engine.claimDailyReward();
+          if (res) {
+            soundEngine.playMilestoneFanfare();
+            showRewardModalUI(res.reward.icon, 'صحة وفرحة بصابة النهار !', res.reward.desc, res.reward.dinars > 0 ? `+${formatCurrency(res.reward.dinars, 0)}` : 'بونيس شاعل');
+            renderDailyLoginUI();
+            renderDOM();
+          }
+        };
+      }
+    }
+
+    function renderDailyChallengesUI() {
+      const container = document.getElementById('dailyChallengesList');
+      if (!container) return;
+      container.innerHTML = '';
+      const challenges = engine.getDailyChallenges();
+      challenges.forEach(ch => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 8px; display: flex; align-items: center; justify-content: space-between;';
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 900; color: #f8fafc; font-size: 12px;">${ch.title} (${ch.current}/${ch.target})</div>
+            <div style="font-size: 10px; color: #94a3b8;">${ch.desc}</div>
+          </div>
+          <div>
+            ${ch.claimed ? `
+              <span style="font-size: 11px; font-weight: 900; color: #34d399;">تمّ ✓</span>
+            ` : ch.completed ? `
+              <button class="upg-buy-btn" style="background:#10b981; padding: 4px 8px; font-size: 10px;" id="claim-ch-${ch.id}">
+                اقبض 🎁
+              </button>
+            ` : `
+              <span style="font-size: 10px; color: #fbbf24; font-weight: 800;">+${formatCurrency(ch.rewardDinars, 0)}</span>
+            `}
+          </div>
+        `;
+        container.appendChild(item);
+
+        const btn = item.querySelector(`#claim-ch-${ch.id}`);
+        if (btn) {
+          btn.onclick = () => {
+            const claimed = engine.claimChallengeReward(ch.id);
+            if (claimed) {
+              soundEngine.playEventFanfare();
+              showRewardModalUI('🎯', 'تحدي تمّ بنجاح !', claimed.title, `+${formatCurrency(claimed.rewardDinars, 0)}`);
+              renderDailyChallengesUI();
+              renderDOM();
+            }
+          };
+        }
+      });
+    }
+
+    function renderLeagueLeaderboardUI() {
+      const container = document.getElementById('leagueLeaderboardList');
+      const titleEl = document.getElementById('leagueTierTitle');
+      const promoteBtn = document.getElementById('leaguePromoteBtn');
+      if (!container) return;
+
+      container.innerHTML = '';
+      const data = engine.getLeagueData();
+      if (titleEl) titleEl.innerText = `🏆 ${data.tierName} (${data.tierBadge})`;
+
+      if (promoteBtn) {
+        promoteBtn.style.display = data.isPromoted ? 'block' : 'none';
+        promoteBtn.onclick = () => {
+          const res = engine.promoteLeague();
+          if (res.success) {
+            soundEngine.playMilestoneFanfare();
+            showRewardModalUI('👑', 'ترقية تاريخية في البطولة !', `صعدت رسمياً إلى : ${res.newTier.name}`, `+${formatCurrency(res.newTier.promotionReward.dinars, 0)}`);
+            renderLeagueTabUI();
+            renderDOM();
+          }
+        };
+      }
+
+      data.leaderboard.forEach(entry => {
+        const row = document.createElement('div');
+        row.style.cssText = `background: ${entry.isPlayer ? 'rgba(99, 102, 241, 0.25)' : 'rgba(0,0,0,0.35)'}; border: 1px solid ${entry.isPlayer ? '#818cf8' : 'rgba(255,255,255,0.06)'}; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;`;
+        row.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 900; font-size: 13px; color: ${entry.rank <= 3 ? '#fbbf24' : '#94a3b8'};">#${entry.rank}</span>
+            <span style="font-size: 16px;">${entry.avatar}</span>
+            <span style="font-weight: 800; font-size: 12px; color: ${entry.isPlayer ? '#fde68a' : '#f8fafc'};">${entry.name}</span>
+          </div>
+          <div style="font-size: 11px; font-weight: 900; color: #38bdf8;">
+            +${formatCurrency(entry.dps)}/ث
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
 
     // --- RENDU DES AMÉLIORATIONS TACTIQUES ---
     const tacticalUpgradesList = document.getElementById('tacticalUpgradesList');

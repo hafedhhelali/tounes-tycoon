@@ -7,33 +7,33 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'kaskrout',
     name: 'نصبة كسكروت عياري',
-    tagline: 'سخون يحرق بالزيت والهريسة العربي، كول وتفرهد !',
+    tagline: 'بالتنّ والزيتون وكعبة العظام المروبة، عضّة تدوّخ وتنسّيك في همّ الدنيا !',
     icon: '🥖',
     baseCost: 5.0, // Don de départ 5 DT permet l'achat immédiat
     baseRevenue: 0.8,
     costMultiplier: 1.07,
     cycleDurationMs: 600, // 0.6s
     managers: [
-      { name: 'عمّك الصادق', role: 'صنايعي الكسكروت', avatar: '👨‍🍳', cost: 25.0 }
+      { name: 'عمّك الصادق', role: 'معلّم القصان والتكبيس بالبابور', avatar: '👨‍🍳', cost: 25.0 }
     ],
   },
   {
     id: 'fricasse',
     name: 'فريكاسي وبمبلوني سخون',
-    tagline: 'من الطنجرة للفوّاي، كعبة تقرمش تسكت الجوع !',
+    tagline: 'كعبة مقرمشة تعوّم في العسل وشاربة الزيت بالبركة، تعضّ الكعبة تتفرشك !',
     icon: '🍩',
     baseCost: 30.0,
     baseRevenue: 3.5,
     costMultiplier: 1.08,
     cycleDurationMs: 1400, // 1.4s
     managers: [
-      { name: 'الباجي البمبلوني', role: 'معلّم القلي والتغميس', avatar: '🧑‍🍳', cost: 150.0 }
+      { name: 'الباجي البمبلوني', role: 'فنّان الغطسة والسكر المحوّر', avatar: '🧑‍🍳', cost: 150.0 }
     ],
   },
   {
     id: 'kahwa',
     name: 'قهوة شعبية وطرح شكبة',
-    tagline: 'كابوسين تروّق المخ وطرح كارطة مع ولاد الحومة',
+    tagline: 'كابوسين قارحة، دخان الكوانين وطرح شكبة للصباح، هوني وين تصنع الصفقات !',
     icon: '☕',
     baseCost: 120.0,
     baseRevenue: 14.0,
@@ -47,7 +47,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'attariya',
     name: 'عطريّة ولد الحومة',
-    tagline: 'باكو حليب، طماطم وخيط وإبرة، وقيّد في الكرني',
+    tagline: 'من حكّة الطماطم لخيط الصوف، السلعة مكدسة والكرني شاهد على ثقة ولاد الحومة.',
     icon: '🏪',
     baseCost: 800.0,
     baseRevenue: 55.0,
@@ -387,6 +387,82 @@ export const TUNISIAN_COMBOS = [
   }
 ];
 
+export const LEAGUE_TIERS = [
+  {
+    id: 'houma',
+    name: 'دوري الحومة والشوانط',
+    badge: '🥉 حومة',
+    minDps: 0,
+    rivals: [
+      { name: 'منصف العطوف', avatar: '🏪', baseDps: 1.2 },
+      { name: 'صالح الكسكروتي', avatar: '🥖', baseDps: 3.5 },
+      { name: 'حمادي بيجو', avatar: '🛵', baseDps: 8.0 },
+      { name: 'خالتي شريفة', avatar: '👵', baseDps: 15.0 },
+      { name: 'وليد ترينكا', avatar: '🎲', baseDps: 25.0 }
+    ],
+    promotionReward: { dinars: 500, prestige: 5 }
+  },
+  {
+    id: 'medina',
+    name: 'رابطة حراير ومعلّمي الأسواق',
+    badge: '🥈 مدينة',
+    minDps: 100,
+    rivals: [
+      { name: 'سفيان بيستاش', avatar: '🥜', baseDps: 150 },
+      { name: 'سي الهاشمي القهواجي', avatar: '☕', baseDps: 450 },
+      { name: 'خالتي منانة البقلاوجية', avatar: '🍯', baseDps: 1200 },
+      { name: 'لمين اللواج', avatar: '🚐', baseDps: 2800 },
+      { name: 'منير الكاشير', avatar: '💳', baseDps: 6000 }
+    ],
+    promotionReward: { dinars: 25000, prestige: 20 }
+  },
+  {
+    id: 'joumhouriya',
+    name: 'دوري حيتان الأعمال وباب سويقة',
+    badge: '🥇 وطني',
+    minDps: 10000,
+    rivals: [
+      { name: 'مدام درّة الكوليكسيون', avatar: '💅', baseDps: 25000 },
+      { name: 'كمال تيربو النقل', avatar: '🏎️', baseDps: 80000 },
+      { name: 'الحاج علي بن سالم', avatar: '🕋', baseDps: 250000 },
+      { name: 'طارق الشاف', avatar: '🏢', baseDps: 700000 },
+      { name: 'وسيم صالون الشاي', avatar: '🍹', baseDps: 1800000 }
+    ],
+    promotionReward: { dinars: 1000000, prestige: 100 }
+  },
+  {
+    id: 'elite',
+    name: 'رابطة أباطرة تونس الكبار',
+    badge: '👑 نخبة تونس',
+    minDps: 2000000,
+    rivals: [
+      { name: 'سي مروان قرطاج', avatar: '🏛️', baseDps: 5000000 },
+      { name: 'فوزي بنزين الطيران', avatar: '🛫', baseDps: 15000000 },
+      { name: 'ليلى غولد القابضة', avatar: '💎', baseDps: 45000000 },
+      { name: 'المعلم مبروك الشامي', avatar: '👑', baseDps: 120000000 },
+      { name: 'البارون الأزرق سيدي بوسعيد', avatar: '🏰', baseDps: 350000000 }
+    ],
+    promotionReward: { dinars: 100000000, prestige: 500 }
+  }
+];
+
+export const DAILY_LOGIN_REWARDS = [
+  { day: 1, title: 'فتّوح يا رزّاق', icon: '🥐', dinars: 50, prestige: 0, desc: '50 د.ت كاش تسمّي بيها باسم الله' },
+  { day: 2, title: 'عرق الجبين', icon: '☕', dinars: 250, prestige: 0, speedBoostMs: 900000, desc: '250 د.ت + تيربو x2 ربع ساعة' },
+  { day: 3, title: 'بركة ولاد الحومة', icon: '🥖', dinars: 1200, prestige: 3, desc: '1 200 د.ت + 3 نقاط معروف' },
+  { day: 4, title: 'خميس وعاشور', icon: '🧿', dinars: 5000, prestige: 0, adBoostMs: 1800000, desc: '5 000 د.ت + إنتاج مضاعف لنصف ساعة' },
+  { day: 5, title: 'صابة الجمعة الفاضلة', icon: '🍯', dinars: 20000, prestige: 10, desc: '20 000 د.ت + 10 نقاط معروف' },
+  { day: 6, title: 'الحطة والهمّة', icon: '🏎️', dinars: 100000, prestige: 0, speedBoostMs: 3600000, desc: '100 000 د.ت + تيربو x4 لساعة كاملة' },
+  { day: 7, title: 'كنز سيدي محرز !', icon: '👑', dinars: 500000, prestige: 25, titleUnlock: 'سلطان التجارة', desc: '500 000 د.ت + 25 معروف + لقب سلطان التجارة' }
+];
+
+export const DAILY_CHALLENGES_POOL = [
+  { id: 'dc_serves', title: 'سربيس سخون', desc: 'سربّي 30 كليان يدويّا باليد', target: 30, type: 'serves', rewardDinars: 500, rewardPrestige: 2 },
+  { id: 'dc_upgrades', title: 'عمارة واستثمار', desc: 'اشري أو طلّع 3 مستويات في المشاريع', target: 3, type: 'upgrades', rewardDinars: 1200, rewardPrestige: 3 },
+  { id: 'dc_chkobba', title: 'معلّم كارطة', desc: 'اربح طرح شكبة في القهوة', target: 1, type: 'chkobba_wins', rewardDinars: 2500, rewardPrestige: 5 },
+  { id: 'dc_spin', title: 'عجلة الحظ', desc: 'دوّر عجلة الحظ مرّة اليوم', target: 1, type: 'wheel_spins', rewardDinars: 800, rewardPrestige: 2 }
+];
+
 export const PRESTIGE_RANKS = [
   { minLevel: 0, title: 'مواطن يلوّج على مشروع', badge: 'مبتدئ' },
   { minLevel: 1, title: 'ولد حومة مستثمر', badge: 'معلّم 1★' },
@@ -444,6 +520,24 @@ export class TycoonEngine {
     this.resolvedDilemmas = [];
     this.nextDilemmaCheck = Date.now() + 25000; // Premier dilemme après 25s
     this.activeDilemma = null;
+
+    // Rétention & Social : صابة الأسبوع (Daily Login Streak)
+    this.dailyLogin = {
+      lastClaimDate: null,
+      currentStreak: 0
+    };
+
+    // Rétention & Social : بطولة تجار تونس (Ligue Hebdomadaire)
+    this.league = {
+      tierIndex: 0,
+      seasonEnd: Date.now() + (7 * 86400000)
+    };
+
+    // Rétention & Social : تحدي اليوم (Daily Challenges)
+    this.dailyChallenge = {
+      dateKey: null,
+      challenges: []
+    };
 
     if (initialState) {
       this.loadState(initialState);
@@ -920,6 +1014,168 @@ export class TycoonEngine {
     this.playerTitle = currentRank.title;
   }
 
+  // Calcul du revenu total par seconde pour la ligue et l'affichage
+  getTotalDinarsPerSecond(now = Date.now()) {
+    let total = 0;
+    for (const biz of this.businesses) {
+      if (biz.level > 0) {
+        total += (this.getRevenue(biz, now) / (biz.cycleDurationMs / 1000));
+      }
+    }
+    return total;
+  }
+
+  // --- صابة الأسبوع (RÉCOMPENSES DE CONNEXION 7 JOURS) ---
+  checkDailyLoginStatus() {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (!this.dailyLogin.lastClaimDate) {
+      return { available: true, dayIndex: 0 };
+    }
+    const lastDate = new Date(this.dailyLogin.lastClaimDate);
+    const today = new Date(todayStr);
+    const diffDays = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      return { available: false, dayIndex: this.dailyLogin.currentStreak % 7 };
+    }
+    if (diffDays === 1) {
+      return { available: true, dayIndex: (this.dailyLogin.currentStreak) % 7 };
+    }
+    return { available: true, dayIndex: 0, resetStreak: true };
+  }
+
+  claimDailyReward(now = Date.now()) {
+    const status = this.checkDailyLoginStatus();
+    if (!status.available) return null;
+
+    const dayIndex = status.resetStreak ? 0 : status.dayIndex;
+    const reward = DAILY_LOGIN_REWARDS[dayIndex];
+
+    this.dinars += reward.dinars;
+    this.totalDinarsEarned += reward.dinars;
+    this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward.dinars;
+    if (reward.prestige) this.prestigePoints += reward.prestige;
+
+    if (reward.speedBoostMs) {
+      this.speedBoostEndsAt = Math.max(now, this.speedBoostEndsAt) + reward.speedBoostMs;
+      this.speedBoostMultiplier = 2.0;
+    }
+    if (reward.adBoostMs) {
+      this.adBoostEndsAt = Math.max(now, this.adBoostEndsAt) + reward.adBoostMs;
+    }
+    if (reward.titleUnlock) {
+      this.playerTitle = reward.titleUnlock;
+    }
+
+    this.dailyLogin.lastClaimDate = new Date().toISOString().slice(0, 10);
+    this.dailyLogin.currentStreak = status.resetStreak ? 1 : (this.dailyLogin.currentStreak + 1);
+
+    return { reward, streak: this.dailyLogin.currentStreak };
+  }
+
+  // --- بطولة تجار تونس (LIGUE HEBDOMADAIRE) ---
+  getLeagueData(now = Date.now()) {
+    const tier = LEAGUE_TIERS[this.league.tierIndex] || LEAGUE_TIERS[0];
+    const playerDps = this.getTotalDinarsPerSecond(now);
+
+    const rivals = tier.rivals.map((r, i) => {
+      const dynamicScore = Math.floor(r.baseDps * 3600);
+      return {
+        name: r.name,
+        avatar: r.avatar,
+        score: dynamicScore,
+        dps: r.baseDps,
+        isPlayer: false
+      };
+    });
+
+    const playerScore = Math.floor(playerDps * 3600);
+    const playerEntry = {
+      name: 'أنت (رجل أعمال الحومة)',
+      avatar: '😎',
+      score: playerScore,
+      dps: playerDps,
+      isPlayer: true
+    };
+
+    const fullList = [...rivals, playerEntry].sort((a, b) => b.score - a.score);
+    fullList.forEach((entry, idx) => { entry.rank = idx + 1; });
+
+    const playerRank = fullList.find(e => e.isPlayer).rank;
+    const isPromoted = playerRank <= 2 && this.league.tierIndex < (LEAGUE_TIERS.length - 1);
+
+    return {
+      tierName: tier.name,
+      tierBadge: tier.badge,
+      leaderboard: fullList,
+      playerRank,
+      isPromoted,
+      promotionReward: tier.promotionReward
+    };
+  }
+
+  promoteLeague() {
+    const data = this.getLeagueData();
+    if (data.isPromoted && this.league.tierIndex < LEAGUE_TIERS.length - 1) {
+      this.league.tierIndex += 1;
+      this.dinars += data.promotionReward.dinars;
+      this.prestigePoints += data.promotionReward.prestige;
+      this.league.seasonEnd = Date.now() + (7 * 86400000);
+      return { success: true, newTier: LEAGUE_TIERS[this.league.tierIndex] };
+    }
+    return { success: false };
+  }
+
+  // --- تحدي اليوم (DAILY MISSIONS) ---
+  getDailyChallenges() {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    if (this.dailyChallenge.dateKey === todayStr && this.dailyChallenge.challenges.length > 0) {
+      return this.dailyChallenge.challenges;
+    }
+
+    const shuffled = [...DAILY_CHALLENGES_POOL].sort(() => 0.5 - Math.random());
+    this.dailyChallenge = {
+      dateKey: todayStr,
+      challenges: shuffled.slice(0, 3).map(ch => ({
+        ...ch,
+        current: 0,
+        completed: false,
+        claimed: false
+      }))
+    };
+    return this.dailyChallenge.challenges;
+  }
+
+  recordChallengeProgress(type, amount = 1) {
+    const list = this.getDailyChallenges();
+    let updated = false;
+    list.forEach(ch => {
+      if (ch.type === type && !ch.completed) {
+        ch.current += amount;
+        if (ch.current >= ch.target) {
+          ch.current = ch.target;
+          ch.completed = true;
+        }
+        updated = true;
+      }
+    });
+    return updated;
+  }
+
+  claimChallengeReward(challengeId) {
+    const list = this.getDailyChallenges();
+    const ch = list.find(c => c.id === challengeId);
+    if (!ch || !ch.completed || ch.claimed) return null;
+
+    ch.claimed = true;
+    this.dinars += ch.rewardDinars;
+    this.totalDinarsEarned += ch.rewardDinars;
+    this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + ch.rewardDinars;
+    if (ch.rewardPrestige) this.prestigePoints += ch.rewardPrestige;
+
+    return ch;
+  }
+
   // --- FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) ---
   claimLuckyDrop(type = 'cash', now = Date.now()) {
     if (type === 'speed') {
@@ -1178,6 +1434,9 @@ export class TycoonEngine {
       currentZoneId: this.currentZoneId || 'bab_souika',
       purchasedUpgrades: this.purchasedUpgrades || [],
       lastFreeWheelSpin: this.lastFreeWheelSpin || 0,
+      dailyLogin: this.dailyLogin || { lastClaimDate: null, currentStreak: 0 },
+      league: this.league || { tierIndex: 0, seasonEnd: Date.now() + 7 * 86400000 },
+      dailyChallenge: this.dailyChallenge || { dateKey: null, challenges: [] },
       businesses: this.businesses.map(b => ({
         id: b.id,
         level: b.level,
@@ -1206,6 +1465,9 @@ export class TycoonEngine {
     this.currentZoneId = state.currentZoneId ?? 'bab_souika';
     this.purchasedUpgrades = Array.isArray(state.purchasedUpgrades) ? state.purchasedUpgrades : [];
     this.lastFreeWheelSpin = state.lastFreeWheelSpin ?? 0;
+    this.dailyLogin = state.dailyLogin ?? { lastClaimDate: null, currentStreak: 0 };
+    this.league = state.league ?? { tierIndex: 0, seasonEnd: Date.now() + 7 * 86400000 };
+    this.dailyChallenge = state.dailyChallenge ?? { dateKey: null, challenges: [] };
 
     if (Array.isArray(state.businesses)) {
       for (const saved of state.businesses) {

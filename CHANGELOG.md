@@ -1,6 +1,11 @@
 ﻿# CHANGELOG
 
-## 2026-10-20
+## 2026-10-21
+- feat(revolution): complete game revolution with airy 4-tab UI, social league, daily streak rewards and authentic derja overhaul
+- feat(revolution,social,ui,derja): complete game revolution by 3 PhD experts :
+  - 🎨 UI/UX Tycoon Art Director: 4-tab spacious layout (المشاريع / الصنعة / الأحياء / البطولة والصابة), airy royal header, crisp tactile cards.
+  - 🏆 Social & Retention Tycoon: weekly Merchants Championship ('بطولة تجار تونس' 4 tiers), 7-day daily login streak ('صابة النهار'), and daily missions ('تحديات اليوم').
+  - 🇹🇳 Authentic Derja Overhaul: PhD linguist street dialect polish for slogans, staff titles, and community rivalries.
 - fix(ui,layout): streamline header compactness, prevent overlap, increase scroll padding and optimize fluid rendering
 - fix(ui,layout): streamline header compactness, prevent overlap, increase scroll padding & optimize fluid rendering
 - feat(gameplay,immersion): major attractiveness overhaul with zones, tactical upgrades, milestones, lucky wheel, and street dilemmas
