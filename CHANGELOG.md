@@ -1,6 +1,13 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- feat(visual-simulation): add 2D cutaway live animated store simulation with register, dynamic staff stations and customer flow
+- feat(visual-simulation): add 2D cutaway live animated store simulation with register, dynamic staff stations and customer flow
+  - 🏪 Interactive 2D Stage (`#bizDetailVisualStage`): Cutaway store view styled in dark luxury & Tunisian tiles.
+  - 📠 Cash Counter & Register: Register drawer pops with gold sparkles (`+د.ت ✨`) on each transaction; dedicated cashier station (active sprite with sparkles when hired, dashed silhouette with one-tap hire when vacant).
+  - 👥 Workstations: Animated staff slots working with tools/fire; vacant slots invite direct tap recruitment.
+  - 🚶 Animated Customer Flow: Dynamic queue of customers (`🚶‍♂️`, `🧑‍💼`, `🧕`, `🧔`) walking in, displaying item order bubbles (`☕`, `🥖`, `🚖`), paying at the register and walking out happy (`😊`).
+  - ⚡ 60 FPS Engine Lifecycle: Clean loop lifecycle automatically started on modal open and stopped on close (`cancelAnimationFrame`, zero memory leaks).
 - fix(derja): replace قص البونيس with اربح البونيس on lucky ad modal
 - fix(derja): replace 'قصّ البونيس' with 'اربح البونيس' on rewarded ad bonus modal
 - feat(biz-interior,audio,economy): add inside business view, Mediterranean lounge BGM, ad-gated rebalanced bonuses and ifles lexical overhaul

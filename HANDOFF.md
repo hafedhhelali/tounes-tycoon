@@ -2,8 +2,8 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Mise à jour lexicale du bouton AdMob : "قصّ البونيس" devient "اربح البونيس".
-Vue immersive des commerces opérationnelle, BGM lounge méditerranéenne douce, hard reset إفلاس.
+Intégration du moteur de SIMULATION VISUELLE 2D en temps réel à l'intérieur de chaque projet (`#bizDetailVisualStage`).
+Scène en coupe animée 60 FPS : comptoir et caisse enregistreuse tactile `📠` avec pièces scintillantes, postes de travail des employés (occupés et animés si recrutés, ou silhouettes pointillées avec embauche au tap), et flux continu de clients tunisiens qui entrent, commandent avec bulles et paient.
 Tests: `npm test` = 12/12 PASS. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE

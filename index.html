@@ -1480,6 +1480,188 @@
       font-weight: 800;
       cursor: pointer;
     }
+
+    /* --- SIMULATION VISUELLE 2D TYCOON (CUTAWAY STORE STAGE) --- */
+    .biz-store-stage {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background: radial-gradient(ellipse at 50% 30%, #1e293b 0%, #0a0f1d 100%);
+      border-radius: 14px;
+      border: 1.5px solid rgba(245, 158, 11, 0.35);
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5);
+      overflow: hidden;
+      user-select: none;
+    }
+    .biz-store-stage::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: repeating-linear-gradient(
+        45deg,
+        #131a29,
+        #131a29 12px,
+        #1e293b 12px,
+        #1e293b 24px
+      );
+      border-top: 2px solid #d97706;
+      z-index: 1;
+    }
+    .store-counter {
+      position: absolute;
+      left: 20px;
+      bottom: 30px;
+      width: 72px;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .store-cash-register {
+      position: relative;
+      font-size: 24px;
+      transition: transform 0.1s ease;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+    }
+    .store-cash-register.paying {
+      animation: registerPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes registerPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3) translateY(-4px); }
+      100% { transform: scale(1); }
+    }
+    .store-counter-desk {
+      background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
+      border: 1px solid #f59e0b;
+      border-radius: 6px;
+      color: #fef08a;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    }
+    .store-stations-row {
+      position: absolute;
+      left: 95px;
+      bottom: 40px;
+      display: flex;
+      gap: 14px;
+      z-index: 3;
+    }
+    .store-station {
+      position: relative;
+      width: 44px;
+      height: 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      cursor: pointer;
+    }
+    .store-station.cashier-station {
+      position: absolute;
+      left: 32px;
+      bottom: 46px;
+      z-index: 2;
+    }
+    .station-worker-active {
+      font-size: 28px;
+      animation: workerIdle 1.4s ease-in-out infinite alternate;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    }
+    @keyframes workerIdle {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-4px) rotate(-3deg); }
+    }
+    .station-tool-effect {
+      position: absolute;
+      top: -8px;
+      font-size: 14px;
+      animation: toolFloat 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes toolFloat {
+      0% { transform: scale(0.8) translateY(2px); opacity: 0.5; }
+      100% { transform: scale(1.1) translateY(-6px); opacity: 1; }
+    }
+    .station-worker-empty {
+      width: 36px;
+      height: 48px;
+      border: 1.5px dashed rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.06);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .station-worker-empty:hover {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #fbbf24;
+      transform: scale(1.05);
+    }
+    .station-worker-empty .empty-plus {
+      font-size: 14px;
+      color: #fbbf24;
+      font-weight: 900;
+    }
+    .station-worker-empty .empty-lbl {
+      font-size: 8px;
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+    .store-customers-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .store-customer {
+      position: absolute;
+      bottom: 34px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.05s linear;
+    }
+    .customer-avatar {
+      font-size: 24px;
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6));
+      animation: customerBob 0.3s ease-in-out infinite alternate;
+    }
+    @keyframes customerBob {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px); }
+    }
+    .customer-bubble {
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 12px;
+      padding: 1px 5px;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 2px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      animation: bubblePop 0.2s ease;
+    }
+    .coin-popup {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 900;
+      color: #fef08a;
+      text-shadow: 0 0 8px #f59e0b;
+      pointer-events: none;
+      animation: coinFloatUp 0.8s ease-out forwards;
+      z-index: 10;
+    }
+    @keyframes coinFloatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      100% { opacity: 0; transform: translateY(-28px) scale(1.2); }
+    }
   </style>
 </head>
 <body>
@@ -1881,6 +2063,24 @@
           </div>
         </div>
         <button class="settings-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
+      </div>
+
+      <!-- SCÈNE VISUELLE TYCOON 2D (Vue en coupe / Cutaway Store) -->
+      <div class="biz-store-stage" id="bizDetailVisualStage">
+        <div class="store-backdrop">
+          <div class="store-counter">
+            <div class="store-cash-register" id="storeRegister">
+              <span class="reg-icon">📠</span>
+            </div>
+            <div class="store-counter-desk">الكاسة</div>
+          </div>
+        </div>
+        <!-- Slot Caissier -->
+        <div class="store-station cashier-station" id="stationCashier"></div>
+        <!-- Postes Employés (Workstations) -->
+        <div class="store-stations-row" id="storeWorkstations"></div>
+        <!-- Voie des clients -->
+        <div class="store-customers-layer" id="storeCustomersLayer"></div>
       </div>
 
       <!-- Quick KPI summary -->
@@ -3142,12 +3342,203 @@
     const bizDetailSatisfaction = document.getElementById('bizDetailSatisfaction');
     const bizDetailLiveTicker = document.getElementById('bizDetailLiveTicker');
 
+    // --- MOTEUR DE SIMULATION VISUELLE 2D (CUTAWAY STORE STAGE) ---
+    class BizStoreSimulation {
+      constructor(stageEl, engineRef) {
+        this.stage = stageEl;
+        this.engine = engineRef;
+        this.bizId = null;
+        this.animId = null;
+        this.lastTime = 0;
+        this.spawnTimer = 0;
+        this.customers = [];
+        this.itemsPool = ['☕', '🥖', '🚖', '🍹', '🍕', '🥫', '🏎️', '🍩'];
+        this.avatarsPool = ['🚶‍♂️', '🧑‍💼', '🧕', '🧔', '👴', '👩‍💻'];
+      }
+
+      start(bizId) {
+        this.stop();
+        this.bizId = bizId;
+        this.customers = [];
+        this.spawnTimer = 0;
+        this.lastTime = performance.now();
+        this.renderStations();
+        this.loop = this.loop.bind(this);
+        this.animId = requestAnimationFrame(this.loop);
+      }
+
+      stop() {
+        if (this.animId) {
+          cancelAnimationFrame(this.animId);
+          this.animId = null;
+        }
+        const layer = this.stage?.querySelector('#storeCustomersLayer');
+        if (layer) layer.innerHTML = '';
+        this.customers = [];
+      }
+
+      renderStations() {
+        const detail = this.engine.getBusinessDetail(this.bizId);
+        if (!detail) return;
+
+        // 1. Caissier
+        const cashierSlot = detail.staffSlots && detail.staffSlots[0];
+        const cashierEl = this.stage.querySelector('#stationCashier');
+        if (cashierEl && cashierSlot) {
+          cashierEl.innerHTML = cashierSlot.hired
+            ? `<div class="station-worker-active" title="${cashierSlot.name}">👨‍💼</div>
+               <div class="station-tool-effect">✨</div>`
+            : `<div class="station-worker-empty" id="sim-hire-cashier-${this.bizId}">
+                 <span class="empty-plus">➕</span>
+                 <span class="empty-lbl">كاسيي</span>
+               </div>`;
+
+          const emptyBtn = cashierEl.querySelector(`#sim-hire-cashier-${this.bizId}`);
+          if (emptyBtn) {
+            emptyBtn.onclick = () => {
+              if (this.engine.hireManager(this.bizId)) {
+                soundEngine.playEventFanfare();
+                renderBizDetailContent();
+                this.renderStations();
+                renderDOM();
+              } else {
+                triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّم الكاسيي ! 👔');
+              }
+            };
+          }
+        }
+
+        // 2. Postes Employés (Workstations)
+        const workRow = this.stage.querySelector('#storeWorkstations');
+        if (workRow && detail.staffSlots) {
+          workRow.innerHTML = '';
+          detail.staffSlots.slice(1).forEach((slot, idx) => {
+            const station = document.createElement('div');
+            station.className = 'store-station';
+            station.innerHTML = slot.hired
+              ? `<div class="station-worker-active" title="${slot.name}">${slot.icon || '👨‍🍳'}</div>
+                 <div class="station-tool-effect">🔥</div>`
+              : `<div class="station-worker-empty" id="sim-hire-work-${this.bizId}-${idx}">
+                   <span class="empty-plus">➕</span>
+                   <span class="empty-lbl">شاغر</span>
+                 </div>`;
+            workRow.appendChild(station);
+
+            const emptyBtn = station.querySelector(`#sim-hire-work-${this.bizId}-${idx}`);
+            if (emptyBtn) {
+              emptyBtn.onclick = () => {
+                if (this.engine.hireManager(this.bizId)) {
+                  soundEngine.playEventFanfare();
+                  renderBizDetailContent();
+                  this.renderStations();
+                  renderDOM();
+                } else {
+                  triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّمو ! 👔');
+                }
+              };
+            }
+          });
+        }
+      }
+
+      spawnCustomer() {
+        const stageWidth = this.stage.clientWidth || 340;
+        const customer = {
+          id: Math.random(),
+          x: stageWidth + 10,
+          targetX: 60 + Math.random() * 25,
+          state: 'walking_in',
+          avatar: this.avatarsPool[Math.floor(Math.random() * this.avatarsPool.length)],
+          item: this.itemsPool[Math.floor(Math.random() * this.itemsPool.length)],
+          payDuration: 1.1,
+          payTimer: 0,
+          el: null
+        };
+
+        const el = document.createElement('div');
+        el.className = 'store-customer';
+        el.innerHTML = `
+          <div class="customer-bubble">${customer.item}</div>
+          <div class="customer-avatar">${customer.avatar}</div>
+        `;
+        const layer = this.stage.querySelector('#storeCustomersLayer');
+        if (layer) layer.appendChild(el);
+        customer.el = el;
+        this.customers.push(customer);
+      }
+
+      triggerPayment(c) {
+        const reg = this.stage.querySelector('#storeRegister');
+        if (reg) {
+          reg.classList.add('paying');
+          setTimeout(() => reg.classList.remove('paying'), 350);
+        }
+        const pop = document.createElement('div');
+        pop.className = 'coin-popup';
+        pop.style.left = `${c.x + 10}px`;
+        pop.style.bottom = '75px';
+        pop.innerText = '+د.ت ✨';
+        this.stage.appendChild(pop);
+        setTimeout(() => pop.remove(), 800);
+      }
+
+      loop(now) {
+        const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+        this.lastTime = now;
+
+        this.spawnTimer += dt;
+        if (this.spawnTimer > 2.2 && this.customers.length < 4) {
+          this.spawnCustomer();
+          this.spawnTimer = 0;
+        }
+
+        for (let i = this.customers.length - 1; i >= 0; i--) {
+          const c = this.customers[i];
+          if (c.state === 'walking_in') {
+            c.x -= 75 * dt;
+            if (c.x <= c.targetX) {
+              c.x = c.targetX;
+              c.state = 'paying';
+              this.triggerPayment(c);
+            }
+          } else if (c.state === 'paying') {
+            c.payTimer += dt;
+            if (c.payTimer >= c.payDuration) {
+              c.state = 'walking_out';
+              const bubble = c.el?.querySelector('.customer-bubble');
+              if (bubble) bubble.innerText = '😊';
+            }
+          } else if (c.state === 'walking_out') {
+            c.x -= 70 * dt;
+            if (c.x < -30) {
+              if (c.el) c.el.remove();
+              this.customers.splice(i, 1);
+              continue;
+            }
+          }
+          if (c.el) {
+            c.el.style.transform = `translateX(${c.x}px)`;
+          }
+        }
+
+        this.animId = requestAnimationFrame(this.loop);
+      }
+    }
+
+    let storeSimulation = null;
+
     let currentDetailBizId = null;
 
     function openBizDetailModalUI(bizId) {
       currentDetailBizId = bizId;
       renderBizDetailContent();
       if (bizDetailModal) bizDetailModal.classList.add('active');
+
+      const stageEl = document.getElementById('bizDetailVisualStage');
+      if (stageEl) {
+        if (!storeSimulation) storeSimulation = new BizStoreSimulation(stageEl, engine);
+        storeSimulation.start(bizId);
+      }
     }
 
     function renderBizDetailContent() {
@@ -3237,6 +3628,7 @@
 
     if (closeBizDetailBtn) {
       closeBizDetailBtn.onclick = () => {
+        if (storeSimulation) storeSimulation.stop();
         if (bizDetailModal) bizDetailModal.classList.remove('active');
       };
     }
