@@ -838,6 +838,26 @@ export class QuartierAnimator {
     this.onInspectBiz = null;
     this.onUpgradeBiz = null;
     this.onCollectBiz = null;
+    this.onHudAction = null;
+
+    // Alertes & Offres actives passées par le HUD principal pour rendu 100% dans le Canvas
+    this.hudOffers = {
+      adBoostText: 'طافي',
+      adBoostActive: false,
+      adCashText: '+30',
+      prestigeText: 'x1.0',
+      canPrestige: false,
+      wheelReady: false,
+      hasQuest: false,
+      questTitle: '',
+      hasEvent: false,
+      eventTitle: '',
+      eventTimer: '',
+      hasDilemma: false,
+      dilemmaTitle: '',
+      hasLuckyDrop: false,
+      luckyDropIcon: '🎁'
+    };
 
     // Entities
     this.pedestrians = [];
@@ -885,10 +905,15 @@ export class QuartierAnimator {
     this.resize();
   }
 
-  setCallbacks({ onInspect, onUpgrade, onCollect }) {
+  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction }) {
     if (onInspect) this.onInspectBiz = onInspect;
     if (onUpgrade) this.onUpgradeBiz = onUpgrade;
     if (onCollect) this.onCollectBiz = onCollect;
+    if (onHudAction) this.onHudAction = onHudAction;
+  }
+
+  updateHudOffers(data) {
+    Object.assign(this.hudOffers, data);
   }
 
   bindEvents() {
@@ -1068,6 +1093,8 @@ export class QuartierAnimator {
       this.onUpgradeBiz(bizId);
     } else if (action === 'collect' && this.onCollectBiz) {
       this.onCollectBiz(bizId);
+    } else if (action.startsWith('hud_') && this.onHudAction) {
+      this.onHudAction(action);
     }
   }
 
@@ -1182,6 +1209,7 @@ export class QuartierAnimator {
     const w = this.width;
     const h = this.height;
     const camX = this.cameraX;
+    const groundY = Math.max(195, Math.min(255, h - 55));
 
     this.interactiveHitboxes = [];
     ctx.clearRect(0, 0, w, h);
@@ -1218,7 +1246,7 @@ export class QuartierAnimator {
     }
     ctx.globalAlpha = 1.0;
 
-    this.drawSkylineBackground(ctx, camX, w, h);
+    this.drawSkylineBackground(ctx, camX, w, h, groundY - 10);
 
     ctx.fillStyle = 'rgba(254, 243, 199, 0.22)';
     this.clouds.forEach(c => {
@@ -1238,14 +1266,14 @@ export class QuartierAnimator {
     this.palms.forEach(p => {
       const screenX = p.x - camX;
       if (screenX > -60 && screenX < w + 60) {
-        this.drawPalmTree(ctx, screenX, 240, p, timestamp);
+        this.drawPalmTree(ctx, screenX, groundY - 12, p, timestamp);
       }
     });
 
     this.buildingsConfig.forEach(b => {
       const screenX = b.x - camX;
       if (screenX + b.width > -50 && screenX < w + 50) {
-        this.drawBuilding(ctx, b, screenX, 255, timestamp);
+        this.drawBuilding(ctx, b, screenX, groundY, timestamp);
       }
     });
 
@@ -1261,19 +1289,19 @@ export class QuartierAnimator {
     });
     ctx.globalAlpha = 1.0;
 
-    this.drawBoulevardStreet(ctx, camX, w, h);
+    this.drawBoulevardStreet(ctx, camX, w, h, groundY);
 
     this.taxis.forEach(t => {
       const screenX = t.x - camX;
       if (screenX > -100 && screenX < w + 100) {
-        this.drawVehicle(ctx, screenX, 305, t, timestamp);
+        this.drawVehicle(ctx, screenX, groundY + 42, t, timestamp);
       }
     });
 
     this.pedestrians.forEach(p => {
       const screenX = p.x - camX;
       if (screenX > -50 && screenX < w + 50) {
-        this.drawPedestrian(ctx, screenX, 268 + p.yOffset, p, timestamp);
+        this.drawPedestrian(ctx, screenX, groundY + 12 + p.yOffset * 0.6, p, timestamp);
       }
     });
 
@@ -1294,6 +1322,7 @@ export class QuartierAnimator {
     });
 
     this.drawMinimapTrack(ctx, w, h);
+    this.drawInCanvasOffersHUD(ctx, w, h, timestamp);
 
     if (this.transitionAlpha > 0) {
       ctx.save();
@@ -1312,8 +1341,7 @@ export class QuartierAnimator {
     }
   }
 
-  drawSkylineBackground(ctx, camX, w, h) {
-    const groundY = 245;
+  drawSkylineBackground(ctx, camX, w, h, groundY = 245) {
     ctx.save();
     ctx.fillStyle = '#1e1b4b';
     ctx.globalAlpha = 0.55;
@@ -1402,7 +1430,9 @@ export class QuartierAnimator {
     const biz = this.engine.businesses.find(item => item.id === b.id);
     const isUnlocked = biz && biz.level > 0;
     const isProducing = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
-    const y = groundY - b.height;
+    const maxAllowedH = Math.max(110, groundY - 42);
+    const bHeight = Math.min(b.height, maxAllowedH);
+    const y = groundY - bHeight;
     const level = biz ? biz.level : 0;
 
     ctx.save();
@@ -1416,21 +1446,21 @@ export class QuartierAnimator {
       ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
       ctx.strokeStyle = '#334155';
       ctx.lineWidth = 2;
-      ctx.fillRect(x, y + 20, b.width, b.height - 20);
-      ctx.strokeRect(x, y + 20, b.width, b.height - 20);
+      ctx.fillRect(x, y + 20, b.width, bHeight - 20);
+      ctx.strokeRect(x, y + 20, b.width, bHeight - 20);
 
       ctx.fillStyle = '#f59e0b';
       ctx.font = '900 13px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(biz ? biz.icon : '🚧', x + b.width / 2, y + 60);
+      ctx.fillText(biz ? biz.icon : '🚧', x + b.width / 2, y + 52);
       ctx.fillStyle = '#cbd5e1';
       ctx.font = '700 11px "Cairo", sans-serif';
-      ctx.fillText(biz ? biz.name : 'مشروع جديد', x + b.width / 2, y + 80);
+      ctx.fillText(biz ? biz.name : 'مشروع جديد', x + b.width / 2, y + 72);
 
       const btnW = Math.min(b.width - 20, 110);
       const btnH = 26;
       const btnX = x + (b.width - btnW) / 2;
-      const btnY = y + b.height - 28;
+      const btnY = y + bHeight - 28;
 
       ctx.fillStyle = '#10b981';
       ctx.beginPath();
@@ -1490,7 +1520,7 @@ export class QuartierAnimator {
     ctx.strokeStyle = tierBorder;
     ctx.lineWidth = tierBorderWidth;
     ctx.beginPath();
-    ctx.roundRect(x, y + 16, b.width, b.height - 16, [8, 8, 0, 0]);
+    ctx.roundRect(x, y + 16, b.width, bHeight - 16, [8, 8, 0, 0]);
     ctx.fill();
     ctx.stroke();
 
@@ -1519,51 +1549,54 @@ export class QuartierAnimator {
     }
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.beginPath();
-    ctx.roundRect(x + 10, y + 24, b.width - 20, 24, 6);
+    ctx.roundRect(x + 10, y + 22, b.width - 20, 22, 6);
     ctx.fill();
     ctx.restore();
 
     ctx.fillStyle = '#fef08a';
-    ctx.font = '900 12px "Cairo", sans-serif';
+    ctx.font = '900 11px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`${biz.icon} ${biz.name}`, x + b.width / 2, y + 40);
+    ctx.fillText(`${biz.icon} ${biz.name}`, x + b.width / 2, y + 37);
 
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
-    ctx.roundRect(x + 6, y + 20, 26, 16, 4);
+    ctx.roundRect(x + 6, y + 18, 26, 15, 4);
     ctx.fill();
     ctx.fillStyle = '#38bdf8';
-    ctx.font = '900 9.5px "Cairo", sans-serif';
-    ctx.fillText(`L${level}`, x + 19, y + 32);
+    ctx.font = '900 9px "Cairo", sans-serif';
+    ctx.fillText(`L${level}`, x + 19, y + 29);
 
+    const winY = y + 48;
+    const winH = Math.max(26, bHeight - 86);
     ctx.fillStyle = isProducing ? 'rgba(254, 240, 138, 0.28)' : 'rgba(30, 41, 59, 0.4)';
     ctx.beginPath();
-    ctx.roundRect(x + 12, y + 54, b.width - 24, 38, 6);
+    ctx.roundRect(x + 12, winY, b.width - 24, winH, 6);
     ctx.fill();
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.stroke();
 
-    ctx.font = '16px serif';
+    const iconCenterY = winY + winH / 2 + 5;
+    ctx.font = '15px serif';
     if (b.id === 'kaskrout') {
-      ctx.fillText('🥖', x + 24, y + 78);
-      ctx.fillText('👨‍🍳', x + b.width / 2, y + 78);
-      ctx.fillText('🥪', x + b.width - 24, y + 78);
+      ctx.fillText('🥖', x + 24, iconCenterY);
+      ctx.fillText('👨‍🍳', x + b.width / 2, iconCenterY);
+      ctx.fillText('🥪', x + b.width - 24, iconCenterY);
     } else if (b.id === 'kahwa') {
-      ctx.fillText('☕', x + 22, y + 78);
-      ctx.fillText('🃏', x + b.width / 2, y + 78);
-      ctx.fillText('👴', x + b.width - 24, y + 78);
+      ctx.fillText('☕', x + 22, iconCenterY);
+      ctx.fillText('🃏', x + b.width / 2, iconCenterY);
+      ctx.fillText('👴', x + b.width - 24, iconCenterY);
     } else if (b.id === 'taxi_collectif') {
-      ctx.fillText('🚖', x + 25, y + 78);
-      ctx.fillText('🏁', x + b.width / 2, y + 78);
-      ctx.fillText('🕶️', x + b.width - 25, y + 78);
+      ctx.fillText('🚖', x + 25, iconCenterY);
+      ctx.fillText('🏁', x + b.width / 2, iconCenterY);
+      ctx.fillText('🕶️', x + b.width - 25, iconCenterY);
     } else {
-      ctx.fillText(biz.icon, x + b.width / 2, y + 78);
+      ctx.fillText(biz.icon, x + b.width / 2, iconCenterY);
     }
 
     const barW = b.width - 24;
     const barH = 5;
     const barX = x + 12;
-    const barY = y + 98;
+    const barY = groundY - 36;
     const pct = Math.min(1, (biz.progressMs || 0) / (biz.cycleDurationMs || 1000));
 
     ctx.fillStyle = '#090d16';
@@ -1574,10 +1607,10 @@ export class QuartierAnimator {
     }
 
     const btnW = (b.width - 28) / 2;
-    const btnH = 24;
+    const btnH = 22;
     const btnInspectX = x + 10;
     const btnUpgradeX = x + 14 + btnW;
-    const btnY = groundY - 28;
+    const btnY = groundY - 26;
 
     ctx.fillStyle = '#3b82f6';
     ctx.beginPath();
@@ -1586,7 +1619,7 @@ export class QuartierAnimator {
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 10px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🏪 ادخل', btnInspectX + btnW / 2, btnY + 16);
+    ctx.fillText('🏪 ادخل', btnInspectX + btnW / 2, btnY + 15);
 
     const canAfford = this.engine.dinars >= this.engine.getCost(biz);
     ctx.fillStyle = canAfford ? '#10b981' : '#475569';
@@ -1595,7 +1628,7 @@ export class QuartierAnimator {
     ctx.fill();
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 10px "Cairo", sans-serif';
-    ctx.fillText(`⬆️ L${biz.level + 1}`, btnUpgradeX + btnW / 2, btnY + 16);
+    ctx.fillText(`⬆️ L${biz.level + 1}`, btnUpgradeX + btnW / 2, btnY + 15);
 
     this.interactiveHitboxes.push({
       x: btnInspectX,
@@ -1619,7 +1652,7 @@ export class QuartierAnimator {
       x: x,
       y: y,
       w: b.width,
-      h: b.height - 30,
+      h: bHeight - 28,
       action: 'inspect',
       bizId: b.id
     });
@@ -1664,12 +1697,11 @@ export class QuartierAnimator {
     ctx.restore();
   }
 
-  drawBoulevardStreet(ctx, camX, w, h) {
-    const curbY = 255;
-    const roadY = 280;
+  drawBoulevardStreet(ctx, camX, w, h, curbY = 255) {
+    const roadY = curbY + 20;
 
     ctx.fillStyle = '#334155';
-    ctx.fillRect(0, curbY, w, 25);
+    ctx.fillRect(0, curbY, w, 20);
 
     ctx.strokeStyle = '#475569';
     ctx.lineWidth = 1;
@@ -1686,15 +1718,15 @@ export class QuartierAnimator {
     }
 
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, roadY, w, h - roadY);
+    ctx.fillRect(0, roadY, w, Math.max(40, h - roadY));
 
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
     ctx.lineWidth = 3;
     ctx.setLineDash([20, 18]);
     ctx.lineDashOffset = -camX;
     ctx.beginPath();
-    ctx.moveTo(0, roadY + 38);
-    ctx.lineTo(w, roadY + 38);
+    ctx.moveTo(0, roadY + 22);
+    ctx.lineTo(w, roadY + 22);
     ctx.stroke();
     ctx.setLineDash([]);
   }
@@ -1802,6 +1834,150 @@ export class QuartierAnimator {
     ctx.beginPath();
     ctx.roundRect(thumbX, trackY - 1, thumbW, trackH + 2, 3);
     ctx.fill();
+    ctx.restore();
+  }
+
+  drawInCanvasOffersHUD(ctx, w, h, timestamp) {
+    const o = this.hudOffers;
+    const pulse = Math.sin(timestamp * 0.006) * 2;
+
+    // 1. Piliers d'offres permanentes en haut à droite DANS le ciel du Canvas
+    const rightBadges = [
+      {
+        action: 'hud_boost',
+        icon: '🚀',
+        label: o.adBoostActive ? o.adBoostText : 'تيربو x2',
+        bg: o.adBoostActive ? 'rgba(16, 185, 129, 0.9)' : 'rgba(14, 165, 233, 0.85)',
+        border: o.adBoostActive ? '#34d399' : '#38bdf8'
+      },
+      {
+        action: 'hud_cash',
+        icon: '🎁',
+        label: o.adCashText || 'كاش بلاش',
+        bg: 'rgba(14, 165, 233, 0.85)',
+        border: '#38bdf8'
+      },
+      {
+        action: 'hud_prestige',
+        icon: '👑',
+        label: o.prestigeText || 'x1.0',
+        bg: o.canPrestige ? 'rgba(245, 158, 11, 0.92)' : 'rgba(30, 41, 59, 0.85)',
+        border: '#fbbf24'
+      },
+      {
+        action: 'hud_wheel',
+        icon: '🎡',
+        label: o.wheelReady ? 'بلاش !' : 'العجلة',
+        bg: o.wheelReady ? 'rgba(225, 29, 72, 0.92)' : 'rgba(136, 19, 55, 0.85)',
+        border: '#fda4af'
+      }
+    ];
+
+    let curX = w - 10;
+    const topY = 8;
+    const badgeH = 26;
+
+    ctx.save();
+    ctx.font = '900 10.5px "Cairo", sans-serif';
+    rightBadges.forEach(b => {
+      const textW = ctx.measureText(b.label).width;
+      const badgeW = Math.max(66, textW + 32);
+      curX -= badgeW;
+
+      ctx.fillStyle = b.bg;
+      ctx.strokeStyle = b.border;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(curX, topY, badgeW, badgeH, 13);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${b.icon} ${b.label}`, curX + badgeW / 2, topY + 17);
+
+      this.interactiveHitboxes.push({
+        x: curX,
+        y: topY,
+        w: badgeW,
+        h: badgeH,
+        action: b.action,
+        bizId: null
+      });
+
+      curX -= 6;
+    });
+
+    // 2. Alertes dynamiques & Événements en haut à gauche DANS le ciel du Canvas
+    let leftX = 10;
+    const dynamicAlerts = [];
+
+    if (o.hasQuest) {
+      dynamicAlerts.push({
+        action: 'hud_quest',
+        icon: '🎯',
+        label: 'اقبض البونيس !',
+        bg: 'rgba(16, 185, 129, 0.95)',
+        border: '#a7f3d0'
+      });
+    }
+    if (o.hasEvent) {
+      dynamicAlerts.push({
+        action: 'hud_event',
+        icon: '🃏',
+        label: `شكبة (${o.eventTimer || '🔥'})`,
+        bg: 'rgba(220, 38, 38, 0.95)',
+        border: '#fca5a5'
+      });
+    }
+    if (o.hasDilemma) {
+      dynamicAlerts.push({
+        action: 'hud_dilemma',
+        icon: '⚖️',
+        label: 'قرار الحومة !',
+        bg: 'rgba(147, 51, 234, 0.95)',
+        border: '#e9d5ff'
+      });
+    }
+    if (o.hasLuckyDrop) {
+      dynamicAlerts.push({
+        action: 'hud_luckydrop',
+        icon: o.luckyDropIcon || '🎁',
+        label: 'تفتوفة طاحت !',
+        bg: 'rgba(245, 158, 11, 0.95)',
+        border: '#fef08a'
+      });
+    }
+
+    dynamicAlerts.forEach(a => {
+      const textW = ctx.measureText(a.label).width;
+      const badgeW = Math.max(78, textW + 34);
+      const by = topY + pulse * 0.5;
+
+      ctx.fillStyle = a.bg;
+      ctx.strokeStyle = a.border;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(leftX, by, badgeW, badgeH, 13);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${a.icon} ${a.label}`, leftX + badgeW / 2, by + 17);
+
+      this.interactiveHitboxes.push({
+        x: leftX,
+        y: topY,
+        w: badgeW,
+        h: badgeH + 4,
+        action: a.action,
+        bizId: null
+      });
+
+      leftX += badgeW + 6;
+    });
+
     ctx.restore();
   }
 }

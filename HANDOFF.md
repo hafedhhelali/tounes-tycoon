@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Scène de rue 2D panoramique plein écran avec HUD ultra-compact en bandeau unique sans masquer l'animation.
-Disparition de la grille statique `.business-list` : 100% de l'interaction et gestion des commerces se passe sur l'image Canvas.
-Entrée directe dans l'intérieur du commerce par tap sur le bâtiment avec simulation 2D détaillée 60 FPS. Tests: npm test = 12/12 PASS.
+Suppression de la barre de navigation du bas (intégrée au HUD supérieur) et des bandeaux DOM qui masquaient la rue et débordaient à gauche.
+Intégration 100% DANS l'image Canvas des icônes d'offres (Turbo 🚀, Cash 🎁, Prestige 👑, Roue 🎡) et d'alertes (Quêtes 🎯, Chkobba 🃏, Dilemme ⚖️, Lucky Drop 🎁).
+Adaptation dynamique de la hauteur des bâtiments et de la chaussée (`groundY`) pour visibilité complète des magasins, trottoir, piétons et taxis. Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(ui,canvas): remove bottom bar occlusion, render offer & alert icons inside 2D sky canvas, dynamic street groundY
 - feat(ui,canvas): fullscreen living 2D street, ultra-sleek HUD and direct shop entrance on tap
 - feat(ui,canvas): fullscreen living 2D street, ultra-sleek HUD and direct shop entrance on tap
 - fix(anim,lifecycle): mount and start QuartierAnimator before initial renderDOM and theme application

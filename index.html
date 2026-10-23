@@ -37,26 +37,26 @@
     #app {
       width: 100%;
       max-width: 100vw;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: 4px 6px 50px 6px;
+      padding: 4px 6px 4px 6px;
       gap: 4px;
-      min-height: 100vh;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     /* SCÈNE DU QUARTIER PANORAMIQUE 2D 60 FPS (MODE HORIZONTAL PAYSAGE) */
     .quartier-panoramic-card {
       width: 100%;
-      height: calc(100vh - 100px);
-      min-height: 320px;
+      height: calc(100vh - 46px);
+      min-height: 250px;
       background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 29, 0.98) 100%);
       border: 1.5px solid rgba(245, 158, 11, 0.35);
       border-radius: 14px;
-      padding: 4px 6px;
+      padding: 3px 6px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(245, 158, 11, 0.12);
       position: relative;
       overflow: hidden;
@@ -294,44 +294,29 @@
       box-shadow: 0 0 10px rgba(14, 165, 233, 0.35);
     }
 
-    /* BOTTOM NAVIGATION BAR MODERNE NATIVE */
-    .bottom-nav-bar {
-      position: fixed;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 24px);
-      max-width: 440px;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 22px;
-      display: flex;
-      justify-content: space-around;
-      padding: 6px 4px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 15px rgba(245, 158, 11, 0.1);
-      z-index: 100;
+    /* BOTTOM NAVIGATION BAR MASQUÉE : INTÉGRÉE DANS LE HUD SUPÉRIEUR */
+    .bottom-nav-bar, .wheel-floating-btn {
+      display: none !important;
     }
     .nav-tab-item {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 2px;
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      font-size: 10px;
+      gap: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      font-size: 10.5px;
       font-weight: 800;
       cursor: pointer;
-      padding: 5px 12px;
-      border-radius: 14px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 3px 7px;
+      border-radius: 10px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
     }
     .nav-tab-item.active {
       color: #fbbf24;
-      background: rgba(245, 158, 11, 0.18);
-      transform: translateY(-2px);
+      background: rgba(245, 158, 11, 0.22);
+      border-color: rgba(245, 158, 11, 0.6);
     }
     .nav-tab-item:active { transform: scale(0.9); }
 
@@ -915,11 +900,7 @@
 
     /* BADGES DE SYNERGIES & COMBOS TUNISIENS */
     .synergies-container {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding: 2px 0;
-      scrollbar-width: none;
+      display: none !important;
     }
     .synergies-container::-webkit-scrollbar { display: none; }
     .synergy-chip {
@@ -1295,7 +1276,12 @@
     .tab-content-panel.active {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    #panelBusinesses.active {
+      overflow: hidden;
     }
 
     /* CARTES D'AMÉLIORATION TACTIQUE (UPGRADES) */
@@ -2163,22 +2149,22 @@
             <span class="balance-label">الكاسة:</span>
             <span class="balance-val" id="dinarsDisplay">0.00 د.ت</span>
           </div>
-          <button class="quick-pill-btn ad-pill" id="adBoostBtn" title="تيربو المداخيل 2x">
-            <span>🚀 تيربو</span>
-            <span id="adBoostStatus">طافي</span>
+          <button class="nav-tab-item active" id="tabBtnBusinesses" title="الشارع والمشاريع">
+            <span>🏪</span><span>الشارع</span>
           </button>
-          <button class="quick-pill-btn ad-pill" id="adCashBtn" title="تفتوفة كاش بلاش">
-            <span>🎁 كاش</span>
-            <span id="cashRewardHint">+30</span>
+          <button class="nav-tab-item" id="tabBtnTactics" title="تكتيكات وصنعة">
+            <span>⚡</span><span>الصنعة</span>
           </button>
-          <button class="quick-pill-btn gold" id="prestigeOpenBtn" title="رأس مال الحومة والهيبة">
-            <span>👑 بيع</span>
-            <span id="prestigeInfoLabel">x1.0</span>
+          <button class="nav-tab-item" id="tabBtnZones" title="الأحياء والمدن">
+            <span>🗺️</span><span id="currentZoneName">باب سويقة</span>
           </button>
-          <button class="icon-pill-btn" id="openZoneMapBtn" title="خريطة الأحياء">
-            <span>🗺️</span>
-            <span id="currentZoneName">باب سويقة</span>
+          <button class="nav-tab-item" id="tabBtnLeague" title="البطولة وصابة النهار">
+            <span>🏆</span><span>البطولة</span>
           </button>
+          <button class="icon-pill-btn" id="openZoneMapBtn" style="display: none;"></button>
+          <button class="quick-pill-btn ad-pill" id="adBoostBtn" style="display: none;"><span id="adBoostStatus"></span></button>
+          <button class="quick-pill-btn ad-pill" id="adCashBtn" style="display: none;"><span id="cashRewardHint"></span></button>
+          <button class="quick-pill-btn gold" id="prestigeOpenBtn" style="display: none;"><span id="prestigeInfoLabel"></span></button>
           <button class="icon-pill-btn" id="soundToggleBtn" title="صوت">🔊</button>
           <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية">📜</button>
           <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات وبروفيل">⚙️</button>
@@ -2186,35 +2172,22 @@
         </div>
       </div>
 
-      <!-- DÉFIS MTA3 EL HOUMA (QUÊTES & SUCCÈS) -->
-      <div id="questBox" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 4px 8px; margin-top: 2px; display: none; align-items: center; justify-content: space-between; width: 100%;">
-        <div style="text-align: right; flex: 1;">
-          <div style="font-size: 9px; font-weight: 900; color: #34d399;">🎯 قضيّة الحومة حضرت !</div>
-          <div style="font-size: 11px; font-weight: 800; color: #ecfdf5;" id="questTitle">عنوان التحدي</div>
-        </div>
-        <button id="claimQuestBtn" style="background: #10b981; border: none; color: white; padding: 3px 8px; border-radius: 6px; font-weight: 900; font-size: 10px; cursor: pointer; margin-right: 6px;">
-          صُبّ البونيس 🎁
-        </button>
+      <!-- Éléments d'état cachés du DOM (rendus sous forme d'icônes dans le Canvas) -->
+      <div id="questBox" style="display: none !important;">
+        <div id="questTitle"></div>
+        <button id="claimQuestBtn"></button>
       </div>
-
-      <!-- BANDEAU ÉVÉNEMENT POP-CULTURE -->
-      <div id="eventBanner" style="display: none; margin-top: 2px; width: 100%;">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
-          <div style="font-weight: 900; color: #fef08a; font-size: 11px;" id="eventTitle">فزعة في الحومة !</div>
-          <button id="eventMiniGameBtn" style="padding: 2px 6px; font-size: 9px;">🔥 العب (شكبة 🃏)</button>
-        </div>
-        <div style="font-size: 9.5px; color: #fef9c3;" id="eventDesc">تفاصيل</div>
-        <div style="font-size: 8.5px; color: var(--gold); font-weight: 800;" id="eventTimer">باقي : 0 ثانية</div>
+      <div id="eventBanner" style="display: none !important;">
+        <div id="eventTitle"></div>
+        <button id="eventMiniGameBtn"></button>
+        <div id="eventDesc"></div>
+        <div id="eventTimer"></div>
       </div>
-
-      <!-- DILEMME MORAL & DÉCISION DU QUARTIER -->
-      <div id="dilemmaBanner" style="display: none; margin-top: 2px; width: 100%;">
-        <div style="font-size: 11px; font-weight: 900; color: #fdf4ff;" id="dilemmaTitle">قرار في الحومة !</div>
-        <div style="font-size: 9.5px; color: #e9d5ff; margin-top: 1px;" id="dilemmaDesc">وصف القرار</div>
-        <div class="dilemma-btn-row">
-          <button class="dilemma-btn" id="dilemmaChoiceABtn">الخيار أ</button>
-          <button class="dilemma-btn" id="dilemmaChoiceBBtn">الخيار ب</button>
-        </div>
+      <div id="dilemmaBanner" style="display: none !important;">
+        <div id="dilemmaTitle"></div>
+        <div id="dilemmaDesc"></div>
+        <button id="dilemmaChoiceABtn"></button>
+        <button id="dilemmaChoiceBBtn"></button>
       </div>
     </header>
 
@@ -2295,34 +2268,14 @@
     </div>
   </div>
 
-  <!-- NOUVELLE BOTTOM NAVIGATION BAR MODERNE NATIVE (4 ONGLETS AÉRÉS) -->
-  <nav class="bottom-nav-bar">
-    <button class="nav-tab-item active" id="tabBtnBusinesses">
-      <span style="font-size: 18px;">🏪</span>
-      <span>المشاريع</span>
-    </button>
-    <button class="nav-tab-item" id="tabBtnTactics">
-      <span style="font-size: 18px;">⚡</span>
-      <span>الصنعة</span>
-    </button>
-    <button class="nav-tab-item" id="tabBtnZones">
-      <span style="font-size: 18px;">🗺️</span>
-      <span>الأحياء</span>
-    </button>
-    <button class="nav-tab-item" id="tabBtnLeague">
-      <span style="font-size: 18px;">🏆</span>
-      <span>البطولة</span>
-    </button>
-  </nav>
-
   <!-- BOUTON FLOTTANT : ROUE DE LA FORTUNE ('عجلة الحظ التونسية') -->
-  <div class="wheel-floating-btn" id="wheelFloatingBtn">
+  <div class="wheel-floating-btn" id="wheelFloatingBtn" style="display: none !important;">
     <span>🎡</span>
     <div class="wheel-badge-ready" id="wheelBadgeReady">بلاش !</div>
   </div>
 
   <!-- FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) -->
-  <div id="luckyDropEl" class="lucky-drop-floating" style="display: none;">
+  <div id="luckyDropEl" class="lucky-drop-floating" style="display: none !important;">
     <span id="luckyDropIcon">🎁</span>
     <span class="lucky-drop-sub">تفتوفة !</span>
   </div>
@@ -2947,14 +2900,12 @@
       const randX = Math.max(15, Math.floor(Math.random() * maxX));
       const randY = Math.floor(minY + Math.random() * (maxY - minY));
 
-      luckyDropEl.style.left = `${randX}px`;
-      luckyDropEl.style.top = `${randY}px`;
-      luckyDropEl.style.display = 'flex';
+      luckyDropEl.dataset.active = '1';
 
       clearTimeout(luckyDropTimeout);
       // Disparaît après 10 secondes si non cliqué, prochain drop après 60s
       luckyDropTimeout = setTimeout(() => {
-        luckyDropEl.style.display = 'none';
+        luckyDropEl.dataset.active = '0';
         nextLuckyDropAt = Date.now() + 60000 + Math.random() * 20000;
       }, 10000);
     }
@@ -2967,7 +2918,7 @@
     let pendingLuckyDropType = null;
 
     luckyDropEl.onclick = (e) => {
-      luckyDropEl.style.display = 'none';
+      luckyDropEl.dataset.active = '0';
       clearTimeout(luckyDropTimeout);
       nextLuckyDropAt = Date.now() + 60000 + Math.random() * 30000;
 
@@ -3841,6 +3792,30 @@
               quartierEngine.spawnGainBubble(biz.id, `+${formatCurrency(engine.getRevenue(biz))}`);
             }
           }
+        },
+        onHudAction: (action) => {
+          soundEngine.playCoin();
+          if (action === 'hud_boost' && adBoostBtn) adBoostBtn.click();
+          else if (action === 'hud_cash' && adCashBtn) adCashBtn.click();
+          else if (action === 'hud_prestige' && prestigeOpenBtn) prestigeOpenBtn.click();
+          else if (action === 'hud_wheel' && wheelFloatingBtn) wheelFloatingBtn.click();
+          else if (action === 'hud_quest' && claimQuestBtn) claimQuestBtn.click();
+          else if (action === 'hud_event' && eventMiniGameBtn) eventMiniGameBtn.click();
+          else if (action === 'hud_dilemma' && engine.activeDilemma) {
+            const d = engine.activeDilemma;
+            const res = engine.resolveDilemma('A');
+            if (res && res.success) {
+              soundEngine.playDilemmaSuccess();
+              showRewardModalUI('⚖️', d.title, res.choice.effectDesc, 'مريڤل 🤝');
+              renderDOM();
+            } else {
+              engine.resolveDilemma('B');
+              showRewardModalUI('⚖️', d.title, d.choiceB.text, 'مريڤل 🤝');
+              renderDOM();
+            }
+          } else if (action === 'hud_luckydrop' && luckyDropEl) {
+            luckyDropEl.click();
+          }
         }
       });
       quartierEngine.start();
@@ -4286,7 +4261,7 @@
       }
 
       // Spawn conditionnel de Lucky Drop
-      if (now >= nextLuckyDropAt && luckyDropEl && luckyDropEl.style.display === 'none') {
+      if (now >= nextLuckyDropAt && luckyDropEl && luckyDropEl.dataset.active !== '1') {
         spawnLuckyDrop();
       }
 
@@ -4377,6 +4352,30 @@
       // Vérification des dilemmes moraux
       checkDilemmasUI();
       updateWheelBtnState();
+
+      // Synchronisation des offres & alertes avec le moteur Canvas 2D
+      if (quartierEngine) {
+        const pendingPts = engine.calculatePendingPrestigePoints();
+        const isBoost = engine.isAdBoostActive(now);
+        const remHours = Math.floor((engine.adBoostEndsAt - now) / 3600000);
+        const remMins = Math.floor(((engine.adBoostEndsAt - now) % 3600000) / 60000);
+        const remEventSec = engine.activeEvent ? Math.max(0, Math.ceil((engine.activeEvent.endsAt - now) / 1000)) : 0;
+
+        quartierEngine.updateHudOffers({
+          adBoostActive: isBoost,
+          adBoostText: isBoost ? `${remHours}h${remMins}m` : 'تيربو x2',
+          adCashText: `+${formatCurrencyPlain(potentialCash, 0)}`,
+          prestigeText: engine.canPrestige() ? `بيع (+${pendingPts})` : `x${engine.getPrestigeMultiplier().toFixed(1)}`,
+          canPrestige: engine.canPrestige(),
+          wheelReady: engine.canSpinWheel(),
+          hasQuest: claimableQuests.length > 0,
+          hasEvent: !!engine.activeEvent,
+          eventTimer: `${remEventSec}s`,
+          hasDilemma: !!engine.activeDilemma,
+          hasLuckyDrop: luckyDropEl && luckyDropEl.dataset.active === '1',
+          luckyDropIcon: luckyDropIcon ? luckyDropIcon.innerText : '🎁'
+        });
+      }
 
       // Sauvegarde automatique toutes les 5s
       if (now - lastSave > 5000) {
