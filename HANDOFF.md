@@ -2,9 +2,9 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Harmonisation UI/UX du bouton d'entrée sur carte (taille compacte 32px alignée avec les proportions, badge de niveau bien intégré, zero débordement).
-Refonte complète des emplacements vides de la simulation (slots d'embauche dorés 44x56px, positions équilibrées caisse/personnel, dialogues concis et complets sans coupure).
-Bannière d'évolution en grille 2 colonnes avec boîte d'encaissement dédiée. Tests: `npm test` = 12/12 PASS. Push automatique CI.
+Intégration d'un conteneur Flex unifié pour le staff de la simulation (caissier + postes employés) évitant tout chevauchement et libérant la voie client.
+Refonte des stalles d'embauche (« انتداب ») et titres de postes avec badging bleu clair.
+Tests: `npm test` = 12/12 PASS. Synchronisation automatique et push immédiat vers origin/main.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

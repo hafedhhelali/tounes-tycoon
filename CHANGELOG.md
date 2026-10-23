@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- fix(uiux,simulation): align staff stations in unified flex container and polish hire slots
 - fix(uiux,layout,animation): harmonize card button proportions, refine vacant staff slots & fit dialog bubbles
 - fix(uiux,simulation,text): fix html leakage in coin popups, redesign project modal & expand 2d stage
 - fix(ui,clicks,branding): fix click handlers by removing duplicate block and design luxury tycoon vector logo
