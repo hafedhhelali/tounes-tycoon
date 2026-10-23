@@ -1481,6 +1481,163 @@
       cursor: pointer;
     }
 
+    /* --- BOUTON D'ACCÈS INSPECTER LE PROJET SUR CARTE --- */
+    .biz-inspect-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.18) 0%, rgba(217, 119, 6, 0.28) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      color: #fef08a;
+      border-radius: 10px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .biz-inspect-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      border-color: #fbbf24;
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+      color: #ffffff;
+    }
+    .biz-inspect-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+    .biz-inspect-btn .btn-badge {
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-size: 9.5px;
+      color: #38bdf8;
+    }
+
+    /* --- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET --- */
+    .biz-income-evolution-card {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 29, 0.95) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    .biz-income-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .biz-income-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .biz-income-stat.stat-cadence {
+      text-align: left;
+    }
+    .stat-label {
+      font-size: 10.5px;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .stat-main-value {
+      font-size: 20px;
+      font-weight: 900;
+      color: #fbbf24;
+      letter-spacing: -0.3px;
+      text-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+    }
+    .stat-sub-value {
+      font-size: 13px;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+    .biz-evolution-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .evo-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+    .evo-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .evo-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      font-size: 9.5px;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+    .evo-target {
+      font-size: 12px;
+      font-weight: 800;
+      color: #f1f5f9;
+    }
+    .evo-gain {
+      font-size: 11px;
+      font-weight: 700;
+      color: #34d399;
+    }
+    .evo-milestone-hint {
+      font-size: 10px;
+      color: #cbd5e1;
+      opacity: 0.85;
+    }
+    .evo-upgrade-btn {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      border: 1px solid #34d399;
+      border-radius: 10px;
+      color: #ffffff;
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      min-width: 90px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+      transition: all 0.18s ease;
+    }
+    .evo-upgrade-btn:hover {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+    }
+    .evo-upgrade-btn:active {
+      transform: translateY(1px) scale(0.97);
+    }
+    .evo-btn-action {
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .evo-btn-cost {
+      font-size: 10px;
+      color: #d1fae5;
+      font-weight: 800;
+    }
+
     /* --- SIMULATION VISUELLE 2D TYCOON (CUTAWAY STORE STAGE) --- */
     .biz-store-stage {
       position: relative;
@@ -1492,6 +1649,7 @@
       box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5);
       overflow: hidden;
       user-select: none;
+      contain: content;
     }
     .biz-store-stage::after {
       content: '';
@@ -1514,7 +1672,7 @@
       position: absolute;
       left: 20px;
       bottom: 30px;
-      width: 72px;
+      width: 76px;
       z-index: 4;
       display: flex;
       flex-direction: column;
@@ -1522,17 +1680,18 @@
     }
     .store-cash-register {
       position: relative;
-      font-size: 24px;
-      transition: transform 0.1s ease;
+      font-size: 26px;
+      will-change: transform;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
     .store-cash-register.paying {
-      animation: registerPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: registerBounce 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    @keyframes registerPop {
+    @keyframes registerBounce {
       0% { transform: scale(1); }
-      50% { transform: scale(1.3) translateY(-4px); }
-      100% { transform: scale(1); }
+      40% { transform: scale(1.35) translateY(-6px) rotate(-6deg); }
+      75% { transform: scale(0.95) translateY(1px) rotate(3deg); }
+      100% { transform: scale(1) translateY(0) rotate(0deg); }
     }
     .store-counter-desk {
       background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
@@ -1546,10 +1705,10 @@
     }
     .store-stations-row {
       position: absolute;
-      left: 95px;
+      left: 100px;
       bottom: 40px;
       display: flex;
-      gap: 14px;
+      gap: 16px;
       z-index: 3;
     }
     .store-station {
@@ -1570,22 +1729,54 @@
     }
     .station-worker-active {
       font-size: 28px;
-      animation: workerIdle 1.4s ease-in-out infinite alternate;
+      will-change: transform;
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+      animation: workerNormal 1.4s ease-in-out infinite alternate;
     }
-    @keyframes workerIdle {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-4px) rotate(-3deg); }
+    .station-worker-active.is-busy {
+      animation: workerBusy 0.35s ease-in-out infinite alternate !important;
+    }
+    .station-worker-active.is-idle-sleep {
+      animation: workerSleep 2s ease-in-out infinite alternate !important;
+      filter: grayscale(0.2) opacity(0.85);
+    }
+    @keyframes workerNormal {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px); }
+    }
+    @keyframes workerBusy {
+      0% { transform: translateY(0) scale(1) rotate(-4deg); }
+      100% { transform: translateY(-5px) scale(1.08) rotate(4deg); }
+    }
+    @keyframes workerSleep {
+      0% { transform: translateY(0) rotate(2deg); }
+      100% { transform: translateY(2px) rotate(-2deg); }
     }
     .station-tool-effect {
       position: absolute;
-      top: -8px;
+      top: -10px;
       font-size: 14px;
-      animation: toolFloat 1.2s ease-in-out infinite alternate;
+      pointer-events: none;
+      animation: effectFloat 1.2s ease-in-out infinite alternate;
     }
-    @keyframes toolFloat {
-      0% { transform: scale(0.8) translateY(2px); opacity: 0.5; }
-      100% { transform: scale(1.1) translateY(-6px); opacity: 1; }
+    .station-tool-effect.cooking-smoke {
+      animation: smokePuff 0.6s ease-in-out infinite alternate;
+    }
+    .station-tool-effect.sleeping-zzz {
+      animation: zzzFloat 1.5s ease-in-out infinite;
+    }
+    @keyframes effectFloat {
+      0% { transform: translateY(2px) scale(0.9); opacity: 0.6; }
+      100% { transform: translateY(-6px) scale(1.15); opacity: 1; }
+    }
+    @keyframes smokePuff {
+      0% { transform: translateY(0) scale(0.9) rotate(-5deg); opacity: 0.7; }
+      100% { transform: translateY(-8px) scale(1.3) rotate(5deg); opacity: 1; filter: drop-shadow(0 0 4px #f59e0b); }
+    }
+    @keyframes zzzFloat {
+      0% { transform: translate(0, 0) scale(0.8); opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { transform: translate(6px, -12px) scale(1.1); opacity: 0; }
     }
     .station-worker-empty {
       width: 36px;
@@ -1597,12 +1788,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 2px;
       transition: all 0.2s ease;
     }
     .station-worker-empty:hover {
       background: rgba(245, 158, 11, 0.15);
-      border-color: #fbbf24;
-      transform: scale(1.05);
+      border-color: #f59e0b;
     }
     .station-worker-empty .empty-plus {
       font-size: 14px;
@@ -1626,41 +1817,50 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.05s linear;
+      will-change: transform;
     }
     .customer-avatar {
-      font-size: 24px;
-      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6));
-      animation: customerBob 0.3s ease-in-out infinite alternate;
+      font-size: 26px;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+      animation: customerBob 0.35s ease-in-out infinite alternate;
     }
     @keyframes customerBob {
       0% { transform: translateY(0); }
-      100% { transform: translateY(-3px); }
+      100% { transform: translateY(-4px); }
     }
     .customer-bubble {
       background: #ffffff;
       color: #0f172a;
       border-radius: 12px;
-      padding: 1px 5px;
+      padding: 2px 7px;
       font-size: 11px;
       font-weight: 800;
-      margin-bottom: 2px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-      animation: bubblePop 0.2s ease;
+      margin-bottom: 3px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.45);
+      white-space: nowrap;
+      animation: bubblePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes bubblePop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
     .coin-popup {
       position: absolute;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 900;
       color: #fef08a;
-      text-shadow: 0 0 8px #f59e0b;
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.9), 0 2px 4px rgba(0,0,0,0.8);
       pointer-events: none;
-      animation: coinFloatUp 0.8s ease-out forwards;
+      white-space: nowrap;
+      will-change: transform, opacity;
+      animation: coinFloatGain 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       z-index: 10;
     }
-    @keyframes coinFloatUp {
-      0% { opacity: 1; transform: translateY(0) scale(0.8); }
-      100% { opacity: 0; transform: translateY(-28px) scale(1.2); }
+    @keyframes coinFloatGain {
+      0% { opacity: 0; transform: translateY(0) scale(0.7); }
+      20% { opacity: 1; transform: translateY(-8px) scale(1.15); }
+      80% { opacity: 1; transform: translateY(-24px) scale(1); }
+      100% { opacity: 0; transform: translateY(-34px) scale(0.9); }
     }
   </style>
 </head>
@@ -2083,10 +2283,36 @@
         <div class="store-customers-layer" id="storeCustomersLayer"></div>
       </div>
 
-      <!-- Quick KPI summary -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(0,0,0,0.35); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
-        <div style="font-size: 11px; color: #cbd5e1;">💰 المدخول في الدورة : <b id="bizDetailIncome" style="color:#fbbf24;">0 د.ت</b></div>
-        <div style="font-size: 11px; color: #cbd5e1;">⚡ الوتيرة : <b id="bizDetailRate" style="color:#38bdf8;">0 د.ت/ث</b></div>
+      <!-- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET -->
+      <div class="biz-income-evolution-card">
+        <div class="biz-income-header">
+          <div class="biz-income-stat">
+            <span class="stat-label">💰 المربوح في الدورة الحالية</span>
+            <div class="stat-main-value" id="bizDetailIncome">+0.00 د.ت</div>
+          </div>
+          <div class="biz-income-stat stat-cadence">
+            <span class="stat-label">⚡ الوتيرة المباشرة</span>
+            <div class="stat-sub-value" id="bizDetailRate">+0.00 د.ت / ثانية</div>
+          </div>
+        </div>
+
+        <div class="biz-evolution-banner">
+          <div class="evo-details">
+            <div class="evo-title-row">
+              <span class="evo-badge">⬆️ الترقية الجاية</span>
+              <span class="evo-target" id="bizDetailNextLvlText">المستوى 2</span>
+            </div>
+            <div class="evo-gain" id="bizDetailNextGain">+0.80 د.ت مربوح إضافي في كل دورة</div>
+            <div class="evo-milestone-hint" id="bizDetailMilestoneHint">
+              🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !
+            </div>
+          </div>
+
+          <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn">
+            <span class="evo-btn-action">طوّر المحلّ 🚀</span>
+            <span class="evo-btn-cost" id="bizDetailUpgradeCost">5.35 د.ت</span>
+          </button>
+        </div>
       </div>
 
       <!-- Navigation 3 Onglets intérieurs -->
@@ -2631,9 +2857,12 @@
               <div class="biz-lvl-tag">مستوى <span class="num-ltr">${biz.level}</span></div>
             </div>
             <div class="biz-info">
-              <div class="biz-title" style="cursor: pointer;" id="title-click-${biz.id}">
+              <div class="biz-title">
                 <span>${biz.name}</span>
-                <span style="font-size: 11px; color: #38bdf8; font-weight: 800;">🔍 ادخل</span>
+                <button class="biz-inspect-btn" id="title-click-${biz.id}" aria-label="تفقد المشروع وادخل للمحل">
+                  <span>🏪 ادخل للمحلّ</span>
+                  <span class="btn-badge">🔍 تفقد</span>
+                </button>
                 ${milestone.nextLevel ? `
                   <span class="milestone-badge" title="وصّل للمستوى ${milestone.nextLevel} باش تدوبل السرعة !">
                     🎯 ${milestone.nextLevel} (x${milestone.nextMultiplier})
@@ -3327,6 +3556,12 @@
     const bizDetailIncome = document.getElementById('bizDetailIncome');
     const bizDetailRate = document.getElementById('bizDetailRate');
 
+    const bizDetailNextLvlText = document.getElementById('bizDetailNextLvlText');
+    const bizDetailNextGain = document.getElementById('bizDetailNextGain');
+    const bizDetailMilestoneHint = document.getElementById('bizDetailMilestoneHint');
+    const bizDetailQuickUpgradeBtn = document.getElementById('bizDetailQuickUpgradeBtn');
+    const bizDetailUpgradeCost = document.getElementById('bizDetailUpgradeCost');
+
     const bizTabBtnStaff = document.getElementById('bizTabBtnStaff');
     const bizTabBtnRecipe = document.getElementById('bizTabBtnRecipe');
     const bizTabBtnActivity = document.getElementById('bizTabBtnActivity');
@@ -3342,7 +3577,7 @@
     const bizDetailSatisfaction = document.getElementById('bizDetailSatisfaction');
     const bizDetailLiveTicker = document.getElementById('bizDetailLiveTicker');
 
-    // --- MOTEUR DE SIMULATION VISUELLE 2D (CUTAWAY STORE STAGE) ---
+    // --- MOTEUR DE SIMULATION VISUELLE 2D (CUTAWAY STORE STAGE 60 FPS) ---
     class BizStoreSimulation {
       constructor(stageEl, engineRef) {
         this.stage = stageEl;
@@ -3352,15 +3587,26 @@
         this.lastTime = 0;
         this.spawnTimer = 0;
         this.customers = [];
-        this.itemsPool = ['☕', '🥖', '🚖', '🍹', '🍕', '🥫', '🏎️', '🍩'];
-        this.avatarsPool = ['🚶‍♂️', '🧑‍💼', '🧕', '🧔', '👴', '👩‍💻'];
+
+        this.dialoguePools = {
+          kahwa: ['💭 ☕ كابوسان سخون', '💭 🍵 تاي منعنع', '💭 ♠️ طرح شكبة', '💭 🍏 شيشة تفاح'],
+          kaskrout: ['💭 🥖 كسكروت عياري حار', '💭 🧆 كفتة وهريسة', '💭 🥤 بوڨاع بارد'],
+          fricasse: ['💭 🥟 فريكاسي محرحر', '💭 🍩 بمبلوني سخون', '💭 🫒 زايد زيتون'],
+          taxi_collectif: ['💭 🚖 المرسى يا شاف', '💭 🏁 سوسة باب عليوة', '💭 🚕 بلعاني مستعجل'],
+          attariya: ['💭 🍞 باڨات وحليب', '💭 📲 كارت شحن 5د', '💭 🧀 قضية الدار'],
+          patisserie: ['💭 🍯 بقلاوة وكعك', '💭 🥐 كرواسون بالزبدة', '💭 🎂 تارت بريستيج'],
+          default: ['💭 🛒 يعطيك الصحة', '💭 ✨ خدمة ممتازة', '💭 🪙 نحاسب ونمشي']
+        };
+
+        this.happyReactions = ['😋 ❤️', '⭐⭐⭐⭐⭐', '🥰 ☕', '👏 تحفونة !', '👌 يعطيك الصحة'];
+        this.avatarsPool = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓'];
       }
 
       start(bizId) {
         this.stop();
         this.bizId = bizId;
         this.customers = [];
-        this.spawnTimer = 0;
+        this.spawnTimer = 1.0;
         this.lastTime = performance.now();
         this.renderStations();
         this.loop = this.loop.bind(this);
@@ -3377,34 +3623,54 @@
         this.customers = [];
       }
 
+      getBiz() {
+        return this.engine.businesses.find(b => b.id === this.bizId);
+      }
+
+      getOrderText() {
+        const list = this.dialoguePools[this.bizId] || this.dialoguePools.default;
+        return list[Math.floor(Math.random() * list.length)];
+      }
+
       renderStations() {
         const detail = this.engine.getBusinessDetail(this.bizId);
         if (!detail) return;
+        const biz = this.getBiz();
+        const isBusy = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
 
         // 1. Caissier
         const cashierSlot = detail.staffSlots && detail.staffSlots[0];
         const cashierEl = this.stage.querySelector('#stationCashier');
         if (cashierEl && cashierSlot) {
-          cashierEl.innerHTML = cashierSlot.hired
-            ? `<div class="station-worker-active" title="${cashierSlot.name}">👨‍💼</div>
-               <div class="station-tool-effect">✨</div>`
-            : `<div class="station-worker-empty" id="sim-hire-cashier-${this.bizId}">
-                 <span class="empty-plus">➕</span>
-                 <span class="empty-lbl">كاسيي</span>
-               </div>`;
-
-          const emptyBtn = cashierEl.querySelector(`#sim-hire-cashier-${this.bizId}`);
-          if (emptyBtn) {
-            emptyBtn.onclick = () => {
-              if (this.engine.hireManager(this.bizId)) {
-                soundEngine.playEventFanfare();
-                renderBizDetailContent();
-                this.renderStations();
-                renderDOM();
-              } else {
-                triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّم الكاسيي ! 👔');
-              }
-            };
+          if (cashierSlot.hired) {
+            cashierEl.innerHTML = `
+              <div class="station-worker-active ${isBusy ? 'is-busy' : 'is-idle-sleep'}" title="${cashierSlot.name}">
+                ${isBusy ? '👨‍💼' : '😴'}
+              </div>
+              <div class="station-tool-effect ${isBusy ? 'cooking-smoke' : 'sleeping-zzz'}">
+                ${isBusy ? '✨' : '💤'}
+              </div>
+            `;
+          } else {
+            cashierEl.innerHTML = `
+              <div class="station-worker-empty" id="sim-hire-cashier-${this.bizId}">
+                <span class="empty-plus">➕</span>
+                <span class="empty-lbl">كاسيي</span>
+              </div>
+            `;
+            const emptyBtn = cashierEl.querySelector(`#sim-hire-cashier-${this.bizId}`);
+            if (emptyBtn) {
+              emptyBtn.onclick = () => {
+                if (this.engine.hireManager(this.bizId)) {
+                  soundEngine.playEventFanfare();
+                  renderBizDetailContent();
+                  this.renderStations();
+                  renderDOM();
+                } else {
+                  triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّم الكاسيي ! 👔');
+                }
+              };
+            }
           }
         }
 
@@ -3415,28 +3681,37 @@
           detail.staffSlots.slice(1).forEach((slot, idx) => {
             const station = document.createElement('div');
             station.className = 'store-station';
-            station.innerHTML = slot.hired
-              ? `<div class="station-worker-active" title="${slot.name}">${slot.icon || '👨‍🍳'}</div>
-                 <div class="station-tool-effect">🔥</div>`
-              : `<div class="station-worker-empty" id="sim-hire-work-${this.bizId}-${idx}">
-                   <span class="empty-plus">➕</span>
-                   <span class="empty-lbl">شاغر</span>
-                 </div>`;
-            workRow.appendChild(station);
-
-            const emptyBtn = station.querySelector(`#sim-hire-work-${this.bizId}-${idx}`);
-            if (emptyBtn) {
-              emptyBtn.onclick = () => {
-                if (this.engine.hireManager(this.bizId)) {
-                  soundEngine.playEventFanfare();
-                  renderBizDetailContent();
-                  this.renderStations();
-                  renderDOM();
-                } else {
-                  triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّمو ! 👔');
-                }
-              };
+            if (slot.hired) {
+              station.innerHTML = `
+                <div class="station-worker-active ${isBusy ? 'is-busy' : 'is-idle-sleep'}" title="${slot.name}">
+                  ${slot.icon || '👨‍🍳'}
+                </div>
+                <div class="station-tool-effect ${isBusy ? 'cooking-smoke' : 'sleeping-zzz'}">
+                  ${isBusy ? '♨️' : '💤'}
+                </div>
+              `;
+            } else {
+              station.innerHTML = `
+                <div class="station-worker-empty" id="sim-hire-work-${this.bizId}-${idx}">
+                  <span class="empty-plus">➕</span>
+                  <span class="empty-lbl">شاغر</span>
+                </div>
+              `;
+              const emptyBtn = station.querySelector(`#sim-hire-work-${this.bizId}-${idx}`);
+              if (emptyBtn) {
+                emptyBtn.onclick = () => {
+                  if (this.engine.hireManager(this.bizId)) {
+                    soundEngine.playEventFanfare();
+                    renderBizDetailContent();
+                    this.renderStations();
+                    renderDOM();
+                  } else {
+                    triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّمو ! 👔');
+                  }
+                };
+              }
             }
+            workRow.appendChild(station);
           });
         }
       }
@@ -3446,11 +3721,11 @@
         const customer = {
           id: Math.random(),
           x: stageWidth + 10,
-          targetX: 60 + Math.random() * 25,
+          targetX: 62 + Math.random() * 20,
           state: 'walking_in',
           avatar: this.avatarsPool[Math.floor(Math.random() * this.avatarsPool.length)],
-          item: this.itemsPool[Math.floor(Math.random() * this.itemsPool.length)],
-          payDuration: 1.1,
+          orderBubble: this.getOrderText(),
+          payDuration: 0.9,
           payTimer: 0,
           el: null
         };
@@ -3458,7 +3733,7 @@
         const el = document.createElement('div');
         el.className = 'store-customer';
         el.innerHTML = `
-          <div class="customer-bubble">${customer.item}</div>
+          <div class="customer-bubble">${customer.orderBubble}</div>
           <div class="customer-avatar">${customer.avatar}</div>
         `;
         const layer = this.stage.querySelector('#storeCustomersLayer');
@@ -3471,23 +3746,32 @@
         const reg = this.stage.querySelector('#storeRegister');
         if (reg) {
           reg.classList.add('paying');
-          setTimeout(() => reg.classList.remove('paying'), 350);
+          setTimeout(() => reg.classList.remove('paying'), 380);
         }
+
+        const biz = this.getBiz();
+        const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
+        const gainText = cycleRevenue > 0 ? `+${formatCurrency(cycleRevenue)}` : `+د.ت 🪙`;
+
         const pop = document.createElement('div');
         pop.className = 'coin-popup';
-        pop.style.left = `${c.x + 10}px`;
-        pop.style.bottom = '75px';
-        pop.innerText = '+د.ت ✨';
+        pop.style.left = `${c.x + 8}px`;
+        pop.style.bottom = '76px';
+        pop.innerText = `🪙 ${gainText}`;
         this.stage.appendChild(pop);
-        setTimeout(() => pop.remove(), 800);
+        setTimeout(() => pop.remove(), 900);
       }
 
       loop(now) {
         const dt = Math.min((now - this.lastTime) / 1000, 0.1);
         this.lastTime = now;
 
+        const biz = this.getBiz();
+        const isProducing = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
+
         this.spawnTimer += dt;
-        if (this.spawnTimer > 2.2 && this.customers.length < 4) {
+        const spawnThreshold = isProducing ? 1.8 : 3.6;
+        if (this.spawnTimer > spawnThreshold && this.customers.length < 4) {
           this.spawnCustomer();
           this.spawnTimer = 0;
         }
@@ -3495,7 +3779,8 @@
         for (let i = this.customers.length - 1; i >= 0; i--) {
           const c = this.customers[i];
           if (c.state === 'walking_in') {
-            c.x -= 75 * dt;
+            const speed = isProducing ? 85 : 55;
+            c.x -= speed * dt;
             if (c.x <= c.targetX) {
               c.x = c.targetX;
               c.state = 'paying';
@@ -3506,11 +3791,13 @@
             if (c.payTimer >= c.payDuration) {
               c.state = 'walking_out';
               const bubble = c.el?.querySelector('.customer-bubble');
-              if (bubble) bubble.innerText = '😊';
+              if (bubble) {
+                bubble.innerText = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
+              }
             }
           } else if (c.state === 'walking_out') {
-            c.x -= 70 * dt;
-            if (c.x < -30) {
+            c.x -= 75 * dt;
+            if (c.x < -40) {
               if (c.el) c.el.remove();
               this.customers.splice(i, 1);
               continue;
@@ -3526,7 +3813,6 @@
     }
 
     let storeSimulation = null;
-
     let currentDetailBizId = null;
 
     function openBizDetailModalUI(bizId) {
@@ -3545,12 +3831,124 @@
       if (!currentDetailBizId) return;
       const detail = engine.getBusinessDetail(currentDetailBizId);
       if (!detail) return;
+      const biz = engine.businesses.find(b => b.id === currentDetailBizId);
+      if (!biz) return;
 
       if (bizDetailIcon) bizDetailIcon.innerText = detail.icon;
       if (bizDetailTitle) bizDetailTitle.innerText = `${detail.name} (مستوى ${detail.level})`;
       if (bizDetailTagline) bizDetailTagline.innerText = detail.tagline;
-      if (bizDetailIncome) bizDetailIncome.innerHTML = formatCurrency(detail.revenuePerCycle);
+
+      // Données financières & évolution possible
+      const currentCost = engine.getCost(biz);
+      const currentRev = engine.getRevenue(biz);
+      const tempBizNext = { ...biz, level: biz.level + 1 };
+      const nextRev = engine.getRevenue(tempBizNext);
+      const deltaRev = Math.max(0, nextRev - currentRev);
+      const milestone = engine.getBusinessMilestones ? engine.getBusinessMilestones(biz) : { nextLevel: null, nextMultiplier: 1 };
+
+      if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / دورة`;
       if (bizDetailRate) bizDetailRate.innerHTML = `+${formatCurrency(detail.dinarsPerSecond)}/ث`;
+      if (bizDetailNextLvlText) bizDetailNextLvlText.innerText = `المستوى ${biz.level + 1}`;
+      if (bizDetailNextGain) bizDetailNextGain.innerText = `+${formatCurrency(deltaRev)} مربوح إضافي في كل دورة`;
+
+      if (bizDetailMilestoneHint) {
+        if (milestone.nextLevel) {
+          const remaining = milestone.nextLevel - biz.level;
+          bizDetailMilestoneHint.innerText = `🎯 المحطّة القادمة : مستوى ${milestone.nextLevel} يعطيك مضاعف x${milestone.nextMultiplier} سرعة ! (باقي ${remaining} مستويات)`;
+        } else {
+          bizDetailMilestoneHint.innerText = `👑 أسطورة كاملة : وصلت للقمّة القصوى للمحلّ !`;
+        }
+      }
+
+      if (bizDetailUpgradeCost) bizDetailUpgradeCost.innerText = formatCurrency(currentCost);
+      if (bizDetailQuickUpgradeBtn) {
+        bizDetailQuickUpgradeBtn.onclick = () => {
+          if (engine.buyBusiness(biz.id)) {
+            soundEngine.playCoin();
+            renderBizDetailContent();
+            if (storeSimulation) storeSimulation.renderStations();
+            renderDOM();
+            updateSynergiesUI();
+          } else {
+            triggerBalanceAlert(`مازالت تخصّك فلوس باش تطوّر المشروع ! 💰`);
+          }
+        };
+      }
+
+      // 1. Staff Slots
+      if (bizDetailStaffList) {
+        bizDetailStaffList.innerHTML = '';
+        detail.staffSlots.forEach((slot, idx) => {
+          const item = document.createElement('div');
+          item.style.cssText = `background: ${slot.hired ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.3)'}; border: 1px solid ${slot.hired ? '#10b981' : 'rgba(255,255,255,0.08)'}; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;`;
+          item.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">${slot.icon}</span>
+              <div>
+                <div style="font-size: 12px; font-weight: 900; color: #f8fafc;">${slot.name} (${slot.role})</div>
+                <div style="font-size: 10px; color: #38bdf8;">${slot.bonusDesc}</div>
+              </div>
+            </div>
+            <div>
+              ${slot.hired ? `
+                <span style="font-size: 11px; font-weight: 900; color: #34d399;">يخدم ✓</span>
+              ` : `
+                <button class="upg-buy-btn" style="padding: 4px 8px; font-size: 10px;" id="hire-slot-${currentDetailBizId}-${idx}">خدّم : ${formatCurrency(slot.cost, 0)}</button>
+              `}
+            </div>
+          `;
+          bizDetailStaffList.appendChild(item);
+
+          const hireBtn = item.querySelector(`#hire-slot-${currentDetailBizId}-${idx}`);
+          if (hireBtn) {
+            hireBtn.onclick = () => {
+              const res = engine.hireManager(currentDetailBizId);
+              if (res) {
+                soundEngine.playEventFanfare();
+                renderBizDetailContent();
+                if (storeSimulation) storeSimulation.renderStations();
+                renderDOM();
+                updateSynergiesUI();
+              } else {
+                triggerBalanceAlert(`مازالت تخصّك فلوس باش تخدّمو ! 👔`);
+              }
+            };
+          }
+        });
+      }
+
+      // 2. Recipe Breakdown
+      if (bizDetailRecipeList) {
+        bizDetailRecipeList.innerHTML = '';
+        detail.recipeBreakdown.forEach(item => {
+          const row = document.createElement('div');
+          row.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;';
+          row.innerHTML = `
+            <div>
+              <div style="font-size: 12px; font-weight: 800; color: #fde68a;">${item.item}</div>
+              <div style="font-size: 10px; color: #94a3b8;">نسبة من الطلبيات : ${item.sharePct}%</div>
+            </div>
+            <div style="font-size: 12px; font-weight: 900; color: #38bdf8;">
+              ${formatCurrency(item.price)}
+            </div>
+          `;
+          bizDetailRecipeList.appendChild(row);
+        });
+      }
+
+      // 3. Activity Simulation
+      if (bizDetailCrowdLevel) bizDetailCrowdLevel.innerText = detail.crowdLevel;
+      if (bizDetailCustomersRate) bizDetailCustomersRate.innerText = `${detail.customersPerMinute}`;
+      if (bizDetailSatisfaction) bizDetailSatisfaction.innerText = `${detail.satisfactionPct}%`;
+      if (bizDetailLiveTicker) {
+        const sampleQuotes = [
+          `💬 زبون دخل يطلب بالوقت... الكاسة تخدم ومريڤلة !`,
+          `💬 تفتوفة باهية من طاولة كليونات راضيين على السرفيس.`,
+          `💬 الإقبال ممتاز والسلعة طازة ماشية بالباهي.`
+        ];
+        bizDetailLiveTicker.innerText = sampleQuotes[Math.floor(Math.random() * sampleQuotes.length)];
+      }
+    }
 
       // 1. Staff Slots
       if (bizDetailStaffList) {

@@ -1,6 +1,11 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- feat(ui,simulation): polish shop modal typography, add current & next-level income evolution card, upgrade button and 3D entrance button
+- feat(ui,simulation): polish shop modal typography, add current & next-level income evolution card, upgrade button and 3D entrance button
+  - 🚪 3D Glassmorphism Entrance Button: Replaced discreet link with golden interactive 3D button (`🏪 ادخل للمحلّ 🔍 تفقد`) on every business card.
+  - 📊 Income & Evolution Card: Clear financial breakdown inside modal with current cycle earnings (`+X.XX د.ت`), cadence per second, next level net gain projection (`+Δ د.ت`), milestone countdown (next speed x2 multiplier), and instant quick upgrade button.
+  - 🎭 Enhanced Visual Storytelling: Authentic contextual order bubbles per business type (e.g. capucin/express, kaskrout ayari, taxi la marsa), dynamic real-time coin popup displaying exact cycle earnings on register pop, active/sleepy staff states and customer satisfaction reactions (`😋 ❤️ ⭐⭐⭐⭐⭐`).
 - feat(visual-simulation): add 2D cutaway live animated store simulation with register, dynamic staff stations and customer flow
 - feat(visual-simulation): add 2D cutaway live animated store simulation with register, dynamic staff stations and customer flow
   - 🏪 Interactive 2D Stage (`#bizDetailVisualStage`): Cutaway store view styled in dark luxury & Tunisian tiles.
