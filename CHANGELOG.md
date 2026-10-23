@@ -1,6 +1,13 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- feat(fx,animations,bonus): eliminate raw HTML text leaks, add CSS alive business animations and re-pace gift drops
+- feat(fx,animations,bonus): eliminate raw HTML text leaks, add CSS alive business animations and re-pace gift drops
+  - 🧹 Zero HTML Leaks: Added `formatCurrencyPlain` preventing `<span class="num-ltr">` from appearing inside `innerText`, toast messages and dialog buttons.
+  - 🎨 Alive Business Animations (Pure CSS 60 FPS):
+    - Micro-animations: Steam rising (`♨️`) on café/fricassé/restaurant/conserverie, pulsing neon light on tearooms/hotels/malls, vehicle exhaust puff (`💨`) on taxi collectif, and gold glimmers on real-estate holdings.
+    - Dynamic States: `is-idle-breathing` (gentle breathing scale), `is-producing` (high-tempo kinetic shake), and `is-upgraded` (golden milestone flash).
+  - 🎁 Re-paced & High-Impact Lucky Drops: Dropped frequency to 60-90s, replaced static drop with bouncing gift box (`@keyframes giftBounce`) emitting a festive burst of coins and confetti (`launchCelebrationBurst`).
 - feat(profile,settings): add empire profile modal, project name customization, progress metrics and secure hard reset
 - feat(profile,settings): add empire profile modal, project name customization, progress metrics and secure hard reset
   - 👑 Empire Profile & Settings Modal: accessed via clean header gear button (⚙️), custom empire name with persistent save.

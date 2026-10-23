@@ -401,9 +401,106 @@
     .biz-avatar {
       transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
+      position: relative;
     }
     .biz-avatar:active, .biz-avatar.squashed {
       transform: scale(1.22, 0.82) !important;
+    }
+
+    /* ÉTATS D'ANIMATION DES COMMERCES (TYCOON ALIVE) */
+    .biz-avatar.is-idle-breathing {
+      animation: idleBreathing 2.4s ease-in-out infinite;
+    }
+    @keyframes idleBreathing {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.05) translateY(-1px); filter: brightness(1.1); }
+    }
+
+    .biz-avatar.is-producing {
+      animation: activeProducing 0.45s ease-in-out infinite;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.6), inset 0 0 8px rgba(245, 158, 11, 0.4);
+    }
+    @keyframes activeProducing {
+      0% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-2px) rotate(-2deg) scale(1.04); }
+      75% { transform: translateY(1px) rotate(2deg) scale(0.98); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+
+    .biz-avatar.is-upgraded {
+      animation: upgradeFlash 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes upgradeFlash {
+      0% { transform: scale(1.3) rotate(-6deg); box-shadow: 0 0 25px #fbbf24, inset 0 0 15px #fff; filter: brightness(1.7); }
+      50% { transform: scale(1.15) rotate(4deg); box-shadow: 0 0 18px #f59e0b; }
+      100% { transform: scale(1) rotate(0deg); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.08); filter: brightness(1); }
+    }
+
+    /* MICRO-ANIMATIONS THÉMATIQUES PAR AVATAR (100% CSS PUR) */
+    /* Vapeur/Fumée pour Café, Bambalouni, Fricassé, Restaurant, Conserverie */
+    .biz-card[data-biz-id="kahwa"] .biz-avatar::before,
+    .biz-card[data-biz-id="fricasse"] .biz-avatar::before,
+    .biz-card[data-biz-id="kaskrout"] .biz-avatar::before,
+    .biz-card[data-biz-id="restaurant"] .biz-avatar::before,
+    .biz-card[data-biz-id="usine_conserves"] .biz-avatar::before {
+      content: '♨️';
+      position: absolute;
+      top: -10px;
+      left: 6px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      animation: steamRise 2s infinite ease-out;
+    }
+    @keyframes steamRise {
+      0% { transform: translateY(2px) scale(0.6); opacity: 0; }
+      40% { opacity: 0.85; }
+      100% { transform: translateY(-16px) scale(1.2); opacity: 0; }
+    }
+
+    /* Néon palpitant pour Salon de thé, Pâtisserie, Hôtel, Mall */
+    .biz-card[data-biz-id="salon_de_the"] .biz-avatar,
+    .biz-card[data-biz-id="hotel"] .biz-avatar,
+    .biz-card[data-biz-id="patisserie"] .biz-avatar,
+    .biz-card[data-biz-id="centre_commercial"] .biz-avatar {
+      animation: neonFlicker 3s infinite ease-in-out;
+    }
+    @keyframes neonFlicker {
+      0%, 100% { filter: drop-shadow(0 0 4px #ec4899) brightness(1); }
+      50% { filter: drop-shadow(0 0 12px #f43f5e) drop-shadow(0 0 20px #a855f7) brightness(1.2); }
+      52% { filter: drop-shadow(0 0 2px #ec4899) brightness(0.9); }
+      54% { filter: drop-shadow(0 0 14px #f43f5e) brightness(1.25); }
+    }
+
+    /* Phares & Fumée rapide pour Taxi Collectif & Agence Voyages */
+    .biz-card[data-biz-id="taxi_collectif"] .biz-avatar::before,
+    .biz-card[data-biz-id="showroom_auto"] .biz-avatar::before {
+      content: '💨';
+      position: absolute;
+      bottom: -6px;
+      left: -6px;
+      font-size: 13px;
+      opacity: 0.75;
+      animation: exhaustPuff 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes exhaustPuff {
+      0% { transform: translateX(0) scale(0.8); opacity: 0.3; }
+      100% { transform: translateX(-5px) scale(1.15); opacity: 0.9; }
+    }
+
+    /* Étincelles dorées pour Holding, Promoteur, Falcon Airlines */
+    .biz-card[data-biz-id="promoteur_immobilier"] .biz-avatar::before,
+    .biz-card[data-biz-id="tayaran_el_ghzela"] .biz-avatar::before {
+      content: '✨';
+      position: absolute;
+      top: -8px;
+      right: -6px;
+      font-size: 14px;
+      animation: goldSparkle 1.8s infinite ease-in-out;
+    }
+    @keyframes goldSparkle {
+      0%, 100% { transform: scale(0.6) rotate(0deg); opacity: 0.3; }
+      50% { transform: scale(1.25) rotate(180deg); opacity: 1; filter: drop-shadow(0 0 6px #fde047); }
     }
 
     /* PARTICULES FLOTTANTES AU TAP (+X د.ت) */
@@ -688,42 +785,58 @@
       100% { border-color: rgba(253, 230, 138, 0.9); }
     }
 
-    /* FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) */
+    /* FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ الأسطوري) */
     .lucky-drop-floating {
       position: fixed;
       z-index: 150;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #f59e0b 0%, #b45309 80%);
-      border: 2px solid #fef08a;
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      width: 66px;
+      height: 66px;
+      border-radius: 18px;
+      background: radial-gradient(circle, #f59e0b 0%, #b45309 85%);
+      border: 2.5px solid #fef08a;
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.85), inset 0 2px 5px rgba(255, 255, 255, 0.5);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 24px;
+      font-size: 32px;
       color: white;
-      animation: floatDrop 3s infinite ease-in-out, pulseDrop 1s infinite alternate;
+      animation: giftBounce 1.4s infinite cubic-bezier(0.28, 0.84, 0.42, 1);
       touch-action: manipulation;
     }
     .lucky-drop-sub {
       font-size: 9px;
       font-weight: 900;
-      color: #1e1b4b;
-      background: #fde68a;
-      padding: 1px 4px;
-      border-radius: 4px;
+      color: #78350f;
+      background: #fef08a;
+      padding: 1px 6px;
+      border-radius: 6px;
       margin-top: -2px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.3px;
     }
-    @keyframes floatDrop {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-12px) rotate(8deg); }
+    @keyframes giftBounce {
+      0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+      30% { transform: translateY(-16px) scale(1.12) rotate(-5deg); filter: drop-shadow(0 0 18px #fef08a); }
+      50% { transform: translateY(0) scale(0.92, 1.08) rotate(4deg); }
+      70% { transform: translateY(-6px) scale(1.04) rotate(-2deg); }
+      85% { transform: translateY(0) scale(0.98, 1.02) rotate(0deg); }
     }
-    @keyframes pulseDrop {
-      from { transform: scale(1); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.6)); }
-      to { transform: scale(1.08); filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.9)); }
+
+    /* CONFETTI & DINAIRS VOLANTS DE CÉLÉBRATION */
+    .lucky-burst-particle {
+      position: fixed;
+      pointer-events: none;
+      user-select: none;
+      z-index: 9999;
+      will-change: transform, opacity;
+      animation: burstFly 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes burstFly {
+      0% { opacity: 1; transform: translate3d(0, 0, 0) scale(0.5) rotate(0deg); }
+      50% { opacity: 1; transform: translate3d(var(--bx), var(--by), 0) scale(1.3) rotate(180deg); }
+      100% { opacity: 0; transform: translate3d(calc(var(--bx) * 1.3), calc(var(--by) + 50px), 0) scale(0.8) rotate(360deg); }
     }
 
     /* CHKOBBA MINI-GAME STYLES */
@@ -1526,7 +1639,7 @@
 
   <!-- FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) -->
   <div id="luckyDropEl" class="lucky-drop-floating" style="display: none;">
-    <span id="luckyDropIcon">💰</span>
+    <span id="luckyDropIcon">🎁</span>
     <span class="lucky-drop-sub">تفتوفة !</span>
   </div>
 
@@ -1844,7 +1957,7 @@
       confirmPrestigeBtn.disabled = !engine.canPrestige();
       confirmPrestigeBtn.innerText = engine.canPrestige() 
         ? `🚀 صَحّح العقد وارجع معلّم (+${pending} نقطة)` 
-        : `🔒 لازمك تلمّ ${formatCurrency(engine.getPrestigeThreshold())} على الأقل`;
+        : `🔒 لازمك تلمّ ${formatCurrencyPlain(engine.getPrestigeThreshold())} على الأقل`;
 
       prestigeModal.classList.add('active');
     };
@@ -1973,13 +2086,13 @@
     const luckyDropEl = document.getElementById('luckyDropEl');
     const luckyDropIcon = document.getElementById('luckyDropIcon');
     let luckyDropTimeout = null;
-    let nextLuckyDropAt = Date.now() + 12000; // Premier drop après 12s
+    let nextLuckyDropAt = Date.now() + 45000; // Premier drop espacé à 45-60s
 
     function spawnLuckyDrop() {
       if (!luckyDropEl) return;
       const isSpeed = Math.random() < 0.35; // 35% de chance de boost vitesse
       luckyDropEl.dataset.type = isSpeed ? 'speed' : 'cash';
-      luckyDropIcon.innerText = isSpeed ? '⚡' : '💰';
+      luckyDropIcon.innerText = isSpeed ? '⚡' : '🎁';
 
       // Position aléatoire sécurisée au niveau de la liste des commerces (sans masquer le header/bannières)
       const maxX = Math.max(20, window.innerWidth - 80);
@@ -1993,29 +2106,38 @@
       luckyDropEl.style.display = 'flex';
 
       clearTimeout(luckyDropTimeout);
-      // Disparaît après 8 secondes si non cliqué
+      // Disparaît après 10 secondes si non cliqué, prochain drop après 60s
       luckyDropTimeout = setTimeout(() => {
         luckyDropEl.style.display = 'none';
-        nextLuckyDropAt = Date.now() + 25000 + Math.random() * 20000;
-      }, 8000);
+        nextLuckyDropAt = Date.now() + 60000 + Math.random() * 20000;
+      }, 10000);
     }
 
     luckyDropEl.onclick = (e) => {
       luckyDropEl.style.display = 'none';
       clearTimeout(luckyDropTimeout);
-      nextLuckyDropAt = Date.now() + 30000 + Math.random() * 25000;
+      nextLuckyDropAt = Date.now() + 60000 + Math.random() * 30000;
+
+      const clickX = e.clientX || (window.innerWidth / 2);
+      const clickY = e.clientY || (window.innerHeight / 2);
+
+      // Gerbe spectaculaire de confettis et dinars dorés
+      launchCelebrationBurst(clickX, clickY);
 
       const type = luckyDropEl.dataset.type;
       const res = engine.claimLuckyDrop(type);
 
       if (res.type === 'speed') {
         soundEngine.playUpgrade();
-        spawnFloatText(e.clientX, e.clientY, `تيربو x2 ⚡`);
+        spawnFloatText(clickX, clickY, `تيربو x2 ⚡`);
         showRewardModalUI('⚡', 'تفتوفة تيربو سريعة !', 'سرعة الإنتاج تضاعفت x2 لمدّة 30 ثانية :', 'سرعة x2');
       } else {
         soundEngine.playCoin();
-        spawnFloatText(e.clientX, e.clientY, `+${formatCurrency(res.amount)}`);
-        showRewardModalUI('💰', 'تفتوفة طايحة في الكياس !', 'لقيت صرّة فلوس مريڤلة في الحومة :', `+${formatCurrency(res.amount)}`);
+        spawnFloatText(clickX, clickY, `+${formatCurrency(res.amount)}`);
+        if (typeof launchCoinShower === 'function') {
+          launchCoinShower(clickX, clickY, 12);
+        }
+        showRewardModalUI('🎁', 'صندوق الحظ الذهبي !', 'لقيت كنز تفتوفة معتبرة في الحومة :', `+${formatCurrency(res.amount)}`);
       }
       renderDOM();
     };
@@ -2029,6 +2151,17 @@
       const formatted = (num / Math.pow(10, i * 3)).toFixed(decimals);
       const suffix = suffixes[i] || 'دينار';
       return `<span class="num-ltr">${formatted}</span> ${suffix}`;
+    }
+
+    // Version texte brut pur sans balises HTML (pour innerText, toasts, alertes, boutons)
+    function formatCurrencyPlain(num, decimals = 2) {
+      if (num === null || num === undefined || isNaN(num)) return '0.00 دينار';
+      if (num < 1000) return `${num.toFixed(decimals)} دينار`;
+      const suffixes = ["دينار", "ألف دينار", "مليون دينار", "مليار دينار", "ترليون دينار"];
+      const i = Math.floor(Math.log10(num) / 3);
+      const formatted = (num / Math.pow(10, i * 3)).toFixed(decimals);
+      const suffix = suffixes[i] || 'دينار';
+      return `${formatted} ${suffix}`;
     }
 
     // --- MOTEUR DE PARTICULES PHYSIQUES TYCOON (COIN PARABOLA CANNON) ---
@@ -2094,6 +2227,25 @@
       el.style.top = `${y}px`;
       document.body.appendChild(el);
       el.addEventListener('animationend', () => el.remove(), { once: true });
+    }
+
+    // Gerbe festive de confettis et dinars dorés (Lucky Drop & Jackpots)
+    function launchCelebrationBurst(x, y) {
+      const items = ['🪙', '💵', '✨', '🎉', '🌟', '💰'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'lucky-burst-particle';
+        p.innerText = items[i % items.length];
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        p.style.fontSize = `${18 + Math.random() * 12}px`;
+        const angle = (Math.PI * 2 * i) / 18 + (Math.random() * 0.3 - 0.15);
+        const dist = 70 + Math.random() * 80;
+        p.style.setProperty('--bx', `${Math.cos(angle) * dist}px`);
+        p.style.setProperty('--by', `${Math.sin(angle) * dist - 30}px`);
+        document.body.appendChild(p);
+        p.addEventListener('animationend', () => p.remove(), { once: true });
+      }
     }
 
     // UI Helper: Toast de notification solde insuffisant
@@ -2164,6 +2316,7 @@
         const card = document.createElement('div');
         card.className = `biz-card ${biz.level > 0 ? 'active' : 'locked'}`;
         card.id = `card-${biz.id}`;
+        card.setAttribute('data-biz-id', biz.id);
 
         const cost = engine.getCost(biz);
         const rev = engine.getRevenue(biz);
@@ -2249,12 +2402,17 @@
             renderDOM();
             updateSynergiesUI();
             renderTacticalUpgradesUI();
+            const upgradedAvatar = document.getElementById(`avatar-${biz.id}`);
+            if (upgradedAvatar) {
+              upgradedAvatar.classList.add('is-upgraded');
+              setTimeout(() => upgradedAvatar.classList.remove('is-upgraded'), 850);
+            }
           } else {
             const currentCost = engine.getCost(biz);
             const manque = (currentCost - engine.dinars);
             buyBtn.classList.add('shake-btn');
             setTimeout(() => buyBtn.classList.remove('shake-btn'), 420);
-            triggerBalanceAlert(`مازالت ناقصتك ${formatCurrency(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
+            triggerBalanceAlert(`مازالت ناقصتك ${formatCurrencyPlain(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
           }
         };
 
@@ -2305,7 +2463,7 @@
               const manque = (nextMgr.cost - engine.dinars);
               mgrBtn.classList.add('shake-btn');
               setTimeout(() => mgrBtn.classList.remove('shake-btn'), 420);
-              triggerBalanceAlert(`مازالت تخصّك ${formatCurrency(manque)} باش تخدّمو ! 👔`);
+              triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(manque)} باش تخدّمو ! 👔`);
             }
           };
         }
@@ -2516,7 +2674,7 @@
                 renderTacticalUpgradesUI();
                 renderDOM();
               } else {
-                triggerBalanceAlert(`مازالت تخصّك ${formatCurrency(u.cost - engine.dinars)} باش تشري سرّ الصنعة !`);
+                triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(u.cost - engine.dinars)} باش تشري سرّ الصنعة !`);
               }
             };
           }
@@ -2577,7 +2735,7 @@
               </button>
             ` : `
               <div style="font-size: 10px; font-weight: 800; color: #ef4444; text-align: center; line-height: 1.2;">
-                🔒 يتطلب ${z.minPrestige > 0 ? `معلّم ${z.minPrestige}★` : ''} ${z.reqDinars > 0 ? formatCurrency(z.reqDinars, 0) : ''}
+                🔒 يتطلب ${z.minPrestige > 0 ? `معلّم ${z.minPrestige}★` : ''} ${z.reqDinars > 0 ? formatCurrencyPlain(z.reqDinars, 0) : ''}
               </div>
             `}
           </div>
@@ -2726,7 +2884,7 @@
             showRewardModalUI('📜', 'قرار صائب في الحومة !', res.choice.effectDesc, 'مريڤل 🤝');
             renderDOM();
           } else if (res && res.reason === 'insufficient_funds') {
-            triggerBalanceAlert(`مازالت تخصّك ${formatCurrency(res.cost - engine.dinars)} باش تنفّذ القرار !`);
+            triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(res.cost - engine.dinars)} باش تنفّذ القرار !`);
           }
         };
 
@@ -2738,7 +2896,7 @@
             showRewardModalUI('📜', 'قرار صائب في الحومة !', res.choice.effectDesc, 'مريڤل 🤝');
             renderDOM();
           } else if (res && res.reason === 'insufficient_funds') {
-            triggerBalanceAlert(`مازالت تخصّك ${formatCurrency(res.cost - engine.dinars)} باش تنفّذ القرار !`);
+            triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(res.cost - engine.dinars)} باش تنفّذ القرار !`);
           }
         };
       } else {
@@ -2890,7 +3048,7 @@
       if (claimableQuests.length > 0) {
         const topQuest = claimableQuests[0];
         questBox.style.display = 'flex';
-        questTitle.innerText = `${topQuest.title} (+${formatCurrency(topQuest.rewardDinars, 0)})`;
+        questTitle.innerText = `${topQuest.title} (+${formatCurrencyPlain(topQuest.rewardDinars, 0)})`;
         claimQuestBtn.onclick = () => {
           const claimed = engine.claimQuest(topQuest.id);
           if (claimed) {
@@ -2931,12 +3089,25 @@
         eventBanner.style.display = 'none';
       }
 
-      // Progression continue des jauges + Onde de choc dorée à l'achèvement
+      // Progression continue des jauges + Onde de choc dorée à l'achèvement + Micro-animations avatar
       engine.businesses.forEach(biz => {
         const bar = document.getElementById(`prog-${biz.id}`);
+        const avatar = document.getElementById(`avatar-${biz.id}`);
         if (bar && biz.level > 0) {
           const pct = Math.min(100, (biz.progressMs / biz.cycleDurationMs) * 100);
           bar.style.width = pct + '%';
+
+          // Animation d'état avatar (is-producing vs is-idle-breathing)
+          if (avatar && !avatar.classList.contains('is-upgraded')) {
+            const isProducing = biz.isProducing || biz.hasManager || biz.progressMs > 0;
+            if (isProducing) {
+              avatar.classList.remove('is-idle-breathing');
+              avatar.classList.add('is-producing');
+            } else {
+              avatar.classList.remove('is-producing');
+              avatar.classList.add('is-idle-breathing');
+            }
+          }
 
           // Détecter la fin de cycle pour déclencher l'onde de choc
           if (pct >= 98 && !bar.dataset.pulsing) {

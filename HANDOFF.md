@@ -2,8 +2,8 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Ajout du système complet de Profil Joueur & Écran Paramétrage de l'Empire Tycoon (« إعدادات الإمبراطورية والبروفيل »).
-Personnalisation du nom du projet, calcul déterministe du niveau d'empire et de la jauge globale (%), tableau de bord d'avancement (17 commerces, staff, dinars cumulés, prestige), et hard reset à double confirmation.
+Éradication des fuites HTML (`formatCurrencyPlain` pour `innerText`, alertes toasts et boutons), animations graphiques vivantes par CSS pur (vapeur café/fricassé, néons palpitants, phares/fumée taxi, scintillement or).
+Consolidation et espacement des bonus (lucky drop espacé de 60 à 90s, boîte cadeau animée rebondissante `🎁` avec gerbe de confettis/pièces `launchCelebrationBurst`).
 Tests: `npm test` = 11/11 PASS. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE
