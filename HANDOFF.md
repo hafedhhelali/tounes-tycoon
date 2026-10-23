@@ -2,8 +2,8 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Évolution majeure du jeu : vue immersive « Plan intérieur du projet » (`#bizDetailModal` avec plan des employés, recettes des produits tunisiens et simulation d'activité en direct).
-Conditionnement pub AdMob des bonus avec montants rééquilibrés/réduits, nouvelle BGM lounge méditerranéenne feutrée (60 BPM, Dm9/G13/Cmaj9 guitare nylon & Rhodes doux), et refonte lexicale "تصفير" ➔ "إفلاس".
+Mise à jour lexicale du bouton AdMob : "قصّ البونيس" devient "اربح البونيس".
+Vue immersive des commerces opérationnelle, BGM lounge méditerranéenne douce, hard reset إفلاس.
 Tests: `npm test` = 12/12 PASS. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE

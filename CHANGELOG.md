@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- fix(derja): replace قص البونيس with اربح البونيس on lucky ad modal
+- fix(derja): replace 'قصّ البونيس' with 'اربح البونيس' on rewarded ad bonus modal
 - feat(biz-interior,audio,economy): add inside business view, Mediterranean lounge BGM, ad-gated rebalanced bonuses and ifles lexical overhaul
 - feat(biz-interior,audio,economy): add inside business view, Mediterranean lounge BGM, ad-gated rebalanced bonuses and ifles lexical overhaul
   - 🔍 Inside Project View (`#bizDetailModal`): Click on any business card to enter the shop with 3 interactive tabs:
