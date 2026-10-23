@@ -3,8 +3,8 @@ MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
 Bouton retour Android intercepté en dur (onKeyDown + Capacitor App) avec modal de confirmation de sortie ("تحبّ تخرج من تونس تايكون ؟") et bouton direct 🚪 dans le header.
-Bouton direct mentions légales et confidentialité 📜 dans le header + panneau complet conforme AdMob / RGPD et copyright © EOLabs 2026.
-Boutons de récompenses publicitaires AdMob (Turbo 🚀, Solde gratuit 🎁, Roue de la fortune 🎡, Lucky Drop 💸) mis en valeur en mode paysage. Tests: npm test = 12/12 PASS.
+Correction popups mode paysage (suppression de contain:strict, ajout d'overflow auto et padding optimisé 94vh) pour afficher l'intégralité du contenu sans rognage.
+Dernier APK compilé (Run #58) rapatrié dans dist/tounes-tycoon-58-beta.apk (3.2 Mo). Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

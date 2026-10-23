@@ -1,6 +1,10 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(ui,modal,viewport): fix landscape modal clipping with overflow auto and 94vh max bounds
+- fix(ui,modal,viewport): fix landscape modal clipping with overflow auto and 94vh max bounds
+  - 🖥️ Full Modal Visibility: Removed `contain: strict` on `.modal-overlay` that clipped tall dialogs in landscape view. Added `overflow-y: auto`, `padding: 10px` and responsive `max-height: 94vh` to `.modal-card`.
+  - 📦 APK Run #58 Deployed: Downloaded and verified APK artifact into `dist/tounes-tycoon-58-beta.apk`.
 - feat(ui,ads,legal): direct header legal and exit buttons, polished ad reward touchpoints
 - feat(ui,ads,legal): direct header legal and exit buttons, polished ad reward touchpoints
 - feat(ui,ads,legal): direct header legal and exit buttons, polished ad reward touchpoints
