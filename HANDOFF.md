@@ -2,8 +2,8 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Sublimation de la modale de projet : bloc financier doré et d'évolution future (revenu/cycle, cadence/seconde, gain net niveau suivant, prochain Milestone x2 vitesse, bouton d'upgrade direct).
-Bouton d'accès « ادخل للمحلّ » restylisé en 3D Glassmorphism doré sur chaque carte, et simulation 2D enrichie (dialogues tunisiens selon commerce, affichage du montant réel gagné à l'encaissement, caissier dynamique).
+Résolution définitive du bug de clic : suppression du bloc de script dupliqué dans `index.html` (74 lignes superflues dans `renderBizDetailContent`).
+Nouveau logo vectoriel premium SVG « تونس تايكون » : médaillon d'or sculpté, croissant & étoile tunisiens, engrenage coffre-fort et typographie or luxueuse.
 Tests: `npm test` = 12/12 PASS. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE

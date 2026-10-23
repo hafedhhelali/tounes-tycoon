@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- fix(ui,clicks,branding): fix click handlers by removing duplicate block and design luxury tycoon vector logo
 - feat(ui,simulation): polish shop modal typography, add current & next-level income evolution card, upgrade button and 3D entrance button
 - feat(ui,simulation): polish shop modal typography, add current & next-level income evolution card, upgrade button and 3D entrance button
   - 🚪 3D Glassmorphism Entrance Button: Replaced discreet link with golden interactive 3D button (`🏪 ادخل للمحلّ 🔍 تفقد`) on every business card.
