@@ -3796,11 +3796,6 @@
       }
     }
 
-    renderDOM();
-    updateSynergiesUI();
-    applyZoneTheme();
-    updateWheelBtnState();
-
     // --- MOTEUR PANORAMIQUE 2D 60 FPS DU QUARTIER TUNISIEN VIVANT (LANDSCAPE) ---
     const quartierCanvas = document.getElementById('quartierMainCanvas');
     const currentQuartierBadge = document.getElementById('currentQuartierBadge');
@@ -3861,6 +3856,11 @@
         };
       }
     }
+
+    renderDOM();
+    updateSynergiesUI();
+    applyZoneTheme();
+    updateWheelBtnState();
 
     // --- GESTION DU PROFIL & PARAMÈTRES DE L'EMPIRE ---
     const openSettingsBtn = document.getElementById('openSettingsBtn');

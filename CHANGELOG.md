@@ -1,6 +1,9 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(anim,lifecycle): mount and start QuartierAnimator before initial renderDOM and theme application
+- fix(anim,lifecycle): mount and start QuartierAnimator before initial renderDOM and theme application
+  - 🎬 Instant Animation Loop: Instantiated and started `QuartierAnimator` ahead of initial DOM rendering and zone theme binding to prevent idle canvas blanking on startup.
 - fix(ui,modal,viewport): fix landscape modal clipping with overflow auto and 94vh max bounds
 - fix(ui,modal,viewport): fix landscape modal clipping with overflow auto and 94vh max bounds
   - 🖥️ Full Modal Visibility: Removed `contain: strict` on `.modal-overlay` that clipped tall dialogs in landscape view. Added `overflow-y: auto`, `padding: 10px` and responsive `max-height: 94vh` to `.modal-card`.
