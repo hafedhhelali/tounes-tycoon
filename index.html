@@ -1574,153 +1574,148 @@
       color: #38bdf8;
     }
 
-    /* --- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET (REDESIGN PREMIUM TYCOON) --- */
+    /* --- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET (GRILLE COMPACTE & COHÉRENTE) --- */
     .biz-income-evolution-card {
       background: linear-gradient(180deg, rgba(20, 29, 47, 0.98) 0%, rgba(11, 17, 32, 0.98) 100%);
       border: 1.5px solid rgba(245, 158, 11, 0.35);
-      border-radius: 16px;
-      padding: 12px 14px;
+      border-radius: 14px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
     }
     .biz-income-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
       background: rgba(0, 0, 0, 0.35);
-      padding: 10px 14px;
-      border-radius: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.06);
     }
     .biz-income-stat {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
     .biz-income-stat.stat-cadence {
       text-align: left;
     }
     .stat-label {
-      font-size: 11px;
+      font-size: 10px;
       color: #94a3b8;
       font-weight: 800;
     }
     .stat-main-value {
-      font-size: 20px;
+      font-size: 15px;
       font-weight: 950;
       color: #fbbf24;
-      letter-spacing: -0.3px;
-      text-shadow: 0 2px 12px rgba(245, 158, 11, 0.5);
       display: inline-flex;
       align-items: center;
       gap: 4px;
     }
     .stat-sub-value {
-      font-size: 13.5px;
+      font-size: 12px;
       font-weight: 900;
       color: #38bdf8;
       display: inline-flex;
       align-items: center;
       gap: 4px;
     }
-    /* Banner Évolution réarchitecturé horizontalement propre */
+    /* Banner Évolution en grille ergonomique compacte : volet info + bouton action */
     .biz-evolution-banner {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
       border: 1.5px solid rgba(56, 189, 248, 0.3);
-      padding: 12px 14px;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      padding: 8px 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
-    .evo-top-row {
+    .evo-info-pane {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 8px;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
     }
     .evo-level-badge-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     .evo-badge {
       background: rgba(56, 189, 248, 0.2);
       border: 1px solid rgba(56, 189, 248, 0.45);
       color: #38bdf8;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 900;
-      padding: 3px 9px;
-      border-radius: 8px;
+      padding: 2px 7px;
+      border-radius: 6px;
     }
     .evo-target {
-      font-size: 14px;
+      font-size: 12.5px;
       font-weight: 950;
       color: #f8fafc;
     }
     .evo-gain-pill {
       background: rgba(16, 185, 129, 0.15);
       border: 1px solid rgba(16, 185, 129, 0.45);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 12px;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 11px;
       font-weight: 900;
       color: #34d399;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-    }
-    .evo-bottom-action-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
+      gap: 4px;
+      width: fit-content;
     }
     .evo-milestone-hint {
-      font-size: 11px;
-      color: #cbd5e1;
+      font-size: 10px;
+      color: #94a3b8;
       font-weight: 700;
-      line-height: 1.4;
-      flex: 1;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .evo-upgrade-btn {
       background: linear-gradient(180deg, #10b981 0%, #059669 100%);
       border: 1.5px solid #34d399;
-      border-radius: 12px;
+      border-radius: 10px;
       color: #ffffff;
-      padding: 10px 18px;
+      padding: 8px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      min-width: 130px;
-      min-height: 50px;
+      min-width: 115px;
+      min-height: 44px;
       touch-action: manipulation;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       flex-shrink: 0;
     }
     .evo-upgrade-btn:hover {
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.6);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.6);
       border-color: #6ee7b7;
     }
     .evo-upgrade-btn:active {
       transform: translateY(1px) scale(0.97);
     }
     .evo-btn-action {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 950;
-      line-height: 1.2;
+      line-height: 1.1;
     }
     .evo-btn-cost {
-      font-size: 11.5px;
+      font-size: 11px;
       color: #d1fae5;
       font-weight: 900;
       margin-top: 2px;
@@ -2433,24 +2428,9 @@
         <button class="settings-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
       </div>
 
-      <!-- SCÈNE VISUELLE TYCOON 2D (Vue en coupe / Cutaway Store) -->
-      <div class="biz-store-stage" id="bizDetailVisualStage">
-        <div class="store-backdrop">
-          <!-- Zone Caisse -->
-          <div class="store-counter">
-            <div class="store-cash-register" id="storeRegister">
-              <span class="reg-icon">📠</span>
-            </div>
-            <div class="store-counter-desk">الكاسة</div>
-          </div>
-          <!-- Rangée Staff : Caissier + Postes Employés côte à côte alignés -->
-          <div class="store-staff-stations-container">
-            <div class="store-station" id="stationCashier"></div>
-            <div id="storeWorkstations" style="display: flex; gap: 14px; align-items: flex-end;"></div>
-          </div>
-        </div>
-        <!-- Voie des clients -->
-        <div class="store-customers-layer" id="storeCustomersLayer"></div>
+      <!-- SCÈNE VISUELLE TYCOON 2D HAUTE DÉFINITION (CANVAS 60 FPS CUTAWAY STORE) -->
+      <div class="biz-store-stage" id="bizDetailVisualStage" style="display: flex; align-items: center; justify-content: center; position: relative;">
+        <canvas id="bizStoreCanvas" style="display: block; width: 100%; height: 200px; border-radius: 14px; cursor: pointer;"></canvas>
       </div>
 
       <!-- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET -->
@@ -2467,25 +2447,23 @@
         </div>
 
         <div class="biz-evolution-banner">
-          <div class="evo-top-row">
+          <div class="evo-info-pane">
             <div class="evo-level-badge-wrap">
               <span class="evo-badge">⬆️ الترقية القادمة</span>
               <span class="evo-target" id="bizDetailNextLvlText">المستوى 2</span>
+              <div class="evo-gain-pill">
+                <span>📈</span>
+                <span id="bizDetailNextGain">+0.80 د.ت إضافي</span>
+              </div>
             </div>
-            <div class="evo-gain-pill">
-              <span>📈</span>
-              <span id="bizDetailNextGain">+0.80 د.ت مربوح إضافي مع كل كليان</span>
-            </div>
-          </div>
-          <div class="evo-bottom-action-row">
             <div class="evo-milestone-hint" id="bizDetailMilestoneHint">
               🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !
             </div>
-            <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn">
-              <span class="evo-btn-action">طوّر المحلّ 🚀</span>
-              <span class="evo-btn-cost" id="bizDetailUpgradeCost">5.35 د.ت</span>
-            </button>
           </div>
+          <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn">
+            <span class="evo-btn-action">طوّر المحلّ 🚀</span>
+            <span class="evo-btn-cost" id="bizDetailUpgradeCost">5.35 د.ت</span>
+          </button>
         </div>
       </div>
 
@@ -2598,6 +2576,7 @@
     import { TycoonEngine } from './engine.js';
     import { soundEngine } from './audio.js';
     import { AdsService } from './ads_service.js';
+    import { CanvasStoreEngine } from './store_animator.js';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -3809,245 +3788,7 @@
     const bizDetailSatisfaction = document.getElementById('bizDetailSatisfaction');
     const bizDetailLiveTicker = document.getElementById('bizDetailLiveTicker');
 
-    // --- MOTEUR DE SIMULATION VISUELLE 2D (CUTAWAY STORE STAGE 60 FPS) ---
-    class BizStoreSimulation {
-      constructor(stageEl, engineRef) {
-        this.stage = stageEl;
-        this.engine = engineRef;
-        this.bizId = null;
-        this.animId = null;
-        this.lastTime = 0;
-        this.spawnTimer = 0;
-        this.customers = [];
-
-        // Émotes minimalistes par projet au lieu de longs textes verbeux
-        this.dialoguePools = {
-          kahwa: ['☕', '🍵', '♠️', '🍏'],
-          kaskrout: ['🥖', '🥪', '🥤', '🌶️'],
-          fricasse: ['🥟', '🍩', '🫒', '🥚'],
-          taxi_collectif: ['🚖', '🏁', '🚕', '🛣️'],
-          attariya: ['🍞', '🥛', '🧀', '📲'],
-          patisserie: ['🍯', '🥐', '🎂', '🧁'],
-          default: ['🛒', '✨', '🪙', '📦']
-        };
-
-        this.happyReactions = ['😋', '⭐', '🥰', '👌', '❤️', '👏'];
-        this.avatarsPool = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓'];
-      }
-
-      start(bizId) {
-        this.stop();
-        this.bizId = bizId;
-        this.customers = [];
-        this.spawnTimer = 1.0;
-        this.lastTime = performance.now();
-        this.renderStations();
-        this.loop = this.loop.bind(this);
-        this.animId = requestAnimationFrame(this.loop);
-      }
-
-      stop() {
-        if (this.animId) {
-          cancelAnimationFrame(this.animId);
-          this.animId = null;
-        }
-        const layer = this.stage?.querySelector('#storeCustomersLayer');
-        if (layer) layer.innerHTML = '';
-        this.customers = [];
-      }
-
-      getBiz() {
-        return this.engine.businesses.find(b => b.id === this.bizId);
-      }
-
-      getOrderText() {
-        const list = this.dialoguePools[this.bizId] || this.dialoguePools.default;
-        return list[Math.floor(Math.random() * list.length)];
-      }
-
-      renderStations() {
-        const detail = this.engine.getBusinessDetail(this.bizId);
-        if (!detail) return;
-        const biz = this.getBiz();
-        const isBusy = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
-
-        // 1. Caissier
-        const cashierSlot = detail.staffSlots && detail.staffSlots[0];
-        const cashierEl = this.stage.querySelector('#stationCashier');
-        if (cashierEl && cashierSlot) {
-          if (cashierSlot.hired) {
-            cashierEl.innerHTML = `
-              <div class="station-worker-active ${isBusy ? 'is-busy' : 'is-idle-sleep'}" title="${cashierSlot.name}">
-                👨‍💼
-              </div>
-              <div class="station-worker-title">كاسيي</div>
-              <div class="station-tool-effect ${isBusy ? 'cooking-smoke' : 'sleeping-zzz'}">
-                ${isBusy ? '✨' : '💤'}
-              </div>
-            `;
-          } else {
-            cashierEl.innerHTML = `
-              <div class="station-worker-empty" id="sim-hire-cashier-${this.bizId}">
-                <span class="empty-plus">➕</span>
-                <span class="empty-lbl">كاسيي</span>
-              </div>
-            `;
-            const emptyBtn = cashierEl.querySelector(`#sim-hire-cashier-${this.bizId}`);
-            if (emptyBtn) {
-              emptyBtn.onclick = () => {
-                if (this.engine.hireManager(this.bizId)) {
-                  soundEngine.playEventFanfare();
-                  renderBizDetailContent();
-                  this.renderStations();
-                  renderDOM();
-                } else {
-                  triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّم الكاسيي ! 👔');
-                }
-              };
-            }
-          }
-        }
-
-        // 2. Postes Employés (Workstations)
-        const workRow = this.stage.querySelector('#storeWorkstations');
-        if (workRow && detail.staffSlots) {
-          workRow.innerHTML = '';
-          detail.staffSlots.slice(1).forEach((slot, idx) => {
-            const station = document.createElement('div');
-            station.className = 'store-station';
-            if (slot.hired) {
-              station.innerHTML = `
-                <div class="station-worker-active ${isBusy ? 'is-busy' : 'is-idle-sleep'}" title="${slot.name}">
-                  ${slot.icon || '👨‍🍳'}
-                </div>
-                <div class="station-worker-title">${slot.role || 'عامل'}</div>
-                <div class="station-tool-effect ${isBusy ? 'cooking-smoke' : 'sleeping-zzz'}">
-                  ${isBusy ? '♨️' : '💤'}
-                </div>
-              `;
-            } else {
-              station.innerHTML = `
-                <div class="station-worker-empty" id="sim-hire-work-${this.bizId}-${idx}">
-                  <span class="empty-plus">➕</span>
-                  <span class="empty-lbl">انتداب</span>
-                </div>
-              `;
-              const emptyBtn = station.querySelector(`#sim-hire-work-${this.bizId}-${idx}`);
-              if (emptyBtn) {
-                emptyBtn.onclick = () => {
-                  if (this.engine.hireManager(this.bizId)) {
-                    soundEngine.playEventFanfare();
-                    renderBizDetailContent();
-                    this.renderStations();
-                    renderDOM();
-                  } else {
-                    triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّمو ! 👔');
-                  }
-                };
-              }
-            }
-            workRow.appendChild(station);
-          });
-        }
-      }
-
-      spawnCustomer() {
-        const stageWidth = this.stage.clientWidth || 340;
-        const customer = {
-          id: Math.random(),
-          x: stageWidth + 30,
-          targetX: 52 + Math.random() * 15,
-          state: 'walking_in',
-          avatar: this.avatarsPool[Math.floor(Math.random() * this.avatarsPool.length)],
-          orderBubble: this.getOrderText(),
-          payDuration: 0.9,
-          payTimer: 0,
-          el: null
-        };
-
-        const el = document.createElement('div');
-        el.className = 'store-customer';
-        el.innerHTML = `
-          <div class="customer-bubble">${customer.orderBubble}</div>
-          <div class="customer-avatar">${customer.avatar}</div>
-        `;
-        const layer = this.stage.querySelector('#storeCustomersLayer');
-        if (layer) layer.appendChild(el);
-        customer.el = el;
-        this.customers.push(customer);
-      }
-
-      triggerPayment(c) {
-        const reg = this.stage.querySelector('#storeRegister');
-        if (reg) {
-          reg.classList.add('paying');
-          setTimeout(() => reg.classList.remove('paying'), 380);
-        }
-
-        const biz = this.getBiz();
-        const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
-        const gainText = cycleRevenue > 0 ? `+${formatCurrencyPlain(cycleRevenue)}` : `+دينار 🪙`;
-
-        const pop = document.createElement('div');
-        pop.className = 'coin-popup';
-        pop.style.left = `${Math.max(20, c.x - 20)}px`;
-        pop.style.bottom = '85px';
-        pop.innerText = `✨ ${gainText} ✨`;
-        this.stage.appendChild(pop);
-        setTimeout(() => pop.remove(), 900);
-      }
-
-      loop(now) {
-        const dt = Math.min((now - this.lastTime) / 1000, 0.1);
-        this.lastTime = now;
-
-        const biz = this.getBiz();
-        const isProducing = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
-
-        this.spawnTimer += dt;
-        const spawnThreshold = isProducing ? 1.8 : 3.6;
-        if (this.spawnTimer > spawnThreshold && this.customers.length < 4) {
-          this.spawnCustomer();
-          this.spawnTimer = 0;
-        }
-
-        for (let i = this.customers.length - 1; i >= 0; i--) {
-          const c = this.customers[i];
-          if (c.state === 'walking_in') {
-            const speed = isProducing ? 85 : 55;
-            c.x -= speed * dt;
-            if (c.x <= c.targetX) {
-              c.x = c.targetX;
-              c.state = 'paying';
-              this.triggerPayment(c);
-            }
-          } else if (c.state === 'paying') {
-            c.payTimer += dt;
-            if (c.payTimer >= c.payDuration) {
-              c.state = 'walking_out';
-              const bubble = c.el?.querySelector('.customer-bubble');
-              if (bubble) {
-                bubble.classList.add('happy');
-                bubble.innerText = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
-              }
-            }
-          } else if (c.state === 'walking_out') {
-            c.x -= 75 * dt;
-            if (c.x < -40) {
-              if (c.el) c.el.remove();
-              this.customers.splice(i, 1);
-              continue;
-            }
-          }
-          if (c.el) {
-            c.el.style.transform = `translateX(${c.x}px)`;
-          }
-        }
-
-        this.animId = requestAnimationFrame(this.loop);
-      }
-    }
-
+    // --- MOTEUR DE SIMULATION VISUELLE 2D HAUTE DÉFINITION CANVAS 60 FPS ---
     let storeSimulation = null;
     let currentDetailBizId = null;
 
@@ -4056,9 +3797,22 @@
       renderBizDetailContent();
       if (bizDetailModal) bizDetailModal.classList.add('active');
 
-      const stageEl = document.getElementById('bizDetailVisualStage');
-      if (stageEl) {
-        if (!storeSimulation) storeSimulation = new BizStoreSimulation(stageEl, engine);
+      const canvasEl = document.getElementById('bizStoreCanvas');
+      if (canvasEl) {
+        if (!storeSimulation) {
+          storeSimulation = new CanvasStoreEngine(canvasEl, engine);
+          storeSimulation.setCallbacks({
+            onHire: (bizId) => {
+              if (engine.hireManager(bizId)) {
+                soundEngine.playEventFanfare();
+                renderBizDetailContent();
+                renderDOM();
+              } else {
+                triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّمو ! 👔');
+              }
+            }
+          });
+        }
         storeSimulation.start(bizId);
       }
     }
@@ -4102,7 +3856,6 @@
           if (engine.buyBusiness(biz.id)) {
             soundEngine.playCoin();
             renderBizDetailContent();
-            if (storeSimulation) storeSimulation.renderStations();
             renderDOM();
             updateSynergiesUI();
           } else {
@@ -4142,7 +3895,6 @@
               if (res) {
                 soundEngine.playEventFanfare();
                 renderBizDetailContent();
-                if (storeSimulation) storeSimulation.renderStations();
                 renderDOM();
                 updateSynergiesUI();
               } else {

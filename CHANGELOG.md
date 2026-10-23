@@ -1,6 +1,12 @@
-﻿# CHANGELOG
+# CHANGELOG
 
 ## 2026-10-23
+- feat(animation): introduce dedicated Canvas2D high-fidelity visual simulation engine for businesses
+  - 🎨 High-Definition Canvas 2D Engine (`store_animator.js`): Replaced basic DOM divs with custom HTML5 Canvas 2D rendering pipeline featuring DevicePixelRatio (`dpr = window.devicePixelRatio || 1`) support and 60 FPS requestAnimationFrame loop.
+  - 🏪 Authentic Tunisian Store Themes: Architectural backdrops customized per business (zellige frieze, wooden counters, shelves with glass jars, spice pots, espresso machine, plancha grill, pastry rotating oven, shared taxi station).
+  - 👥 Active Animated Staff & Stations: Interactive staff positions with animated working cycles, bobbing, rotating tools, cooking steam, active/sleepy states, and direct one-tap hiring zones on canvas.
+  - 🚶 Dynamic Customer Lifecycle: Organic walking cadence with bounce and tilt, order thoughts (`☕`, `🥖`, `🚖`, `🍯`), payment interaction at the counter with coin/sparkle particle bursts, satisfied reactions, and natural exits.
+  - 🛡️ Zero Memory Leaks: Complete cleanup on modal close via `cancelAnimationFrame`, context clearing, and event listener lifecycle management.
 - feat(navigation,uiux,legal): portrait lock, back button navigation with exit modal, legal terms and sleek emote animations
 - feat(navigation,uiux,legal): portrait lock, back button navigation with exit modal, legal terms and sleek emote animations
   - 📱 Screen Orientation Lock: Added `android:screenOrientation="portrait"` to AndroidManifest to prevent inverted and unwanted landscape rotations.
