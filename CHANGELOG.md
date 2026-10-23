@@ -1,6 +1,13 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- feat(navigation,uiux,legal): portrait lock, back button navigation with exit modal, legal terms and sleek emote animations
+- feat(navigation,uiux,legal): portrait lock, back button navigation with exit modal, legal terms and sleek emote animations
+  - 📱 Screen Orientation Lock: Added `android:screenOrientation="portrait"` to AndroidManifest to prevent inverted and unwanted landscape rotations.
+  - 🔙 Hardware & UI Back Button Navigation: Modal back stack navigation closing open overlays (`bizDetailModal`, `settingsModal`, etc.) or triggering a clean Arabic exit confirmation modal (`exitAppModal`).
+  - 📜 Legal & Privacy Modal (`legalModal`): Complete terms, data protection notice, AdMob compliance, EOLabs contact (`contact@eolabs.tn`) and `© EOLabs 2026 beta` copyright.
+  - 🎨 Sleek Emote Simulation: Replaced verbose text bubbles over walking customers with clean contextual emoji badges (`☕`, `🥖`, `🚖`, `😋`, `⭐`), fluid entrance and checkout departure.
+  - 📊 Balanced Evolution Panel: Restructured `.biz-evolution-banner` into clean top and bottom rows with uncompressed upgrade buttons and multi-line business descriptions.
 - fix(uiux,simulation): align staff stations in unified flex container and polish hire slots
 - fix(uiux,layout,animation): harmonize card button proportions, refine vacant staff slots & fit dialog bubbles
 - fix(uiux,simulation,text): fix html leakage in coin popups, redesign project modal & expand 2d stage

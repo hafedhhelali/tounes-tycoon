@@ -368,10 +368,11 @@
       font-weight: 600;
       direction: rtl;
       text-align: right;
-      white-space: nowrap;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
     }
     .biz-sub-row {
       display: flex;
@@ -1575,7 +1576,7 @@
 
     /* --- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET (REDESIGN PREMIUM TYCOON) --- */
     .biz-income-evolution-card {
-      background: linear-gradient(180deg, rgba(20, 29, 47, 0.95) 0%, rgba(11, 17, 32, 0.98) 100%);
+      background: linear-gradient(180deg, rgba(20, 29, 47, 0.98) 0%, rgba(11, 17, 32, 0.98) 100%);
       border: 1.5px solid rgba(245, 158, 11, 0.35);
       border-radius: 16px;
       padding: 12px 14px;
@@ -1624,24 +1625,26 @@
       align-items: center;
       gap: 4px;
     }
+    /* Banner Évolution réarchitecturé horizontalement propre */
     .biz-evolution-banner {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
       border: 1.5px solid rgba(56, 189, 248, 0.3);
       padding: 12px 14px;
       border-radius: 14px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     }
-    .evo-details {
+    .evo-top-row {
       display: flex;
-      flex-direction: column;
-      gap: 5px;
-      min-width: 0;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
     }
-    .evo-title-row {
+    .evo-level-badge-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -1652,43 +1655,43 @@
       color: #38bdf8;
       font-size: 11px;
       font-weight: 900;
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: 8px;
     }
     .evo-target {
-      font-size: 13.5px;
-      font-weight: 900;
+      font-size: 14px;
+      font-weight: 950;
       color: #f8fafc;
     }
-    .evo-gain-box {
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.35);
+    .evo-gain-pill {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.45);
       border-radius: 8px;
-      padding: 4px 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      width: fit-content;
-    }
-    .evo-gain {
+      padding: 4px 10px;
       font-size: 12px;
       font-weight: 900;
       color: #34d399;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+    }
+    .evo-bottom-action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
     .evo-milestone-hint {
       font-size: 11px;
       color: #cbd5e1;
       font-weight: 700;
-      line-height: 1.35;
-      margin-top: 2px;
+      line-height: 1.4;
+      flex: 1;
     }
     .evo-upgrade-btn {
       background: linear-gradient(180deg, #10b981 0%, #059669 100%);
       border: 1.5px solid #34d399;
-      border-radius: 14px;
+      border-radius: 12px;
       color: #ffffff;
       padding: 10px 18px;
       display: flex;
@@ -1696,15 +1699,15 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      min-width: 125px;
-      min-height: 52px;
+      min-width: 130px;
+      min-height: 50px;
       touch-action: manipulation;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       flex-shrink: 0;
     }
     .evo-upgrade-btn:hover {
-      transform: translateY(-2px) scale(1.04);
+      transform: translateY(-2px) scale(1.03);
       box-shadow: 0 8px 22px rgba(16, 185, 129, 0.6);
       border-color: #6ee7b7;
     }
@@ -1712,11 +1715,12 @@
       transform: translateY(1px) scale(0.97);
     }
     .evo-btn-action {
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 950;
+      line-height: 1.2;
     }
     .evo-btn-cost {
-      font-size: 11px;
+      font-size: 11.5px;
       color: #d1fae5;
       font-weight: 900;
       margin-top: 2px;
@@ -1926,21 +1930,34 @@
       0% { transform: translateY(0); }
       100% { transform: translateY(-4px); }
     }
+    /* Bulle émoticône minimaliste au-dessus du client (zéro texte verbeux) */
     .customer-bubble {
-      background: #ffffff;
-      color: #0f172a;
-      border-radius: 14px;
-      padding: 4px 10px;
-      font-size: 11px;
-      font-weight: 900;
+      background: rgba(15, 23, 42, 0.88);
+      color: #f8fafc;
+      border: 1.5px solid #38bdf8;
+      border-radius: 16px;
+      padding: 3px 8px;
+      font-size: 15px;
       margin-bottom: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.55);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
       white-space: nowrap;
-      border: 1px solid rgba(0,0,0,0.1);
       animation: bubblePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .customer-bubble.happy {
+      border-color: #10b981;
+      background: rgba(6, 78, 59, 0.9);
+      animation: bubblePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), happyPulse 0.8s ease-in-out infinite alternate;
+    }
+    @keyframes happyPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.15); }
     }
     @keyframes bubblePop {
-      0% { transform: scale(0.5); opacity: 0; }
+      0% { transform: scale(0.4); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
     .coin-popup {
@@ -2374,7 +2391,10 @@
             </div>
             <button class="settings-toggle-btn" id="settingsSoundToggle">🔊 مشعول</button>
           </div>
-          <div class="settings-copyright">© EOLabs 2026 beta • صُنع بكل فخر في تونس 🇹🇳</div>
+          <div class="settings-copyright">
+            © EOLabs 2026 beta • صُنع بكل فخر في تونس 🇹🇳<br>
+            <button id="openLegalModalBtn" style="background: none; border: none; color: #38bdf8; font-size: 10px; cursor: pointer; text-decoration: underline; margin-top: 4px;">📜 الشروط القانونية وحماية المعطيات</button>
+          </div>
         </section>
 
         <!-- Bloc 4 - منطقة الخطر والإفلاس (Zone Rouge / Reset) -->
@@ -2447,24 +2467,25 @@
         </div>
 
         <div class="biz-evolution-banner">
-          <div class="evo-details">
-            <div class="evo-title-row">
+          <div class="evo-top-row">
+            <div class="evo-level-badge-wrap">
               <span class="evo-badge">⬆️ الترقية القادمة</span>
               <span class="evo-target" id="bizDetailNextLvlText">المستوى 2</span>
             </div>
-            <div class="evo-gain-box">
-              <span style="font-size: 13px;">📈</span>
-              <div class="evo-gain" id="bizDetailNextGain">+0.80 د.ت مربوح إضافي مع كل كليان</div>
+            <div class="evo-gain-pill">
+              <span>📈</span>
+              <span id="bizDetailNextGain">+0.80 د.ت مربوح إضافي مع كل كليان</span>
             </div>
+          </div>
+          <div class="evo-bottom-action-row">
             <div class="evo-milestone-hint" id="bizDetailMilestoneHint">
               🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !
             </div>
+            <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn">
+              <span class="evo-btn-action">طوّر المحلّ 🚀</span>
+              <span class="evo-btn-cost" id="bizDetailUpgradeCost">5.35 د.ت</span>
+            </button>
           </div>
-
-          <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn">
-            <span class="evo-btn-action">طوّر المحلّ 🚀</span>
-            <span class="evo-btn-cost" id="bizDetailUpgradeCost">5.35 د.ت</span>
-          </button>
         </div>
       </div>
 
@@ -2499,6 +2520,60 @@
         <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px; font-size: 11px; color: #a7f3d0;" id="bizDetailLiveTicker">
           💬 كليان دخل يطلب في كعيبات سخان... الكاسة تسجّل في المرابيح !
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MENTIONS LÉGALES & CONFIDENTIALITÉ -->
+  <div class="modal-overlay" id="legalModal">
+    <div class="modal-card" style="max-width: 440px; width: 95%; max-height: 85vh; padding: 20px; text-align: right; direction: rtl; gap: 14px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+        <div style="font-size: 16px; font-weight: 900; color: #fbbf24;">📜 الشروط القانونية وحماية المعطيات</div>
+        <button class="settings-close-btn" id="closeLegalModalBtn">✕</button>
+      </div>
+      <div style="overflow-y: auto; max-height: 60vh; font-size: 12px; color: #cbd5e1; line-height: 1.6; display: flex; flex-direction: column; gap: 12px; padding-left: 4px;">
+        <div>
+          <strong style="color: #f8fafc; font-size: 13px;">1. الناشر والملكية الفكرية :</strong><br>
+          لعبة <strong>Tounes Tycoon (تونس تايكون)</strong> مطوّرة ومملوكة حصرياً لـ <strong>© EOLabs 2026</strong>. جميع الحقوق محفوظة، بما في ذلك الرسوم والأكواد والتسميات التجارية.
+        </div>
+        <div>
+          <strong style="color: #f8fafc; font-size: 13px;">2. حماية المعطيات الشخصية (Privacy) :</strong><br>
+          لا تقوم اللعبة بجمع أو تخزين أو نقل أي بيانات شخصية أو هواتف أو مواقع جغرافية للمستخدمين إلى خوادم خارجية. يتم تخزين تقدمك في اللعبة محلياً وبشكل مشفر في ذاكرة هاتفك (Local Storage).
+        </div>
+        <div>
+          <strong style="color: #f8fafc; font-size: 13px;">3. الإعلانات والخدمات الخارجية :</strong><br>
+          تستخدم اللعبة شبكة Google AdMob لعرض إعلانات المكافآت الاختيارية (Rewarded Ads). تخضع هذه الإعلانات لسياسة الخصوصية المعتمدة من شركة Google.
+        </div>
+        <div>
+          <strong style="color: #f8fafc; font-size: 13px;">4. شروط الاستخدام :</strong><br>
+          اللعبة ترفيهية خفيفة تحاكي الاقتصاد التونسي الشعبي بروح فكاهية ووطنية. العملة الافتراضية (د.ت) داخل اللعبة وهمية وليس لها أي قيمة مالية حقيقية.
+        </div>
+        <div>
+          <strong style="color: #f8fafc; font-size: 13px;">5. الاتصال والدعم :</strong><br>
+          لأي استفسار أو اقتراح، يمكنكم التواصل مع فريق التطوير عبر البريد : <code>contact@eolabs.tn</code>
+        </div>
+      </div>
+      <button class="modal-btn" id="confirmLegalBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 10px;">
+        فهمت وموافق ✓
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMATION SORTIE DE L'APPLICATION (BOUTON RETOUR ANDROID) -->
+  <div class="modal-overlay" id="exitAppModal">
+    <div class="modal-card" style="max-width: 340px; padding: 22px; gap: 14px; text-align: center;">
+      <div style="font-size: 44px;">🚪</div>
+      <div class="modal-title" style="font-size: 18px;">تحبّ تخرج من تونس تايكون ؟</div>
+      <div class="modal-subtitle" style="font-size: 12px; color: #94a3b8;">
+        مشاريعك والفلوس الكل مسجّلة وتلقاها في بلاصتها كي ترجع ! 🇹🇳
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 6px;">
+        <button class="modal-btn" id="confirmExitAppBtn" style="background: #dc2626; border-color: #ef4444; padding: 10px; font-size: 13px;">
+          نعم، اخرج
+        </button>
+        <button class="modal-btn" id="cancelExitAppBtn" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); color: #f8fafc; padding: 10px; font-size: 13px;">
+          كمّل العب 🎮
+        </button>
       </div>
     </div>
   </div>
@@ -3745,17 +3820,18 @@
         this.spawnTimer = 0;
         this.customers = [];
 
+        // Émotes minimalistes par projet au lieu de longs textes verbeux
         this.dialoguePools = {
-          kahwa: ['☕ كابوسان سخون', '🍵 تاي بالبندق', '♠️ طرح شكبة', '🍏 شيشة تفاح'],
-          kaskrout: ['🥖 كسكروت عياري', '🧆 كفتة وسلاطة', '🥤 بوڨاع بارد'],
-          fricasse: ['🥟 فريكاسي محرحر', '🍩 بمبلوني سخون', '🫒 زيتون وعظمة'],
-          taxi_collectif: ['🚖 المرسى يا شاف', '🏁 باب عليوة درج', '🚕 طريق مسرح'],
-          attariya: ['🍞 باڨات وحليب', '📲 كارت 5 دينار', '🧀 قضية الدار'],
-          patisserie: ['🍯 بقلاوة وكعك', '🥐 كرواسون زبدة', '🎂 تارت بريستيج'],
-          default: ['🛒 يعطيك الصحة', '✨ سلعة طازة', '🪙 نحاسب ونرجع']
+          kahwa: ['☕', '🍵', '♠️', '🍏'],
+          kaskrout: ['🥖', '🥪', '🥤', '🌶️'],
+          fricasse: ['🥟', '🍩', '🫒', '🥚'],
+          taxi_collectif: ['🚖', '🏁', '🚕', '🛣️'],
+          attariya: ['🍞', '🥛', '🧀', '📲'],
+          patisserie: ['🍯', '🥐', '🎂', '🧁'],
+          default: ['🛒', '✨', '🪙', '📦']
         };
 
-        this.happyReactions = ['😋 بنين برشا !', '⭐⭐⭐⭐⭐ 5 نجوم', '🥰 يعطيك الصحة', '👏 خدمة نظيفة !', '👌 ديما نرجعلك'];
+        this.happyReactions = ['😋', '⭐', '🥰', '👌', '❤️', '👏'];
         this.avatarsPool = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓'];
       }
 
@@ -3951,6 +4027,7 @@
               c.state = 'walking_out';
               const bubble = c.el?.querySelector('.customer-bubble');
               if (bubble) {
+                bubble.classList.add('happy');
                 bubble.innerText = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
               }
             }
@@ -4115,6 +4192,88 @@
         if (bizDetailModal) bizDetailModal.classList.remove('active');
       };
     }
+
+    // --- GESTION DU MODAL MENTIONS LÉGALES & CONFIDENTIALITÉ ---
+    const legalModal = document.getElementById('legalModal');
+    const openLegalModalBtn = document.getElementById('openLegalModalBtn');
+    const closeLegalModalBtn = document.getElementById('closeLegalModalBtn');
+    const confirmLegalBtn = document.getElementById('confirmLegalBtn');
+
+    if (openLegalModalBtn && legalModal) {
+      openLegalModalBtn.onclick = () => legalModal.classList.add('active');
+    }
+    if (closeLegalModalBtn && legalModal) {
+      closeLegalModalBtn.onclick = () => legalModal.classList.remove('active');
+    }
+    if (confirmLegalBtn && legalModal) {
+      confirmLegalBtn.onclick = () => legalModal.classList.remove('active');
+    }
+
+    // --- GESTION DU MODAL DE SORTIE ET BOUTON RETOUR (ANDROID HARDWARE + BROWSER) ---
+    const exitAppModal = document.getElementById('exitAppModal');
+    const confirmExitAppBtn = document.getElementById('confirmExitAppBtn');
+    const cancelExitAppBtn = document.getElementById('cancelExitAppBtn');
+
+    function handleBackNavigation() {
+      // 1. Si le modal de sortie est ouvert, on le ferme
+      if (exitAppModal && exitAppModal.classList.contains('active')) {
+        exitAppModal.classList.remove('active');
+        return;
+      }
+
+      // 2. Si une autre modal est ouverte, on la ferme en priorité pour revenir à l'écran principal
+      const openModal = document.querySelector('.modal-overlay.active');
+      if (openModal) {
+        openModal.classList.remove('active');
+        if (openModal.id === 'bizDetailModal' && storeSimulation) {
+          storeSimulation.stop();
+        }
+        return;
+      }
+
+      // 3. Si on est sur l'écran principal sans modale ouverte -> Demande confirmation de sortie
+      if (exitAppModal) {
+        exitAppModal.classList.add('active');
+      }
+    }
+
+    if (cancelExitAppBtn && exitAppModal) {
+      cancelExitAppBtn.onclick = () => exitAppModal.classList.remove('active');
+    }
+    if (confirmExitAppBtn) {
+      confirmExitAppBtn.onclick = () => {
+        // Sauvegarde avant de quitter
+        localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+          window.Capacitor.Plugins.App.exitApp();
+        } else {
+          // Mode PWA / Web : fermer la fenêtre ou recharger au calme
+          try { window.close(); } catch(e) {}
+          if (exitAppModal) exitAppModal.classList.remove('active');
+        }
+      };
+    }
+
+    // Écoute du bouton physique / geste retour Android via Capacitor et via navigateur Web
+    document.addEventListener('backbutton', (e) => {
+      e.preventDefault();
+      handleBackNavigation();
+    });
+
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+      window.Capacitor.Plugins.App.addListener('backButton', ({ canGoBack }) => {
+        handleBackNavigation();
+      });
+    }
+
+    // Historique navigateur pour intercepter le bouton retour du téléphone sur Chrome Mobile / PWA
+    try {
+      history.pushState({ page: 'tycoon_home' }, '');
+      window.addEventListener('popstate', (e) => {
+        history.pushState({ page: 'tycoon_home' }, '');
+        handleBackNavigation();
+      });
+    } catch (e) {}
 
     function switchBizDetailTab(tab) {
       bizTabBtnStaff.classList.toggle('active', tab === 'staff');

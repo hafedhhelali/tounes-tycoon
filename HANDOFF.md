@@ -2,9 +2,9 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Intégration d'un conteneur Flex unifié pour le staff de la simulation (caissier + postes employés) évitant tout chevauchement et libérant la voie client.
-Refonte des stalles d'embauche (« انتداب ») et titres de postes avec badging bleu clair.
-Tests: `npm test` = 12/12 PASS. Synchronisation automatique et push immédiat vers origin/main.
+Portrait forcé (`android:screenOrientation="portrait"`), gestion matérielle et logicielle du bouton retour avec modale de confirmation de sortie, modale des mentions légales et protection des données (© EOLabs 2026).
+Animation 2D épurée : suppression des bulles textuelles verbeuses au profit d'émoticônes contextuelles expressives au-dessus des clients (`☕`, `🥖`, `⭐`, `😋`).
+Refonte équilibrée du bandeau d'évolution financière des projets avec bouton d'amélioration proportionné et descriptions multi-lignes rétablies. Tests: `npm test` = 12/12 PASS. Synchronisation automatique et push immédiat vers origin/main.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).
