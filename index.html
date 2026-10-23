@@ -277,6 +277,16 @@
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.1) 100%);
       color: #fef08a;
     }
+    .quick-pill-btn.ad-pill {
+      border-color: rgba(56, 189, 248, 0.45);
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, rgba(3, 105, 161, 0.12) 100%);
+      color: #7dd3fc;
+      box-shadow: 0 0 8px rgba(14, 165, 233, 0.2);
+    }
+    .quick-pill-btn.ad-pill:hover {
+      border-color: rgba(56, 189, 248, 0.8);
+      box-shadow: 0 0 12px rgba(14, 165, 233, 0.35);
+    }
 
     /* BOTTOM NAVIGATION BAR MODERNE NATIVE */
     .bottom-nav-bar {
@@ -2146,7 +2156,9 @@
             <span id="currentZoneName">باب سويقة</span>
           </button>
           <button class="icon-pill-btn" id="soundToggleBtn">🔊</button>
+          <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية">📜</button>
           <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات وبروفيل">⚙️</button>
+          <button class="icon-pill-btn exit-pill-btn" id="headerExitBtn" title="خروج من اللعبة" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">🚪</button>
         </div>
       </div>
 
@@ -2160,11 +2172,11 @@
           <span>👑 رأس مال الحومة</span>
           <span id="prestigeInfoLabel">x1.00</span>
         </button>
-        <button class="quick-pill-btn" id="adBoostBtn">
+        <button class="quick-pill-btn ad-pill" id="adBoostBtn">
           <span>🚀 تيربو المداخيل</span>
           <span id="adBoostStatus">طافي</span>
         </button>
-        <button class="quick-pill-btn" id="adCashBtn">
+        <button class="quick-pill-btn ad-pill" id="adCashBtn">
           <span>🎁 تفتوفة بلاش</span>
           <span id="cashRewardHint">+30 د.ت</span>
         </button>
@@ -4140,11 +4152,16 @@
     // --- GESTION DU MODAL MENTIONS LÉGALES & CONFIDENTIALITÉ ---
     const legalModal = document.getElementById('legalModal');
     const openLegalModalBtn = document.getElementById('openLegalModalBtn');
+    const headerLegalBtn = document.getElementById('headerLegalBtn');
+    const headerExitBtn = document.getElementById('headerExitBtn');
     const closeLegalModalBtn = document.getElementById('closeLegalModalBtn');
     const confirmLegalBtn = document.getElementById('confirmLegalBtn');
 
     if (openLegalModalBtn && legalModal) {
       openLegalModalBtn.onclick = () => legalModal.classList.add('active');
+    }
+    if (headerLegalBtn && legalModal) {
+      headerLegalBtn.onclick = () => legalModal.classList.add('active');
     }
     if (closeLegalModalBtn && legalModal) {
       closeLegalModalBtn.onclick = () => legalModal.classList.remove('active');
@@ -4222,6 +4239,9 @@
       document.addEventListener('deviceready', tryCapApp, { once: true });
     }
     window.handleBackNavigation = handleBackNavigation;
+    if (headerExitBtn) {
+      headerExitBtn.onclick = () => handleBackNavigation();
+    }
     registerBackButtonListener();
 
     function switchBizDetailTab(tab) {

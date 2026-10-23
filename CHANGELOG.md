@@ -1,6 +1,12 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(ui,ads,legal): direct header legal and exit buttons, polished ad reward touchpoints
+- feat(ui,ads,legal): direct header legal and exit buttons, polished ad reward touchpoints
+- feat(ui,ads,legal): direct header legal and exit buttons, polished ad reward touchpoints
+  - 📜 Direct Legal Terms Access: Added quick header button (`📜`) opening the comprehensive legal & privacy modal with full AdMob compliance, data terms and contact details.
+  - 🚪 Direct Exit Trigger & Android Back Lock: Integrated dedicated exit button (`🚪`) invoking the Arabic exit confirmation modal (`exitAppModal`), seamlessly paired with native Android onKeyDown hardware interception.
+  - 🚀 Polished Ad Touchpoints: Enhanced styling and glow on AdMob rewarded pills (`#adBoostBtn`, `#adCashBtn`) and verified Lucky Drop & Wheel of Fortune ad reward loops.
 - fix(android,backbutton): hardware onKeyDown interception to enforce exit confirmation modal
 - feat(landscape,world-anim): horizontal layout & 2D panoramic living neighborhood city canvas
 

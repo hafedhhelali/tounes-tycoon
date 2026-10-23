@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Basculement en Mode Paysage / Horizontal exclusif (`sensorLandscape` dans AndroidManifest + CSS responsive large).
-Moteur Canvas 2D panoramique 60 FPS du Quartier Tunisien Vivant (`QuartierAnimator`) avec les 17 projets en façades stylisées, évolution par paliers (25, 50, 100, 200), transitions cinématiques de quartiers, piétons, taxis, fumée, drapeaux et bulles de gains.
-Nouveau logo Tycoon 3D royal vectoriel avec couronne dorée, médaillon rubis et croissant tunisien. Tests: `npm test` = 12/12 PASS.
+Bouton retour Android intercepté en dur (onKeyDown + Capacitor App) avec modal de confirmation de sortie ("تحبّ تخرج من تونس تايكون ؟") et bouton direct 🚪 dans le header.
+Bouton direct mentions légales et confidentialité 📜 dans le header + panneau complet conforme AdMob / RGPD et copyright © EOLabs 2026.
+Boutons de récompenses publicitaires AdMob (Turbo 🚀, Solde gratuit 🎁, Roue de la fortune 🎡, Lucky Drop 💸) mis en valeur en mode paysage. Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).
