@@ -200,6 +200,72 @@ test('Prestige ascension resets businesses and awards permanent multiplier', () 
   assert.equal(engine.playerTitle, 'ولد حومة مستثمر');
 });
 
+test('Profile stats, empire name customization, serialization and hard reset', () => {
+  const engine = new TycoonEngine();
+
+  // 1. Valeurs par défaut du profil
+  assert.equal(engine.empireName, 'إمبراطورية تونس للخدمات');
+  let stats = engine.getProfileStats();
+  assert.equal(stats.empireName, 'إمبراطورية تونس للخدمات');
+  assert.equal(stats.playerTitle, 'مواطن يلوّج على مشروع');
+  assert.equal(stats.empireLevel, 1);
+  assert.equal(stats.overallProgressPct, 0);
+  assert.equal(stats.unlockedBusinessesCount, 0);
+  assert.equal(stats.totalManagersHired, 0);
+  assert.equal(stats.prestigeCount, 0);
+  assert.equal(stats.prestigePoints, 0);
+  assert.equal(stats.lifetimeDinars, 5.0);
+  assert.equal(stats.currentDinars, 5.0);
+  assert.ok(stats.totalPlayTimeSeconds >= 0);
+
+  // 2. Personnalisation du nom d'empire
+  assert.equal(engine.setEmpireName(''), false); // Vide rejeté
+  assert.equal(engine.setEmpireName('   '), false); // Espaces seuls rejetés
+  assert.equal(engine.setEmpireName('a'.repeat(33)), false); // > 32 caractères rejeté
+  assert.equal(engine.setEmpireName(123), false); // Non-string rejeté
+
+  assert.equal(engine.setEmpireName('  مجمع قرطاج الاستثماري  '), true);
+  assert.equal(engine.empireName, 'مجمع قرطاج الاستثماري');
+
+  // 3. Évolution des métriques
+  engine.dinars = 1000.0;
+  engine.buyBusiness('kaskrout');
+  engine.hireManager('kaskrout');
+  engine.buyBusiness('fricasse');
+
+  stats = engine.getProfileStats();
+  assert.equal(stats.empireName, 'مجمع قرطاج الاستثماري');
+  assert.equal(stats.unlockedBusinessesCount, 2);
+  assert.equal(stats.totalManagersHired, 1);
+  assert.ok(stats.empireLevel > 1);
+  assert.ok(stats.overallProgressPct > 0);
+
+  // 4. Export / Import d'état
+  const savedState = engine.exportState();
+  assert.equal(savedState.empireName, 'مجمع قرطاج الاستثماري');
+
+  const newEngine = new TycoonEngine(savedState);
+  assert.equal(newEngine.empireName, 'مجمع قرطاج الاستثماري');
+  assert.equal(newEngine.businesses[0].level, 1);
+  assert.equal(newEngine.businesses[0].hasManager, true);
+
+  // 5. Hard Reset
+  engine.resetGame();
+  assert.equal(engine.empireName, 'إمبراطورية تونس للخدمات');
+  assert.equal(engine.dinars, 5.0);
+  assert.equal(engine.businesses[0].level, 0);
+  assert.equal(engine.businesses[0].hasManager, false);
+  assert.equal(engine.prestigePoints, 0);
+  assert.equal(engine.prestigeLevel, 0);
+
+  const resetStats = engine.getProfileStats();
+  assert.equal(resetStats.unlockedBusinessesCount, 0);
+  assert.equal(resetStats.totalManagersHired, 0);
+  assert.equal(resetStats.empireLevel, 1);
+  assert.equal(resetStats.overallProgressPct, 0);
+});
+
+
 
 
 

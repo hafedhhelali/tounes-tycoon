@@ -2,10 +2,9 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Révolution UI/UX, animations tycoon & architecture clean code par le trio d'experts.
-Correction immédiate du blocage JS (restauration d'éléments manquants `adCashBtn`, `questBox`, guards défensifs et correction `card-${biz.id}`).
-Layout aéré sans encombrement (header épuré divisé par 3, bottom-nav native à 4 onglets), fontaine de pièces en arc parabolique (Quadratic Bezier), shockwaves dorées d'achèvement de cycle.
-Tests: `npm test` = 10/10. CI GitHub Actions génère l'APK à chaque push.
+Ajout du système complet de Profil Joueur & Écran Paramétrage de l'Empire Tycoon (« إعدادات الإمبراطورية والبروفيل »).
+Personnalisation du nom du projet, calcul déterministe du niveau d'empire et de la jauge globale (%), tableau de bord d'avancement (17 commerces, staff, dinars cumulés, prestige), et hard reset à double confirmation.
+Tests: `npm test` = 11/11 PASS. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

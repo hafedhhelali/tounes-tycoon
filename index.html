@@ -1072,6 +1072,301 @@
     body.zone-lac-2 { background-image: radial-gradient(circle at 50% -10%, #1e1b4b 0%, #070a12 75%); }
     body.zone-hammamet { background-image: radial-gradient(circle at 50% -10%, #2e260c 0%, #070a12 75%); }
     body.zone-djerba { background-image: radial-gradient(circle at 50% -10%, #31104b 0%, #070a12 75%); }
+
+    /* SETTINGS & PROFILE MODAL STYLES */
+    .settings-modal-card {
+      max-width: 440px;
+      width: 95%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 14px;
+      direction: rtl;
+      text-align: right;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: linear-gradient(180deg, #131a29 0%, #0a0f1d 100%);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(245, 158, 11, 0.15);
+    }
+    .settings-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+      width: 100%;
+    }
+    .settings-modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .settings-title-icon {
+      font-size: 20px;
+    }
+    .settings-close-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 900;
+      transition: all 0.15s ease;
+    }
+    .settings-close-btn:active {
+      transform: scale(0.92);
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+    .settings-modal-body {
+      overflow-y: auto;
+      padding-left: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+    .settings-section {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .settings-sec-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: #fbbf24;
+      letter-spacing: 0.2px;
+    }
+    .settings-sec-title.danger {
+      color: #f87171;
+    }
+    .empire-name-box {
+      display: flex;
+      gap: 8px;
+    }
+    .empire-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: #f8fafc;
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+      direction: rtl;
+      transition: border-color 0.2s;
+    }
+    .empire-input:focus {
+      border-color: #fbbf24;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.25);
+    }
+    .settings-btn-save {
+      background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+      border: 1px solid #fde68a;
+      color: #1a0f02;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.1s ease;
+    }
+    .settings-btn-save:active { transform: scale(0.95); }
+    .empire-level-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .empire-badge {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fef08a;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .empire-honor-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #93c5fd;
+    }
+    .empire-progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .empire-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 800;
+      color: #cbd5e1;
+    }
+    .empire-progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .empire-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #fbbf24 100%);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+    .settings-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .settings-stat-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .settings-stat-card .stat-icon {
+      font-size: 20px;
+    }
+    .settings-stat-card .stat-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .settings-stat-card .stat-label {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .settings-stat-card .stat-value {
+      font-size: 12px;
+      font-weight: 900;
+      color: #f8fafc;
+    }
+    .settings-stat-card .stat-value.gold {
+      color: #fbbf24;
+    }
+    .settings-option-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .option-desc {
+      display: flex;
+      flex-direction: column;
+    }
+    .option-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #f1f5f9;
+    }
+    .option-sub {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .settings-toggle-btn {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .settings-toggle-btn:active { transform: scale(0.95); }
+    .settings-copyright {
+      font-size: 10px;
+      color: #64748b;
+      text-align: center;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+    .danger-zone {
+      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.04);
+    }
+    .danger-desc {
+      font-size: 11px;
+      color: #fca5a5;
+      line-height: 1.4;
+    }
+    .danger-reset-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .danger-reset-btn:active { transform: scale(0.97); background: rgba(239, 68, 68, 0.3); }
+    .danger-confirm-box {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #ef4444;
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .danger-confirm-alert {
+      font-size: 11px;
+      color: #fee2e2;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .danger-confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .danger-confirm-execute-btn {
+      background: #dc2626;
+      border: 1px solid #f87171;
+      color: white;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .danger-cancel-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #cbd5e1;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -1088,6 +1383,7 @@
             <span id="currentZoneName">باب سويقة</span>
           </button>
           <button class="icon-pill-btn" id="soundToggleBtn">🔊</button>
+          <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات وبروفيل">⚙️</button>
         </div>
       </div>
 
@@ -1353,6 +1649,110 @@
       <div class="modal-subtitle" id="modalSub">الكاسة تعمّرت</div>
       <div class="modal-reward-badge" id="modalRewardAmount">+30.00 د.ت</div>
       <button class="modal-btn" id="modalCloseBtn">اقبض الصّابة 💰</button>
+    </div>
+  </div>
+
+  <!-- MODAL PARAMÈTRES & PROFIL (إعدادات الإمبراطورية والبروفيل) -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card settings-modal-card">
+      <div class="settings-modal-header">
+        <div class="settings-modal-title-wrap">
+          <span class="settings-title-icon">⚙️</span>
+          <h3 class="modal-title" style="margin:0; font-size:18px;">إعدادات الإمبراطورية والبروفيل</h3>
+        </div>
+        <button class="settings-close-btn" id="closeSettingsModalBtn" aria-label="Fermer">✕</button>
+      </div>
+
+      <div class="settings-modal-body">
+        <!-- Bloc 1 - هويّة المشروع (Carte d'identité de l'Empire) -->
+        <section class="settings-section">
+          <div class="settings-sec-title">👑 هويّة المشروع والامبراطورية</div>
+          <div class="empire-name-box">
+            <input type="text" id="empireNameInput" class="empire-input" placeholder="اسم إمبراطوريتك (مثال: إمبراطورية تونس)" maxlength="32" />
+            <button class="settings-btn-save" id="saveEmpireNameBtn">سجّل الاسم</button>
+          </div>
+          <div class="empire-level-row">
+            <div class="empire-badge" id="profileEmpireLevelBadge">مستوى الإمبراطورية : 1</div>
+            <div class="empire-honor-title" id="profilePlayerTitle">مواطن يلوّج على مشروع</div>
+          </div>
+          <div class="empire-progress-container">
+            <div class="empire-progress-labels">
+              <span>نسبة إنجاز وتوسّع الإمبراطورية</span>
+              <span id="overallProgressPctLabel">0%</span>
+            </div>
+            <div class="empire-progress-track">
+              <div class="empire-progress-bar" id="overallProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bloc 2 - إحصائيات وتقدّم المشروع (Statistiques clés) -->
+        <section class="settings-section">
+          <div class="settings-sec-title">📊 لوحة أرقام وإحصائيات المشروع</div>
+          <div class="settings-stats-grid">
+            <div class="settings-stat-card">
+              <div class="stat-icon">🏪</div>
+              <div class="stat-info">
+                <span class="stat-label">المشاريع المحلولة</span>
+                <strong class="stat-value" id="statUnlockedBiz">0/17</strong>
+              </div>
+            </div>
+            <div class="settings-stat-card">
+              <div class="stat-icon">👔</div>
+              <div class="stat-info">
+                <span class="stat-label">الخدّامة المنتدبين</span>
+                <strong class="stat-value" id="statTotalManagers">0</strong>
+              </div>
+            </div>
+            <div class="settings-stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-info">
+                <span class="stat-label">غلّة ومداخيل تاريخية</span>
+                <strong class="stat-value gold" id="statLifetimeDinars">0 د.ت</strong>
+              </div>
+            </div>
+            <div class="settings-stat-card">
+              <div class="stat-icon">👑</div>
+              <div class="stat-info">
+                <span class="stat-label">مرّات التكبير (الهيبة)</span>
+                <strong class="stat-value" id="statPrestigeCount">0</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bloc 3 - خيارات اللعبة والصوت (Options & Audio) -->
+        <section class="settings-section">
+          <div class="settings-sec-title">🎵 خيارات اللعبة والصوتيات</div>
+          <div class="settings-option-row">
+            <div class="option-desc">
+              <span class="option-title">الأصوات والموسيقى التونسية</span>
+              <span class="option-sub">تفعيل أو كتم المؤثرات والنغمات</span>
+            </div>
+            <button class="settings-toggle-btn" id="settingsSoundToggle">🔊 مشعول</button>
+          </div>
+          <div class="settings-copyright">© EOLabs 2026 beta • صُنع بكل فخر في تونس 🇹🇳</div>
+        </section>
+
+        <!-- Bloc 4 - منطقة الخطر والتصفير (Zone Rouge / Reset) -->
+        <section class="settings-section danger-zone">
+          <div class="settings-sec-title danger">⚠️ منطقة الخطر</div>
+          <div class="danger-desc">في حال رغبت في إعادة بناء إمبراطوريتك بالكامل من الصفر ومسح كل البيانات المحلية.</div>
+          <button class="danger-reset-btn" id="hardResetInitBtn">⚠️ تصفير المشروع والبدء من الصفر</button>
+
+          <!-- Sous-modale / confirmation à 2 étapes -->
+          <div class="danger-confirm-box" id="hardResetConfirmBox" style="display: none;">
+            <div class="danger-confirm-alert">
+              🚨 <strong>هل أنت متأكد تماماً ؟</strong><br>
+              الفلوس، المشاريع والترقيات الكل باش ترجع للصفر ولا يمكن التراجع !
+            </div>
+            <div class="danger-confirm-actions">
+              <button class="danger-confirm-execute-btn" id="hardResetConfirmBtn">نعم، صفّر كل شي 🔥</button>
+              <button class="danger-cancel-btn" id="hardResetCancelBtn">إلغاء والتراجع 🛡️</button>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -2350,6 +2750,108 @@
     updateSynergiesUI();
     applyZoneTheme();
     updateWheelBtnState();
+
+    // --- GESTION DU PROFIL & PARAMÈTRES DE L'EMPIRE ---
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
+    const empireNameInput = document.getElementById('empireNameInput');
+    const saveEmpireNameBtn = document.getElementById('saveEmpireNameBtn');
+    const profileEmpireLevelBadge = document.getElementById('profileEmpireLevelBadge');
+    const profilePlayerTitle = document.getElementById('profilePlayerTitle');
+    const overallProgressBar = document.getElementById('overallProgressBar');
+    const overallProgressPctLabel = document.getElementById('overallProgressPctLabel');
+    const statUnlockedBiz = document.getElementById('statUnlockedBiz');
+    const statTotalManagers = document.getElementById('statTotalManagers');
+    const statLifetimeDinars = document.getElementById('statLifetimeDinars');
+    const statPrestigeCount = document.getElementById('statPrestigeCount');
+    const settingsSoundToggle = document.getElementById('settingsSoundToggle');
+    const hardResetInitBtn = document.getElementById('hardResetInitBtn');
+    const hardResetConfirmBox = document.getElementById('hardResetConfirmBox');
+    const hardResetConfirmBtn = document.getElementById('hardResetConfirmBtn');
+    const hardResetCancelBtn = document.getElementById('hardResetCancelBtn');
+
+    function renderSettingsAndProfileUI() {
+      if (!settingsModal) return;
+      const stats = engine.getProfileStats();
+      if (empireNameInput) empireNameInput.value = stats.empireName || 'إمبراطورية تونس للخدمات';
+      if (profileEmpireLevelBadge) profileEmpireLevelBadge.innerText = `مستوى الإمبراطورية : ${stats.empireLevel}`;
+      if (profilePlayerTitle) profilePlayerTitle.innerText = stats.playerTitle;
+      if (overallProgressBar) overallProgressBar.style.width = `${stats.overallProgressPct}%`;
+      if (overallProgressPctLabel) overallProgressPctLabel.innerText = `${stats.overallProgressPct}%`;
+
+      if (statUnlockedBiz) statUnlockedBiz.innerText = `${stats.unlockedBusinessesCount}/17`;
+      if (statTotalManagers) statTotalManagers.innerText = `${stats.totalManagersHired}`;
+      if (statLifetimeDinars) statLifetimeDinars.innerHTML = formatCurrency(stats.lifetimeDinars, 0);
+      if (statPrestigeCount) statPrestigeCount.innerText = `${stats.prestigeCount}`;
+
+      if (settingsSoundToggle) {
+        settingsSoundToggle.innerText = soundEngine.enabled ? '🔊 مشعول' : '🔇 مطفي';
+        settingsSoundToggle.style.borderColor = soundEngine.enabled ? '#10b981' : '#64748b';
+      }
+
+      if (hardResetConfirmBox) hardResetConfirmBox.style.display = 'none';
+    }
+
+    if (openSettingsBtn) {
+      openSettingsBtn.onclick = () => {
+        renderSettingsAndProfileUI();
+        settingsModal.classList.add('active');
+      };
+    }
+
+    if (closeSettingsModalBtn) {
+      closeSettingsModalBtn.onclick = () => {
+        settingsModal.classList.remove('active');
+      };
+    }
+
+    if (saveEmpireNameBtn && empireNameInput) {
+      saveEmpireNameBtn.onclick = () => {
+        const val = empireNameInput.value.trim();
+        if (val.length > 0) {
+          engine.setEmpireName(val);
+          soundEngine.playCoin();
+          saveEmpireNameBtn.innerText = 'تمّ الحفظ ✓';
+          setTimeout(() => { if (saveEmpireNameBtn) saveEmpireNameBtn.innerText = 'سجّل الاسم'; }, 1800);
+          localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
+        }
+      };
+    }
+
+    if (settingsSoundToggle) {
+      settingsSoundToggle.onclick = () => {
+        const active = soundEngine.toggleSound();
+        settingsSoundToggle.innerText = active ? '🔊 مشعول' : '🔇 مطفي';
+        settingsSoundToggle.style.borderColor = active ? '#10b981' : '#64748b';
+        soundToggleBtn.innerText = active ? '🔊' : '🔇';
+      };
+    }
+
+    if (hardResetInitBtn && hardResetConfirmBox) {
+      hardResetInitBtn.onclick = () => {
+        hardResetConfirmBox.style.display = hardResetConfirmBox.style.display === 'none' ? 'flex' : 'none';
+      };
+    }
+
+    if (hardResetCancelBtn && hardResetConfirmBox) {
+      hardResetCancelBtn.onclick = () => {
+        hardResetConfirmBox.style.display = 'none';
+      };
+    }
+
+    if (hardResetConfirmBtn) {
+      hardResetConfirmBtn.onclick = () => {
+        engine.resetGame();
+        localStorage.removeItem('tounes_tycoon_save');
+        localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
+        settingsModal.classList.remove('active');
+        renderDOM();
+        updateSynergiesUI();
+        renderSettingsAndProfileUI();
+        triggerBalanceAlert('تمّ تصفير المشروع بنجاح ! ابدأ من الصفر يا معلّم 🚀');
+      };
+    }
 
     // Boucle de rendu fluide 60 FPS
     let lastSave = Date.now();

@@ -490,6 +490,11 @@ export class TycoonEngine {
     this.prestigePoints = 0; // Ma3rouf / Réputation / Expérience
     this.prestigeLevel = 0; // Nombre de prestiges effectués
     this.lastTimestamp = Date.now();
+    this.createdAt = Date.now();
+    this.totalPlayTimeSeconds = 0;
+
+    // Profil Joueur & Empire
+    this.empireName = 'إمبراطورية تونس للخدمات';
 
     // Statistiques pour les quêtes
     this.manualServesCount = 0;
@@ -1362,6 +1367,7 @@ export class TycoonEngine {
   update(now = Date.now()) {
     const deltaMs = Math.max(0, now - this.lastTimestamp);
     this.lastTimestamp = now;
+    this.totalPlayTimeSeconds = (this.totalPlayTimeSeconds || 0) + (deltaMs / 1000);
 
     // Gestion du timer de l'événement en cours
     if (this.activeEvent && now >= this.activeEvent.endsAt) {
@@ -1416,9 +1422,113 @@ export class TycoonEngine {
     return this.update(currentTimestamp);
   }
 
+  // Gestion du profil Joueur & Empire
+  setEmpireName(newName) {
+    if (typeof newName !== 'string') return false;
+    const trimmed = newName.trim();
+    if (trimmed.length === 0 || trimmed.length > 32) return false;
+    this.empireName = trimmed;
+    return true;
+  }
+
+  getProfileStats(now = Date.now()) {
+    const unlockedCount = this.businesses.filter(b => b.level > 0).length;
+    const totalLevels = this.businesses.reduce((sum, b) => sum + (b.level || 0), 0);
+    const totalManagersHired = this.businesses.reduce((sum, b) => sum + (b.hiredManagersCount || (b.hasManager ? 1 : 0)), 0);
+
+    // Calcul deterministe de l'Empire Level :
+    // Niveau = 1 + total des niveaux des commerces + paliers logarithmiques basés sur lifetimeDinarsEarned
+    const lifetime = Math.max(0, this.lifetimeDinarsEarned || this.totalDinarsEarned || 0);
+    const earningsLevelBonus = lifetime > 5 ? Math.floor(Math.log10(lifetime)) : 0;
+    const empireLevel = Math.max(1, 1 + totalLevels + earningsLevelBonus);
+
+    // Progression globale du jeu (0 - 100%) :
+    // 17 commerces * palier 100 niveaux = 1700 niveaux de commerces
+    // + managers (17) + quêtes achevées (TUNISIAN_QUESTS.length)
+    const totalBiz = this.businesses.length || 17;
+    const maxMilestoneTarget = totalBiz * 100;
+    const levelProgress = Math.min(1, totalLevels / maxMilestoneTarget);
+    const questProgress = TUNISIAN_QUESTS.length > 0 ? (this.completedQuestIds.length / TUNISIAN_QUESTS.length) : 0;
+    const overallProgressPct = Math.min(100, Math.round(((levelProgress * 0.7) + (questProgress * 0.3)) * 1000) / 10);
+
+    // Calcul précis du temps de jeu écoulé
+    const elapsedSinceCreation = Math.max(0, Math.floor((now - (this.createdAt || now)) / 1000));
+    const playTimeSeconds = Math.max(Math.floor(this.totalPlayTimeSeconds || 0), elapsedSinceCreation);
+
+    return {
+      empireName: this.empireName || 'إمبراطورية تونس للخدمات',
+      playerTitle: this.playerTitle || 'مواطن يلوّج على مشروع',
+      empireLevel,
+      overallProgressPct,
+      unlockedBusinessesCount: unlockedCount,
+      totalManagersHired,
+      prestigeCount: this.prestigeLevel || 0,
+      prestigePoints: this.prestigePoints || 0,
+      lifetimeDinars: lifetime,
+      currentDinars: this.dinars || 0,
+      totalPlayTimeSeconds: playTimeSeconds
+    };
+  }
+
+  // Hard Reset complet du jeu
+  resetGame() {
+    this.businesses = BUSINESS_CONFIGS.map(cfg => ({
+      ...cfg,
+      level: 0,
+      hiredManagersCount: 0,
+      hasManager: false,
+      progressMs: 0,
+      isProducing: false
+    }));
+
+    this.dinars = 5.0;
+    this.totalDinarsEarned = 5.0;
+    this.lifetimeDinarsEarned = 5.0;
+    this.prestigePoints = 0;
+    this.prestigeLevel = 0;
+    this.lastTimestamp = Date.now();
+    this.createdAt = Date.now();
+    this.totalPlayTimeSeconds = 0;
+    this.empireName = 'إمبراطورية تونس للخدمات';
+
+    this.manualServesCount = 0;
+    this.completedQuestIds = [];
+    this.playerTitle = 'مواطن يلوّج على مشروع';
+
+    this.activeEvent = null;
+    this.nextEventCheck = Date.now() + 15000;
+    this.adBoostEndsAt = 0;
+    this.speedBoostEndsAt = 0;
+    this.speedBoostMultiplier = 1.0;
+    this.currentZoneId = 'bab_souika';
+    this.purchasedUpgrades = [];
+    this.lastFreeWheelSpin = 0;
+    this.resolvedDilemmas = [];
+    this.nextDilemmaCheck = Date.now() + 25000;
+    this.activeDilemma = null;
+
+    this.dailyLogin = {
+      lastClaimDate: null,
+      currentStreak: 0
+    };
+
+    this.league = {
+      tierIndex: 0,
+      seasonEnd: Date.now() + (7 * 86400000)
+    };
+
+    this.dailyChallenge = {
+      dateKey: null,
+      challenges: []
+    };
+  }
+
   // Sauvegarde / Restauration
   exportState() {
     return {
+      empireName: this.empireName || 'إمبراطورية تونس للخدمات',
+      createdAt: this.createdAt || Date.now(),
+      totalPlayTimeSeconds: this.totalPlayTimeSeconds || 0,
       dinars: this.dinars,
       totalDinarsEarned: this.totalDinarsEarned,
       lifetimeDinarsEarned: this.lifetimeDinarsEarned || this.totalDinarsEarned,
@@ -1450,6 +1560,9 @@ export class TycoonEngine {
 
   loadState(state) {
     if (!state) return;
+    this.empireName = typeof state.empireName === 'string' && state.empireName.trim().length > 0 ? state.empireName.trim() : this.empireName;
+    this.createdAt = state.createdAt ?? this.createdAt;
+    this.totalPlayTimeSeconds = state.totalPlayTimeSeconds ?? this.totalPlayTimeSeconds;
     this.dinars = state.dinars ?? this.dinars;
     this.totalDinarsEarned = state.totalDinarsEarned ?? this.totalDinarsEarned;
     this.lifetimeDinarsEarned = state.lifetimeDinarsEarned ?? this.totalDinarsEarned;

@@ -1,6 +1,11 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- feat(profile,settings): add empire profile modal, project name customization, progress metrics and secure hard reset
+- feat(profile,settings): add empire profile modal, project name customization, progress metrics and secure hard reset
+  - 👑 Empire Profile & Settings Modal: accessed via clean header gear button (⚙️), custom empire name with persistent save.
+  - 📊 Deterministic Progression Analytics: calculated Empire Level, overall completion percentage (0-100%), unlocked businesses (X/17), managers hired count, lifetime gross earnings, and prestige counter.
+  - ⚠️ Two-Step Secure Hard Reset: full zero-state wipe with explicit confirmation box preventing accidental taps.
 - fix(ui,clicks): restore missing adCashBtn and questBox elements, add defensive guards and fix card shockwave id
 - fix(ui,clicks): restore missing adCashBtn and questBox elements, add defensive guards and fix card shockwave id
 - feat(ui,motion,clean-code): declutter airy layout, bottom nav, physics coin shower and clean code architecture
