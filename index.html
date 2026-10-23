@@ -1847,11 +1847,11 @@
           <div class="settings-copyright">© EOLabs 2026 beta • صُنع بكل فخر في تونس 🇹🇳</div>
         </section>
 
-        <!-- Bloc 4 - منطقة الخطر والتصفير (Zone Rouge / Reset) -->
+        <!-- Bloc 4 - منطقة الخطر والإفلاس (Zone Rouge / Reset) -->
         <section class="settings-section danger-zone">
           <div class="settings-sec-title danger">⚠️ منطقة الخطر</div>
           <div class="danger-desc">في حال رغبت في إعادة بناء إمبراطوريتك بالكامل من الصفر ومسح كل البيانات المحلية.</div>
-          <button class="danger-reset-btn" id="hardResetInitBtn">⚠️ تصفير المشروع والبدء من الصفر</button>
+          <button class="danger-reset-btn" id="hardResetInitBtn">⚠️ إعلان إفلاس المشروع والبدء من الصفر</button>
 
           <!-- Sous-modale / confirmation à 2 étapes -->
           <div class="danger-confirm-box" id="hardResetConfirmBox" style="display: none;">
@@ -1860,12 +1860,83 @@
               الفلوس، المشاريع والترقيات الكل باش ترجع للصفر ولا يمكن التراجع !
             </div>
             <div class="danger-confirm-actions">
-              <button class="danger-confirm-execute-btn" id="hardResetConfirmBtn">نعم، صفّر كل شي 🔥</button>
+              <button class="danger-confirm-execute-btn" id="hardResetConfirmBtn">نعم، أعلن الإفلاس وابدأ من جديد 🔥</button>
               <button class="danger-cancel-btn" id="hardResetCancelBtn">إلغاء والتراجع 🛡️</button>
             </div>
           </div>
         </section>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL DÉTAIL & PLAN INTÉRIEUR DU PROJET (ادخل للمحلّ) -->
+  <div class="modal-overlay" id="bizDetailModal">
+    <div class="modal-card biz-detail-card" style="max-width: 440px; width: 95%; max-height: 90vh; padding: 14px; gap: 10px; direction: rtl; text-align: right; border-color: var(--gold);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div id="bizDetailIcon" style="font-size: 32px;">🏪</div>
+          <div>
+            <div id="bizDetailTitle" style="font-size: 16px; font-weight: 900; color: #f8fafc;">اسم المحلّ</div>
+            <div id="bizDetailTagline" style="font-size: 11px; color: #94a3b8;">شعار المحلّ</div>
+          </div>
+        </div>
+        <button class="settings-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
+      </div>
+
+      <!-- Quick KPI summary -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: rgba(0,0,0,0.35); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+        <div style="font-size: 11px; color: #cbd5e1;">💰 المدخول في الدورة : <b id="bizDetailIncome" style="color:#fbbf24;">0 د.ت</b></div>
+        <div style="font-size: 11px; color: #cbd5e1;">⚡ الوتيرة : <b id="bizDetailRate" style="color:#38bdf8;">0 د.ت/ث</b></div>
+      </div>
+
+      <!-- Navigation 3 Onglets intérieurs -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-top: 2px;">
+        <button class="quick-pill-btn active" id="bizTabBtnStaff" style="justify-content: center; font-size: 10px;">👥 الخدّامة</button>
+        <button class="quick-pill-btn" id="bizTabBtnRecipe" style="justify-content: center; font-size: 10px;">📜 الوصفة</button>
+        <button class="quick-pill-btn" id="bizTabBtnActivity" style="justify-content: center; font-size: 10px;">⚡ النشاط</button>
+      </div>
+
+      <!-- Panneau 1 : Plan des Employés -->
+      <div id="bizDetailPanelStaff" style="display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; padding-right: 2px;">
+        <div id="bizDetailStaffList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+      </div>
+
+      <!-- Panneau 2 : Décomposition de la Recette -->
+      <div id="bizDetailPanelRecipe" style="display: none; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto;">
+        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 2px;">🥖 المنتوجات التونسية الأكثر طلباً في هذا المحلّ :</div>
+        <div id="bizDetailRecipeList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+      </div>
+
+      <!-- Panneau 3 : Simulation d'activité en direct -->
+      <div id="bizDetailPanelActivity" style="display: none; flex-direction: column; gap: 8px;">
+        <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); text-align: center;">
+          <div style="font-size: 12px; color: #94a3b8;">جوّ المحلّ والإقبال الحيني :</div>
+          <div id="bizDetailCrowdLevel" style="font-size: 18px; font-weight: 900; color: #f59e0b; margin: 4px 0;">الحانوت معبي للكرومة 🔥</div>
+          <div style="display: flex; justify-content: space-around; margin-top: 8px; font-size: 11px;">
+            <div>👥 كليونات/دقيقة : <b id="bizDetailCustomersRate" style="color:#38bdf8;">14</b></div>
+            <div>⭐ نسبة الرضا : <b id="bizDetailSatisfaction" style="color:#34d399;">96%</b></div>
+          </div>
+        </div>
+        <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px; font-size: 11px; color: #a7f3d0;" id="bizDetailLiveTicker">
+          💬 كليان دخل يطلب في كعيبات سخان... الكاسة تسجّل في المرابيح !
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL REWARD AD LUCKY DROP -->
+  <div class="modal-overlay" id="luckyAdModal">
+    <div class="modal-card" style="max-width: 360px; border-color: #f59e0b;">
+      <div class="modal-icon-glow" style="font-size: 44px;" id="luckyAdEmoji">🎁</div>
+      <div class="modal-title" id="luckyAdTitle">تفتوفة الحومة طاحت !</div>
+      <div class="modal-subtitle" id="luckyAdSub">تفرّج في فيديو وقصّ البونيس كامل</div>
+      <div class="modal-reward-badge" id="luckyAdAmount">+15.00 د.ت</div>
+      <button class="modal-btn" id="claimLuckyAdBtn" style="background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);">
+        🎬 تفرّج في إشهار وقصّ البونيس 🔥
+      </button>
+      <button id="closeLuckyAdBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">
+        سكّر
+      </button>
     </div>
   </div>
 
@@ -2113,34 +2184,60 @@
       }, 10000);
     }
 
+    // Éléments du Lucky Drop Ad Modal
+    const luckyAdModal = document.getElementById('luckyAdModal');
+    const luckyAdAmount = document.getElementById('luckyAdAmount');
+    const claimLuckyAdBtn = document.getElementById('claimLuckyAdBtn');
+    const closeLuckyAdBtn = document.getElementById('closeLuckyAdBtn');
+    let pendingLuckyDropType = null;
+
     luckyDropEl.onclick = (e) => {
       luckyDropEl.style.display = 'none';
       clearTimeout(luckyDropTimeout);
       nextLuckyDropAt = Date.now() + 60000 + Math.random() * 30000;
 
-      const clickX = e.clientX || (window.innerWidth / 2);
-      const clickY = e.clientY || (window.innerHeight / 2);
+      pendingLuckyDropType = luckyDropEl.dataset.type;
+      let totalPerSec = 0;
+      engine.businesses.forEach(b => { if (b.level > 0) totalPerSec += (engine.getRevenue(b)/(b.cycleDurationMs/1000)); });
+      const estReward = Math.max(2.0, Math.floor(totalPerSec * 15));
 
-      // Gerbe spectaculaire de confettis et dinars dorés
-      launchCelebrationBurst(clickX, clickY);
-
-      const type = luckyDropEl.dataset.type;
-      const res = engine.claimLuckyDrop(type);
-
-      if (res.type === 'speed') {
-        soundEngine.playUpgrade();
-        spawnFloatText(clickX, clickY, `تيربو x2 ⚡`);
-        showRewardModalUI('⚡', 'تفتوفة تيربو سريعة !', 'سرعة الإنتاج تضاعفت x2 لمدّة 30 ثانية :', 'سرعة x2');
-      } else {
-        soundEngine.playCoin();
-        spawnFloatText(clickX, clickY, `+${formatCurrency(res.amount)}`);
-        if (typeof launchCoinShower === 'function') {
-          launchCoinShower(clickX, clickY, 12);
-        }
-        showRewardModalUI('🎁', 'صندوق الحظ الذهبي !', 'لقيت كنز تفتوفة معتبرة في الحومة :', `+${formatCurrency(res.amount)}`);
+      if (luckyAdAmount) {
+        luckyAdAmount.innerHTML = pendingLuckyDropType === 'speed' ? 'سرعة x2 (30 ثانية)' : `+${formatCurrency(estReward)}`;
       }
-      renderDOM();
+      if (luckyAdModal) luckyAdModal.classList.add('active');
     };
+
+    if (closeLuckyAdBtn) {
+      closeLuckyAdBtn.onclick = () => {
+        if (luckyAdModal) luckyAdModal.classList.remove('active');
+      };
+    }
+
+    if (claimLuckyAdBtn) {
+      claimLuckyAdBtn.onclick = async () => {
+        if (luckyAdModal) luckyAdModal.classList.remove('active');
+        await adsService.showRewardedBoost();
+
+        const clickX = window.innerWidth / 2;
+        const clickY = window.innerHeight / 2;
+        launchCelebrationBurst(clickX, clickY);
+
+        const res = engine.claimLuckyDrop(pendingLuckyDropType || 'cash');
+        if (res.type === 'speed') {
+          soundEngine.playUpgrade();
+          spawnFloatText(clickX, clickY, `تيربو x2 ⚡`);
+          showRewardModalUI('⚡', 'تفتوفة تيربو سريعة !', 'سرعة الإنتاج تضاعفت x2 لمدّة 30 ثانية :', 'سرعة x2');
+        } else {
+          soundEngine.playCoin();
+          spawnFloatText(clickX, clickY, `+${formatCurrency(res.amount)}`);
+          if (typeof launchCoinShower === 'function') {
+            launchCoinShower(clickX, clickY, 12);
+          }
+          showRewardModalUI('🎁', 'صندوق الحظ الذهبي !', 'الكاسة تعمّرت بدعم الإشهار :', `+${formatCurrency(res.amount)}`);
+        }
+        renderDOM();
+      };
+    }
 
     // Formateur en dialecte et arabe tunisien (دينار, ألف دينار, مليون دينار, مليار دينار...)
     function formatCurrency(num, decimals = 2) {
@@ -2334,8 +2431,9 @@
               <div class="biz-lvl-tag">مستوى <span class="num-ltr">${biz.level}</span></div>
             </div>
             <div class="biz-info">
-              <div class="biz-title">
+              <div class="biz-title" style="cursor: pointer;" id="title-click-${biz.id}">
                 <span>${biz.name}</span>
+                <span style="font-size: 11px; color: #38bdf8; font-weight: 800;">🔍 ادخل</span>
                 ${milestone.nextLevel ? `
                   <span class="milestone-badge" title="وصّل للمستوى ${milestone.nextLevel} باش تدوبل السرعة !">
                     🎯 ${milestone.nextLevel} (x${milestone.nextMultiplier})
@@ -2448,6 +2546,15 @@
             triggerServe(e.clientX, e.clientY);
           }
         };
+
+        // Clic pour entrer dans le plan intérieur du projet
+        const titleClickEl = card.querySelector(`#title-click-${biz.id}`);
+        if (titleClickEl) {
+          titleClickEl.onclick = () => {
+            soundEngine.playCoin();
+            openBizDetailModalUI(biz.id);
+          };
+        }
 
         const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
         if (mgrBtn) {
@@ -3007,9 +3114,146 @@
         renderDOM();
         updateSynergiesUI();
         renderSettingsAndProfileUI();
-        triggerBalanceAlert('تمّ تصفير المشروع بنجاح ! ابدأ من الصفر يا معلّم 🚀');
+        triggerBalanceAlert('تمّ إعلان إفلاس المشروع بنجاح ! ابدأ من الصفر يا معلّم 🚀');
       };
     }
+
+    // --- GESTION DE LA VUE IMMERSIVE : DÉTAIL DU PROJET (ادخل للمحلّ) ---
+    const bizDetailModal = document.getElementById('bizDetailModal');
+    const closeBizDetailBtn = document.getElementById('closeBizDetailBtn');
+    const bizDetailIcon = document.getElementById('bizDetailIcon');
+    const bizDetailTitle = document.getElementById('bizDetailTitle');
+    const bizDetailTagline = document.getElementById('bizDetailTagline');
+    const bizDetailIncome = document.getElementById('bizDetailIncome');
+    const bizDetailRate = document.getElementById('bizDetailRate');
+
+    const bizTabBtnStaff = document.getElementById('bizTabBtnStaff');
+    const bizTabBtnRecipe = document.getElementById('bizTabBtnRecipe');
+    const bizTabBtnActivity = document.getElementById('bizTabBtnActivity');
+
+    const bizDetailPanelStaff = document.getElementById('bizDetailPanelStaff');
+    const bizDetailPanelRecipe = document.getElementById('bizDetailPanelRecipe');
+    const bizDetailPanelActivity = document.getElementById('bizDetailPanelActivity');
+
+    const bizDetailStaffList = document.getElementById('bizDetailStaffList');
+    const bizDetailRecipeList = document.getElementById('bizDetailRecipeList');
+    const bizDetailCrowdLevel = document.getElementById('bizDetailCrowdLevel');
+    const bizDetailCustomersRate = document.getElementById('bizDetailCustomersRate');
+    const bizDetailSatisfaction = document.getElementById('bizDetailSatisfaction');
+    const bizDetailLiveTicker = document.getElementById('bizDetailLiveTicker');
+
+    let currentDetailBizId = null;
+
+    function openBizDetailModalUI(bizId) {
+      currentDetailBizId = bizId;
+      renderBizDetailContent();
+      if (bizDetailModal) bizDetailModal.classList.add('active');
+    }
+
+    function renderBizDetailContent() {
+      if (!currentDetailBizId) return;
+      const detail = engine.getBusinessDetail(currentDetailBizId);
+      if (!detail) return;
+
+      if (bizDetailIcon) bizDetailIcon.innerText = detail.icon;
+      if (bizDetailTitle) bizDetailTitle.innerText = `${detail.name} (مستوى ${detail.level})`;
+      if (bizDetailTagline) bizDetailTagline.innerText = detail.tagline;
+      if (bizDetailIncome) bizDetailIncome.innerHTML = formatCurrency(detail.revenuePerCycle);
+      if (bizDetailRate) bizDetailRate.innerHTML = `+${formatCurrency(detail.dinarsPerSecond)}/ث`;
+
+      // 1. Staff Slots
+      if (bizDetailStaffList) {
+        bizDetailStaffList.innerHTML = '';
+        detail.staffSlots.forEach((slot, idx) => {
+          const item = document.createElement('div');
+          item.style.cssText = `background: ${slot.hired ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.3)'}; border: 1px solid ${slot.hired ? '#10b981' : 'rgba(255,255,255,0.08)'}; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;`;
+          item.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 18px;">${slot.icon}</span>
+              <div>
+                <div style="font-size: 12px; font-weight: 900; color: #f8fafc;">${slot.name} (${slot.role})</div>
+                <div style="font-size: 10px; color: #38bdf8;">${slot.bonusDesc}</div>
+              </div>
+            </div>
+            <div>
+              ${slot.hired ? `
+                <span style="font-size: 11px; font-weight: 900; color: #34d399;">يخدم ✓</span>
+              ` : `
+                <button class="upg-buy-btn" style="padding: 4px 8px; font-size: 10px;" id="hire-slot-${currentDetailBizId}-${idx}">خدّم : ${formatCurrency(slot.cost, 0)}</button>
+              `}
+            </div>
+          `;
+          bizDetailStaffList.appendChild(item);
+
+          const hireBtn = item.querySelector(`#hire-slot-${currentDetailBizId}-${idx}`);
+          if (hireBtn) {
+            hireBtn.onclick = () => {
+              const res = engine.hireManager(currentDetailBizId);
+              if (res) {
+                soundEngine.playEventFanfare();
+                renderBizDetailContent();
+                renderDOM();
+                updateSynergiesUI();
+              } else {
+                triggerBalanceAlert(`مازالت تخصّك فلوس باش تخدّمو ! 👔`);
+              }
+            };
+          }
+        });
+      }
+
+      // 2. Recipe Breakdown
+      if (bizDetailRecipeList) {
+        bizDetailRecipeList.innerHTML = '';
+        detail.recipeBreakdown.forEach(item => {
+          const row = document.createElement('div');
+          row.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;';
+          row.innerHTML = `
+            <div>
+              <div style="font-size: 12px; font-weight: 800; color: #fde68a;">${item.item}</div>
+              <div style="font-size: 10px; color: #94a3b8;">نسبة من الطلبيات : ${item.sharePct}%</div>
+            </div>
+            <div style="font-size: 12px; font-weight: 900; color: #38bdf8;">
+              ${formatCurrency(item.price)}
+            </div>
+          `;
+          bizDetailRecipeList.appendChild(row);
+        });
+      }
+
+      // 3. Activity Simulation
+      if (bizDetailCrowdLevel) bizDetailCrowdLevel.innerText = detail.crowdLevel;
+      if (bizDetailCustomersRate) bizDetailCustomersRate.innerText = `${detail.customersPerMinute}`;
+      if (bizDetailSatisfaction) bizDetailSatisfaction.innerText = `${detail.satisfactionPct}%`;
+      if (bizDetailLiveTicker) {
+        const sampleQuotes = [
+          `💬 زبون دخل يطلب بالوقت... الكاسة تخدم ومريڤلة !`,
+          `💬 تفتوفة باهية من طاولة كليونات راضيين على السرفيس.`,
+          `💬 الإقبال ممتاز والسلعة طازة ماشية بالباهي.`
+        ];
+        bizDetailLiveTicker.innerText = sampleQuotes[Math.floor(Math.random() * sampleQuotes.length)];
+      }
+    }
+
+    if (closeBizDetailBtn) {
+      closeBizDetailBtn.onclick = () => {
+        if (bizDetailModal) bizDetailModal.classList.remove('active');
+      };
+    }
+
+    function switchBizDetailTab(tab) {
+      bizTabBtnStaff.classList.toggle('active', tab === 'staff');
+      bizTabBtnRecipe.classList.toggle('active', tab === 'recipe');
+      bizTabBtnActivity.classList.toggle('active', tab === 'activity');
+
+      bizDetailPanelStaff.style.display = tab === 'staff' ? 'flex' : 'none';
+      bizDetailPanelRecipe.style.display = tab === 'recipe' ? 'flex' : 'none';
+      bizDetailPanelActivity.style.display = tab === 'activity' ? 'flex' : 'none';
+    }
+
+    if (bizTabBtnStaff) bizTabBtnStaff.onclick = () => switchBizDetailTab('staff');
+    if (bizTabBtnRecipe) bizTabBtnRecipe.onclick = () => switchBizDetailTab('recipe');
+    if (bizTabBtnActivity) bizTabBtnActivity.onclick = () => switchBizDetailTab('activity');
 
     // Boucle de rendu fluide 60 FPS
     let lastSave = Date.now();

@@ -1,6 +1,15 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- feat(biz-interior,audio,economy): add inside business view, Mediterranean lounge BGM, ad-gated rebalanced bonuses and ifles lexical overhaul
+- feat(biz-interior,audio,economy): add inside business view, Mediterranean lounge BGM, ad-gated rebalanced bonuses and ifles lexical overhaul
+  - 🔍 Inside Project View (`#bizDetailModal`): Click on any business card to enter the shop with 3 interactive tabs:
+    - 👥 Staff Roster: Employee role distribution, active status, direct hiring and productivity boosts.
+    - 📜 Recipe & Economy: Breakdown of core Tunisian products sold, unit prices and revenue shares (e.g. Express, Direct, Capucin, Bambalouni).
+    - ⚡ Live Activity Simulation: Real-time customer footfall (customers/minute), crowd gauge, and live customer order ticker.
+  - 🎵 Mediterranean Lounge BGM: Replaced old synth track with a soft, warm 60 BPM Mediterranean nylon guitar & Rhodes progression (Dm9-G13-Cmaj9-Am9, gentle lowpass filter).
+  - 🎬 Ad-Gated & Rebalanced Bonuses: Lucky drop now gates full rewards behind AdMob rewarded video with reduced, sustainable cash amounts.
+  - 💥 Lexical Overhaul: Replaced all occurrences of "تصفير" with authentic business bankruptcy term "إفلاس".
 - feat(fx,animations,bonus): eliminate raw HTML text leaks, add CSS alive business animations and re-pace gift drops
 - feat(fx,animations,bonus): eliminate raw HTML text leaks, add CSS alive business animations and re-pace gift drops
   - 🧹 Zero HTML Leaks: Added `formatCurrencyPlain` preventing `<span class="num-ltr">` from appearing inside `innerText`, toast messages and dialog buttons.

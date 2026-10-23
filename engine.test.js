@@ -164,11 +164,11 @@ test('Floating lucky drop awards instant cash and turbo speed boost', () => {
   engine.dinars = 100.0;
   engine.buyBusiness('kaskrout');
 
-  // Lucky drop cash
+  // Lucky drop cash (formule révisée : min 2.0 DT ou 15s de production)
   const initialDinars = engine.dinars;
   const cashDrop = engine.claimLuckyDrop('cash', t0);
   assert.equal(cashDrop.type, 'cash');
-  assert.ok(cashDrop.amount >= 20.0);
+  assert.ok(cashDrop.amount >= 2.0);
   assert.equal(engine.dinars, initialDinars + cashDrop.amount);
 
   // Lucky drop speed boost (30s)
@@ -264,6 +264,39 @@ test('Profile stats, empire name customization, serialization and hard reset', (
   assert.equal(resetStats.empireLevel, 1);
   assert.equal(resetStats.overallProgressPct, 0);
 });
+
+test('getBusinessDetail returns complete inner breakdown for immersive view', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 100.0;
+  engine.buyBusiness('kaskrout');
+
+  const detail = engine.getBusinessDetail('kaskrout');
+  assert.ok(detail);
+  assert.equal(detail.id, 'kaskrout');
+  assert.equal(detail.name, 'نصبة كسكروت عياري');
+  assert.equal(detail.icon, '🥖');
+  assert.equal(detail.level, 1);
+  assert.equal(detail.cycleDurationMs, 600);
+  assert.ok(detail.revenuePerCycle > 0);
+  assert.ok(detail.dinarsPerSecond > 0);
+
+  // Recette décomposée
+  assert.ok(Array.isArray(detail.recipeBreakdown));
+  assert.ok(detail.recipeBreakdown.length >= 3);
+  const totalShare = detail.recipeBreakdown.reduce((sum, r) => sum + r.sharePct, 0);
+  assert.equal(totalShare, 100);
+
+  // Postes employés
+  assert.ok(Array.isArray(detail.staffSlots));
+  assert.ok(detail.staffSlots.length >= 1);
+  assert.equal(detail.staffSlots[0].hired, false);
+
+  // Simulation d'activité
+  assert.ok(detail.customersPerMinute > 0);
+  assert.ok(detail.satisfactionPct >= 70 && detail.satisfactionPct <= 100);
+  assert.ok(['متوسط', 'قوي', 'شاعل'].includes(detail.crowdLevel));
+});
+
 
 
 

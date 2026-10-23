@@ -1197,8 +1197,8 @@ export class TycoonEngine {
         totalPerSecond += (this.getRevenue(biz, now) / (biz.cycleDurationMs / 1000));
       }
     }
-    // Gain d'au moins 20 DT ou 90 secondes de production
-    const amount = Math.max(20.0, Math.floor(totalPerSecond * 90));
+    // Gain équilibré : au moins 2.0 DT ou 15 secondes de production (facteur idle soutenable)
+    const amount = Math.max(2.0, Math.floor(totalPerSecond * 15));
     this.dinars += amount;
     this.totalDinarsEarned += amount;
     this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + amount;
@@ -1277,6 +1277,163 @@ export class TycoonEngine {
 
   getCost(business) {
     return Math.floor(business.baseCost * Math.pow(business.costMultiplier, business.level) * 100) / 100;
+  }
+
+  // --- DÉTAIL & PLAN INTÉRIEUR DU PROJET (VUE IMMERSIVE) ---
+  getBusinessDetail(bizId, now = Date.now()) {
+    const biz = this.businesses.find(b => b.id === bizId);
+    if (!biz) return null;
+
+    const revenuePerCycle = this.getRevenue(biz, now);
+    const cycleSeconds = (biz.cycleDurationMs || 1000) / 1000;
+    const dinarsPerSecond = cycleSeconds > 0 ? (revenuePerCycle / cycleSeconds) : 0;
+
+    // Recettes authentiques décomposées selon la nature du commerce tunisien
+    const RECIPES_MAP = {
+      kaskrout: [
+        { item: 'كسكروت عياري كامل بالتن والعظام', price: 4.5, sharePct: 60 },
+        { item: 'كعيبات كفتة وهريسة عربي', price: 2.0, sharePct: 25 },
+        { item: 'مشروب غازي بوڨاع سيدر بارد', price: 1.5, sharePct: 15 }
+      ],
+      fricasse: [
+        { item: 'كعبة فريكاسي سخونة بالزيتون', price: 1.2, sharePct: 55 },
+        { item: 'كعبة بمبلوني مرشوشة سكر', price: 1.5, sharePct: 35 },
+        { item: 'دبوزة ماء صافية معدنية', price: 1.0, sharePct: 10 }
+      ],
+      kahwa: [
+        { item: 'قهوة كابوسين قارحة كاس قزاز', price: 2.2, sharePct: 45 },
+        { item: 'طرح شكبة مع كاس تاي منعنع', price: 1.8, sharePct: 35 },
+        { item: 'شيشة تفاح فاخرة وسريعة', price: 6.0, sharePct: 20 }
+      ],
+      attariya: [
+        { item: 'قضية اليوم (حليب، خبز، طماطم، سميد)', price: 12.0, sharePct: 50 },
+        { item: 'صبّان صولد وتيكيات هواتف', price: 5.0, sharePct: 30 },
+        { item: 'سلعة الصغار والشكلاطة والبيمو', price: 2.5, sharePct: 20 }
+      ],
+      patisserie: [
+        { item: 'صحن بقلاوة ومقروض قيرواني بالعسل', price: 18.0, sharePct: 50 },
+        { item: 'قرون غزال وحلو درع وزرير', price: 14.0, sharePct: 30 },
+        { item: 'تورتة عيد ميلاد بريستيج', price: 45.0, sharePct: 20 }
+      ],
+      taxi_collectif: [
+        { item: 'توصيلة ركاب سنتر فيل خط سريع', price: 2.5, sharePct: 70 },
+        { item: 'كورسة خاصة ومستعجلة', price: 15.0, sharePct: 20 },
+        { item: 'نقل كردونات وقضية من المحطة', price: 5.0, sharePct: 10 }
+      ],
+      superette: [
+        { item: 'سلة قضية العائلة الأسبوعية', price: 65.0, sharePct: 50 },
+        { item: 'ياغورت وأجبان ومشروبات', price: 22.0, sharePct: 30 },
+        { item: 'مواد تنظيف وغسيل', price: 28.0, sharePct: 20 }
+      ],
+      supermarche: [
+        { item: 'شاريو كامل لحم وخضار ومؤونة الشهر', price: 220.0, sharePct: 55 },
+        { item: 'إلكتروميناجي وأواني المطبخ', price: 110.0, sharePct: 25 },
+        { item: 'مواد تجميل وبارفانات', price: 45.0, sharePct: 20 }
+      ],
+      salon_de_the: [
+        { item: 'موخيتو فريش وتشكيلة كوكتيل', price: 12.0, sharePct: 45 },
+        { item: 'شيشة فاخرة وقعدة بحر', price: 18.0, sharePct: 35 },
+        { item: 'تشيز كيك وميلك شيك شوكولا', price: 14.0, sharePct: 20 }
+      ],
+      restaurant: [
+        { item: 'صحن مشاوي مشكل على الفحم', price: 38.0, sharePct: 50 },
+        { item: 'شاورما سوري ومقبلات شامية', price: 16.0, sharePct: 30 },
+        { item: 'عصائر طبيعية وحلويات شامية', price: 8.5, sharePct: 20 }
+      ],
+      agence_voyages: [
+        { item: 'تذكرة طيران وفويّاج منظم', price: 1200.0, sharePct: 50 },
+        { item: 'باكج عمرة VIP فنادق الحرم', price: 3800.0, sharePct: 35 },
+        { item: 'حجوزات نزل سياحية وسهرات', price: 450.0, sharePct: 15 }
+      ],
+      hotel: [
+        { item: 'إقامة جناح ديلوكس شامل كلياً', price: 420.0, sharePct: 55 },
+        { item: 'خدمات السبا والبيسين والمساج', price: 160.0, sharePct: 25 },
+        { item: 'بوفيه عشاء وسهرة سياحية', price: 85.0, sharePct: 20 }
+      ],
+      centre_commercial: [
+        { item: 'إيجار محلات الماركات العالمية', price: 12000.0, sharePct: 45 },
+        { item: 'تذاكر قاعات السينما الفاخرة', price: 18.0, sharePct: 30 },
+        { item: 'إيرادات ساحة المطاعم والـFood Court', price: 35.0, sharePct: 25 }
+      ],
+      usine_conserves: [
+        { item: 'حاوية تصدير هريسة عربي لأوروبا', price: 45000.0, sharePct: 50 },
+        { item: 'دفعة علب طماطم وتنّ وطني', price: 28000.0, sharePct: 35 },
+        { item: 'مربى وزيوت طبيعية معلبة', price: 15000.0, sharePct: 15 }
+      ],
+      showroom_auto: [
+        { item: 'سيارة دفع رباعي فارهة زيرو كم', price: 240000.0, sharePct: 60 },
+        { item: 'سيارة برلين هجينة للمدينة', price: 110000.0, sharePct: 30 },
+        { item: 'عقود صيانة وتأمين ذهبي', price: 8500.0, sharePct: 10 }
+      ],
+      promoteur_immobilier: [
+        { item: 'شقة فاخرة بريزيدنس قمرت مطلة عالبحر', price: 680000.0, sharePct: 55 },
+        { item: 'فيلا مستقلة بالحمامات مع مسبح', price: 1200000.0, sharePct: 35 },
+        { item: 'مكاتب ومقرات إدارية كبرى', price: 450000.0, sharePct: 10 }
+      ],
+      tayaran_el_ghzela: [
+        { item: 'تذاكر الدرجة الأولى ورجال الأعمال', price: 3200.0, sharePct: 45 },
+        { item: 'تذاكر الدرجة الاقتصادية للرحلات الدولية', price: 750.0, sharePct: 40 },
+        { item: 'شحن بضائع جوي سريع (Cargo)', price: 18000.0, sharePct: 15 }
+      ]
+    };
+
+    const recipeBreakdown = RECIPES_MAP[biz.id] || [
+      { item: 'الخدمة الأساسية للمشروع', price: Math.max(1, Math.round(revenuePerCycle * 0.6)), sharePct: 60 },
+      { item: 'خدمات إضافية ممتازة', price: Math.max(1, Math.round(revenuePerCycle * 0.25)), sharePct: 25 },
+      { item: 'مبيعات جانبية وسريعة', price: Math.max(1, Math.round(revenuePerCycle * 0.15)), sharePct: 15 }
+    ];
+
+    // Postes d'employés et cadres (Staff Slots)
+    const hiredCount = biz.hiredManagersCount ?? (biz.hasManager ? 1 : 0);
+    const staffSlots = (biz.managers || []).map((m, idx) => ({
+      role: m.role,
+      name: m.name,
+      icon: m.avatar || '👔',
+      hired: idx < hiredCount,
+      bonusDesc: idx === 0 ? 'تشغيل أوتوماتيكي مستمر 24/7' : 'مضاعفة الكفاءة والإنتاجية (+25%)',
+      cost: m.cost
+    }));
+
+    // Simulation dynamique d'activité (Clients / min, satisfaction, affluence)
+    let customersPerMinute = 0;
+    let satisfactionPct = 80;
+    let crowdLevel = 'متوسط';
+
+    if (biz.level > 0) {
+      // Fréquentation basée sur le niveau et la vitesse
+      const baseFlow = Math.max(1, Math.round((60 / cycleSeconds) * (1 + (biz.level * 0.08))));
+      customersPerMinute = Math.min(2500, baseFlow);
+
+      // Satisfaction client : grimpe avec les cadres recrutés et les niveaux
+      satisfactionPct = Math.min(99, Math.max(70, 75 + (hiredCount * 8) + Math.min(15, Math.floor(biz.level / 10))));
+
+      if (biz.level >= 50 || hiredCount >= 2) {
+        crowdLevel = 'شاعل';
+      } else if (biz.level >= 15 || hiredCount >= 1) {
+        crowdLevel = 'قوي';
+      } else {
+        crowdLevel = 'متوسط';
+      }
+    } else {
+      crowdLevel = 'متوسط';
+      satisfactionPct = 0;
+    }
+
+    return {
+      id: biz.id,
+      name: biz.name,
+      tagline: biz.tagline,
+      icon: biz.icon,
+      level: biz.level,
+      cycleDurationMs: biz.cycleDurationMs,
+      revenuePerCycle,
+      dinarsPerSecond,
+      recipeBreakdown,
+      staffSlots,
+      customersPerMinute,
+      satisfactionPct,
+      crowdLevel
+    };
   }
 
   getRevenue(business, now = Date.now()) {

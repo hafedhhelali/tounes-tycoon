@@ -244,67 +244,97 @@ class SoundEngine {
     osc.stop(now + 0.1);
   }
 
-  // Musique d'ambiance feutrée, chaleureuse et relaxante (Warm Mediterranean Lounge)
+  // Musique d'ambiance feutrée, type lounge méditerranéen relaxant (Guitare nylon & Rhodes doux)
   startBGM() {
     if (this.bgmTimer || this.muted) return;
     this.init();
 
-    // Rythme doux 68 BPM : accords riches et tamisés (D min9 - G 13 - C maj7 - A 7alt)
-    // Son style piano Rhodes feutré avec filtre passe-bas doux
-    const bpm = 64;
-    const stepDuration = 60 / bpm / 2; // croche = ~470ms
+    // Rythme lounge doux 60 BPM (1 battement = 1000ms, step = 500ms)
+    // Progression harmonique apaisante : Dm9 -> G13 -> Cmaj9 -> Am9
+    const bpm = 60;
+    const stepDuration = 60 / bpm / 2; // 500ms par temps
     let bgmStep = 0;
 
     const chords = [
-      { bass: 73.42, notes: [220.00, 261.63, 329.63, 392.00] }, // Dm7/9
-      { bass: 98.00, notes: [196.00, 246.94, 293.66, 349.23] }, // G7
-      { bass: 65.41, notes: [196.00, 246.94, 261.63, 329.63] }, // Cmaj7
-      { bass: 110.00, notes: [220.00, 277.18, 329.63, 392.00] } // A7
+      {
+        bass: 73.42, // D2
+        nylon: [146.83, 220.00, 261.63, 329.63], // D3, A3, C4, E4 (Dm9)
+        melody: [329.63, 392.00, 440.00, 329.63]
+      },
+      {
+        bass: 98.00, // G2
+        nylon: [146.83, 196.00, 246.94, 329.63], // D3, G3, B3, E4 (G13)
+        melody: [293.66, 329.63, 392.00, 293.66]
+      },
+      {
+        bass: 65.41, // C2
+        nylon: [130.81, 196.00, 246.94, 293.66], // C3, G3, B3, D4 (Cmaj9)
+        melody: [246.94, 293.66, 329.63, 246.94]
+      },
+      {
+        bass: 110.00, // A2
+        nylon: [164.81, 220.00, 261.63, 329.63], // E3, A3, C4, E4 (Am9)
+        melody: [261.63, 293.66, 329.63, 220.00]
+      }
     ];
-    const sequence = [0, 2, 1, 3, 1, 2, 0, 1];
 
-    const playWarmNote = (freq, time, duration, peakVol) => {
+    // Synthèse Rhodes feutré / Guitare nylon acoustique sans aucun sifflement strident
+    const playLoungeVoice = (freq, time, duration, peakGain, isBass = false) => {
       if (!freq || this.muted || !this.ctx) return;
+
       const osc = this.ctx.createOscillator();
       const filter = this.ctx.createBiquadFilter();
       const gain = this.ctx.createGain();
 
-      osc.type = 'triangle';
+      // Forme d'onde sine / triangle douce, sans harmoniques agressives
+      osc.type = isBass ? 'sine' : 'triangle';
       osc.frequency.setValueAtTime(freq, time);
 
-      // Filtre chaleureux passe-bas pour éviter tout son perçant ou agressif
+      // Filtre passe-bas chaleureux : coupe les aigus grinçants
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(450, time);
-      filter.frequency.exponentialRampToValueAtTime(180, time + duration);
+      const cutoff = isBass ? 160 : 420;
+      filter.frequency.setValueAtTime(cutoff, time);
+      filter.frequency.exponentialRampToValueAtTime(Math.max(60, cutoff * 0.4), time + duration);
 
-      gain.gain.setValueAtTime(0.0001, time);
-      gain.gain.linearRampToValueAtTime(peakVol, time + 0.08);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+      // Enveloppe ADSR feutrée (attaque douce ~30ms, extinction progressive)
+      gain.gain.setValueAtTime(0.00001, time);
+      gain.gain.linearRampToValueAtTime(peakGain, time + (isBass ? 0.08 : 0.035));
+      gain.gain.exponentialRampToValueAtTime(0.00001, time + duration);
 
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start(time);
-      osc.stop(time + duration + 0.1);
+      osc.stop(time + duration + 0.05);
     };
 
     let nextNoteTime = this.ctx.currentTime + 0.1;
     this.bgmTimer = setInterval(() => {
       if (this.muted || !this.ctx) return;
-      while (nextNoteTime < this.ctx.currentTime + 0.3) {
+      while (nextNoteTime < this.ctx.currentTime + 0.35) {
         const chordIdx = Math.floor(bgmStep / 8) % chords.length;
         const pos = bgmStep % 8;
         const chord = chords[chordIdx];
 
-        // Basse feutrée
+        // 1. Basse feutrée ronde sur les temps 0 et 4
         if (pos === 0) {
-          playWarmNote(chord.bass, nextNoteTime, stepDuration * 6, 0.045);
+          playLoungeVoice(chord.bass, nextNoteTime, stepDuration * 3.8, 0.035, true);
+        } else if (pos === 4) {
+          playLoungeVoice(chord.bass * 1.5, nextNoteTime, stepDuration * 2.5, 0.022, true);
         }
 
-        // Note mélodique douce
-        const noteFreq = chord.notes[sequence[pos]];
-        playWarmNote(noteFreq, nextNoteTime, stepDuration * 2.8, 0.022);
+        // 2. Arpège nylon délicat
+        if (pos === 1 || pos === 3 || pos === 5 || pos === 7) {
+          const noteIndex = Math.floor(pos / 2) % chord.nylon.length;
+          playLoungeVoice(chord.nylon[noteIndex], nextNoteTime, stepDuration * 1.6, 0.016, false);
+        }
+
+        // 3. Touche mélodique Rhodes en sourdine
+        if (pos === 2 || pos === 6) {
+          const melNote = chord.melody[(pos === 2 ? 0 : 2) % chord.melody.length];
+          playLoungeVoice(melNote, nextNoteTime, stepDuration * 2.2, 0.012, false);
+        }
 
         nextNoteTime += stepDuration;
         bgmStep++;
