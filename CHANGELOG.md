@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(android,backbutton): hardware onKeyDown interception to enforce exit confirmation modal
 - feat(landscape,world-anim): horizontal layout & 2D panoramic living neighborhood city canvas
 
 ## 2026-10-23

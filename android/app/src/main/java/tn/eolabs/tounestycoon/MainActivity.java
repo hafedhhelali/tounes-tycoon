@@ -1,6 +1,7 @@
 package tn.eolabs.tounestycoon;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import androidx.activity.OnBackPressedCallback;
 import com.getcapacitor.BridgeActivity;
 
@@ -9,18 +10,36 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Interception native absolue du bouton retour matériel Android pour empêcher la fermeture brusque
+        // 1. Interception native OnBackPressedDispatcher (Android 13+ et moderne)
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Notifie le WebView / JS pour ouvrir la modale de confirmation ou fermer la vue active
-                if (getBridge() != null && getBridge().getWebView() != null) {
+                dispatchBackToWeb();
+            }
+        });
+    }
+
+    // 2. Interception physique bas niveau KeyEvent (Bouton matériel retour et navigation bar classique)
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            dispatchBackToWeb();
+            return true; // Bloque toute fermeture native de l'application
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void dispatchBackToWeb() {
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            getBridge().getWebView().post(new Runnable() {
+                @Override
+                public void run() {
                     getBridge().getWebView().evaluateJavascript(
-                        "window.handleBackNavigation ? window.handleBackNavigation() : document.dispatchEvent(new Event('backbutton'));",
+                        "(function() { if (window.handleBackNavigation) { window.handleBackNavigation(); } else { document.dispatchEvent(new Event('backbutton')); } })();",
                         null
                     );
                 }
-            }
-        });
+            });
+        }
     }
 }
