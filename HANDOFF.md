@@ -1,9 +1,9 @@
 ﻿# HANDOFF — Tounes Tycoon
-MAJ: 2026-10-21 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Révolution globale de Tounes Tycoon (Capacitor/Android, JS vanilla).
-Intégration des 3 expertises : UI/UX aérée & élégante (4 onglets respirants, header royal non-bloquant), module Social & Rétention (بطولة تجار تونس avec 4 divisions, صابة النهار fidélité 7 jours, تحديات اليوم), et Derja tunisienne authentique revue par PhD.
+Révolution UI/UX, animations tycoon & architecture clean code par le trio d'experts.
+Layout aéré sans encombrement (header épuré divisé par 3, bottom-nav native à 4 onglets), fontaine de pièces en arc parabolique (Quadratic Bezier), shockwaves dorées d'achèvement de cycle, et sérialisation étanche anti-NaN / anti-fuite.
 Tests: `npm test` = 10/10. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE

@@ -1,5 +1,12 @@
 ﻿# CHANGELOG
 
+## 2026-10-23
+- feat(ui,motion,clean-code): declutter airy layout, bottom nav, physics coin shower and clean code architecture
+- feat(ui,motion,clean-code): declutter airy layout, bottom nav, physics coin shower and clean code architecture
+  - 🎨 UI/UX Declutter: Divided top sticky header by 3, eliminated all visual overlap, spacious cards with 88px bottom nav clearance.
+  - 🪙 Motion Engine: Quadratic Bezier coin cannon (`launchCoinShower`) flying to balance, completion shockwave pulse (`biz-shockwave`), squash & stretch.
+  - ⚡ Clean Code & Architecture: Strict decoupling, 10/10 automated tests pass, resilient JSON save/load with defensive fallbacks.
+
 ## 2026-10-21
 - feat(revolution): complete game revolution with airy 4-tab UI, social league, daily streak rewards and authentic derja overhaul
 - feat(revolution,social,ui,derja): complete game revolution by 3 PhD experts :

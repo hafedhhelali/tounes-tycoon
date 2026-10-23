@@ -44,35 +44,34 @@
       min-height: 100vh;
     }
 
-    /* HEADER TYCOON - ULTRA COMPACT, FLUIDE & SANS ENCOMBREMENT */
+    /* HEADER TYCOON - ULTRA ÉPURÉ & AÉRIEN (HAUTEUR DIVISÉE PAR 3) */
     header {
-      background: linear-gradient(180deg, #162032 0%, #0d131f 100%);
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 10px 12px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 10px 14px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
       position: sticky;
-      top: 4px;
+      top: 6px;
       z-index: 50;
-      backdrop-filter: blur(12px);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
-    .brand-bar {
+    .header-top-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2px;
     }
-    .brand-title {
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      color: #e2e8f0;
+    .brand-pill {
       display: flex;
       align-items: center;
       gap: 6px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #f8fafc;
     }
     .badge-tn {
       background: linear-gradient(135deg, var(--red-tn) 0%, #be123c 100%);
@@ -83,15 +82,34 @@
       border-radius: 6px;
       box-shadow: 0 0 12px var(--red-glow);
     }
-    .balance-box {
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(251, 191, 36, 0.4);
-      padding: 8px 14px;
-      border-radius: 12px;
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .icon-pill-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 3px 8px;
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.15s ease;
+    }
+    .icon-pill-btn:active { transform: scale(0.92); }
+
+    /* SOLDE GÉANT SCINTILLANT */
+    .balance-hero {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      align-items: baseline;
+      background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+      padding: 2px 0;
     }
     .balance-label {
       font-size: 12px;
@@ -99,44 +117,101 @@
       color: var(--text-muted);
     }
     .balance-val {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 900;
       color: var(--gold);
-      text-shadow: 0 0 18px rgba(251, 191, 36, 0.45);
+      text-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
       letter-spacing: -0.5px;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .balance-val.bump {
+      transform: scale(1.12);
     }
 
-    /* ACTION PUB DÉDIÉE (SOLDE & BOOST) */
-    .ads-hub {
+    /* MINI PILLS D'ACTIONS RAPIDES */
+    .header-quick-pills {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
     }
-    .ad-card-btn {
-      border: none;
+    .quick-pill-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 5px 8px;
       border-radius: 10px;
-      padding: 6px 6px;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 800;
       cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .quick-pill-btn:active { transform: scale(0.96); }
+    .quick-pill-btn.gold {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.1) 100%);
+      color: #fef08a;
+    }
+
+    /* BOTTOM NAVIGATION BAR MODERNE NATIVE */
+    .bottom-nav-bar {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 440px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 22px;
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 4px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 15px rgba(245, 158, 11, 0.1);
+      z-index: 100;
+    }
+    .nav-tab-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 1px;
+      gap: 2px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 10px;
       font-weight: 800;
-      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-      color: white;
-      min-height: 38px;
+      cursor: pointer;
+      padding: 5px 12px;
+      border-radius: 14px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .ad-card-btn:active { transform: scale(0.96); }
-    .ad-btn-cash {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
-      border: 1px solid rgba(16, 185, 129, 0.5);
+    .nav-tab-item.active {
+      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.18);
+      transform: translateY(-2px);
     }
-    .ad-btn-boost {
-      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
-      border: 1px solid rgba(245, 158, 11, 0.5);
+    .nav-tab-item:active { transform: scale(0.9); }
+
+    /* SQUASH & STRETCH ANIMATION */
+    .squash-target {
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .squash-active {
+      transform: scale(1.18, 0.82) !important;
+    }
+
+    /* GOLD SHOCKWAVE */
+    @keyframes goldPulseWave {
+      0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.8); }
+      70% { box-shadow: 0 0 0 16px rgba(245, 158, 11, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+    .biz-shockwave {
+      animation: goldPulseWave 0.7s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .ad-btn-title { font-size: 11px; font-weight: 900; display: flex; align-items: center; gap: 4px; }
     .ad-btn-sub { font-size: 9px; opacity: 0.9; font-weight: 700; }
@@ -1002,88 +1077,50 @@
 <body>
   <div id="app">
     <header>
-      <!-- BARRE D'AMBIANCE DE QUARTIER & CONQUÊTE URBAINE -->
-      <div class="street-atmosphere-bar">
-        <div class="street-crowd-layer">
-          <span>🚶‍♂️</span><span>🚖</span><span>🧑‍🤝‍🧑</span><span>🛵</span><span>🚶‍♀️</span><span>🚐</span><span>👨‍🍳</span>
-        </div>
-        <div style="text-align: right; z-index: 2;">
-          <div style="font-size: 10px; color: #fbbf24; font-weight: 800;">📍 حيّ الاستثمار الحالي :</div>
-          <div style="font-size: 13px; font-weight: 900; color: #f8fafc;" id="currentZoneName">باب سويقة والمدينة العربي</div>
-        </div>
-        <button class="zone-badge-btn" id="openZoneMapBtn" style="z-index: 2;">
-          <span>🗺️ خريطة تونس</span>
-        </button>
-      </div>
-
-      <div class="brand-bar">
-        <div class="brand-title">
+      <div class="header-top-row">
+        <div class="brand-pill">
           <span>🇹🇳 تونس تايكون</span>
           <span class="badge-tn" id="playerTitleBadge">مواطن يلوّج على مشروع</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <button id="soundToggleBtn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; color: #f8fafc; font-size: 14px; padding: 3px 8px; cursor: pointer;">🔊</button>
-          <div style="font-size: 11px; font-weight: 700; color: #94a3b8;">© EOLabs 2026 beta</div>
+        <div class="header-actions">
+          <button class="icon-pill-btn" id="openZoneMapBtn">
+            <span>🗺️</span>
+            <span id="currentZoneName">باب سويقة</span>
+          </button>
+          <button class="icon-pill-btn" id="soundToggleBtn">🔊</button>
         </div>
       </div>
 
-      <div class="balance-box">
-        <div class="balance-label">الكاسة</div>
+      <div class="balance-hero">
+        <div class="balance-label">الكاسة الحالية :</div>
         <div class="balance-val" id="dinarsDisplay">0.00 د.ت</div>
       </div>
 
-      <!-- BANDEAU PRESTIGE & INVESTISSEMENT -->
-      <div class="prestige-bar-box" id="prestigeBarBox">
-        <div style="text-align: right;">
-          <div style="font-size: 11px; font-weight: 900; color: #fde68a;">🌟 رأس مال الحومة والخبرة</div>
-          <div style="font-size: 10px; color: #cbd5e1;" id="prestigeInfoLabel">مضروب القوّة : x1.00</div>
-        </div>
-        <button class="prestige-btn" id="prestigeOpenBtn">
-          👑 بيع واستثمر (+0)
+      <div class="header-quick-pills">
+        <button class="quick-pill-btn gold" id="prestigeOpenBtn">
+          <span>👑 رأس مال الحومة</span>
+          <span id="prestigeInfoLabel">x1.00</span>
         </button>
-      </div>
-
-      <!-- SYNERGIES & COMBOS TUNISIENS -->
-      <div class="synergies-container" id="synergiesContainer">
-        <!-- Rempli dynamiquement -->
-      </div>
-
-      <!-- ADMOB REWARD HUB -->
-      <div class="ads-hub">
-        <button class="ad-card-btn ad-btn-cash" id="adCashBtn">
-          <div class="ad-btn-title">🎁 دبّر تفتوفة بلاش</div>
-          <div class="ad-btn-sub" id="cashRewardHint">تفرّج في فيديو (+30 دينار)</div>
-        </button>
-        <button class="ad-card-btn ad-btn-boost" id="adBoostBtn">
-          <div class="ad-btn-title">🚀 تيربو x2 (4 سوايع)</div>
-          <div class="ad-btn-sub" id="adBoostStatus">طافي</div>
-        </button>
-      </div>
-
-      <!-- DÉFIS MTA3 EL HOUMA (QUÊTES & SUCCÈS) -->
-      <div id="questBox" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 10px; margin-top: 8px; display: none; align-items: center; justify-content: space-between;">
-        <div style="text-align: right; flex: 1;">
-          <div style="font-size: 10px; font-weight: 900; color: #34d399;">🎯 قضيّة الحومة حضرت !</div>
-          <div style="font-size: 12px; font-weight: 800; color: #ecfdf5;" id="questTitle">عنوان التحدي</div>
-        </div>
-        <button id="claimQuestBtn" style="background: #10b981; border: none; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 900; font-size: 12px; cursor: pointer; margin-right: 8px;">
-          صُبّ البونيس 🎁
+        <button class="quick-pill-btn" id="adBoostBtn">
+          <span>🚀 تيربو المداخيل</span>
+          <span id="adBoostStatus">طافي</span>
         </button>
       </div>
 
       <!-- BANDEAU ÉVÉNEMENT POP-CULTURE -->
-      <div id="eventBanner">
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-          <div style="font-weight: 900; color: #fef08a; font-size: 13px;" id="eventTitle">فزعة في الحومة !</div>
-          <button id="eventMiniGameBtn">🔥 العب و لمّ بزايد فلوس (شكبة 🃏)</button>
+      <div id="eventBanner" style="display: none; margin-top: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+          <div style="font-weight: 900; color: #fef08a; font-size: 12px;" id="eventTitle">فزعة في الحومة !</div>
+          <button id="eventMiniGameBtn" style="padding: 3px 6px; font-size: 10px;">🔥 العب (شكبة 🃏)</button>
         </div>
-        <div style="font-size: 12px; margin: 4px 0; color: #fef9c3;" id="eventDesc">تفاصيل</div>
-        <div style="font-size: 11px; color: var(--gold); font-weight: 800;" id="eventTimer">باقي : 0 ثانية</div>
+        <div style="font-size: 10px; color: #fef9c3;" id="eventDesc">تفاصيل</div>
+        <div style="font-size: 9px; color: var(--gold); font-weight: 800;" id="eventTimer">باقي : 0 ثانية</div>
       </div>
+
       <!-- DILEMME MORAL & DÉCISION DU QUARTIER -->
-      <div id="dilemmaBanner">
-        <div style="font-size: 13px; font-weight: 900; color: #fdf4ff;" id="dilemmaTitle">قرار في الحومة !</div>
-        <div style="font-size: 11px; color: #e9d5ff; margin-top: 4px;" id="dilemmaDesc">وصف القرار</div>
+      <div id="dilemmaBanner" style="display: none; margin-top: 4px;">
+        <div style="font-size: 12px; font-weight: 900; color: #fdf4ff;" id="dilemmaTitle">قرار في الحومة !</div>
+        <div style="font-size: 10px; color: #e9d5ff; margin-top: 2px;" id="dilemmaDesc">وصف القرار</div>
         <div class="dilemma-btn-row">
           <button class="dilemma-btn" id="dilemmaChoiceABtn">الخيار أ</button>
           <button class="dilemma-btn" id="dilemmaChoiceBBtn">الخيار ب</button>
@@ -1091,28 +1128,10 @@
       </div>
     </header>
 
-    <!-- ONGLETS DE NAVIGATION : COMMERCES / AMÉLIORATIONS TACTIQUES / QUARTIERS / LIGUE -->
-    <div class="view-tabs-hub">
-      <button class="tab-btn active" id="tabBtnBusinesses">
-        <span style="font-size: 16px;">🏪</span>
-        <span>المشاريع</span>
-      </button>
-      <button class="tab-btn" id="tabBtnTactics">
-        <span style="font-size: 16px;">⚡</span>
-        <span>أسرار الصنعة</span>
-      </button>
-      <button class="tab-btn" id="tabBtnZones">
-        <span style="font-size: 16px;">🗺️</span>
-        <span>غزو تونس</span>
-      </button>
-      <button class="tab-btn" id="tabBtnLeague">
-        <span style="font-size: 16px;">🏆</span>
-        <span>البطولة والصابة</span>
-      </button>
-    </div>
-
     <!-- PANNEAU 1 : LISTE DES COMMERCES (PAR DÉFAUT) -->
     <div class="tab-content-panel active" id="panelBusinesses">
+      <!-- SYNERGIES & COMBOS COMPACTS -->
+      <div class="synergies-container" id="synergiesContainer"></div>
       <div class="business-list" id="businessList"></div>
     </div>
 
@@ -1167,6 +1186,26 @@
       </div>
     </div>
   </div>
+
+  <!-- NOUVELLE BOTTOM NAVIGATION BAR MODERNE NATIVE (4 ONGLETS AÉRÉS) -->
+  <nav class="bottom-nav-bar">
+    <button class="nav-tab-item active" id="tabBtnBusinesses">
+      <span style="font-size: 18px;">🏪</span>
+      <span>المشاريع</span>
+    </button>
+    <button class="nav-tab-item" id="tabBtnTactics">
+      <span style="font-size: 18px;">⚡</span>
+      <span>الصنعة</span>
+    </button>
+    <button class="nav-tab-item" id="tabBtnZones">
+      <span style="font-size: 18px;">🗺️</span>
+      <span>الأحياء</span>
+    </button>
+    <button class="nav-tab-item" id="tabBtnLeague">
+      <span style="font-size: 18px;">🏆</span>
+      <span>البطولة</span>
+    </button>
+  </nav>
 
   <!-- BOUTON FLOTTANT : ROUE DE LA FORTUNE ('عجلة الحظ التونسية') -->
   <div class="wheel-floating-btn" id="wheelFloatingBtn">
@@ -1577,6 +1616,58 @@
       return `<span class="num-ltr">${formatted}</span> ${suffix}`;
     }
 
+    // --- MOTEUR DE PARTICULES PHYSIQUES TYCOON (COIN PARABOLA CANNON) ---
+    function launchCoinShower(startX, startY, count = 7) {
+      const dinarsEl = document.getElementById('dinarsDisplay');
+      const targetRect = dinarsEl ? dinarsEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: 30 };
+      const targetX = targetRect.left + (targetRect.width / 2);
+      const targetY = targetRect.top + (targetRect.height / 2);
+
+      for (let i = 0; i < count; i++) {
+        const coin = document.createElement('div');
+        coin.innerText = '🪙';
+        coin.style.position = 'fixed';
+        coin.style.zIndex = '9999';
+        coin.style.left = `${startX}px`;
+        coin.style.top = `${startY}px`;
+        coin.style.fontSize = `${16 + Math.random() * 8}px`;
+        coin.style.pointerEvents = 'none';
+        coin.style.userSelect = 'none';
+        document.body.appendChild(coin);
+
+        const angle = (Math.PI * 0.65) + (Math.random() * Math.PI * 0.7);
+        const force = 90 + Math.random() * 80;
+        const peakX = startX + Math.cos(angle) * force;
+        const peakY = startY - Math.sin(angle) * force;
+
+        const startTime = performance.now();
+        const duration = 550 + Math.random() * 150;
+
+        function animate(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(1, elapsed / duration);
+          const inv = 1 - progress;
+          const curX = inv * inv * startX + 2 * inv * progress * peakX + progress * progress * targetX;
+          const curY = inv * inv * startY + 2 * inv * progress * peakY + progress * progress * targetY;
+          const scale = 1 + Math.sin(progress * Math.PI) * 0.4;
+          const rot = progress * 720;
+
+          coin.style.transform = `translate(${curX - startX}px, ${curY - startY}px) scale(${scale}) rotate(${rot}deg)`;
+
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            coin.remove();
+            if (i === 0 && dinarsEl) {
+              dinarsEl.classList.add('bump');
+              setTimeout(() => dinarsEl.classList.remove('bump'), 160);
+            }
+          }
+        }
+        requestAnimationFrame(animate);
+      }
+    }
+
     // Particules volantes au tap (+X د.ت)
     function spawnFloatText(x, y, text) {
       const el = document.createElement('div');
@@ -1758,8 +1849,11 @@
             else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
             else soundEngine.playCoin();
 
-            // Particule flottante de gain au point de contact
+            // Particule flottante de gain au point de contact + Fontaine de pièces réaliste
             spawnFloatText(clientX, clientY, `+${formatCurrency(rev)}`);
+            if (typeof launchCoinShower === 'function') {
+              launchCoinShower(clientX, clientY, 6);
+            }
 
             // Animation squash
             avatarEl.classList.add('squashed');
@@ -2316,12 +2410,24 @@
         eventBanner.style.display = 'none';
       }
 
-      // Progression continue des jauges
+      // Progression continue des jauges + Onde de choc dorée à l'achèvement
       engine.businesses.forEach(biz => {
         const bar = document.getElementById(`prog-${biz.id}`);
         if (bar && biz.level > 0) {
           const pct = Math.min(100, (biz.progressMs / biz.cycleDurationMs) * 100);
           bar.style.width = pct + '%';
+
+          // Détecter la fin de cycle pour déclencher l'onde de choc
+          if (pct >= 98 && !bar.dataset.pulsing) {
+            bar.dataset.pulsing = '1';
+            const card = document.getElementById(`biz-${biz.id}`);
+            if (card) {
+              card.classList.add('biz-shockwave');
+              setTimeout(() => card.classList.remove('biz-shockwave'), 450);
+            }
+          } else if (pct < 15) {
+            delete bar.dataset.pulsing;
+          }
         }
       });
 
