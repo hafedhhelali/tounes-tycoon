@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- fix(ui,clicks): restore missing adCashBtn and questBox elements, add defensive guards and fix card shockwave id
+- fix(ui,clicks): restore missing adCashBtn and questBox elements, add defensive guards and fix card shockwave id
 - feat(ui,motion,clean-code): declutter airy layout, bottom nav, physics coin shower and clean code architecture
 - feat(ui,motion,clean-code): declutter airy layout, bottom nav, physics coin shower and clean code architecture
   - 🎨 UI/UX Declutter: Divided top sticky header by 3, eliminated all visual overlap, spacious cards with 88px bottom nav clearance.
