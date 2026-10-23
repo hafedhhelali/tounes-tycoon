@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Initialisation prioritaire du moteur panoramique QuartierAnimator avant le rendu initial pour synchroniser les animations au premier chargement.
-Bouton retour Android et modales avec scrolling vertical débridé et bouton direct 🚪 dans le header.
-APK mis à jour et validé. Tests: npm test = 12/12 PASS.
+Scène de rue 2D panoramique plein écran avec HUD ultra-compact en bandeau unique sans masquer l'animation.
+Disparition de la grille statique `.business-list` : 100% de l'interaction et gestion des commerces se passe sur l'image Canvas.
+Entrée directe dans l'intérieur du commerce par tap sur le bâtiment avec simulation 2D détaillée 60 FPS. Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

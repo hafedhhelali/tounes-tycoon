@@ -1620,7 +1620,7 @@ export class QuartierAnimator {
       y: y,
       w: b.width,
       h: b.height - 30,
-      action: 'collect',
+      action: 'inspect',
       bizId: b.id
     });
 

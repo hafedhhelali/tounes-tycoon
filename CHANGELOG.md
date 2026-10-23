@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(ui,canvas): fullscreen living 2D street, ultra-sleek HUD and direct shop entrance on tap
+- feat(ui,canvas): fullscreen living 2D street, ultra-sleek HUD and direct shop entrance on tap
 - fix(anim,lifecycle): mount and start QuartierAnimator before initial renderDOM and theme application
 - fix(anim,lifecycle): mount and start QuartierAnimator before initial renderDOM and theme application
   - 🎬 Instant Animation Loop: Instantiated and started `QuartierAnimator` ahead of initial DOM rendering and zone theme binding to prevent idle canvas blanking on startup.
