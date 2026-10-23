@@ -8,7 +8,7 @@ foreach ($a in $artifacts) {
   Write-Host "Artifact: $($a.name), id=$($a.id), size=$($a.size_in_bytes), run=$($a.workflow_run.id)"
 }
 
-$apkArtifact = $artifacts | Where-Object { $_.name -like '*.apk' -or $_.name -like '*apk*' } | Select-Object -First 1
+$apkArtifact = $artifacts | Where-Object { $_.name -like '*.apk' -or $_.name -like '*apk*' } | Sort-Object { $_.workflow_run.id } -Descending | Select-Object -First 1
 if ($apkArtifact) {
   $distDir = "C:\Projects\tounes-tycoon\dist"
   if (-not (Test-Path $distDir)) { New-Item -ItemType Directory -Path $distDir | Out-Null }

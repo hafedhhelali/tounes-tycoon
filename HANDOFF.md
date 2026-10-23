@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Suppression de la barre de navigation du bas (intégrée au HUD supérieur) et des bandeaux DOM qui masquaient la rue et débordaient à gauche.
+Suppression de la barre du bas (intégrée au HUD supérieur) et des bandeaux DOM qui masquaient la rue et débordaient à gauche.
 Intégration 100% DANS l'image Canvas des icônes d'offres (Turbo 🚀, Cash 🎁, Prestige 👑, Roue 🎡) et d'alertes (Quêtes 🎯, Chkobba 🃏, Dilemme ⚖️, Lucky Drop 🎁).
-Adaptation dynamique de la hauteur des bâtiments et de la chaussée (`groundY`) pour visibilité complète des magasins, trottoir, piétons et taxis. Tests: npm test = 12/12 PASS.
+Adaptation dynamique de la hauteur des bâtiments et de la chaussée (`groundY`) + tri CI `fetch_apk.ps1`. Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).
