@@ -1,6 +1,11 @@
-# CHANGELOG
+﻿# CHANGELOG
 
 ## 2026-10-23
+- fix(clicks,navigation): eradicate history popstate hijack and prevent click freeze permanently
+- fix(clicks,navigation): eradicate history popstate hijack and prevent click freeze permanently
+  - 🛡️ Zero Click Freeze: Removed synthetic `history.pushState` / `popstate` hook that hijacked gesture events and froze interactive taps on mobile browsers.
+  - 🔒 Hardware Back Isolation: Dedicated listener exclusively on native Capacitor `backButton` and document `backbutton`.
+  - 🧠 Anti-Regression Memorization: Formalized rule in `HANDOFF.md` and directives to permanently eliminate navigation-induced click freezes.
 - feat(animation): introduce dedicated Canvas2D high-fidelity visual simulation engine for businesses
   - 🎨 High-Definition Canvas 2D Engine (`store_animator.js`): Replaced basic DOM divs with custom HTML5 Canvas 2D rendering pipeline featuring DevicePixelRatio (`dpr = window.devicePixelRatio || 1`) support and 60 FPS requestAnimationFrame loop.
   - 🏪 Authentic Tunisian Store Themes: Architectural backdrops customized per business (zellige frieze, wooden counters, shelves with glass jars, spice pots, espresso machine, plancha grill, pastry rotating oven, shared taxi station).

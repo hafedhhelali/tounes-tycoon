@@ -1,9 +1,9 @@
-# HANDOFF — Tounes Tycoon
+﻿# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Moteur Canvas 2D HD 60 FPS (`CanvasStoreEngine` dans `store_animator.js`) simulant en coupe chaque commerce tunisien avec DPR dynamique, arrière-plans thématiques, machines actives, staff animé, flux de clients avec bulles et particules d'argent.
-Recrutement direct sur le Canvas avec zones d'interaction interactives, zéro fuite mémoire via cycle strict `requestAnimationFrame`/`cancelAnimationFrame`.
+Éradication du piège `history.pushState` / `popstate` qui interceptait et bloquait les clics utilisateur en mode Web/PWA.
+Mémorisation définitive dans les directives AGENTS.md et HANDOFF.md pour neutraliser à la source toute réapparition.
 Tests: `npm test` = 12/12 PASS. Synchronisation automatique et push immédiat vers origin/main.
 
 ## Dépôts — NE PAS CONFONDRE
@@ -35,6 +35,7 @@ Hook `.githooks/pre-commit` (`git config core.hooksPath .githooks`) bloque un co
 Style télégraphique; diffs minimaux; copyright `© EOLabs 2026 beta`; APK versionné `<base>.<run>-beta`, un seul APK dans `dist/`.
 
 ## Dette / pièges connus
+- **Règle absolue Click Bug (Mémorisation)** : Interdiction d'utiliser `history.pushState` ou d'écouter `popstate` sur la boucle principale ; sur mobile/PWA cela désynchronise l'arbre d'événements et bloque les clics (pointer events). Tout bouton retour passe par le bridge Capacitor natif (`backButton` listener) ou l'événement `backbutton` document uniquement.
 - `audio.js` BGM et mini-jeu utilisent `setInterval` (AGENTS.md l'interdit pour le gameplay). BGM = scheduler lookahead sur `ctx.currentTime` (acceptable); mini-jeu à migrer vers deltas `Date.now()`.
 - Avertissement Git LF→CRLF: bénin.
 - Sous-agents: toujours leur donner le chemin `C:\Projects\tounes-tycoon` (une fois ils ont cherché dans tunisie-quiz et n'ont rien trouvé).

@@ -4006,26 +4006,17 @@
       };
     }
 
-    // Écoute du bouton physique / geste retour Android via Capacitor et via navigateur Web
+    // Écoute du bouton physique / geste retour Android via Capacitor
     document.addEventListener('backbutton', (e) => {
       e.preventDefault();
       handleBackNavigation();
     });
 
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-      window.Capacitor.Plugins.App.addListener('backButton', ({ canGoBack }) => {
+      window.Capacitor.Plugins.App.addListener('backButton', () => {
         handleBackNavigation();
       });
     }
-
-    // Historique navigateur pour intercepter le bouton retour du téléphone sur Chrome Mobile / PWA
-    try {
-      history.pushState({ page: 'tycoon_home' }, '');
-      window.addEventListener('popstate', (e) => {
-        history.pushState({ page: 'tycoon_home' }, '');
-        handleBackNavigation();
-      });
-    } catch (e) {}
 
     function switchBizDetailTab(tab) {
       bizTabBtnStaff.classList.toggle('active', tab === 'staff');
