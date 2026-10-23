@@ -33,7 +33,7 @@ jobs:
       - name: Prepare web assets
         run: |
           mkdir -p www
-          cp index.html engine.js ads_service.js audio.js www/
+          cp index.html engine.js ads_service.js audio.js store_animator.js www/
           npx cap sync android
 
       - name: Setup Java 21

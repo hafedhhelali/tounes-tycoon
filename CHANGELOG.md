@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- fix(build,assets): include store_animator.js in www assets and CI workflow to fix app freeze
+- fix(build,assets): include store_animator.js in www assets and CI workflow to fix app freeze
 - fix(clicks,navigation): eradicate history popstate hijack and prevent click freeze permanently
 - fix(clicks,navigation): eradicate history popstate hijack and prevent click freeze permanently
   - 🛡️ Zero Click Freeze: Removed synthetic `history.pushState` / `popstate` hook that hijacked gesture events and froze interactive taps on mobile browsers.
