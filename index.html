@@ -295,7 +295,7 @@
       padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
       transition: all 0.2s ease;
     }
@@ -308,8 +308,8 @@
       gap: 12px;
     }
     .biz-avatar {
-      width: 50px;
-      height: 50px;
+      width: 52px;
+      height: 52px;
       border-radius: 12px;
       background: linear-gradient(135deg, #1e293b 0%, #090d16 100%);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -322,23 +322,23 @@
       position: relative;
     }
     .biz-lvl-tag {
-      position: absolute;
-      bottom: -4px;
-      right: -4px;
       background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
       color: #1c1003;
       font-size: 10px;
       font-weight: 900;
-      padding: 1px 6px;
+      padding: 2px 8px;
       border-radius: 6px;
       border: 1px solid rgba(255, 255, 255, 0.35);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 8px rgba(245, 158, 11, 0.45);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
     }
     .biz-info {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       direction: rtl;
       text-align: right;
     }
@@ -1517,168 +1517,192 @@
     .biz-inspect-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.18) 0%, rgba(217, 119, 6, 0.28) 100%);
-      border: 1px solid rgba(251, 191, 36, 0.45);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      color: #fef08a;
-      border-radius: 10px;
-      padding: 4px 8px;
-      font-size: 11px;
-      font-weight: 800;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.28) 0%, rgba(217, 119, 6, 0.42) 100%);
+      border: 1.5px solid #fbbf24;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 7px 12px;
+      font-size: 12.5px;
+      font-weight: 900;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: 38px;
+      touch-action: manipulation;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
       overflow: hidden;
     }
     .biz-inspect-btn:hover {
-      transform: translateY(-1px) scale(1.02);
-      border-color: #fbbf24;
-      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
-      color: #ffffff;
+      transform: translateY(-2px) scale(1.04);
+      border-color: #fde047;
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.55);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.45) 0%, rgba(217, 119, 6, 0.6) 100%);
     }
     .biz-inspect-btn:active {
-      transform: translateY(1px) scale(0.98);
+      transform: translateY(1px) scale(0.97);
     }
     .biz-inspect-btn .btn-badge {
-      background: rgba(0, 0, 0, 0.45);
-      border-radius: 6px;
-      padding: 1px 5px;
-      font-size: 9.5px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 900;
       color: #38bdf8;
     }
 
-    /* --- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET --- */
+    /* --- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET (REDESIGN PREMIUM TYCOON) --- */
     .biz-income-evolution-card {
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 29, 0.95) 100%);
-      border: 1px solid rgba(251, 191, 36, 0.25);
-      border-radius: 14px;
-      padding: 10px 12px;
+      background: linear-gradient(180deg, rgba(20, 29, 47, 0.95) 0%, rgba(11, 17, 32, 0.98) 100%);
+      border: 1.5px solid rgba(245, 158, 11, 0.35);
+      border-radius: 16px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      gap: 10px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     .biz-income-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(0, 0, 0, 0.35);
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
     .biz-income-stat {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
     .biz-income-stat.stat-cadence {
       text-align: left;
     }
     .stat-label {
-      font-size: 10.5px;
+      font-size: 11px;
       color: #94a3b8;
-      font-weight: 700;
+      font-weight: 800;
     }
     .stat-main-value {
       font-size: 20px;
-      font-weight: 900;
+      font-weight: 950;
       color: #fbbf24;
       letter-spacing: -0.3px;
-      text-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+      text-shadow: 0 2px 12px rgba(245, 158, 11, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .stat-sub-value {
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 13.5px;
+      font-weight: 900;
       color: #38bdf8;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .biz-evolution-banner {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      padding: 8px 10px;
-      border-radius: 10px;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     }
     .evo-details {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
       flex: 1;
+      min-width: 0;
     }
     .evo-title-row {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
     .evo-badge {
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.45);
       color: #38bdf8;
-      font-size: 9.5px;
+      font-size: 10.5px;
       font-weight: 900;
-      padding: 1px 6px;
-      border-radius: 6px;
+      padding: 2px 8px;
+      border-radius: 8px;
     }
     .evo-target {
-      font-size: 12px;
-      font-weight: 800;
-      color: #f1f5f9;
+      font-size: 13px;
+      font-weight: 900;
+      color: #f8fafc;
     }
     .evo-gain {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 11.5px;
+      font-weight: 800;
       color: #34d399;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .evo-milestone-hint {
-      font-size: 10px;
+      font-size: 10.5px;
       color: #cbd5e1;
-      opacity: 0.85;
+      font-weight: 700;
+      line-height: 1.35;
     }
     .evo-upgrade-btn {
       background: linear-gradient(180deg, #10b981 0%, #059669 100%);
-      border: 1px solid #34d399;
-      border-radius: 10px;
+      border: 1.5px solid #34d399;
+      border-radius: 14px;
       color: #ffffff;
-      padding: 6px 10px;
+      padding: 10px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      min-width: 90px;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
-      transition: all 0.18s ease;
+      min-width: 110px;
+      min-height: 48px;
+      touch-action: manipulation;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      flex-shrink: 0;
     }
     .evo-upgrade-btn:hover {
-      transform: translateY(-1px) scale(1.03);
-      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.6);
+      border-color: #6ee7b7;
     }
     .evo-upgrade-btn:active {
       transform: translateY(1px) scale(0.97);
     }
     .evo-btn-action {
-      font-size: 11px;
-      font-weight: 900;
+      font-size: 12.5px;
+      font-weight: 950;
     }
     .evo-btn-cost {
-      font-size: 10px;
+      font-size: 11px;
       color: #d1fae5;
-      font-weight: 800;
+      font-weight: 900;
+      margin-top: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
     }
 
     /* --- SIMULATION VISUELLE 2D TYCOON (CUTAWAY STORE STAGE) --- */
     .biz-store-stage {
       position: relative;
       width: 100%;
-      height: 180px;
-      background: radial-gradient(ellipse at 50% 30%, #1e293b 0%, #0a0f1d 100%);
-      border-radius: 14px;
-      border: 1.5px solid rgba(245, 158, 11, 0.35);
-      box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5);
+      height: 200px;
+      background: radial-gradient(ellipse at 50% 25%, #1e293b 0%, #080d1a 100%);
+      border-radius: 16px;
+      border: 1.5px solid rgba(245, 158, 11, 0.4);
+      box-shadow: inset 0 2px 14px rgba(0,0,0,0.85), 0 6px 24px rgba(0,0,0,0.55);
       overflow: hidden;
       user-select: none;
       contain: content;
@@ -1689,7 +1713,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 48px;
+      height: 52px;
       background: repeating-linear-gradient(
         45deg,
         #131a29,
@@ -1702,9 +1726,9 @@
     }
     .store-counter {
       position: absolute;
-      left: 20px;
+      left: 18px;
       bottom: 30px;
-      width: 76px;
+      width: 80px;
       z-index: 4;
       display: flex;
       flex-direction: column;
@@ -1712,9 +1736,9 @@
     }
     .store-cash-register {
       position: relative;
-      font-size: 26px;
+      font-size: 28px;
       will-change: transform;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));
     }
     .store-cash-register.paying {
       animation: registerBounce 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1727,17 +1751,17 @@
     }
     .store-counter-desk {
       background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
-      border: 1px solid #f59e0b;
-      border-radius: 6px;
+      border: 1.5px solid #f59e0b;
+      border-radius: 8px;
       color: #fef08a;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 2px 6px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      font-size: 10px;
+      font-weight: 900;
+      padding: 3px 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     }
     .store-stations-row {
       position: absolute;
-      left: 100px;
+      left: 185px;
       bottom: 40px;
       display: flex;
       gap: 16px;
@@ -1755,9 +1779,9 @@
     }
     .store-station.cashier-station {
       position: absolute;
-      left: 32px;
-      bottom: 46px;
-      z-index: 2;
+      left: 115px;
+      bottom: 38px;
+      z-index: 3;
     }
     .station-worker-active {
       font-size: 28px;
@@ -1864,12 +1888,15 @@
       background: #ffffff;
       color: #0f172a;
       border-radius: 12px;
-      padding: 2px 7px;
-      font-size: 11px;
-      font-weight: 800;
-      margin-bottom: 3px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.45);
+      padding: 3px 9px;
+      font-size: 11.5px;
+      font-weight: 900;
+      margin-bottom: 4px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
       white-space: nowrap;
+      max-width: 170px;
+      overflow: hidden;
+      text-overflow: ellipsis;
       animation: bubblePop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     @keyframes bubblePop {
@@ -1878,10 +1905,10 @@
     }
     .coin-popup {
       position: absolute;
-      font-size: 12px;
-      font-weight: 900;
+      font-size: 13.5px;
+      font-weight: 950;
       color: #fef08a;
-      text-shadow: 0 0 8px rgba(245, 158, 11, 0.9), 0 2px 4px rgba(0,0,0,0.8);
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.95), 0 2px 5px rgba(0,0,0,0.85);
       pointer-events: none;
       white-space: nowrap;
       will-change: transform, opacity;
@@ -2352,11 +2379,11 @@
       <div class="biz-income-evolution-card">
         <div class="biz-income-header">
           <div class="biz-income-stat">
-            <span class="stat-label">💰 المربوح في الدورة الحالية</span>
+            <span class="stat-label">💰 المربوح مع كل كليان (كل طلبية)</span>
             <div class="stat-main-value" id="bizDetailIncome">+0.00 د.ت</div>
           </div>
           <div class="biz-income-stat stat-cadence">
-            <span class="stat-label">⚡ الوتيرة المباشرة</span>
+            <span class="stat-label">⚡ الوتيرة الحينية</span>
             <div class="stat-sub-value" id="bizDetailRate">+0.00 د.ت / ثانية</div>
           </div>
         </div>
@@ -2364,10 +2391,10 @@
         <div class="biz-evolution-banner">
           <div class="evo-details">
             <div class="evo-title-row">
-              <span class="evo-badge">⬆️ الترقية الجاية</span>
+              <span class="evo-badge">⬆️ الترقية القادمة</span>
               <span class="evo-target" id="bizDetailNextLvlText">المستوى 2</span>
             </div>
-            <div class="evo-gain" id="bizDetailNextGain">+0.80 د.ت مربوح إضافي في كل دورة</div>
+            <div class="evo-gain" id="bizDetailNextGain">+0.80 د.ت مربوح إضافي في كل كليان</div>
             <div class="evo-milestone-hint" id="bizDetailMilestoneHint">
               🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !
             </div>
@@ -2919,15 +2946,23 @@
           <div class="biz-main-row">
             <div class="biz-avatar" id="avatar-${biz.id}">
               ${biz.icon}
-              <div class="biz-lvl-tag">مستوى <span class="num-ltr">${biz.level}</span></div>
             </div>
             <div class="biz-info">
               <div class="biz-title">
-                <span>${biz.name}</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span>${biz.name}</span>
+                  <span class="biz-lvl-tag">مستوى <span class="num-ltr">${biz.level}</span></span>
+                </div>
                 <button class="biz-inspect-btn" id="title-click-${biz.id}" aria-label="تفقد المشروع وادخل للمحل">
                   <span>🏪 ادخل للمحلّ</span>
                   <span class="btn-badge">🔍 تفقد</span>
                 </button>
+              </div>
+              <div class="biz-ar">${biz.tagline}</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="biz-income">
+                  ${rev > 0 ? '+' + formatCurrency(rev) : '0.00&nbsp;د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ <span class="num-ltr">${(biz.cycleDurationMs/1000).toFixed(1)}</span>&nbsp;ثانية</span>
+                </div>
                 ${milestone.nextLevel ? `
                   <span class="milestone-badge" title="وصّل للمستوى ${milestone.nextLevel} باش تدوبل السرعة !">
                     🎯 ${milestone.nextLevel} (x${milestone.nextMultiplier})
@@ -2935,10 +2970,6 @@
                 ` : `
                   <span class="milestone-badge" style="color: #34d399; border-color: #34d399;">👑 معلّم كامل</span>
                 `}
-              </div>
-              <div class="biz-ar">${biz.tagline}</div>
-              <div class="biz-income">
-                ${rev > 0 ? '+' + formatCurrency(rev) : '0.00&nbsp;د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ <span class="num-ltr">${(biz.cycleDurationMs/1000).toFixed(1)}</span>&nbsp;ثانية</span>
               </div>
             </div>
           </div>
@@ -3654,16 +3685,16 @@
         this.customers = [];
 
         this.dialoguePools = {
-          kahwa: ['💭 ☕ كابوسان سخون', '💭 🍵 تاي منعنع', '💭 ♠️ طرح شكبة', '💭 🍏 شيشة تفاح'],
-          kaskrout: ['💭 🥖 كسكروت عياري حار', '💭 🧆 كفتة وهريسة', '💭 🥤 بوڨاع بارد'],
-          fricasse: ['💭 🥟 فريكاسي محرحر', '💭 🍩 بمبلوني سخون', '💭 🫒 زايد زيتون'],
-          taxi_collectif: ['💭 🚖 المرسى يا شاف', '💭 🏁 سوسة باب عليوة', '💭 🚕 بلعاني مستعجل'],
-          attariya: ['💭 🍞 باڨات وحليب', '💭 📲 كارت شحن 5د', '💭 🧀 قضية الدار'],
-          patisserie: ['💭 🍯 بقلاوة وكعك', '💭 🥐 كرواسون بالزبدة', '💭 🎂 تارت بريستيج'],
-          default: ['💭 🛒 يعطيك الصحة', '💭 ✨ خدمة ممتازة', '💭 🪙 نحاسب ونمشي']
+          kahwa: ['☕ كابوسان سخون محرحر', '🍵 تاي منعنع بالبندق', '♠️ طرح شكبة حامي', '🍏 شيشة تفاح وسهريّة'],
+          kaskrout: ['🥖 كسكروت عياري حار ومريڤل', '🧆 كفتة وسلاطة مشوية', '🥤 بوڨاع سيدي بو بلار'],
+          fricasse: ['🥟 فريكاسي محرحر بالطن', '🍩 بمبلوني سخون يڤرمش', '🫒 زيتون وعظمة مروّبة'],
+          taxi_collectif: ['🚖 المرسى يا شاف بالوقت', '🏁 سوسة باب عليوة درج', '🚕 طريق مسرح بلعاني'],
+          attariya: ['🍞 باڨات سميد وحليب باهي', '📲 كارت شحن 5 دينار', '🧀 قضية الدار كاملة'],
+          patisserie: ['🍯 بقلاوة وكعك ورقة ملوكي', '🥐 كرواسون زبدة مورّق', '🎂 تارت بريستيج بنينة'],
+          default: ['🛒 يعطيك الصحة خدمة عالية', '✨ سلعة طازة وقمّة الإتقان', '🪙 نحاسب ونرجع ديما']
         };
 
-        this.happyReactions = ['😋 ❤️', '⭐⭐⭐⭐⭐', '🥰 ☕', '👏 تحفونة !', '👌 يعطيك الصحة'];
+        this.happyReactions = ['😋 بنين برشا !', '⭐⭐⭐⭐⭐ 5 نجوم', '🥰 يعطيك الصحة', '👏 خدمة نظيفة !', '👌 ديما نرجعلك'];
         this.avatarsPool = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓'];
       }
 
@@ -3816,13 +3847,13 @@
 
         const biz = this.getBiz();
         const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
-        const gainText = cycleRevenue > 0 ? `+${formatCurrency(cycleRevenue)}` : `+د.ت 🪙`;
+        const gainText = cycleRevenue > 0 ? `+${formatCurrencyPlain(cycleRevenue)}` : `+دينار 🪙`;
 
         const pop = document.createElement('div');
         pop.className = 'coin-popup';
-        pop.style.left = `${c.x + 8}px`;
-        pop.style.bottom = '76px';
-        pop.innerText = `🪙 ${gainText}`;
+        pop.style.left = `${Math.max(20, c.x - 20)}px`;
+        pop.style.bottom = '85px';
+        pop.innerText = `✨ ${gainText} ✨`;
         this.stage.appendChild(pop);
         setTimeout(() => pop.remove(), 900);
       }
@@ -3911,10 +3942,10 @@
       const deltaRev = Math.max(0, nextRev - currentRev);
       const milestone = engine.getBusinessMilestones ? engine.getBusinessMilestones(biz) : { nextLevel: null, nextMultiplier: 1 };
 
-      if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / دورة`;
+      if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / كليان`;
       if (bizDetailRate) bizDetailRate.innerHTML = `+${formatCurrency(detail.dinarsPerSecond)}/ث`;
       if (bizDetailNextLvlText) bizDetailNextLvlText.innerText = `المستوى ${biz.level + 1}`;
-      if (bizDetailNextGain) bizDetailNextGain.innerText = `+${formatCurrency(deltaRev)} مربوح إضافي في كل دورة`;
+      if (bizDetailNextGain) bizDetailNextGain.innerHTML = `+${formatCurrency(deltaRev)} مربوح إضافي مع كل كليان`;
 
       if (bizDetailMilestoneHint) {
         if (milestone.nextLevel) {
@@ -3925,7 +3956,7 @@
         }
       }
 
-      if (bizDetailUpgradeCost) bizDetailUpgradeCost.innerText = formatCurrency(currentCost);
+      if (bizDetailUpgradeCost) bizDetailUpgradeCost.innerHTML = formatCurrency(currentCost);
       if (bizDetailQuickUpgradeBtn) {
         bizDetailQuickUpgradeBtn.onclick = () => {
           if (engine.buyBusiness(biz.id)) {

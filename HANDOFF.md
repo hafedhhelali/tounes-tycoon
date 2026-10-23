@@ -2,8 +2,8 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Résolution définitive du bug de clic : suppression du bloc de script dupliqué dans `index.html` (74 lignes superflues dans `renderBizDetailContent`).
-Nouveau logo vectoriel premium SVG « تونس تايكون » : médaillon d'or sculpté, croissant & étoile tunisiens, engrenage coffre-fort et typographie or luxueuse.
+Refonte UI/UX experte du panel projet : élimination des fuites HTML (remplacement par `formatCurrencyPlain` dans innerText), scène 2D élargie (200px) avec caisse et personnel découplés sans obstruction.
+Bouton d'accès « ادخل للمحلّ » agrandi et modernisé (38px tactile haute fidélité) ; badge de niveau déplacé sur le titre pour libérer les micro-animations d'avatars ; vocabulaire tunisien harmonisé (« كليان » au lieu de « دورة »).
 Tests: `npm test` = 12/12 PASS. CI GitHub Actions génère l'APK à chaque push.
 
 ## Dépôts — NE PAS CONFONDRE
