@@ -2,8 +2,8 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Éradication du piège `history.pushState` / `popstate` qui interceptait et bloquait les clics utilisateur en mode Web/PWA.
-Mémorisation définitive dans les directives AGENTS.md et HANDOFF.md pour neutraliser à la source toute réapparition.
+Interception native absolue du bouton retour matériel Android (`OnBackPressedCallback` dans `MainActivity.java` + `@capacitor/app` + écouteur prioritaire capture JS) empêchant toute sortie accidentelle et affichant la confirmation de sortie.
+Neutralisation du tremblement d'affichage (`contain: strict` sur les overlays, suppression des reflows de superposition) et articles de simulation Canvas 2D 100% calibrés pour les 17 projets.
 Tests: `npm test` = 12/12 PASS. Synchronisation automatique et push immédiat vers origin/main.
 
 ## Dépôts — NE PAS CONFONDRE

@@ -1,6 +1,11 @@
 ﻿# CHANGELOG
 
 ## 2026-10-23
+- fix(backbutton,ui,simulation): native android back press interception, eliminate modal jitter and tailor business items
+- fix(backbutton,ui,simulation): native android back press interception, eliminate modal jitter and tailor business items
+  - 🚪 Native Back Button Interception: Implemented `OnBackPressedCallback` in `MainActivity.java` and installed `@capacitor/app` so pressing the phone's hardware back button never exits the game abruptly, cleanly prompting the Arabic exit confirmation modal (`exitAppModal`).
+  - 🖥️ Zero Jitter Overlay: Added `contain: strict` and isolated GPU compositing layers on `.modal-overlay` eliminating viewport jitter and repainting tremors when reward/offer modals pop up.
+  - 🥖 100% Tailored Business Simulation: Configured custom, contextual Tunisian goods and props across all 17 businesses in `store_animator.js` (including mall, usine conserves, car showroom, promoteur, and airline).
 - fix(build,assets): include store_animator.js in www assets and CI workflow to fix app freeze
 - fix(build,assets): include store_animator.js in www assets and CI workflow to fix app freeze
 - fix(clicks,navigation): eradicate history popstate hijack and prevent click freeze permanently

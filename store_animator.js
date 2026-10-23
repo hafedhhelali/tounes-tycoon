@@ -29,7 +29,7 @@ export class CanvasStoreEngine {
     this.onHireClick = null;
     this.onUpgradeClick = null;
 
-    // Émotes & répertoires thématiques tunisiens
+    // Émotes & répertoires d'articles authentiques et spécifiques pour CHAQUE projet
     this.orderIcons = {
       kaskrout: ['🥖', '🥪', '🌶️', '🥤'],
       fricasse: ['🥟', '🍩', '🫒', '🥚'],
@@ -43,6 +43,11 @@ export class CanvasStoreEngine {
       restaurant: ['🍗', '🥘', '🥗', '🍖'],
       agence_voyages: ['✈️', '🎫', '🏝️', '🧳'],
       hotel: ['🛎️', '🍸', '🛏️', '🏊'],
+      centre_commercial: ['🛍️', '👗', '👟', '🎮'],
+      usine_conserves: ['🥫', '🐟', '🍅', '📦'],
+      showroom_auto: ['🚗', '🚘', '🔑', '🏎️'],
+      promoteur_immobilier: ['🏢', '🏗️', '📐', '🏡'],
+      tayaran_el_ghzela: ['✈️', '🛫', '💺', '🌍'],
       default: ['🛒', '✨', '🪙', '📦']
     };
 
@@ -367,6 +372,56 @@ export class CanvasStoreEngine {
       ctx.font = 'bold 10px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('🚖 محطّة التاكسي الجماعي - باب عليوة', w / 2, 47);
+      ctx.textAlign = 'left';
+    } else if (bizId === 'centre_commercial') {
+      ctx.fillStyle = '#1e1b4b';
+      ctx.fillRect(40, 32, w - 80, 22);
+      ctx.strokeStyle = '#a855f7';
+      ctx.strokeRect(40, 32, w - 80, 22);
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🛍️ المركز التجاري ومحلات الموضة', w / 2, 47);
+      ctx.textAlign = 'left';
+    } else if (bizId === 'usine_conserves') {
+      ctx.fillStyle = '#3f3f46';
+      ctx.fillRect(110, 52, w - 130, 6);
+      ctx.fillStyle = '#52525b';
+      ctx.fillRect(110, 88, w - 130, 6);
+      ctx.font = '16px serif';
+      for (let x = 120; x < w - 25; x += 32) {
+        ctx.fillText('🥫', x, 50);
+        ctx.fillText('🐟', x, 86);
+      }
+    } else if (bizId === 'showroom_auto') {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(40, 32, w - 80, 22);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.strokeRect(40, 32, w - 80, 22);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🏎️ قاعة عرض السيارات الفاخرة', w / 2, 47);
+      ctx.textAlign = 'left';
+    } else if (bizId === 'promoteur_immobilier') {
+      ctx.fillStyle = '#064e3b';
+      ctx.fillRect(40, 32, w - 80, 22);
+      ctx.strokeStyle = '#34d399';
+      ctx.strokeRect(40, 32, w - 80, 22);
+      ctx.fillStyle = '#ecfdf5';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🏢 الشركة العقارية - اللجّ الأزرق', w / 2, 47);
+      ctx.textAlign = 'left';
+    } else if (bizId === 'tayaran_el_ghzela') {
+      ctx.fillStyle = '#7f1d1d';
+      ctx.fillRect(40, 32, w - 80, 22);
+      ctx.strokeStyle = '#f87171';
+      ctx.strokeRect(40, 32, w - 80, 22);
+      ctx.fillStyle = '#fef2f2';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🛫 الخطوط التونسية - طيران الغزالة', w / 2, 47);
       ctx.textAlign = 'left';
     } else {
       // Décor générique chaleureux

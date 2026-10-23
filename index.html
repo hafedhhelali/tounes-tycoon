@@ -688,12 +688,13 @@
       40%, 80% { transform: translateX(6px); }
     }
 
-    /* MODAL DE CÉLÉBRATION TYCOON */
+    /* MODAL DE CÉLÉBRATION TYCOON & OVERLAYS */
     .modal-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -702,6 +703,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease;
+      contain: strict;
     }
     .modal-overlay.active {
       opacity: 1;
@@ -4006,17 +4008,31 @@
       };
     }
 
-    // Écoute du bouton physique / geste retour Android via Capacitor
-    document.addEventListener('backbutton', (e) => {
-      e.preventDefault();
-      handleBackNavigation();
-    });
-
-    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-      window.Capacitor.Plugins.App.addListener('backButton', () => {
+    // Écoute prioritaire du bouton retour matériel Android
+    function registerBackButtonListener() {
+      // 1. Événement standard Cordova / WebView
+      document.addEventListener('backbutton', (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         handleBackNavigation();
-      });
+      }, true);
+
+      // 2. Événement Capacitor Plugin App (prioritaire sous Capacitor 6/7/8)
+      const tryCapApp = () => {
+        if (window.Capacitor?.Plugins?.App) {
+          window.Capacitor.Plugins.App.removeAllListeners?.();
+          window.Capacitor.Plugins.App.addListener('backButton', () => {
+            handleBackNavigation();
+          });
+        }
+      };
+      tryCapApp();
+      document.addEventListener('deviceready', tryCapApp, { once: true });
     }
+    window.handleBackNavigation = handleBackNavigation;
+    registerBackButtonListener();
 
     function switchBizDetailTab(tab) {
       bizTabBtnStaff.classList.toggle('active', tab === 'staff');
