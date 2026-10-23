@@ -2,9 +2,9 @@
 MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Refonte UI/UX experte du panel projet : élimination des fuites HTML (remplacement par `formatCurrencyPlain` dans innerText), scène 2D élargie (200px) avec caisse et personnel découplés sans obstruction.
-Bouton d'accès « ادخل للمحلّ » agrandi et modernisé (38px tactile haute fidélité) ; badge de niveau déplacé sur le titre pour libérer les micro-animations d'avatars ; vocabulaire tunisien harmonisé (« كليان » au lieu de « دورة »).
-Tests: `npm test` = 12/12 PASS. CI GitHub Actions génère l'APK à chaque push.
+Harmonisation UI/UX du bouton d'entrée sur carte (taille compacte 32px alignée avec les proportions, badge de niveau bien intégré, zero débordement).
+Refonte complète des emplacements vides de la simulation (slots d'embauche dorés 44x56px, positions équilibrées caisse/personnel, dialogues concis et complets sans coupure).
+Bannière d'évolution en grille 2 colonnes avec boîte d'encaissement dédiée. Tests: `npm test` = 12/12 PASS. Push automatique CI.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).
