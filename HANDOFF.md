@@ -1,10 +1,10 @@
 ﻿# HANDOFF — Tounes Tycoon
-MAJ: 2026-10-23 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Interception native absolue du bouton retour matériel Android (`OnBackPressedCallback` dans `MainActivity.java` + `@capacitor/app` + écouteur prioritaire capture JS) empêchant toute sortie accidentelle et affichant la confirmation de sortie.
-Neutralisation du tremblement d'affichage (`contain: strict` sur les overlays, suppression des reflows de superposition) et articles de simulation Canvas 2D 100% calibrés pour les 17 projets.
-Tests: `npm test` = 12/12 PASS. Synchronisation automatique et push immédiat vers origin/main.
+Basculement en Mode Paysage / Horizontal exclusif (`sensorLandscape` dans AndroidManifest + CSS responsive large).
+Moteur Canvas 2D panoramique 60 FPS du Quartier Tunisien Vivant (`QuartierAnimator`) avec les 17 projets en façades stylisées, évolution par paliers (25, 50, 100, 200), transitions cinématiques de quartiers, piétons, taxis, fumée, drapeaux et bulles de gains.
+Nouveau logo Tycoon 3D royal vectoriel avec couronne dorée, médaillon rubis et croissant tunisien. Tests: `npm test` = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

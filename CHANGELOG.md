@@ -1,6 +1,17 @@
 ﻿# CHANGELOG
 
+## 2026-10-24
+- feat(landscape,world-anim): horizontal layout & 2D panoramic living neighborhood city canvas
+
 ## 2026-10-23
+- feat(landscape,world-anim): horizontal layout & 2D panoramic living neighborhood city canvas
+  - 🔄 Mode Paysage Forcé (Horizontal Only): Configuré `android:screenOrientation="sensorLandscape"` dans `AndroidManifest.xml` et adapté le viewport CSS avec layout responsive panoramique et grille adaptative.
+  - 🌆 Moteur Canvas 2D Panoramique 60 FPS du Quartier Tunisien (`QuartierAnimator`): Représentation vivante des 17 projets en façades et échoppes stylisées défilantes avec parallaxe, minarets, horloge municipale, palmiers oscillant au vent et mouettes méditerranéennes.
+  - 🚶 Piétons et Circulation Citadine: Citoyens tunisiens qui marchent et visitent les commerces, bulles d'avis populaires, taxis collectifs jaunes et voitures en mouvement, cheminées fumantes et drapeaux tunisiens ondulants.
+  - 👑 Évolution Visuelle par Paliers: Ornements de façades évolutifs aux niveaux 25 (émeraude), 50 (royal), 100 (néon éclatant) et 200 (aura d'or mythique).
+  - 🎬 Transitions Cinématiques de Quartiers: Passage fluide d'une ville/quartier à l'autre (Bab Souika, La Goulette, Lac 2, Hammamet, Djerba) avec filtre atmosphérique et repositionnement de caméra.
+  - 👑 Nouveau Logo 3D Tycoon Royal: Couronne dorée d'empire sculptée, croissant et étoile tunisiens rubis étincelants et halo solaire.
+  - 🧪 Qualité & Tests: 100% de tests validés (`npm test` = 12/12 PASS).
 - fix(backbutton,ui,simulation): native android back press interception, eliminate modal jitter and tailor business items
 - fix(backbutton,ui,simulation): native android back press interception, eliminate modal jitter and tailor business items
   - 🚪 Native Back Button Interception: Implemented `OnBackPressedCallback` in `MainActivity.java` and installed `@capacitor/app` so pressing the phone's hardware back button never exits the game abruptly, cleanly prompting the Arabic exit confirmation modal (`exitAppModal`).

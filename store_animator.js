@@ -804,3 +804,1005 @@ export class CanvasStoreEngine {
     this.animId = requestAnimationFrame(this.loop);
   }
 }
+
+/**
+ * QuartierAnimator
+ * Moteur Panoramique Canvas 2D 60 FPS du Quartier Tunisien Vivant pour Tounes Tycoon (Landscape).
+ * Gère les transitions cinématiques de quartiers, les évolutions visuelles de paliers (25, 50, 100, 200),
+ * les animations de véhicules, piétons, fumée, drapeaux et bulles de gains.
+ */
+export class QuartierAnimator {
+  constructor(canvasEl, engineRef) {
+    this.canvas = canvasEl;
+    this.ctx = canvasEl.getContext('2d');
+    this.engine = engineRef;
+
+    this.animId = null;
+    this.lastTime = 0;
+    this.dpr = window.devicePixelRatio || 1;
+    this.width = 800;
+    this.height = 360;
+
+    // Scrolling caméra horizontal panoramique
+    this.cameraX = 0;
+    this.targetCameraX = 0;
+    this.worldWidth = 3850;
+
+    // Transitions cinématiques de quartier
+    this.currentZoneId = 'bab_souika';
+    this.transitionAlpha = 0;
+    this.transitionBannerText = '';
+    this.transitionTimer = 0;
+
+    // Callbacks
+    this.onInspectBiz = null;
+    this.onUpgradeBiz = null;
+    this.onCollectBiz = null;
+
+    // Entities
+    this.pedestrians = [];
+    this.taxis = [];
+    this.clouds = [];
+    this.floatingCoins = [];
+    this.smokePuffs = [];
+    this.palms = [];
+    this.seagulls = [];
+    this.interactiveHitboxes = [];
+
+    this.buildingsConfig = [
+      { id: 'kaskrout', x: 80, width: 140, height: 110, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
+      { id: 'fricasse', x: 250, width: 130, height: 115, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
+      { id: 'kahwa', x: 410, width: 170, height: 130, style: 'cafe_terrasse', color: '#eab308', roofColor: '#1e3a8a' },
+      { id: 'attariya', x: 610, width: 150, height: 125, style: 'attariya_shop', color: '#10b981', roofColor: '#047857' },
+      { id: 'patisserie', x: 790, width: 160, height: 135, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
+      { id: 'taxi_collectif', x: 980, width: 180, height: 115, style: 'taxi_station', color: '#facc15', roofColor: '#1f2937' },
+      { id: 'superette', x: 1190, width: 165, height: 135, style: 'superette_modern', color: '#06b6d4', roofColor: '#0e7490' },
+      { id: 'supermarche', x: 1385, width: 190, height: 150, style: 'supermarket_mall', color: '#3b82f6', roofColor: '#1d4ed8' },
+      { id: 'salon_de_the', x: 1605, width: 175, height: 145, style: 'lounge_tea', color: '#ec4899', roofColor: '#831843' },
+      { id: 'restaurant', x: 1810, width: 180, height: 155, style: 'restaurant_chami', color: '#ef4444', roofColor: '#991b1b' },
+      { id: 'agence_voyages', x: 2020, width: 165, height: 140, style: 'travel_agency', color: '#38bdf8', roofColor: '#0284c7' },
+      { id: 'hotel', x: 2215, width: 200, height: 185, style: 'luxury_hotel', color: '#a855f7', roofColor: '#6b21a8' },
+      { id: 'centre_commercial', x: 2445, width: 220, height: 195, style: 'grand_mall', color: '#6366f1', roofColor: '#4338ca' },
+      { id: 'usine_conserves', x: 2695, width: 185, height: 150, style: 'harissa_factory', color: '#f43f5e', roofColor: '#be123c' },
+      { id: 'showroom_auto', x: 2910, width: 195, height: 160, style: 'auto_palace', color: '#e2e8f0', roofColor: '#334155' },
+      { id: 'promoteur_immobilier', x: 3135, width: 210, height: 210, style: 'real_estate_tower', color: '#38bdf8', roofColor: '#0369a1' },
+      { id: 'tayaran_el_ghzela', x: 3375, width: 230, height: 220, style: 'airline_headquarters', color: '#f1f5f9', roofColor: '#e11d48' }
+    ];
+
+    this.initWorld();
+
+    this.isDragging = false;
+    this.startX = 0;
+    this.startCamX = 0;
+    this.hasDraggedSignificantly = false;
+
+    this.handlePointerDown = this.handlePointerDown.bind(this);
+    this.handlePointerMove = this.handlePointerMove.bind(this);
+    this.handlePointerUp = this.handlePointerUp.bind(this);
+    this.handleWheel = this.handleWheel.bind(this);
+
+    this.bindEvents();
+    this.resize();
+  }
+
+  setCallbacks({ onInspect, onUpgrade, onCollect }) {
+    if (onInspect) this.onInspectBiz = onInspect;
+    if (onUpgrade) this.onUpgradeBiz = onUpgrade;
+    if (onCollect) this.onCollectBiz = onCollect;
+  }
+
+  bindEvents() {
+    this.canvas.addEventListener('pointerdown', this.handlePointerDown);
+    window.addEventListener('pointermove', this.handlePointerMove);
+    window.addEventListener('pointerup', this.handlePointerUp);
+    window.addEventListener('pointercancel', this.handlePointerUp);
+    this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
+    window.addEventListener('resize', () => this.resize());
+  }
+
+  unbindEvents() {
+    this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
+    window.removeEventListener('pointermove', this.handlePointerMove);
+    window.removeEventListener('pointerup', this.handlePointerUp);
+    window.removeEventListener('pointercancel', this.handlePointerUp);
+    this.canvas.removeEventListener('wheel', this.handleWheel);
+  }
+
+  resize() {
+    if (!this.canvas) return;
+    const rect = this.canvas.getBoundingClientRect();
+    this.width = rect.width || 800;
+    this.height = rect.height || 360;
+    this.dpr = window.devicePixelRatio || 1;
+
+    this.canvas.width = Math.floor(this.width * this.dpr);
+    this.canvas.height = Math.floor(this.height * this.dpr);
+    this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+  }
+
+  initWorld() {
+    this.clouds = [
+      { x: 100, y: 35, speed: 8, scale: 1.1 },
+      { x: 600, y: 55, speed: 6, scale: 0.8 },
+      { x: 1150, y: 25, speed: 10, scale: 1.3 },
+      { x: 1700, y: 45, speed: 7, scale: 0.9 },
+      { x: 2300, y: 30, speed: 11, scale: 1.2 },
+      { x: 2900, y: 50, speed: 8, scale: 1.0 },
+      { x: 3500, y: 20, speed: 9, scale: 1.15 }
+    ];
+
+    this.palms = [];
+    for (let x = 40; x < this.worldWidth; x += 180 + Math.random() * 50) {
+      this.palms.push({
+        x: x,
+        height: 75 + Math.random() * 25,
+        lean: (Math.random() - 0.5) * 8,
+        swayPhase: Math.random() * Math.PI * 2
+      });
+    }
+
+    this.taxis = [
+      { x: 200, speed: 95, dir: 1, type: 'taxi_collectif' },
+      { x: 900, speed: 110, dir: 1, type: 'taxi_citadin' },
+      { x: 1700, speed: 90, dir: -1, type: 'taxi_collectif' },
+      { x: 2500, speed: 125, dir: 1, type: 'citadine_rouge' },
+      { x: 3200, speed: 100, dir: -1, type: 'taxi_collectif' }
+    ];
+
+    const avatars = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓', '🧑‍🎓', '🤹'];
+    this.pedestrians = [];
+    for (let i = 0; i < 24; i++) {
+      this.pedestrians.push({
+        x: 60 + Math.random() * (this.worldWidth - 120),
+        yOffset: (Math.random() - 0.5) * 16,
+        speed: (24 + Math.random() * 32) * (Math.random() > 0.5 ? 1 : -1),
+        avatar: avatars[i % avatars.length],
+        bubbleText: null,
+        bubbleTimer: 0,
+        visitTimer: 3 + Math.random() * 6
+      });
+    }
+
+    this.seagulls = [
+      { x: 300, y: 40, speed: 28, wingPhase: 0 },
+      { x: 1200, y: 60, speed: 22, wingPhase: 1 },
+      { x: 2200, y: 35, speed: 30, wingPhase: 2 }
+    ];
+  }
+
+  transitionToZone(zoneId, zoneName) {
+    this.currentZoneId = zoneId;
+    this.transitionBannerText = zoneName || 'حيّ جديد';
+    this.transitionAlpha = 1.0;
+    this.transitionTimer = 1.8;
+
+    const zoneTargets = {
+      bab_souika: 0,
+      la_goulette: 800,
+      lac_2: 1500,
+      hammamet: 2100,
+      sousse_kantaoui: 2600,
+      djerba_holding: 3100
+    };
+    const targetX = zoneTargets[zoneId] || 0;
+    this.targetCameraX = Math.max(0, Math.min(targetX, this.worldWidth - this.width));
+  }
+
+  start() {
+    if (this.animId) return;
+    this.lastTime = performance.now();
+    const loop = (timestamp) => {
+      const dt = Math.min((timestamp - this.lastTime) / 1000, 0.1);
+      this.lastTime = timestamp;
+      this.update(dt, timestamp);
+      this.render(timestamp);
+      this.animId = requestAnimationFrame(loop);
+    };
+    this.animId = requestAnimationFrame(loop);
+  }
+
+  stop() {
+    if (this.animId) {
+      cancelAnimationFrame(this.animId);
+      this.animId = null;
+    }
+  }
+
+  focusBusiness(bizId) {
+    const bConf = this.buildingsConfig.find(b => b.id === bizId);
+    if (!bConf) return;
+    const targetX = bConf.x + bConf.width / 2 - this.width / 2;
+    this.targetCameraX = Math.max(0, Math.min(targetX, this.worldWidth - this.width));
+  }
+
+  handlePointerDown(e) {
+    this.isDragging = true;
+    this.startX = e.clientX;
+    this.startCamX = this.cameraX;
+    this.hasDraggedSignificantly = false;
+  }
+
+  handlePointerMove(e) {
+    if (!this.isDragging) return;
+    const delta = e.clientX - this.startX;
+    if (Math.abs(delta) > 6) {
+      this.hasDraggedSignificantly = true;
+    }
+    this.targetCameraX = this.startCamX - delta;
+    this.targetCameraX = Math.max(0, Math.min(this.targetCameraX, this.worldWidth - this.width));
+  }
+
+  handlePointerUp(e) {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+
+    if (!this.hasDraggedSignificantly) {
+      const rect = this.canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      for (let i = this.interactiveHitboxes.length - 1; i >= 0; i--) {
+        const box = this.interactiveHitboxes[i];
+        if (
+          clickX >= box.x &&
+          clickX <= box.x + box.w &&
+          clickY >= box.y &&
+          clickY <= box.y + box.h
+        ) {
+          this.triggerAction(box.action, box.bizId);
+          break;
+        }
+      }
+    }
+  }
+
+  handleWheel(e) {
+    this.targetCameraX += e.deltaY || e.deltaX;
+    this.targetCameraX = Math.max(0, Math.min(this.targetCameraX, this.worldWidth - this.width));
+  }
+
+  triggerAction(action, bizId) {
+    if (action === 'inspect' && this.onInspectBiz) {
+      this.onInspectBiz(bizId);
+    } else if (action === 'upgrade' && this.onUpgradeBiz) {
+      this.onUpgradeBiz(bizId);
+    } else if (action === 'collect' && this.onCollectBiz) {
+      this.onCollectBiz(bizId);
+    }
+  }
+
+  update(dt, timestamp) {
+    this.cameraX += (this.targetCameraX - this.cameraX) * Math.min(1, dt * 10);
+
+    if (this.transitionTimer > 0) {
+      this.transitionTimer -= dt;
+      if (this.transitionTimer <= 0) {
+        this.transitionAlpha = 0;
+      } else {
+        this.transitionAlpha = Math.min(1, this.transitionTimer);
+      }
+    }
+
+    this.clouds.forEach(c => {
+      c.x += c.speed * dt;
+      if (c.x > this.worldWidth + 120) c.x = -150;
+    });
+
+    this.seagulls.forEach(s => {
+      s.x += s.speed * dt;
+      s.wingPhase += dt * 8;
+      if (s.x > this.worldWidth + 100) s.x = -80;
+    });
+
+    this.taxis.forEach(t => {
+      t.x += t.speed * t.dir * dt;
+      if (t.dir > 0 && t.x > this.worldWidth + 120) t.x = -100;
+      if (t.dir < 0 && t.x < -120) t.x = this.worldWidth + 100;
+    });
+
+    this.pedestrians.forEach(p => {
+      p.x += p.speed * dt;
+      if (p.x < 30) { p.x = 30; p.speed *= -1; }
+      if (p.x > this.worldWidth - 30) { p.x = this.worldWidth - 30; p.speed *= -1; }
+
+      p.visitTimer -= dt;
+      if (p.visitTimer <= 0) {
+        p.visitTimer = 5 + Math.random() * 8;
+        const tunisianQuips = ['بنينة ! 🤤', 'عزّ الطلة 👌', 'تبارك الله 🔥', 'صحة ! ☕', 'ملا جو 🇹🇳', 'الكاسة تعمرت 💰'];
+        p.bubbleText = tunisianQuips[Math.floor(Math.random() * tunisianQuips.length)];
+        p.bubbleTimer = 2.2;
+      }
+      if (p.bubbleTimer > 0) {
+        p.bubbleTimer -= dt;
+        if (p.bubbleTimer <= 0) p.bubbleText = null;
+      }
+    });
+
+    if (Math.random() < dt * 10) {
+      this.smokePuffs.push({
+        x: 120 + (Math.random() - 0.5) * 16,
+        y: 205,
+        vx: (Math.random() - 0.5) * 10,
+        vy: -24 - Math.random() * 18,
+        radius: 4,
+        alpha: 0.75,
+        color: '#f8fafc'
+      });
+      this.smokePuffs.push({
+        x: 460 + (Math.random() - 0.5) * 18,
+        y: 195,
+        vx: 8 + (Math.random() - 0.5) * 8,
+        vy: -18 - Math.random() * 14,
+        radius: 3.5,
+        alpha: 0.6,
+        color: '#e2e8f0'
+      });
+      this.smokePuffs.push({
+        x: 2780,
+        y: 170,
+        vx: 12 + Math.random() * 8,
+        vy: -32 - Math.random() * 14,
+        radius: 6,
+        alpha: 0.7,
+        color: '#cbd5e1'
+      });
+    }
+
+    for (let i = this.smokePuffs.length - 1; i >= 0; i--) {
+      const sp = this.smokePuffs[i];
+      sp.x += sp.vx * dt;
+      sp.y += sp.vy * dt;
+      sp.radius += dt * 6;
+      sp.alpha -= dt * 0.7;
+      if (sp.alpha <= 0) this.smokePuffs.splice(i, 1);
+    }
+
+    for (let i = this.floatingCoins.length - 1; i >= 0; i--) {
+      const c = this.floatingCoins[i];
+      c.y += c.vy * dt;
+      c.alpha -= dt * 1.2;
+      if (c.alpha <= 0) this.floatingCoins.splice(i, 1);
+    }
+  }
+
+  spawnGainBubble(bizId, text) {
+    const bConf = this.buildingsConfig.find(b => b.id === bizId);
+    if (!bConf) return;
+    this.floatingCoins.push({
+      x: bConf.x + bConf.width / 2,
+      y: 200 - bConf.height - 15,
+      vy: -45,
+      text: text || '+د.ت',
+      alpha: 1.0
+    });
+  }
+
+  render(timestamp) {
+    const ctx = this.ctx;
+    const w = this.width;
+    const h = this.height;
+    const camX = this.cameraX;
+
+    this.interactiveHitboxes = [];
+    ctx.clearRect(0, 0, w, h);
+
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.65);
+    if (this.currentZoneId === 'la_goulette') {
+      skyGrad.addColorStop(0, '#0c4a6e');
+      skyGrad.addColorStop(0.5, '#0284c7');
+      skyGrad.addColorStop(1, '#38bdf8');
+    } else if (this.currentZoneId === 'lac_2') {
+      skyGrad.addColorStop(0, '#0f172a');
+      skyGrad.addColorStop(0.5, '#1e1b4b');
+      skyGrad.addColorStop(1, '#4338ca');
+    } else if (this.currentZoneId === 'hammamet') {
+      skyGrad.addColorStop(0, '#1e1b4b');
+      skyGrad.addColorStop(0.5, '#701a75');
+      skyGrad.addColorStop(1, '#f59e0b');
+    } else {
+      skyGrad.addColorStop(0, '#0f172a');
+      skyGrad.addColorStop(0.4, '#1e1b4b');
+      skyGrad.addColorStop(0.75, '#431407');
+      skyGrad.addColorStop(1, '#b45309');
+    }
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+    for (let i = 0; i < 35; i++) {
+      const sx = ((i * 137.5) % w);
+      const sy = ((i * 73.1) % (h * 0.45));
+      const blink = Math.sin(timestamp * 0.003 + i) * 0.5 + 0.5;
+      ctx.globalAlpha = 0.2 + blink * 0.6;
+      ctx.fillRect(sx, sy, 1.5, 1.5);
+    }
+    ctx.globalAlpha = 1.0;
+
+    this.drawSkylineBackground(ctx, camX, w, h);
+
+    ctx.fillStyle = 'rgba(254, 243, 199, 0.22)';
+    this.clouds.forEach(c => {
+      const screenX = c.x - camX * 0.3;
+      if (screenX > -150 && screenX < w + 150) {
+        this.drawCloud(ctx, screenX, c.y, c.scale);
+      }
+    });
+
+    this.seagulls.forEach(s => {
+      const screenX = s.x - camX * 0.5;
+      if (screenX > -50 && screenX < w + 50) {
+        this.drawSeagull(ctx, screenX, s.y, s.wingPhase);
+      }
+    });
+
+    this.palms.forEach(p => {
+      const screenX = p.x - camX;
+      if (screenX > -60 && screenX < w + 60) {
+        this.drawPalmTree(ctx, screenX, 240, p, timestamp);
+      }
+    });
+
+    this.buildingsConfig.forEach(b => {
+      const screenX = b.x - camX;
+      if (screenX + b.width > -50 && screenX < w + 50) {
+        this.drawBuilding(ctx, b, screenX, 255, timestamp);
+      }
+    });
+
+    this.smokePuffs.forEach(sp => {
+      const screenX = sp.x - camX;
+      if (screenX > -30 && screenX < w + 30) {
+        ctx.fillStyle = sp.color;
+        ctx.globalAlpha = Math.max(0, sp.alpha);
+        ctx.beginPath();
+        ctx.arc(screenX, sp.y, sp.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    ctx.globalAlpha = 1.0;
+
+    this.drawBoulevardStreet(ctx, camX, w, h);
+
+    this.taxis.forEach(t => {
+      const screenX = t.x - camX;
+      if (screenX > -100 && screenX < w + 100) {
+        this.drawVehicle(ctx, screenX, 305, t, timestamp);
+      }
+    });
+
+    this.pedestrians.forEach(p => {
+      const screenX = p.x - camX;
+      if (screenX > -50 && screenX < w + 50) {
+        this.drawPedestrian(ctx, screenX, 268 + p.yOffset, p, timestamp);
+      }
+    });
+
+    this.floatingCoins.forEach(fc => {
+      const screenX = fc.x - camX;
+      if (screenX > -50 && screenX < w + 50) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, fc.alpha);
+        ctx.fillStyle = '#fbbf24';
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 3;
+        ctx.font = '900 15px "Cairo", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.strokeText(fc.text, screenX, fc.y);
+        ctx.fillText(fc.text, screenX, fc.y);
+        ctx.restore();
+      }
+    });
+
+    this.drawMinimapTrack(ctx, w, h);
+
+    if (this.transitionAlpha > 0) {
+      ctx.save();
+      ctx.fillStyle = `rgba(15, 23, 42, ${this.transitionAlpha * 0.75})`;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = '#fef08a';
+      ctx.font = '900 22px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`✨ ${this.transitionBannerText} ✨`, w / 2, h / 2 - 10);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '700 13px "Cairo", sans-serif';
+      ctx.fillText('أجواء جديدة وتوسّع استثماري تونسي', w / 2, h / 2 + 18);
+      ctx.restore();
+    }
+  }
+
+  drawSkylineBackground(ctx, camX, w, h) {
+    const groundY = 245;
+    ctx.save();
+    ctx.fillStyle = '#1e1b4b';
+    ctx.globalAlpha = 0.55;
+
+    const hillX = 200 - camX * 0.15;
+    ctx.beginPath();
+    ctx.moveTo(hillX - 250, groundY);
+    ctx.quadraticCurveTo(hillX, groundY - 100, hillX + 350, groundY);
+    ctx.fill();
+
+    for (let x = -100; x < this.worldWidth; x += 450) {
+      const sx = x - camX * 0.2;
+      if (sx > -100 && sx < w + 100) {
+        ctx.fillRect(sx + 50, groundY - 95, 24, 95);
+        ctx.beginPath();
+        ctx.moveTo(sx + 45, groundY - 95);
+        ctx.lineTo(sx + 62, groundY - 125);
+        ctx.lineTo(sx + 79, groundY - 95);
+        ctx.fill();
+
+        ctx.fillRect(sx + 240, groundY - 110, 20, 110);
+        ctx.beginPath();
+        ctx.arc(sx + 250, groundY - 90, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#fef08a';
+        ctx.fill();
+        ctx.fillStyle = '#1e1b4b';
+      }
+    }
+    ctx.restore();
+  }
+
+  drawCloud(ctx, x, y, scale) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, 18 * scale, 0, Math.PI * 2);
+    ctx.arc(x + 20 * scale, y - 6 * scale, 24 * scale, 0, Math.PI * 2);
+    ctx.arc(x + 44 * scale, y, 16 * scale, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  drawSeagull(ctx, x, y, phase) {
+    ctx.save();
+    const wing = Math.sin(phase) * 5;
+    ctx.strokeStyle = '#f8fafc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x - 8, y + wing);
+    ctx.quadraticCurveTo(x - 4, y - 4, x, y);
+    ctx.quadraticCurveTo(x + 4, y - 4, x + 8, y + wing);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  drawPalmTree(ctx, x, groundY, p, timestamp) {
+    ctx.save();
+    const sway = Math.sin(timestamp * 0.002 + p.swayPhase) * 4;
+
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 5.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x, groundY);
+    ctx.quadraticCurveTo(x + p.lean, groundY - p.height * 0.5, x + p.lean + sway, groundY - p.height);
+    ctx.stroke();
+
+    const topX = x + p.lean + sway;
+    const topY = groundY - p.height;
+    ctx.strokeStyle = '#15803d';
+    ctx.lineWidth = 3;
+
+    const leaves = [-0.9, -0.6, -0.2, 0.2, 0.6, 0.9];
+    leaves.forEach(angle => {
+      ctx.beginPath();
+      ctx.moveTo(topX, topY);
+      const endX = topX + Math.sin(angle) * 32;
+      const endY = topY - Math.cos(angle) * 14 + 18;
+      ctx.quadraticCurveTo(topX + Math.sin(angle) * 18, topY - 12, endX, endY);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  drawBuilding(ctx, b, x, groundY, timestamp) {
+    const biz = this.engine.businesses.find(item => item.id === b.id);
+    const isUnlocked = biz && biz.level > 0;
+    const isProducing = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
+    const y = groundY - b.height;
+    const level = biz ? biz.level : 0;
+
+    ctx.save();
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.beginPath();
+    ctx.ellipse(x + b.width / 2, groundY, b.width * 0.55, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (!isUnlocked) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2;
+      ctx.fillRect(x, y + 20, b.width, b.height - 20);
+      ctx.strokeRect(x, y + 20, b.width, b.height - 20);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = '900 13px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(biz ? biz.icon : '🚧', x + b.width / 2, y + 60);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '700 11px "Cairo", sans-serif';
+      ctx.fillText(biz ? biz.name : 'مشروع جديد', x + b.width / 2, y + 80);
+
+      const btnW = Math.min(b.width - 20, 110);
+      const btnH = 26;
+      const btnX = x + (b.width - btnW) / 2;
+      const btnY = y + b.height - 28;
+
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.roundRect(btnX, btnY, btnW, btnH, 8);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 11px "Cairo", sans-serif';
+      ctx.fillText('🔑 افتح المحلّ', btnX + btnW / 2, btnY + 17);
+
+      this.interactiveHitboxes.push({
+        x: btnX,
+        y: btnY,
+        w: btnW,
+        h: btnH,
+        action: 'upgrade',
+        bizId: b.id
+      });
+
+      ctx.restore();
+      return;
+    }
+
+    let tierBorder = 'rgba(255, 255, 255, 0.2)';
+    let tierBorderWidth = 2;
+    let hasGoldAura = false;
+    let hasNeonSign = false;
+
+    if (level >= 200) {
+      tierBorder = '#f59e0b';
+      tierBorderWidth = 3.5;
+      hasGoldAura = true;
+      hasNeonSign = true;
+    } else if (level >= 100) {
+      tierBorder = '#38bdf8';
+      tierBorderWidth = 3;
+      hasNeonSign = true;
+    } else if (level >= 50) {
+      tierBorder = '#a855f7';
+      tierBorderWidth = 2.5;
+    } else if (level >= 25) {
+      tierBorder = '#10b981';
+      tierBorderWidth = 2.2;
+    }
+
+    if (hasGoldAura) {
+      ctx.save();
+      const pulse = Math.sin(timestamp * 0.005) * 5 + 8;
+      ctx.shadowColor = '#f59e0b';
+      ctx.shadowBlur = pulse;
+    }
+
+    const grad = ctx.createLinearGradient(x, y, x, groundY);
+    grad.addColorStop(0, b.color);
+    grad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = grad;
+    ctx.strokeStyle = tierBorder;
+    ctx.lineWidth = tierBorderWidth;
+    ctx.beginPath();
+    ctx.roundRect(x, y + 16, b.width, b.height - 16, [8, 8, 0, 0]);
+    ctx.fill();
+    ctx.stroke();
+
+    if (hasGoldAura) ctx.restore();
+
+    ctx.fillStyle = b.roofColor;
+    ctx.beginPath();
+    ctx.moveTo(x - 6, y + 18);
+    ctx.lineTo(x + b.width + 6, y + 18);
+    ctx.lineTo(x + b.width, y + 2);
+    ctx.lineTo(x, y + 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    for (let rx = x; rx < x + b.width; rx += 16) {
+      ctx.fillRect(rx, y + 4, 8, 14);
+    }
+
+    this.drawTunisianFlag(ctx, x + b.width - 24, y - 10, timestamp);
+
+    ctx.save();
+    if (hasNeonSign) {
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 8;
+    }
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.beginPath();
+    ctx.roundRect(x + 10, y + 24, b.width - 20, 24, 6);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '900 12px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${biz.icon} ${biz.name}`, x + b.width / 2, y + 40);
+
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.roundRect(x + 6, y + 20, 26, 16, 4);
+    ctx.fill();
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '900 9.5px "Cairo", sans-serif';
+    ctx.fillText(`L${level}`, x + 19, y + 32);
+
+    ctx.fillStyle = isProducing ? 'rgba(254, 240, 138, 0.28)' : 'rgba(30, 41, 59, 0.4)';
+    ctx.beginPath();
+    ctx.roundRect(x + 12, y + 54, b.width - 24, 38, 6);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.stroke();
+
+    ctx.font = '16px serif';
+    if (b.id === 'kaskrout') {
+      ctx.fillText('🥖', x + 24, y + 78);
+      ctx.fillText('👨‍🍳', x + b.width / 2, y + 78);
+      ctx.fillText('🥪', x + b.width - 24, y + 78);
+    } else if (b.id === 'kahwa') {
+      ctx.fillText('☕', x + 22, y + 78);
+      ctx.fillText('🃏', x + b.width / 2, y + 78);
+      ctx.fillText('👴', x + b.width - 24, y + 78);
+    } else if (b.id === 'taxi_collectif') {
+      ctx.fillText('🚖', x + 25, y + 78);
+      ctx.fillText('🏁', x + b.width / 2, y + 78);
+      ctx.fillText('🕶️', x + b.width - 25, y + 78);
+    } else {
+      ctx.fillText(biz.icon, x + b.width / 2, y + 78);
+    }
+
+    const barW = b.width - 24;
+    const barH = 5;
+    const barX = x + 12;
+    const barY = y + 98;
+    const pct = Math.min(1, (biz.progressMs || 0) / (biz.cycleDurationMs || 1000));
+
+    ctx.fillStyle = '#090d16';
+    ctx.fillRect(barX, barY, barW, barH);
+    if (pct > 0) {
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(barX, barY, barW * pct, barH);
+    }
+
+    const btnW = (b.width - 28) / 2;
+    const btnH = 24;
+    const btnInspectX = x + 10;
+    const btnUpgradeX = x + 14 + btnW;
+    const btnY = groundY - 28;
+
+    ctx.fillStyle = '#3b82f6';
+    ctx.beginPath();
+    ctx.roundRect(btnInspectX, btnY, btnW, btnH, 6);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 10px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏪 ادخل', btnInspectX + btnW / 2, btnY + 16);
+
+    const canAfford = this.engine.dinars >= this.engine.getCost(biz);
+    ctx.fillStyle = canAfford ? '#10b981' : '#475569';
+    ctx.beginPath();
+    ctx.roundRect(btnUpgradeX, btnY, btnW, btnH, 6);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 10px "Cairo", sans-serif';
+    ctx.fillText(`⬆️ L${biz.level + 1}`, btnUpgradeX + btnW / 2, btnY + 16);
+
+    this.interactiveHitboxes.push({
+      x: btnInspectX,
+      y: btnY,
+      w: btnW,
+      h: btnH,
+      action: 'inspect',
+      bizId: b.id
+    });
+
+    this.interactiveHitboxes.push({
+      x: btnUpgradeX,
+      y: btnY,
+      w: btnW,
+      h: btnH,
+      action: 'upgrade',
+      bizId: b.id
+    });
+
+    this.interactiveHitboxes.push({
+      x: x,
+      y: y,
+      w: b.width,
+      h: b.height - 30,
+      action: 'collect',
+      bizId: b.id
+    });
+
+    ctx.restore();
+  }
+
+  drawTunisianFlag(ctx, x, y, timestamp) {
+    ctx.save();
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y + 26);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    const wave = Math.sin(timestamp * 0.006 + x) * 2.5;
+
+    ctx.fillStyle = '#e11d48';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x + 10, y + wave, x + 20, y);
+    ctx.lineTo(x + 20, y + 12);
+    ctx.quadraticCurveTo(x + 10, y + 12 + wave, x, y + 12);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x + 10, y + 6 + wave * 0.5, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#e11d48';
+    ctx.beginPath();
+    ctx.arc(x + 10.5, y + 6 + wave * 0.5, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x + 11.2, y + 6 + wave * 0.5, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  drawBoulevardStreet(ctx, camX, w, h) {
+    const curbY = 255;
+    const roadY = 280;
+
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(0, curbY, w, 25);
+
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1;
+    for (let px = - (camX % 20); px < w; px += 20) {
+      ctx.beginPath();
+      ctx.moveTo(px, curbY);
+      ctx.lineTo(px, roadY);
+      ctx.stroke();
+    }
+
+    for (let bx = - (camX % 30); bx < w; bx += 30) {
+      ctx.fillStyle = ((Math.floor((bx + camX) / 30)) % 2 === 0) ? '#facc15' : '#1e293b';
+      ctx.fillRect(bx, roadY - 4, 30, 4);
+    }
+
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, roadY, w, h - roadY);
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([20, 18]);
+    ctx.lineDashOffset = -camX;
+    ctx.beginPath();
+    ctx.moveTo(0, roadY + 38);
+    ctx.lineTo(w, roadY + 38);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  drawVehicle(ctx, x, y, t, timestamp) {
+    ctx.save();
+    const bob = Math.sin(timestamp * 0.015 + x) * 1;
+
+    if (t.type === 'taxi_collectif') {
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.roundRect(x, y - 22 + bob, 56, 18, 4);
+      ctx.fill();
+
+      ctx.fillStyle = '#2563eb';
+      ctx.fillRect(x, y - 13 + bob, 56, 4);
+
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(x + 22, y - 27 + bob, 12, 5);
+    } else {
+      ctx.fillStyle = t.type === 'citadine_rouge' ? '#dc2626' : '#eab308';
+      ctx.beginPath();
+      ctx.roundRect(x, y - 18 + bob, 46, 14, 5);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(x + 10, y - 20 + bob, 12, 7);
+    ctx.fillRect(x + 26, y - 20 + bob, 14, 7);
+
+    ctx.fillStyle = '#020617';
+    ctx.beginPath();
+    ctx.arc(x + 12, y - 2 + bob, 5, 0, Math.PI * 2);
+    ctx.arc(x + 42, y - 2 + bob, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#fef08a';
+    if (t.dir > 0) {
+      ctx.fillRect(x + 52, y - 16 + bob, 3, 5);
+    } else {
+      ctx.fillRect(x + 1, y - 16 + bob, 3, 5);
+    }
+
+    ctx.restore();
+  }
+
+  drawPedestrian(ctx, x, y, p, timestamp) {
+    ctx.save();
+    const step = Math.sin(timestamp * 0.008 + p.x) * 2;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 6, 8, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = '18px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(p.avatar, x, y + step);
+
+    if (p.bubbleText) {
+      ctx.font = '900 11px "Cairo", sans-serif';
+      const textW = ctx.measureText(p.bubbleText).width;
+      const bW = textW + 14;
+      const bH = 20;
+      const bX = x - bW / 2;
+      const bY = y - 28;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(bX, bY, bW, bH, 6);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(x - 3, bY + bH);
+      ctx.lineTo(x + 3, bY + bH);
+      ctx.lineTo(x, bY + bH + 4);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.fillText(p.bubbleText, x, bY + 14);
+    }
+
+    ctx.restore();
+  }
+
+  drawMinimapTrack(ctx, w, h) {
+    const trackW = 160;
+    const trackH = 4;
+    const trackX = (w - trackW) / 2;
+    const trackY = h - 10;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.beginPath();
+    ctx.roundRect(trackX, trackY, trackW, trackH, 2);
+    ctx.fill();
+
+    const visibleRatio = w / this.worldWidth;
+    const thumbW = Math.max(20, trackW * visibleRatio);
+    const progress = this.cameraX / (this.worldWidth - w);
+    const thumbX = trackX + progress * (trackW - thumbW);
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.roundRect(thumbX, trackY - 1, thumbW, trackH + 2, 3);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+

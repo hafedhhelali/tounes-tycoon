@@ -36,12 +36,103 @@
     }
     #app {
       width: 100%;
-      max-width: 460px;
+      max-width: 1360px;
       display: flex;
       flex-direction: column;
-      padding: 12px;
-      gap: 12px;
+      padding: 10px 14px 75px 14px;
+      gap: 10px;
       min-height: 100vh;
+    }
+
+    /* SCÈNE DU QUARTIER PANORAMIQUE 2D 60 FPS (MODE HORIZONTAL PAYSAGE) */
+    .quartier-panoramic-card {
+      width: 100%;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 29, 0.98) 100%);
+      border: 1.5px solid rgba(245, 158, 11, 0.35);
+      border-radius: 18px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 20px rgba(245, 158, 11, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .quartier-panoramic-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 4px;
+    }
+    .quartier-title-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .quartier-title-main {
+      font-size: 13.5px;
+      font-weight: 950;
+      color: #fef08a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .quartier-nav-hint {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .quartier-quick-scroll-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .quartier-quick-scroll-btn:active { transform: scale(0.92); }
+
+    .quartier-canvas-wrap {
+      width: 100%;
+      height: 290px;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.7);
+      touch-action: pan-y;
+      cursor: grab;
+    }
+    .quartier-canvas-wrap:active {
+      cursor: grabbing;
+    }
+    #quartierMainCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Grille responsive des commerces adaptée au mode Paysage */
+    .business-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 680px) {
+      .business-list {
+        grid-template-columns: 1fr;
+      }
+      .quartier-canvas-wrap {
+        height: 230px;
+      }
     }
 
     /* HEADER TYCOON - ULTRA ÉPURÉ & AÉRIEN (HAUTEUR DIVISÉE PAR 3) */
@@ -1998,34 +2089,49 @@
     <header>
       <div class="header-top-row">
         <div class="brand-pill">
-          <svg class="brand-logo-mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="شعار تونس تايكون">
+          <!-- LOGO 3D TYCOON PRESTIGIEUX TUNISIEN -->
+          <svg class="brand-logo-mark" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="شعار تونس تايكون">
             <defs>
-              <linearGradient id="goldGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#fef08a"/>
-                <stop offset="50%" stop-color="#f59e0b"/>
-                <stop offset="100%" stop-color="#b45309"/>
+              <linearGradient id="goldCrown3D" x1="0" y1="0" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#fffbeb"/>
+                <stop offset="25%" stop-color="#fef08a"/>
+                <stop offset="60%" stop-color="#f59e0b"/>
+                <stop offset="90%" stop-color="#b45309"/>
+                <stop offset="100%" stop-color="#78350f"/>
               </linearGradient>
-              <linearGradient id="redRuby" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#e11d48"/>
-                <stop offset="100%" stop-color="#9f1239"/>
+              <linearGradient id="rubyCore3D" x1="14" y1="14" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#fb7185"/>
+                <stop offset="40%" stop-color="#e11d48"/>
+                <stop offset="85%" stop-color="#9f1239"/>
+                <stop offset="100%" stop-color="#4c0519"/>
               </linearGradient>
-              <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#f59e0b" flood-opacity="0.6"/>
+              <radialGradient id="sunburstGold" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fef08a" stop-opacity="0.9"/>
+                <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#b45309" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="royalTycoonGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f59e0b" flood-opacity="0.75"/>
               </filter>
             </defs>
-            <!-- Medallion Coin / Tycoon Vault Cog -->
-            <circle cx="24" cy="24" r="22" stroke="url(#goldGrad)" stroke-width="2.5" fill="#0f172a" filter="url(#goldGlow)"/>
-            <circle cx="24" cy="24" r="18" stroke="#d97706" stroke-width="1" stroke-dasharray="2 2" fill="none" opacity="0.7"/>
-            <!-- Tunisian Flag Core Medallion -->
-            <circle cx="24" cy="24" r="14" fill="url(#redRuby)"/>
-            <!-- White Disc inside Flag -->
-            <circle cx="24" cy="24" r="7.5" fill="#ffffff"/>
-            <!-- Red Crescent inside Disc -->
-            <path d="M 23 18.5 A 5.5 5.5 0 1 0 23 29.5 A 4.3 4.3 0 1 1 23 18.5 Z" fill="#e11d48"/>
-            <!-- Red 5-Pointed Star -->
-            <polygon points="26,21.5 27.2,23.3 29.3,23.1 27.8,24.5 28.4,26.5 26.6,25.4 24.8,26.5 25.4,24.5 23.9,23.1 26,23.3" fill="#e11d48"/>
-            <!-- Sparkle Accent Top Right -->
-            <polygon points="40,8 41.2,11.5 44.5,12 41.7,13.8 42.5,17 39.8,14.8 37,17 37.8,13.8 35,12 38.5,11.5" fill="#fbbf24"/>
+            <!-- Sunburst Rays & Ambient Glow -->
+            <circle cx="27" cy="27" r="26" fill="url(#sunburstGold)"/>
+            <!-- Outer Gold Ring with 3D Embossed Edge -->
+            <circle cx="27" cy="27" r="23" stroke="url(#goldCrown3D)" stroke-width="3" fill="#090d16" filter="url(#royalTycoonGlow)"/>
+            <circle cx="27" cy="27" r="19.5" stroke="#d97706" stroke-width="1.2" stroke-dasharray="2.5 2" fill="none" opacity="0.85"/>
+            <!-- Inner Ruby Flag Medallion -->
+            <circle cx="27" cy="27" r="15" fill="url(#rubyCore3D)"/>
+            <circle cx="27" cy="27" r="8" fill="#ffffff"/>
+            <!-- Tunisian Crescent & 5-Point Star -->
+            <path d="M 26 21 A 6 6 0 1 0 26 33 A 4.8 4.8 0 1 1 26 21 Z" fill="#e11d48"/>
+            <polygon points="29.2,24.2 30.5,26.2 32.8,26 31.1,27.5 31.8,29.7 29.8,28.5 27.8,29.7 28.5,27.5 26.8,26 29.1,26.2" fill="#e11d48"/>
+            <!-- Crown of Empire Jewels on Top -->
+            <path d="M 19 12 L 23 7 L 27 11 L 31 7 L 35 12 Z" fill="url(#goldCrown3D)"/>
+            <circle cx="23" cy="7" r="1.5" fill="#fef08a"/>
+            <circle cx="27" cy="11" r="1.8" fill="#e11d48"/>
+            <circle cx="31" cy="7" r="1.5" fill="#fef08a"/>
+            <!-- Sparkles -->
+            <polygon points="44,8 45.2,11.5 48.5,12 45.7,13.8 46.5,17 43.8,14.8 41,17 41.8,13.8 39,12 42.5,11.5" fill="#fde047"/>
           </svg>
           <div class="brand-text-col">
             <div class="brand-title-wrap">
@@ -2098,6 +2204,24 @@
 
     <!-- PANNEAU 1 : LISTE DES COMMERCES (PAR DÉFAUT) -->
     <div class="tab-content-panel active" id="panelBusinesses">
+      <!-- SCÈNE PANORAMIQUE 2D DU QUARTIER TUNISIEN VIVANT (CANVAS 60 FPS) -->
+      <section class="quartier-panoramic-card">
+        <div class="quartier-panoramic-header">
+          <div class="quartier-title-box">
+            <span class="quartier-title-main">🌆 شارع الحومة التونسية الحية</span>
+            <span class="badge-tn" id="currentQuartierBadge">تونس العاصمة 🇹🇳</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="quartier-nav-hint">👈 حرّك الشارع بصبعك للجمال والتوسع 👉</span>
+            <button class="quartier-quick-scroll-btn" id="panStartBtn" title="الرجوع للبداية">⏪ أوّل الشارع</button>
+            <button class="quartier-quick-scroll-btn" id="panEndBtn" title="المشاريع الكبرى">آخر الشارع ⏩</button>
+          </div>
+        </div>
+        <div class="quartier-canvas-wrap" id="quartierCanvasWrap">
+          <canvas id="quartierMainCanvas"></canvas>
+        </div>
+      </section>
+
       <!-- SYNERGIES & COMBOS COMPACTS -->
       <div class="synergies-container" id="synergiesContainer"></div>
       <div class="business-list" id="businessList"></div>
@@ -2578,7 +2702,7 @@
     import { TycoonEngine } from './engine.js';
     import { soundEngine } from './audio.js';
     import { AdsService } from './ads_service.js';
-    import { CanvasStoreEngine } from './store_animator.js';
+    import { CanvasStoreEngine, QuartierAnimator } from './store_animator.js';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -3450,7 +3574,12 @@
     function applyZoneTheme() {
       const current = engine.getCurrentZone();
       if (currentZoneName) currentZoneName.innerText = current.name;
+      const currentQuartierBadge = document.getElementById('currentQuartierBadge');
+      if (currentQuartierBadge) currentQuartierBadge.innerText = `${current.name} 🇹🇳`;
       document.body.className = current.themeClass || 'zone-bab-souika';
+      if (quartierEngine) {
+        quartierEngine.transitionToZone(current.id, current.name);
+      }
     }
 
     function renderZonesUI() {
@@ -3657,6 +3786,67 @@
     updateSynergiesUI();
     applyZoneTheme();
     updateWheelBtnState();
+
+    // --- MOTEUR PANORAMIQUE 2D 60 FPS DU QUARTIER TUNISIEN VIVANT (LANDSCAPE) ---
+    const quartierCanvas = document.getElementById('quartierMainCanvas');
+    const currentQuartierBadge = document.getElementById('currentQuartierBadge');
+    const panStartBtn = document.getElementById('panStartBtn');
+    const panEndBtn = document.getElementById('panEndBtn');
+    let quartierEngine = null;
+
+    if (quartierCanvas) {
+      quartierEngine = new QuartierAnimator(quartierCanvas, engine);
+      quartierEngine.setCallbacks({
+        onInspect: (bizId) => {
+          soundEngine.playCoin();
+          openBizDetailModalUI(bizId);
+        },
+        onUpgrade: (bizId) => {
+          const biz = engine.businesses.find(b => b.id === bizId);
+          if (biz) {
+            const oldLevel = biz.level;
+            if (engine.buyBusiness(biz.id)) {
+              if ([25, 50, 100, 200].includes(biz.level) && oldLevel < biz.level) {
+                soundEngine.playMilestoneFanfare();
+                showRewardModalUI('🎉', `مبروك المستوى ${biz.level} !`, `مشروع ${biz.name} دخل في مرحلة القوة والمداخيل تضاعفت !`, '🚀 تيربو دائم');
+              } else {
+                soundEngine.playUpgrade();
+              }
+              quartierEngine.spawnGainBubble(biz.id, `+L${biz.level}`);
+              renderDOM();
+              updateSynergiesUI();
+            } else {
+              triggerBalanceAlert(`مازالت تخصّك فلوس باش تطوّر المشروع ! 💰`);
+            }
+          }
+        },
+        onCollect: (bizId) => {
+          const biz = engine.businesses.find(b => b.id === bizId);
+          if (biz && biz.level > 0) {
+            if (engine.startProduction(biz.id)) {
+              if (biz.id === 'kahwa') soundEngine.playTeaCup();
+              else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
+              else soundEngine.playCoin();
+              quartierEngine.spawnGainBubble(biz.id, `+${formatCurrency(engine.getRevenue(biz))}`);
+            }
+          }
+        }
+      });
+      quartierEngine.start();
+
+      if (panStartBtn) {
+        panStartBtn.onclick = () => {
+          soundEngine.playCoin();
+          quartierEngine.focusBusiness('kaskrout');
+        };
+      }
+      if (panEndBtn) {
+        panEndBtn.onclick = () => {
+          soundEngine.playCoin();
+          quartierEngine.focusBusiness('tayaran_el_ghzela');
+        };
+      }
+    }
 
     // --- GESTION DU PROFIL & PARAMÈTRES DE L'EMPIRE ---
     const openSettingsBtn = document.getElementById('openSettingsBtn');
