@@ -489,7 +489,7 @@ export class CanvasStoreEngine {
     const timeSec = now / 1000;
     const counterX = 14;
     const counterY = 106;
-    const deskW = 78;
+    const deskW = 92;
     const deskH = 50;
 
     ctx.save();
@@ -526,7 +526,7 @@ export class CanvasStoreEngine {
     ctx.fillStyle = '#fef08a';
     ctx.font = 'bold 9.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(bizRef ? bizRef.name.slice(0, 14) : '', counterX + deskW / 2, counterY + 40);
+    ctx.fillText(bizRef ? (bizRef.name.length > 16 ? bizRef.name.slice(0, 16) : bizRef.name) : '', counterX + deskW / 2, counterY + 40);
 
     // Icône du projet sur le comptoir
     ctx.font = '20px sans-serif';
@@ -1111,28 +1111,28 @@ export class CanvasStoreEngine {
 
       ctx.restore();
 
-      // Bulle de commande / réaction
+      // Bulle de commande / réaction compacte et élégante
       const bubbleX = c.x + 12;
-      const bubbleY = c.y - 44 - bounce;
+      const bubbleY = c.y - 36 - bounce;
       const bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
 
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.roundRect(bubbleX - 14, bubbleY - 14, 28, 24, 8);
+      ctx.roundRect(bubbleX - 10, bubbleY - 10, 20, 18, 6);
       ctx.fill();
-      ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.2;
       ctx.stroke();
 
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.moveTo(bubbleX - 3, bubbleY + 10);
-      ctx.lineTo(bubbleX + 3, bubbleY + 10);
-      ctx.lineTo(bubbleX, bubbleY + 14);
+      ctx.moveTo(bubbleX - 2, bubbleY + 8);
+      ctx.lineTo(bubbleX + 2, bubbleY + 8);
+      ctx.lineTo(bubbleX, bubbleY + 11);
       ctx.closePath();
       ctx.fill();
 
-      ctx.font = '13px sans-serif';
+      ctx.font = '10px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(bubbleIcon, bubbleX, bubbleY + 3);
 
@@ -1456,53 +1456,53 @@ export class QuartierAnimator {
       bab_souika: [
         { type: 'house', style: 'medina', name: 'دار بن عاشور', width: 115, height: 118, wallColor: '#fef3c7', doorColor: '#2563eb' },
         { type: 'biz', id: 'kaskrout' },
-        { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'la_goulette', nextZoneLabel: 'حلق الوادي ⚓' },
+        { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'la_goulette', nextZoneLabel: 'بنزرت' },
         { type: 'biz', id: 'fricasse' },
         { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
         { type: 'biz', id: 'kahwa' },
-        { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'la_goulette', nextZoneLabel: 'حلق الوادي ⚓' },
+        { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'la_goulette', nextZoneLabel: 'بنزرت' },
         { type: 'biz', id: 'attariya' },
         { type: 'house', style: 'medina', name: 'دار سيدي محرز', width: 115, height: 120, wallColor: '#f8fafc', doorColor: '#0284c7' }
       ],
       la_goulette: [
         { type: 'house', style: 'goulette', name: 'فيلا سيدي بوسعيد', width: 125, height: 130, wallColor: '#f8fafc', doorColor: '#0284c7' },
         { type: 'biz', id: 'patisserie' },
-        { type: 'crossroad', streetName: 'شارع فرحات حشاد', width: 125, nextZoneId: 'lac_2', nextZoneLabel: 'البحيرة 2 🏙️' },
+        { type: 'crossroad', streetName: 'شارع فرحات حشاد', width: 125, nextZoneId: 'lac_2', nextZoneLabel: 'الحمامات' },
         { type: 'biz', id: 'taxi_collectif' },
         { type: 'house', style: 'goulette', name: 'دار الكورنيش', width: 125, height: 126, wallColor: '#f0f9ff', doorColor: '#2563eb' },
         { type: 'biz', id: 'superette' },
-        { type: 'crossroad', streetName: 'مفترق الكرم والبحيرة', width: 130, nextZoneId: 'lac_2', nextZoneLabel: 'البحيرة 2 🏙️' },
+        { type: 'crossroad', streetName: 'مفترق الكرم والبحيرة', width: 130, nextZoneId: 'lac_2', nextZoneLabel: 'الحمامات' },
         { type: 'house', style: 'goulette', name: 'دار البحر', width: 120, height: 122, wallColor: '#ffffff', doorColor: '#0369a1' }
       ],
       lac_2: [
         { type: 'house', style: 'lac', name: 'إقامة البحيرة بلازا', width: 130, height: 162, wallColor: '#e2e8f0', doorColor: '#0ea5e9' },
         { type: 'biz', id: 'supermarche' },
-        { type: 'crossroad', streetName: 'جادة البحيرة 2', width: 130, nextZoneId: 'hammamet', nextZoneLabel: 'الحمامات 🏖️' },
+        { type: 'crossroad', streetName: 'جادة البحيرة 2', width: 130, nextZoneId: 'hammamet', nextZoneLabel: 'سوسة' },
         { type: 'biz', id: 'salon_de_the' },
         { type: 'house', style: 'lac', name: 'عمارة السفارات', width: 130, height: 168, wallColor: '#cbd5e1', doorColor: '#38bdf8' },
         { type: 'biz', id: 'restaurant' },
-        { type: 'crossroad', streetName: 'مفترق لاك سنتر', width: 130, nextZoneId: 'hammamet', nextZoneLabel: 'الحمامات 🏖️' },
+        { type: 'crossroad', streetName: 'مفترق لاك سنتر', width: 130, nextZoneId: 'hammamet', nextZoneLabel: 'سوسة' },
         { type: 'biz', id: 'agence_voyages' },
         { type: 'house', style: 'lac', name: 'برج الياسمين', width: 125, height: 158, wallColor: '#f1f5f9', doorColor: '#0284c7' }
       ],
       hammamet: [
         { type: 'house', style: 'hammamet', name: 'فيلا الياسمين', width: 135, height: 138, wallColor: '#fffbeb', doorColor: '#d97706' },
         { type: 'biz', id: 'hotel' },
-        { type: 'crossroad', streetName: 'شارع المارينا', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'تونس الدولية 👑' },
+        { type: 'crossroad', streetName: 'شارع المارينا', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
         { type: 'biz', id: 'centre_commercial' },
         { type: 'house', style: 'hammamet', name: 'رياض قمرت', width: 135, height: 142, wallColor: '#fef3c7', doorColor: '#059669' },
         { type: 'biz', id: 'usine_conserves' },
-        { type: 'crossroad', streetName: 'مفترق الحمامات الجنوبية', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'تونس الدولية 👑' },
+        { type: 'crossroad', streetName: 'مفترق الحمامات الجنوبية', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
         { type: 'house', style: 'hammamet', name: 'دار الفلّ والياسمين', width: 130, height: 134, wallColor: '#ffffff', doorColor: '#0284c7' }
       ],
       djerba_holding: [
         { type: 'house', style: 'djerba', name: 'حوش جربة الكبير', width: 140, height: 148, wallColor: '#f8fafc', doorColor: '#0284c7' },
         { type: 'biz', id: 'showroom_auto' },
-        { type: 'crossroad', streetName: 'ساحة قرطاج الدولية', width: 135, nextZoneId: 'bab_souika', nextZoneLabel: 'باب سويقة 🕌' },
+        { type: 'crossroad', streetName: 'ساحة قرطاج الدولية', width: 135, nextZoneId: 'bab_souika', nextZoneLabel: 'تونس' },
         { type: 'biz', id: 'promoteur_immobilier' },
         { type: 'house', style: 'djerba', name: 'قصر الأغالبة', width: 145, height: 155, wallColor: '#fef3c7', doorColor: '#b45309' },
         { type: 'biz', id: 'tayaran_el_ghzela' },
-        { type: 'crossroad', streetName: 'مفترق المطار الدولي', width: 135, nextZoneId: 'bab_souika', nextZoneLabel: 'باب سويقة 🕌' },
+        { type: 'crossroad', streetName: 'مفترق المطار الدولي', width: 135, nextZoneId: 'bab_souika', nextZoneLabel: 'تونس' },
         { type: 'house', style: 'djerba', name: 'فيلا النخيل', width: 135, height: 142, wallColor: '#ffffff', doorColor: '#2563eb' }
       ]
     };
@@ -1512,11 +1512,11 @@ export class QuartierAnimator {
     // Quartier précédent (cyclique) pour permettre la navigation dans les deux sens
     const zoneOrder = ['bab_souika', 'la_goulette', 'lac_2', 'hammamet', 'djerba_holding'];
     const zoneLabels = {
-      bab_souika: 'باب سويقة 🕌',
-      la_goulette: 'حلق الوادي ⚓',
-      lac_2: 'البحيرة 2 🏙️',
-      hammamet: 'الحمامات 🏖️',
-      djerba_holding: 'تونس الدولية 👑'
+      bab_souika: 'تونس',
+      la_goulette: 'بنزرت',
+      lac_2: 'الحمامات',
+      hammamet: 'سوسة',
+      djerba_holding: 'جربة'
     };
     const zIdx = Math.max(0, zoneOrder.indexOf(zoneId));
     const prevId = zoneOrder[(zIdx - 1 + zoneOrder.length) % zoneOrder.length];
@@ -2328,48 +2328,43 @@ export class QuartierAnimator {
     // Drapeau tunisien au sommet
     this.drawTunisianFlag(ctx, x + b.width - 24, y - 10, timestamp);
 
-    // Badge de niveau au-dessus de l'enseigne (élégant, doré et cliquable)
-    const lvlBadgeW = 38;
-    const lvlBadgeH = 15;
-    const lvlBadgeX = x + (b.width - lvlBadgeW) / 2;
-    const lvlBadgeY = y + 8;
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
-    ctx.beginPath();
-    ctx.roundRect(lvlBadgeX, lvlBadgeY, lvlBadgeW, lvlBadgeH, 4);
-    ctx.fill();
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-    ctx.fillStyle = '#fde047';
-    ctx.font = '900 9px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('⭐ L' + level, lvlBadgeX + lvlBadgeW / 2, lvlBadgeY + 11);
-
-    // Enseigne du magasin au-dessus de la porte
+    // Enseigne du magasin au-dessus de la porte avec petite mention discrète du niveau à côté
     ctx.save();
     if (hasNeonSign) {
       ctx.shadowColor = '#38bdf8';
       ctx.shadowBlur = 8;
     }
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    const signW = b.width - 16;
+    const signH = 22;
+    const signX = x + 8;
+    const signY = y + 22;
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
     ctx.beginPath();
-    ctx.roundRect(x + 8, y + 25, b.width - 16, 22, 6);
+    ctx.roundRect(signX, signY, signW, signH, 6);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.restore();
 
+    // Nom du projet centré
     ctx.fillStyle = '#fef08a';
-    ctx.font = '900 11px "Cairo", sans-serif';
+    ctx.font = '900 10.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(biz.icon + ' ' + biz.name, x + b.width / 2, y + 40);
+    ctx.fillText(biz.icon + ' ' + biz.name, signX + signW / 2, signY + 15);
 
-    // --- GRANDE PORTE ARABE TRADITIONNELLE (باب عربي مرصّع بالمسامير النحاسية) ---
-    const doorW = Math.min(42, b.width * 0.38);
-    const doorH = Math.max(48, bHeight - 74);
+    // Petite mention discrète et élégante du niveau à côté sur l'enseigne
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '900 8.5px "Cairo", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('L' + level, signX + 5, signY + 15);
+
+    // --- PORTE TRADITIONNELLE ÉLÉGANTE ET BIEN PROPORTIONNÉE ---
+    const doorW = Math.min(36, b.width * 0.32);
+    const doorH = Math.min(42, Math.max(34, bHeight * 0.38));
     const doorX = x + (b.width - doorW) / 2;
-    const doorY = groundY - doorH - 32;
+    const doorY = groundY - doorH - 18;
 
     // 1. Cadre en pierre de Kadhel avec arc outrepassé et claveaux alternés
     ctx.save();
@@ -2495,22 +2490,7 @@ export class QuartierAnimator {
     ctx.fillText('🚪 ادخل', doorX + doorW / 2, doorY + doorH - 8);
     ctx.restore();
 
-    // Plaque d'amélioration élégante au-dessus de la porte
-    const upgBadgeW = 48;
-    const upgBadgeH = 16;
-    const upgBadgeX = doorX + (doorW - upgBadgeW) / 2;
-    const upgBadgeY = doorY - 18;
-    ctx.fillStyle = canAfford ? '#059669' : 'rgba(30, 41, 59, 0.9)';
-    ctx.beginPath();
-    ctx.roundRect(upgBadgeX, upgBadgeY, upgBadgeW, upgBadgeH, 4);
-    ctx.fill();
-    ctx.strokeStyle = canAfford ? '#6ee7b7' : '#64748b';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 8.5px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('⬆️ L' + (biz.level + 1), upgBadgeX + upgBadgeW / 2, upgBadgeY + 11.5);
+    // Seuil et heurtoir discrets (pas de superposition de bouton)
 
     // Enregistrement des hitboxes précises
     this.interactiveHitboxes.push({
@@ -2519,22 +2499,6 @@ export class QuartierAnimator {
       w: doorInteractW,
       h: doorInteractH,
       action: 'inspect',
-      bizId: b.id
-    });
-    this.interactiveHitboxes.push({
-      x: upgBadgeX - 4,
-      y: upgBadgeY - 4,
-      w: upgBadgeW + 8,
-      h: upgBadgeH + 8,
-      action: 'upgrade',
-      bizId: b.id
-    });
-    this.interactiveHitboxes.push({
-      x: lvlBadgeX - 4,
-      y: lvlBadgeY - 4,
-      w: lvlBadgeW + 8,
-      h: lvlBadgeH + 8,
-      action: 'upgrade',
       bizId: b.id
     });
     this.interactiveHitboxes.push({
@@ -2917,15 +2881,15 @@ export class QuartierAnimator {
     ctx.textAlign = 'center';
     ctx.fillText(`🪧 ${cItem.streetName}`, signX + signW / 2, signY + 14);
 
-    // 5. Portes et Bannières de voyage entre villes cliquables et prestigieuses
+    // 5. Panneaux de voyage épurés : UNIQUEMENT LE NOM DE LA VILLE (zéro débordement)
     const signs = [];
-    if (cItem.nextZoneId && cItem.nextZoneLabel) signs.push({ id: cItem.nextZoneId, label: `سافر إلى ${cItem.nextZoneLabel} ⬅️`, c0: '#047857', c1: '#064e3b', edge: '#6ee7b7', glow: '#10b981' });
-    if (cItem.prevZoneId && cItem.prevZoneLabel) signs.push({ id: cItem.prevZoneId, label: `➡️ عودة إلى ${cItem.prevZoneLabel}`, c0: '#1d4ed8', c1: '#1e3a8a', edge: '#93c5fd', glow: '#3b82f6' });
+    if (cItem.nextZoneId && cItem.nextZoneLabel) signs.push({ id: cItem.nextZoneId, label: `⬅️ ${cItem.nextZoneLabel}`, c0: '#047857', c1: '#064e3b', edge: '#6ee7b7', glow: '#10b981' });
+    if (cItem.prevZoneId && cItem.prevZoneLabel) signs.push({ id: cItem.prevZoneId, label: `${cItem.prevZoneLabel} ➡️`, c0: '#1d4ed8', c1: '#1e3a8a', edge: '#93c5fd', glow: '#3b82f6' });
     signs.forEach((s, i) => {
-      const dirW = Math.min(w - 6, 122);
-      const dirH = 26;
+      const dirW = Math.min(w - 10, 115);
+      const dirH = 22;
       const dirX = x + (w - dirW) / 2;
-      const dirY = groundY - 56 - i * 30;
+      const dirY = groundY - 52 - i * 26;
 
       // Halo d'attraction
       ctx.save();

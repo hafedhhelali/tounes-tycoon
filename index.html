@@ -1405,7 +1405,7 @@
     .biz-upgrade-btn:active { transform: translateY(2px) scale(0.97); }
     .biz-upgrade-action { font-size: 12px; line-height: 1.5; font-weight: 950; white-space: nowrap; }
     .biz-upgrade-cost { font-size: 10.5px; line-height: 1.4; font-weight: 900; opacity: 0.9; white-space: nowrap; }
-    .biz-evo-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .biz-evo-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; overflow: hidden; }
     .biz-evo-line { display: flex; align-items: center; gap: 6px; font-size: 11.5px; line-height: 1.45; color: #f8fafc; flex-wrap: wrap; }
     .biz-evo-gain { font-size: 10.5px; line-height: 1.5; color: #34d399; font-weight: 900; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); border-radius: 8px; padding: 0 6px; }
     .biz-evo-hint { font-size: 9.5px; line-height: 1.45; color: #cbd5e1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -3611,6 +3611,7 @@
       if (tabName === 'zones') {
         renderZonesUI();
         initTunisiaMap();
+        setTimeout(() => { if (tunisiaMap) tunisiaMap.resize(); }, 60);
       }
       if (tabName === 'league') renderLeagueTabUI();
     }
@@ -4338,7 +4339,7 @@
       if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / حريف`;
       if (bizDetailRate) bizDetailRate.innerHTML = `+${formatCurrency(detail.dinarsPerSecond)}/ث`;
       if (bizDetailNextLvlText) bizDetailNextLvlText.innerText = `المستوى ${biz.level + 1}`;
-      if (bizDetailNextGain) bizDetailNextGain.innerHTML = `+${formatCurrency(deltaRev)} مربوح إضافي مع كل حريف`;
+      if (bizDetailNextGain) bizDetailNextGain.innerHTML = `+${formatCurrency(deltaRev)} / حريف`;
 
       if (bizDetailMilestoneHint) {
         if (milestone.nextLevel) {

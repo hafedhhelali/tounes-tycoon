@@ -53,3 +53,5 @@ Style télégraphique; diffs minimaux; copyright `© EOLabs 2026 beta`; APK vers
 - CI auto à chaque push: `build-apk.yml` (npm test, copie vers www, cap sync, APK release beta, artifact 14 j) et `docs-guard.yml` (échoue si code modifié sans HANDOFF.md + CHANGELOG.md).
 - Donc: tout commit de code DOIT inclure HANDOFF.md + CHANGELOG.md dans le même commit. `www/` et `scripts/ship.ps1` ne sont utiles qu'en local.
 - APK: onglet Actions > dernier run > Artifacts.
+
+<!-- updated 1792873349482 -->

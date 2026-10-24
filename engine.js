@@ -14,7 +14,7 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.07,
     cycleDurationMs: 600, // 0.6s
     managers: [
-      { name: 'عمّك الصادق', role: 'معلّم القصان والتكبيس بالبابور', avatar: '👨‍🍳', cost: 25.0 }
+      { name: 'عمّك الصادق', role: 'معلّم القصّان', avatar: '👨‍🍳', cost: 25.0 }
     ],
   },
   {
@@ -27,7 +27,7 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.08,
     cycleDurationMs: 1400, // 1.4s
     managers: [
-      { name: 'الباجي البمبلوني', role: 'فنّان الغطسة والسكر المحوّر', avatar: '🧑‍🍳', cost: 150.0 }
+      { name: 'الباجي البمبلوني', role: 'فنّان البمبلوني', avatar: '🧑‍🍳', cost: 150.0 }
     ],
   },
   {
@@ -40,8 +40,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.09,
     cycleDurationMs: 2500, // 2.5s
     managers: [
-      { name: 'الناصر القارصون', role: 'سرباي الصالة والضحكة', avatar: '🤵', cost: 600.0 },
-      { name: 'سي الهاشمي', role: 'صاحب القهوة والكونتوار', avatar: '☕', cost: 1800.0 }
+      { name: 'الناصر القارصون', role: 'سرباي الصالة', avatar: '🤵', cost: 600.0 },
+      { name: 'سي الهاشمي', role: 'مولى القهوة', avatar: '☕', cost: 1800.0 }
     ],
   },
   {
@@ -54,7 +54,7 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.10,
     cycleDurationMs: 5000, // 5.0s
     managers: [
-      { name: 'منصف العطّار', role: 'مولى الحانوت والكرني', avatar: '🏬', cost: 4000.0 }
+      { name: 'منصف العطّار', role: 'مولى الحانوت', avatar: '🏬', cost: 4000.0 }
     ],
   },
   {
@@ -67,8 +67,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.11,
     cycleDurationMs: 10000, // 10.0s
     managers: [
-      { name: 'الحاج عمر', role: 'حلواني الفور والعسل', avatar: '👳', cost: 20000.0 },
-      { name: 'خالتي زبيدة', role: 'شوافة الحلو والتوزيع', avatar: '👩‍🍳', cost: 50000.0 }
+      { name: 'الحاج عمر', role: 'حلواني الفور', avatar: '👳', cost: 20000.0 },
+      { name: 'خالتي زبيدة', role: 'مسؤولة التوزيع', avatar: '👩‍🍳', cost: 50000.0 }
     ],
   },
   {
@@ -81,7 +81,7 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.12,
     cycleDurationMs: 18000, // 18.0s
     managers: [
-      { name: 'كمال تيربو', role: 'كلاج الديسك والشوفيرية', avatar: '🕶️', cost: 120000.0 }
+      { name: 'كمال تيربو', role: 'شاف الشوفيرية', avatar: '🕶️', cost: 120000.0 }
     ],
   },
   {
@@ -95,7 +95,7 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 30000, // 30.0s
     managers: [
       { name: 'منير الكاشير', role: 'كاشير الكاسة', avatar: '💳', cost: 600000.0 },
-      { name: 'سي رضا', role: 'شاف الرّفوف والسلعة', avatar: '👔', cost: 1500000.0 }
+      { name: 'سي رضا', role: 'شاف الرّفوف', avatar: '👔', cost: 1500000.0 }
     ],
   },
   {
@@ -108,8 +108,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.13,
     cycleDurationMs: 45000, // 45.0s
     managers: [
-      { name: 'طارق الشاف', role: 'كابو السلعة والبيع', avatar: '📋', cost: 3500000.0 },
-      { name: 'كريم الشريف', role: 'معلّم الليفريزون والسطوك', avatar: '💼', cost: 9000000.0 }
+      { name: 'طارق الشاف', role: 'كابو المبيعات', avatar: '📋', cost: 3500000.0 },
+      { name: 'كريم الشريف', role: 'معلّم التوزيع', avatar: '💼', cost: 9000000.0 }
     ],
   },
   {
@@ -122,8 +122,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.14,
     cycleDurationMs: 60000, // 60.0s
     managers: [
-      { name: 'وسيم الكابتن', role: 'شاف صالة الصالون', avatar: '🤵', cost: 20000000.0 },
-      { name: 'رامي الباريستا', role: 'فنّان العصير والكوكتيل', avatar: '🍸', cost: 50000000.0 }
+      { name: 'وسيم الكابتن', role: 'شاف الصالة', avatar: '🤵', cost: 20000000.0 },
+      { name: 'رامي الباريستا', role: 'باريستا الكوكتيل', avatar: '🍸', cost: 50000000.0 }
     ],
   },
   {
@@ -136,8 +136,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.14,
     cycleDurationMs: 90000, // 90.0s
     managers: [
-      { name: 'المعلم مبروك', role: 'صنايعي الكانون والشواية', avatar: '🔥', cost: 110000000.0 },
-      { name: 'الشاف فتحي', role: 'معلّم الكوجينة والطياب', avatar: '👨‍🍳', cost: 280000000.0 }
+      { name: 'المعلم مبروك', role: 'صنايعي الشواية', avatar: '🔥', cost: 110000000.0 },
+      { name: 'الشاف فتحي', role: 'معلّم الكوجينة', avatar: '👨‍🍳', cost: 280000000.0 }
     ],
   },
   {
@@ -150,8 +150,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.14,
     cycleDurationMs: 120000, // 120.0s
     managers: [
-      { name: 'أنيس التيكي', role: 'شاف التيكيات والفيزا', avatar: '🎫', cost: 600000000.0 },
-      { name: 'سي منير اللقلاق', role: 'الباترون الكبير', avatar: '🧳', cost: 1500000000.0 }
+      { name: 'أنيس التيكي', role: 'شاف الحجوزات', avatar: '🎫', cost: 600000000.0 },
+      { name: 'سي منير اللقلاق', role: 'الباترون', avatar: '🧳', cost: 1500000000.0 }
     ],
   },
   {
@@ -164,8 +164,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 150000, // 150.0s
     managers: [
-      { name: 'مدام سيرين', role: 'شوافة الريسبسيون والدلال', avatar: '👩‍💼', cost: 3000000000.0 },
-      { name: 'ميسيو برهان', role: 'مدير الفندق والباترون', avatar: '🎩', cost: 8000000000.0 }
+      { name: 'مدام سيرين', role: 'مسؤولة الاستقبال', avatar: '👩‍💼', cost: 3000000000.0 },
+      { name: 'ميسيو برهان', role: 'مدير النزل', avatar: '🎩', cost: 8000000000.0 }
     ],
   },
   {
@@ -178,9 +178,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 200000, // 200.0s
     managers: [
-      { name: 'المهندس مراد', role: 'كابو التكنيك والضوّ', avatar: '👷', cost: 15000000000.0 },
-      { name: 'مدام نادية', role: 'شوافة البوتيكات والماركات', avatar: '👠', cost: 35000000000.0 },
-      { name: 'سي خليل بن عمار', role: 'الباترون الكبير وصاحب المول', avatar: '👑', cost: 90000000000.0 }
+      { name: 'المهندس مراد', role: 'كابو الصيانة', avatar: '👷', cost: 15000000000.0 },
+      { name: 'مدام نادية', role: 'مديرة الماركات', avatar: '👠', cost: 35000000000.0 },
+      { name: 'سي خليل بن عمار', role: 'الباترون وصاحب المول', avatar: '👑', cost: 90000000000.0 }
     ],
   },
   {
@@ -193,9 +193,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 260000, // 260.0s
     managers: [
-      { name: 'المهندس حمادي', role: 'كابو الآلات والتعليب', avatar: '🏭', cost: 70000000000.0 },
-      { name: 'سي عبد السلام', role: 'شاف التصدير والديوانة', avatar: '🚢', cost: 180000000000.0 },
-      { name: 'الحاج بلقاسم', role: 'صاحب المعامل والهنشرات', avatar: '💼', cost: 450000000000.0 }
+      { name: 'المهندس حمادي', role: 'شاف الإنتاج', avatar: '🏭', cost: 70000000000.0 },
+      { name: 'سي عبد السلام', role: 'شاف التصدير', avatar: '🚢', cost: 180000000000.0 },
+      { name: 'الحاج بلقاسم', role: 'مالك المصانع', avatar: '💼', cost: 450000000000.0 }
     ],
   },
   {
@@ -208,9 +208,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 320000, // 320.0s
     managers: [
-      { name: 'ياسين كوميرسيال', role: 'بياع كراهب الـVIP', avatar: '🏎️', cost: 350000000000.0 },
-      { name: 'مدام مريم الوكيل', role: 'شوافة الدار والماركات', avatar: '💎', cost: 850000000000.0 },
-      { name: 'سي طارق قطوس', role: 'الباترون الكبير', avatar: '👑', cost: 2000000000000.0 }
+      { name: 'ياسين كوميرسيال', role: 'مستشار السيارات', avatar: '🏎️', cost: 350000000000.0 },
+      { name: 'مدام مريم الوكيل', role: 'مديرة المبيعات', avatar: '💎', cost: 850000000000.0 },
+      { name: 'سي طارق قطوس', role: 'الباترون', avatar: '👑', cost: 2000000000000.0 }
     ],
   },
   {
@@ -223,9 +223,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 380000, // 380.0s
     managers: [
-      { name: 'سي لطفي المهندس', role: 'معلّم الشوانط والبني', avatar: '👷', cost: 1800000000000.0 },
-      { name: 'مدام وفاء السمسارة', role: 'شوافة العقار والصفقات', avatar: '🏘️', cost: 4500000000000.0 },
-      { name: 'الحاج بوبكر', role: 'الباترون الكبير وصاحب الرزيدونسات', avatar: '🏢', cost: 10000000000000.0 }
+      { name: 'سي لطفي المهندس', role: 'مهندس البناء', avatar: '👷', cost: 1800000000000.0 },
+      { name: 'مدام وفاء السمسارة', role: 'مستشارة العقار', avatar: '🏘️', cost: 4500000000000.0 },
+      { name: 'الحاج بوبكر', role: 'الباترون وصاحب الرزيدونسات', avatar: '🏢', cost: 10000000000000.0 }
     ],
   },
   {
@@ -238,9 +238,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 450000, // 450.0s
     managers: [
-      { name: 'الكابتن رمزي', role: 'قائد الأسطول وكبير الطيّارين', avatar: '👨‍✈️', cost: 8000000000000.0 },
-      { name: 'مدام سهام', role: 'شوافة المطار والملاحة', avatar: '👩‍✈️', cost: 20000000000000.0 },
-      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام وصاحب الأسطول', avatar: '🦅', cost: 50000000000000.0 }
+      { name: 'الكابتن رمزي', role: 'قائد الأسطول', avatar: '👨‍✈️', cost: 8000000000000.0 },
+      { name: 'مدام سهام', role: 'مديرة الملاحة', avatar: '👩‍✈️', cost: 20000000000000.0 },
+      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام', avatar: '🦅', cost: 50000000000000.0 }
     ],
   }
 ];

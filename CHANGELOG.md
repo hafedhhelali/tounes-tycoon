@@ -1,6 +1,11 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(street,doors,ui): realistic doors, discreet level badge, city names on signs, concise roles
+- fix(street,doors,ui): realistic doors, discreet level badge, city names on signs, concise roles
+- fix(street,doors,ui): realistic doors, discreet level badge, city names on signs, concise roles
+- fix(street,doors,ui): realistic doors, discreet level badge, city names on signs, concise roles
+- fix(street,doors,ui): realistic door proportions, discreet level badge on store sign, concise staff role titles, strict city names on crossroad signs without text overflow
 - fix(runtime): restore clean startup stability and add futuristic app icon
 - fix(runtime): resolve startup blank screen and restore pure modular engine stability
 - feat(icon): futuristic cyberpunk mobile icon with neon cyan halo, gold hexagon and quantum star
