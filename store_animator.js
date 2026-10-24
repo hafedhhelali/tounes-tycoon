@@ -1591,10 +1591,13 @@ export class QuartierAnimator {
       bab_souika: [
         { type: 'house', style: 'medina', name: 'دار بن عاشور', width: 115, height: 118, wallColor: '#fef3c7', doorColor: '#2563eb' },
         { type: 'biz', id: 'kaskrout' },
+        { type: 'garden', name: 'حديقة الياسمين والزيتون', width: 95 },
         { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'la_goulette', nextZoneLabel: 'بنزرت' },
         { type: 'biz', id: 'fricasse' },
+        { type: 'service_station', name: 'عجيل تونس', width: 130 },
         { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
         { type: 'biz', id: 'kahwa' },
+        { type: 'bank_branch', name: 'بنك الإسكان والتنمية', width: 135 },
         { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'la_goulette', nextZoneLabel: 'بنزرت' },
         { type: 'biz', id: 'attariya' },
         { type: 'house', style: 'medina', name: 'دار سيدي محرز', width: 115, height: 120, wallColor: '#f8fafc', doorColor: '#0284c7' }
@@ -1679,6 +1682,10 @@ export class QuartierAnimator {
         this.streetLayout.push(entry);
         curX += item.width + 24;
       } else if (item.type === 'crossroad') {
+        const entry = { ...item, x: curX };
+        this.streetLayout.push(entry);
+        curX += item.width + 24;
+      } else if (item.type === 'garden' || item.type === 'service_station' || item.type === 'bank_branch') {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
         curX += item.width + 24;
@@ -2151,6 +2158,12 @@ export class QuartierAnimator {
           this.drawHouse(ctx, item, screenX, groundY, timestamp);
         } else if (item.type === 'crossroad') {
           this.drawCrossroad(ctx, item, screenX, groundY, h, timestamp);
+        } else if (item.type === 'garden') {
+          this.drawGarden(ctx, item, screenX, groundY, timestamp);
+        } else if (item.type === 'service_station') {
+          this.drawServiceStation(ctx, item, screenX, groundY, timestamp);
+        } else if (item.type === 'bank_branch') {
+          this.drawBankBranch(ctx, item, screenX, groundY, timestamp);
         }
       }
     });
@@ -2522,8 +2535,7 @@ export class QuartierAnimator {
       ctx.fillRect(rx, y + 4, 8, 14);
     }
 
-    // Drapeau tunisien au sommet
-    this.drawTunisianFlag(ctx, x + b.width - 24, y - 10, timestamp);
+    // Drapeau retiré selon la directive utilisateur
 
     // Enseigne du magasin avec badge de niveau TRÈS VISIBLE et contrasté
     const signW = b.width - 16;
@@ -2583,7 +2595,7 @@ export class QuartierAnimator {
     const doorW = Math.min(36, b.width * 0.32);
     const doorH = Math.min(42, Math.max(34, bHeight * 0.38));
     const doorX = x + (b.width - doorW) / 2;
-    const doorY = groundY - doorH - 18;
+    const doorY = groundY - doorH;
 
     // 1. Encadrement noble en pierre de Kadhel sculptée (طاق حجري تونسي أصيل)
     ctx.save();
@@ -2720,12 +2732,28 @@ export class QuartierAnimator {
     const doorInteractX = doorX - 8;
     const doorInteractY = doorY - 10;
 
-    // Inscription gravée discrète et raffinée directement sur le bois de la porte
+    // Badge d'entrée hautement visible et contrasté au centre de la porte
     ctx.save();
-    ctx.fillStyle = 'rgba(254, 240, 138, 0.9)';
-    ctx.font = '900 8.5px "Cairo", sans-serif';
+    const enterBadgeW = Math.min(doorW + 12, 48);
+    const enterBadgeH = 18;
+    const enterBadgeX = doorX + (doorW - enterBadgeW) / 2;
+    const enterBadgeY = doorY + (doorH - enterBadgeH) / 2;
+
+    ctx.shadowColor = '#10b981';
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = 'rgba(6, 78, 59, 0.95)';
+    ctx.beginPath();
+    ctx.roundRect(enterBadgeX, enterBadgeY, enterBadgeW, enterBadgeH, 6);
+    ctx.fill();
+    ctx.strokeStyle = '#34d399';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '900 10.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🚪 ادخل', doorX + doorW / 2, doorY + doorH - 8);
+    ctx.fillText('ادخل 🚪', doorX + doorW / 2, enterBadgeY + 13);
     ctx.restore();
 
     // Seuil et heurtoir discrets (pas de superposition de bouton)
@@ -2867,22 +2895,150 @@ export class QuartierAnimator {
     ctx.arc(doorX + doorW / 2 + 5, doorY + 22, 3, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Nom de la maison & petit chat tunisien sur le toit / seuil
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-    ctx.beginPath();
-    ctx.roundRect(x + 12, y + 18, w - 24, 15, 4);
-    ctx.fill();
-
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = '800 9.5px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`🏡 ${hItem.name}`, x + w / 2, y + 29);
+    // Pas d'enseigne de texte sur les maisons (façades épurées et authentiques)
+    // Antenne parabolique tunisienne réaliste sur le toit (présente sur la plupart des toits tunisiens)
+    if (hItem.hasDish !== false && (x % 3 === 0 || hItem.style === 'medina' || hItem.style === 'goulette')) {
+      ctx.save();
+      const dishX = x + w - 24;
+      const dishY = y + 8;
+      // Support métallique
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(dishX, dishY + 8);
+      ctx.lineTo(dishX + 6, dishY);
+      ctx.stroke();
+      // Parabole orientée
+      ctx.fillStyle = '#cbd5e1';
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.ellipse(dishX + 6, dishY, 9, 5, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      // Tête LNB
+      ctx.strokeStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.moveTo(dishX + 6, dishY);
+      ctx.lineTo(dishX + 2, dishY - 4);
+      ctx.stroke();
+      ctx.restore();
+    }
 
     // Petit chat ou jasmin animé
     const catBob = Math.sin(timestamp * 0.004 + x) * 1.5;
     ctx.font = '12px serif';
     ctx.fillText('🐈', x + w - 16, groundY - 4 + catBob * 0.3);
 
+    ctx.restore();
+  }
+
+
+  drawGarden(ctx, gItem, x, groundY, timestamp) {
+    const w = gItem.width || 95;
+    ctx.save();
+    // Pelouse / Gazon fleuri
+    ctx.fillStyle = '#15803d';
+    ctx.beginPath();
+    ctx.roundRect(x, groundY - 14, w, 14, [4, 4, 0, 0]);
+    ctx.fill();
+
+    // Palmiers et oliviers
+    const treeX = x + w / 2;
+    const treeY = groundY - 14;
+    // Tronc d'olivier
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(treeX - 4, treeY - 38, 8, 38);
+    // Feuillage rond luxuriant
+    ctx.fillStyle = '#166534';
+    ctx.beginPath();
+    ctx.arc(treeX, treeY - 44, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.arc(treeX - 6, treeY - 48, 14, 0, Math.PI * 2);
+    ctx.arc(treeX + 8, treeY - 46, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Fleurs et jasmins
+    const flowers = [x + 12, x + 32, x + w - 28, x + w - 12];
+    flowers.forEach((fx, idx) => {
+      ctx.fillStyle = idx % 2 === 0 ? '#fbcfe8' : '#fef08a';
+      ctx.beginPath();
+      ctx.arc(fx, groundY - 8, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  drawServiceStation(ctx, sItem, x, groundY, timestamp) {
+    const w = sItem.width || 130;
+    const h = 76;
+    const y = groundY - h;
+    ctx.save();
+    // Auvent station Agil / Shell
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(x, y, w, 18);
+    ctx.strokeRect(x, y, w, 18);
+
+    // Enseigne lumineuse Station
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '900 10px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('⛽ محطة خدمات وتوزيع الوقود', x + w / 2, y + 13);
+
+    // Piliers de l'auvent
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(x + 10, y + 18, 8, h - 18);
+    ctx.fillRect(x + w - 18, y + 18, 8, h - 18);
+
+    // Pompe à essence moderne
+    const pumpX = x + w / 2 - 14;
+    const pumpY = groundY - 34;
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.roundRect(pumpX, pumpY, 28, 34, 4);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(pumpX + 4, pumpY + 4, 20, 10);
+    ctx.fillStyle = '#10b981';
+    ctx.font = '900 8px monospace';
+    ctx.fillText('2.450', pumpX + 14, pumpY + 12);
+    ctx.restore();
+  }
+
+  drawBankBranch(ctx, bItem, x, groundY, timestamp) {
+    const w = bItem.width || 135;
+    const h = 90;
+    const y = groundY - h;
+    ctx.save();
+    // Façade vitrée moderne bancaire
+    ctx.fillStyle = '#0f172a';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, [6, 6, 0, 0]);
+    ctx.fill();
+    ctx.stroke();
+
+    // Enseigne Banque
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(x + 6, y + 8, w - 12, 20);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 10px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏦 وكالة بنكية وطنية', x + w / 2, y + 22);
+
+    // Distributeur automatique DAB / GAB
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(x + 16, groundY - 42, 24, 42);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(x + 20, groundY - 36, 16, 12);
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '700 7px "Cairo", sans-serif';
+    ctx.fillText('DAB', x + 28, groundY - 27);
     ctx.restore();
   }
 
@@ -2973,48 +3129,8 @@ export class QuartierAnimator {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // GRANDE ARCHE MONUMENTALE TUNISIENNE (باب المدينة / قوس السفر)
-    const archW = Math.min(w - 6, 126);
-    const archH = 96;
-    const archX = x + (w - archW) / 2;
-    const archY = groundY - archH + 6;
-
-    // Deux piliers en pierre sculptée
-    const pillarW = 14;
-    const archPillarGrad = ctx.createLinearGradient(0, archY, 0, groundY);
-    archPillarGrad.addColorStop(0, '#fef3c7');
-    archPillarGrad.addColorStop(0.5, '#fde68a');
-    archPillarGrad.addColorStop(1, '#d97706');
-    ctx.fillStyle = archPillarGrad;
-    ctx.strokeStyle = '#92400e';
-    ctx.lineWidth = 1.5;
-
-    // Pilier gauche
-    ctx.fillRect(archX, archY + 22, pillarW, archH - 22);
-    ctx.strokeRect(archX, archY + 22, pillarW, archH - 22);
-    // Pilier droit
-    ctx.fillRect(archX + archW - pillarW, archY + 22, pillarW, archH - 22);
-    ctx.strokeRect(archX + archW - pillarW, archY + 22, pillarW, archH - 22);
-
-    // Chapiteaux sculptés dorés
-    ctx.fillStyle = '#fbbf24';
-    ctx.fillRect(archX - 2, archY + 20, pillarW + 4, 5);
-    ctx.fillRect(archX + archW - pillarW - 2, archY + 20, pillarW + 4, 5);
-
-    // Fronton et arc outrepassé supérieur
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-    ctx.beginPath();
-    ctx.roundRect(archX - 2, archY, archW + 4, 24, 6);
-    ctx.fill();
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Inscription monumentale au fronton de la porte
-    ctx.fillStyle = '#fde047';
-    ctx.font = '900 10.5px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('🏛️ باب العبور بين المدن', archX + archW / 2, archY + 16);
+    // Arche monumentale supprimée selon la demande explicite de l'utilisateur.
+    // Vue dégagée sur l'horizon et les paysages tunisiens au loin.
 
     // Lampadaire tunisien à halo chaud au coin du carrefour
     const lampX = x + w - 12;
@@ -3104,7 +3220,7 @@ export class QuartierAnimator {
     const dirW = Math.min(w - 8, 126);
     const dirH = 32;
     const dirX = x + (w - dirW) / 2;
-    const dirY = groundY - 70;
+    const dirY = groundY - 38;
 
     ctx.save();
     // Halo lumineux pulsé invitant au voyage
@@ -3772,8 +3888,8 @@ export class TunisiaMapEngine {
     this.cities = [
       {
         id: 'tunis',
-        name: 'تونس العاصمة',
-        fullName: 'تونس العاصمة - نقطة البداية',
+        name: 'تونس',
+        fullName: 'تونس',
         icon: '🕌',
         x: 240,
         y: 115,
@@ -3785,7 +3901,7 @@ export class TunisiaMapEngine {
       {
         id: 'bizerte',
         name: 'بنزرت',
-        fullName: 'بنزرت - قنال بنزرت',
+        fullName: 'بنزرت',
         icon: '⛵',
         x: 210,
         y: 60,
@@ -3796,8 +3912,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'nabeul_hammamet',
-        name: 'نابل / الحمامات',
-        fullName: 'نابل / الحمامات - الفخار والياسمين',
+        name: 'نابل',
+        fullName: 'نابل',
         icon: '🏖️',
         x: 308,
         y: 135,
@@ -3809,7 +3925,7 @@ export class TunisiaMapEngine {
       {
         id: 'beja',
         name: 'باجة',
-        fullName: 'باجة - مطمورة روما',
+        fullName: 'باجة',
         icon: '🧀',
         x: 140,
         y: 110,
@@ -3821,7 +3937,7 @@ export class TunisiaMapEngine {
       {
         id: 'le_kef',
         name: 'الكاف',
-        fullName: 'الكاف - القصبة العالية',
+        fullName: 'الكاف',
         icon: '🏰',
         x: 115,
         y: 180,
@@ -3832,8 +3948,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'sousse',
-        name: 'سوسة جوهرة الساحل',
-        fullName: 'سوسة جوهرة الساحل - بوجعفر',
+        name: 'سوسة',
+        fullName: 'سوسة',
         icon: '💎',
         x: 288,
         y: 215,
@@ -3844,8 +3960,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'monastir_mahdia',
-        name: 'المنستير / المهدية',
-        fullName: 'المنستير / المهدية - رباط المنستير',
+        name: 'المنستير',
+        fullName: 'المنستير',
         icon: '⚓',
         x: 312,
         y: 238,
@@ -3856,8 +3972,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'kairouan',
-        name: 'القيروان عاصمة الأغالبة',
-        fullName: 'القيروان عاصمة الأغالبة - فسقية الأغالبة',
+        name: 'القيروان',
+        fullName: 'القيروان',
         icon: '🕌',
         x: 215,
         y: 230,
@@ -3868,8 +3984,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'sfax',
-        name: 'صفاقس عاصمة الجنوب والهمّة',
-        fullName: 'صفاقس عاصمة الجنوب والهمّة - باب الديوان',
+        name: 'صفاقس',
+        fullName: 'صفاقس',
         icon: '🏭',
         x: 282,
         y: 320,
@@ -3881,7 +3997,7 @@ export class TunisiaMapEngine {
       {
         id: 'gafsa',
         name: 'قفصة',
-        fullName: 'قفصة - الحوض المنجمي',
+        fullName: 'قفصة',
         icon: '⛏️',
         x: 145,
         y: 345,
@@ -3892,8 +4008,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'tozeur',
-        name: 'توزر والجريد',
-        fullName: 'توزر والجريد - دقلة النور',
+        name: 'توزر',
+        fullName: 'توزر',
         icon: '🌴',
         x: 95,
         y: 400,
@@ -3904,8 +4020,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'gabes',
-        name: 'قابس بوابة الصحراء والبحر',
-        fullName: 'قابس بوابة الصحراء والبحر - الحناء الجبسية',
+        name: 'قابس',
+        fullName: 'قابس',
         icon: '🌊',
         x: 235,
         y: 400,
@@ -3916,8 +4032,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'medenine_zarzis',
-        name: 'مدنين / جرجيس',
-        fullName: 'مدنين / جرجيس - قصور مدنين',
+        name: 'مدنين',
+        fullName: 'مدنين',
         icon: '🏺',
         x: 260,
         y: 465,
@@ -3928,8 +4044,8 @@ export class TunisiaMapEngine {
       },
       {
         id: 'djerba_holding',
-        name: 'جربة / الهولدينغ الوطني',
-        fullName: 'جربة / الهولدينغ الوطني - جزيرة الأحلام',
+        name: 'جربة',
+        fullName: 'جربة',
         icon: '👑',
         x: 330,
         y: 440,

@@ -2212,7 +2212,9 @@
     .tunisia-map-canvas-wrap {
       position: relative;
       width: 100%;
-      height: 480px;
+      height: 520px !important;
+      min-height: 500px !important;
+      flex-shrink: 0;
       background: radial-gradient(circle at center, #0f2942 0%, #0a192f 100%);
       border-radius: 12px;
       overflow: hidden;
@@ -2804,7 +2806,7 @@
         </div>
         <div class="biz-tabs">
           <button class="biz-tab" id="bizTabBtnStaff"><span>👥</span><span>الخدّامة</span></button>
-          <button class="biz-tab" id="bizTabBtnRecipe"><span>📜</span><span>الوصفة</span></button>
+          <button class="biz-tab" id="bizTabBtnRecipe"><span>📜</span><span>اللائحة</span></button>
           <button class="biz-tab" id="bizTabBtnActivity"><span>⚡</span><span>النشاط</span></button>
         </div>
       </div>
@@ -3245,6 +3247,14 @@
     }
 
     // Formateur en dialecte et arabe tunisien (دينار, ألف دينار, مليون دينار, مليار دينار...)
+
+    function formatCompactDinars(num) {
+      if (num === null || num === undefined || isNaN(num)) return '0.00 د.ت';
+      if (num < 1000) return num.toFixed(2) + ' د.ت';
+      if (num < 1000000) return (num / 1000).toFixed(1) + ' ألف د.ت';
+      if (num < 1000000000) return (num / 1000000).toFixed(1) + ' م.د';
+      return (num / 1000000000).toFixed(2) + ' مليار د.ت';
+    }
     function formatCurrency(num, decimals = 2) {
       if (num === null || num === undefined || isNaN(num)) return '<span class="num-ltr">0.00</span> دينار';
       if (num < 1000) return `<span class="num-ltr">${num.toFixed(decimals)}</span> دينار`;
@@ -4210,7 +4220,8 @@
           soundEngine.playCoin();
           saveEmpireNameBtn.innerText = 'تمّ الحفظ ✓';
           setTimeout(() => { if (saveEmpireNameBtn) saveEmpireNameBtn.innerText = 'سجّل الاسم'; }, 1800);
-          localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
+          soundEngine.stopBGM();
+        localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
         }
       };
     }
@@ -4553,6 +4564,24 @@
     if (cancelExitAppBtn && exitAppModal) {
       cancelExitAppBtn.onclick = () => exitAppModal.classList.remove('active');
     }
+
+    // Coupure automatique et immédiate du son lors de la mise en veille ou sortie de l'application
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        soundEngine.stopBGM();
+        if (soundEngine.ctx && soundEngine.ctx.state === 'running') {
+          soundEngine.ctx.suspend();
+        }
+      } else if (!soundEngine.muted) {
+        soundEngine.init();
+        soundEngine.startBGM();
+      }
+    });
+
+    window.addEventListener('pagehide', () => {
+      soundEngine.stopBGM();
+    });
+
     if (confirmExitAppBtn) {
       confirmExitAppBtn.onclick = () => {
         // Sauvegarde avant de quitter
@@ -4663,7 +4692,10 @@
       const formattedDinars = formatCurrency(engine.dinars);
       if (formattedDinars !== lastDisplayedDinars) {
         dinarsDisplay.innerHTML = formattedDinars;
-        if (bizBalanceEl) bizBalanceEl.innerHTML = formattedDinars;
+        if (bizBalanceEl) {
+          // Formatage compact sans débordement pour le bandeau du magasin
+          bizBalanceEl.innerHTML = formatCompactDinars(engine.dinars);
+        }
         lastDisplayedDinars = formattedDinars;
       }
 

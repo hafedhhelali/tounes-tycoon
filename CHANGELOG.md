@@ -1,6 +1,22 @@
+﻿## [0.80.0] - 2026-10-24
+### Added
+- Spécialités régionales adaptées selon la ville (Béja: fromages/laiterie, Tozeur: dattes, Nabeul: poterie, Djerba: artisanat/poterie, Sfax: poissons/fruits de mer).
+- Décors urbains tunisiens : station-service (⛽), agence bancaire (🏦), paraboles sur les toits, jardins et oliviers.
+- Musique Malouf tunisien classique authentique procédurale (Oud et Kanoun) sans aucun copyright.
+
+### Changed
+- Carte de Tunisie : noms de villes épurés (NOM DE VILLE ONLY), hauteur d'affichage minimale garantie à 520px.
+- Portes de projets : descendues au sol, badge d'entrée « ادخل 🚪 » agrandi et très contrasté.
+- Maisons : suppression des enseignes de texte pour des façades épurées et authentiques.
+- Carrefour : suppression de la grande arche « باب العبور بين المدن », bouton voyage élégamment positionné au niveau de la route.
+- Onglet projet : renommé en « اللائحة ».
+- Solde boutique (bizBalance) : formatage compact adapté sans débordement.
+- Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
+
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(city-map-audio): regional adaptation, clean map, street decor & classic malouf
 - fix(anomalies,travel,hud): fix interior overlapping text, elevated customer bubbles, enlarged neon sign and interactive travel map button
 - feat(attariya,anim,signs,car): authentic grocery interior, item pickup animation, rooftop level badge and car travel
 - feat(attariya,anim,signs,car): authentic grocery interior, item pickup animation, rooftop level badge, clean 3D crossroad and car travel

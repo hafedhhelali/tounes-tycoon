@@ -245,61 +245,59 @@ class SoundEngine {
   }
 
   // Musique d'ambiance feutrée, type lounge méditerranéen relaxant (Guitare nylon & Rhodes doux)
+    // Musique tunisienne classique authentique (Malouf traditionnel - Maqam Bayati / Rast sans copyright)
+  // Simulation procédurale d'Oud tunisien (عود تونسي) et de Kanoun doux (قانون)
   startBGM() {
     if (this.bgmTimer || this.muted) return;
     this.init();
 
-    // Rythme lounge doux 60 BPM (1 battement = 1000ms, step = 500ms)
-    // Progression harmonique apaisante : Dm9 -> G13 -> Cmaj9 -> Am9
-    const bpm = 60;
-    const stepDuration = 60 / bpm / 2; // 500ms par temps
+    // Rythme de Malouf tunisien apaisant (Dukah / Samai 72 BPM)
+    const bpm = 72;
+    const stepDuration = 60 / bpm / 2; // ~416ms
     let bgmStep = 0;
 
-    const chords = [
+    // Gamme Maqam Bayati / Rast tunisien traditionnel : D, E-half-flat (~155Hz), F, G, A, Bb, C, D
+    // Fréquences harmoniques de l'Oud et du Kanoun tunisien
+    const maloufChords = [
       {
-        bass: 73.42, // D2
-        nylon: [146.83, 220.00, 261.63, 329.63], // D3, A3, C4, E4 (Dm9)
-        melody: [329.63, 392.00, 440.00, 329.63]
+        bass: 73.42, // Ré (D2)
+        oud: [146.83, 220.00, 293.66, 349.23], // D3, A3, D4, F4
+        kanoun: [349.23, 392.00, 440.00, 523.25, 587.33] // F4, G4, A4, C5, D5
       },
       {
-        bass: 98.00, // G2
-        nylon: [146.83, 196.00, 246.94, 329.63], // D3, G3, B3, E4 (G13)
-        melody: [293.66, 329.63, 392.00, 293.66]
+        bass: 87.31, // Fa (F2)
+        oud: [174.61, 220.00, 261.63, 349.23], // F3, A3, C4, F4
+        kanoun: [440.00, 523.25, 587.33, 659.25, 698.46] // A4, C5, D5, E5, F5
       },
       {
-        bass: 65.41, // C2
-        nylon: [130.81, 196.00, 246.94, 293.66], // C3, G3, B3, D4 (Cmaj9)
-        melody: [246.94, 293.66, 329.63, 246.94]
+        bass: 98.00, // Sol (G2)
+        oud: [196.00, 246.94, 293.66, 392.00], // G3, B3, D4, G4
+        kanoun: [392.00, 440.00, 523.25, 587.33, 440.00] // G4, A4, C5, D5, A4
       },
       {
-        bass: 110.00, // A2
-        nylon: [164.81, 220.00, 261.63, 329.63], // E3, A3, C4, E4 (Am9)
-        melody: [261.63, 293.66, 329.63, 220.00]
+        bass: 110.00, // La (A2)
+        oud: [220.00, 261.63, 329.63, 440.00], // A3, C4, E4, A4
+        kanoun: [523.25, 440.00, 392.00, 349.23, 293.66] // C5, A4, G4, F4, D4
       }
     ];
 
-    // Synthèse Rhodes feutré / Guitare nylon acoustique sans aucun sifflement strident
-    const playLoungeVoice = (freq, time, duration, peakGain, isBass = false) => {
+    // Synthèse instrumentale Oud tunisien feutré (corde pincée résonante et boisée)
+    const playOudNote = (freq, time, duration, peakGain = 0.025) => {
       if (!freq || this.muted || !this.ctx) return;
-
       const osc = this.ctx.createOscillator();
       const filter = this.ctx.createBiquadFilter();
       const gain = this.ctx.createGain();
 
-      // Forme d'onde sine / triangle douce, sans harmoniques agressives
-      osc.type = isBass ? 'sine' : 'triangle';
+      osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, time);
 
-      // Filtre passe-bas chaleureux : coupe les aigus grinçants
       filter.type = 'lowpass';
-      const cutoff = isBass ? 160 : 420;
-      filter.frequency.setValueAtTime(cutoff, time);
-      filter.frequency.exponentialRampToValueAtTime(Math.max(60, cutoff * 0.4), time + duration);
+      filter.frequency.setValueAtTime(480, time);
+      filter.frequency.exponentialRampToValueAtTime(140, time + duration);
 
-      // Enveloppe ADSR feutrée (attaque douce ~30ms, extinction progressive)
-      gain.gain.setValueAtTime(0.00001, time);
-      gain.gain.linearRampToValueAtTime(peakGain, time + (isBass ? 0.08 : 0.035));
-      gain.gain.exponentialRampToValueAtTime(0.00001, time + duration);
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(peakGain, time + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
 
       osc.connect(filter);
       filter.connect(gain);
@@ -309,31 +307,57 @@ class SoundEngine {
       osc.stop(time + duration + 0.05);
     };
 
-    let nextNoteTime = this.ctx.currentTime + 0.1;
+    // Synthèse Kanoun oriental subtil (arpège métallique soyeux)
+    const playKanounNote = (freq, time, duration, peakGain = 0.015) => {
+      if (!freq || this.muted || !this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time);
+
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(freq * 1.2, time);
+      filter.Q.setValueAtTime(3.0, time);
+
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(peakGain, time + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(time);
+      osc.stop(time + duration + 0.05);
+    };
+
+    let nextNoteTime = this.ctx.currentTime + 0.08;
     this.bgmTimer = setInterval(() => {
       if (this.muted || !this.ctx) return;
       while (nextNoteTime < this.ctx.currentTime + 0.35) {
-        const chordIdx = Math.floor(bgmStep / 8) % chords.length;
+        const chordIdx = Math.floor(bgmStep / 8) % maloufChords.length;
         const pos = bgmStep % 8;
-        const chord = chords[chordIdx];
+        const chord = maloufChords[chordIdx];
 
-        // 1. Basse feutrée ronde sur les temps 0 et 4
+        // Bourdon de l'Oud (قرارة العود) sur les temps 0 et 4
         if (pos === 0) {
-          playLoungeVoice(chord.bass, nextNoteTime, stepDuration * 3.8, 0.035, true);
+          playOudNote(chord.bass, nextNoteTime, stepDuration * 3.5, 0.032);
         } else if (pos === 4) {
-          playLoungeVoice(chord.bass * 1.5, nextNoteTime, stepDuration * 2.5, 0.022, true);
+          playOudNote(chord.bass * 1.5, nextNoteTime, stepDuration * 2.2, 0.02);
         }
 
-        // 2. Arpège nylon délicat
-        if (pos === 1 || pos === 3 || pos === 5 || pos === 7) {
-          const noteIndex = Math.floor(pos / 2) % chord.nylon.length;
-          playLoungeVoice(chord.nylon[noteIndex], nextNoteTime, stepDuration * 1.6, 0.016, false);
+        // Pincements de cordes d'Oud traditionnels
+        if (pos === 1 || pos === 3 || pos === 6) {
+          const oudIdx = (pos === 1 ? 0 : pos === 3 ? 1 : 2) % chord.oud.length;
+          playOudNote(chord.oud[oudIdx], nextNoteTime, stepDuration * 1.8, 0.018);
         }
 
-        // 3. Touche mélodique Rhodes en sourdine
-        if (pos === 2 || pos === 6) {
-          const melNote = chord.melody[(pos === 2 ? 0 : 2) % chord.melody.length];
-          playLoungeVoice(melNote, nextNoteTime, stepDuration * 2.2, 0.012, false);
+        // Répétitions et ornementations douces de Kanoun (زخرفة القانون)
+        if (pos === 2 || pos === 5 || pos === 7) {
+          const kIdx = (pos === 2 ? 0 : pos === 5 ? 2 : 4) % chord.kanoun.length;
+          playKanounNote(chord.kanoun[kIdx], nextNoteTime, stepDuration * 1.4, 0.012);
         }
 
         nextNoteTime += stepDuration;
@@ -346,6 +370,9 @@ class SoundEngine {
     if (this.bgmTimer) {
       clearInterval(this.bgmTimer);
       this.bgmTimer = null;
+    }
+    if (this.ctx && this.ctx.state === 'running') {
+      try { this.ctx.suspend(); } catch(e) {}
     }
   }
 

@@ -19,7 +19,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'fricasse',
-    name: 'فريكاسي وبمبلوني سخون',
+    name: 'فريكاسي وبمبلوني',
     tagline: 'كعبة مقرمشة تعوّم في العسل وشاربة الزيت بالبركة، تعضّ الكعبة تتفرشك !',
     icon: '🍩',
     baseCost: 30.0,
@@ -32,7 +32,7 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'kahwa',
-    name: 'قهوة شعبية وطرح شكبة',
+    name: 'قهوة شعبية',
     tagline: 'كابوسين قارحة، دخان الكوانين وطرح شكبة للصباح، هوني وين تصنع الصفقات !',
     icon: '☕',
     baseCost: 120.0,
@@ -1523,9 +1523,55 @@ export class TycoonEngine {
   }
 
   // --- DÉTAIL & PLAN INTÉRIEUR DU PROJET (VUE IMMERSIVE) ---
+  // Spécialités régionales adaptées selon la ville
+  getBusinessRegionalSpecialty(businessId, targetCityId = null) {
+    const cityId = targetCityId || this.currentCityId || 'tunis';
+    const citySpecialties = {
+      beja: {
+        attariya: { name: 'أجبان ومشتقات حليب باجة', icon: '🧀', tagline: 'جبن مالح، ريكوتا طازجة وحليب بيو من مراعي باجة الخضراء' },
+        supermarche: { name: 'مجمّع خيرات ومطامير باجة', icon: '🌾', tagline: 'قمح باجة العالي، سميد صافي ومخارق وزلابية سخونة' },
+        kaskrout: { name: 'كسكروت خبز طابونة باجي', icon: '🥖', tagline: 'طابونة سخونة بالجبن الباجي والزيت الحار' }
+      },
+      tozeur: {
+        attariya: { name: 'تمور ودقلة النور الجريدية', icon: '🌴', tagline: 'دقلة العرجون معسّلة، ربّ التمر ومطاويح تمور الواحات العالمية' },
+        patisserie: { name: 'حلويات التمور وواحة توزر', icon: '🍯', tagline: 'مقروض محشي بدقلة النور وكعك التمر باللوز' },
+        agence_voyages: { name: 'سفاري وواحات الشبيكة وتوزر', icon: '🚙', tagline: 'رحلات بالرباعية في كثبان الشبيكة وتامغزة والشط' }
+      },
+      nabeul_hammamet: {
+        attariya: { name: 'فخار وخزف نابل التقليدي', icon: '🏺', tagline: 'جرار، أواني خزفية ومزهريات قلالين نابل العريقة' },
+        patisserie: { name: 'زهر نابل وياسمين الحمامات', icon: '🌸', tagline: 'تقطير ماء الزهر الحر، حلويات اللوز ونبلية نابلية' },
+        hotel: { name: 'منتجع ياسمين الحمامات الفاخر', icon: '🏖️', tagline: 'شاطئ لازوردي، مسبح دافئ واستجمام على الطريقة النابلية' }
+      },
+      djerba_holding: {
+        attariya: { name: 'فخار قلالة وصناعات جربة التقليدية', icon: '🏺', tagline: 'أواني فخار قلالة، فليج وسعف المظلات وصياغة الفضة' },
+        supermarche: { name: 'سوق الحارة والمنسوجات الجربية', icon: '🧶', tagline: 'كليم جربي، بشكير حمام وحياكة صوف جزيرة الأحلام' },
+        hotel: { name: 'منتجع الهولدينغ والمنزل الجربي 5 نجوم', icon: '👑', tagline: 'إقامة أندلسية بأقواس بيضاء وبحر قنطرة جربة' }
+      },
+      sfax: {
+        restaurant: { name: 'مطعم الحوت والقرنيط الصفاقسي', icon: '🐟', tagline: 'حوت مشوي طازج، شوربة قرنيط وشرمولة صفاقسية أصلية' },
+        supermarche: { name: 'سوق باب الجبلي للسمك وزيت الزيتون', icon: '🫒', tagline: 'صابة زيت الزيتون البكر الممتاز وحوت شوابي طازة' },
+        usine_conserves: { name: 'مصنع مصبرات الحوت الأزرق وزيت الزيتون', icon: '🥫', tagline: 'تعليب السردينة والتن وتصدير الذهب الأخضر الصفاقسي' }
+      },
+      bizerte: {
+        restaurant: { name: 'مطعم حوت الميناء العتيق', icon: '⛵', tagline: 'حوت قنال بنزرت، سردينة مشوية وكفتة بحرية مقرمشة' },
+        kaskrout: { name: 'كسكروت لبلابي كركار بنزرتي', icon: '🍲', tagline: 'صحفة لبلابي بنزرتية حارة بحبة البيض والكمون' }
+      },
+      kairouan: {
+        patisserie: { name: 'مقروض القيروان الملكي بالسمن', icon: '🍯', tagline: 'مقروض بالسمن الحر، التمر المعسل وجلجلان باب الجلادين' },
+        attariya: { name: 'زربية القيروان والصناعات التقليدية', icon: '🧵', tagline: 'زرابي صوفية عقدة عقدة، نحاس مطروق وبخور القيروان' }
+      }
+    };
+
+    if (citySpecialties[cityId] && citySpecialties[cityId][businessId]) {
+      return citySpecialties[cityId][businessId];
+    }
+    return null;
+  }
+
   getBusinessDetail(bizId, now = Date.now()) {
     const biz = this.businesses.find(b => b.id === bizId);
     if (!biz) return null;
+    const specialty = this.getBusinessRegionalSpecialty(biz.id);
 
     const revenuePerCycle = this.getRevenue(biz, now);
     const cycleSeconds = (biz.cycleDurationMs || 1000) / 1000;
@@ -1664,9 +1710,9 @@ export class TycoonEngine {
 
     return {
       id: biz.id,
-      name: biz.name,
-      tagline: biz.tagline,
-      icon: biz.icon,
+      name: specialty ? specialty.name : biz.name,
+      tagline: specialty ? specialty.tagline : biz.tagline,
+      icon: specialty ? specialty.icon : biz.icon,
       level: biz.level,
       cycleDurationMs: biz.cycleDurationMs,
       revenuePerCycle,
