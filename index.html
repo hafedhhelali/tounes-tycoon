@@ -4066,6 +4066,10 @@
         },
         onHudAction: (action) => {
           soundEngine.playCoin();
+          if (action === 'hud_map') {
+            switchTab('zones');
+            return;
+          }
           if (action === 'hud_boost' && adBoostBtn) adBoostBtn.click();
           else if (action === 'hud_cash' && adCashBtn) adCashBtn.click();
           else if (action === 'hud_prestige' && prestigeOpenBtn) prestigeOpenBtn.click();
@@ -4590,8 +4594,21 @@
     registerBackButtonListener();
 
     let activeBizTab = null;
+    let bizDrawerAutoCloseTimer = null;
     const bizDrawer = document.getElementById('bizDrawer');
+    function resetBizDrawerTimer() {
+      if (bizDrawerAutoCloseTimer) clearTimeout(bizDrawerAutoCloseTimer);
+      if (activeBizTab) {
+        bizDrawerAutoCloseTimer = setTimeout(() => {
+          switchBizDetailTab(null);
+        }, 3000);
+      }
+    }
     function switchBizDetailTab(tab) {
+      if (bizDrawerAutoCloseTimer) {
+        clearTimeout(bizDrawerAutoCloseTimer);
+        bizDrawerAutoCloseTimer = null;
+      }
       // Tap sur l'onglet actif = referme le tiroir (animation dégagée)
       const open = tab !== null && tab !== activeBizTab;
       activeBizTab = open ? tab : null;
@@ -4603,6 +4620,24 @@
       bizDetailPanelRecipe.style.display = activeBizTab === 'recipe' ? 'flex' : 'none';
       bizDetailPanelActivity.style.display = activeBizTab === 'activity' ? 'flex' : 'none';
       if (bizDrawer) bizDrawer.classList.toggle('open', open);
+
+      if (open) {
+        resetBizDrawerTimer();
+      }
+    }
+    // Réinitialiser le timer si l'utilisateur interagit avec le panneau
+    if (bizDrawer) {
+      bizDrawer.addEventListener('pointerdown', () => resetBizDrawerTimer());
+      bizDrawer.addEventListener('touchstart', () => resetBizDrawerTimer());
+    }
+    // Fermeture immédiate du tiroir si clic/tap sur le canvas intérieur du commerce
+    const bizStoreCanvas = document.getElementById('bizStoreCanvas');
+    if (bizStoreCanvas) {
+      bizStoreCanvas.addEventListener('pointerdown', (e) => {
+        if (activeBizTab) {
+          switchBizDetailTab(null);
+        }
+      });
     }
 
     if (bizTabBtnStaff) bizTabBtnStaff.onclick = () => switchBizDetailTab('staff');

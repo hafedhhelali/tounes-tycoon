@@ -572,7 +572,7 @@ export class CanvasStoreEngine {
         this.drawWorker(ctx, stationX + 22, baseY, idx + 1, isBusy, timeSec);
         this.drawRoleTag(ctx, stationX + 22, baseY + 4, slot.role);
 
-        const effIcon = isBusy ? '♨️' : '💤';
+        const effIcon = isBusy ? (detail.staffSlots && detail.staffSlots[idx + 1] && detail.staffSlots[idx + 1].icon ? detail.staffSlots[idx + 1].icon : '⚡') : '💤';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(effIcon, stationX + 22, baseY - 54 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
@@ -810,7 +810,7 @@ export class CanvasStoreEngine {
       ctx.fillRect(x + 2, y - 36, 40, 9);
       ctx.fillStyle = '#22c55e';
       ctx.font = 'bold 7px monospace';
-      ctx.fillText('BVMT ▲+2%', x + 4, y - 29);
+      ctx.fillText('بورصة تونس 📈', x + 2, y - 29);
     }
 
     // Décor par défaut
@@ -2327,34 +2327,42 @@ export class QuartierAnimator {
     // Drapeau tunisien au sommet
     this.drawTunisianFlag(ctx, x + b.width - 24, y - 10, timestamp);
 
+    // Badge de niveau au-dessus de l'enseigne (élégant, doré et cliquable)
+    const lvlBadgeW = 38;
+    const lvlBadgeH = 15;
+    const lvlBadgeX = x + (b.width - lvlBadgeW) / 2;
+    const lvlBadgeY = y + 8;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+    ctx.beginPath();
+    ctx.roundRect(lvlBadgeX, lvlBadgeY, lvlBadgeW, lvlBadgeH, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.fillStyle = '#fde047';
+    ctx.font = '900 9px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('⭐ L' + level, lvlBadgeX + lvlBadgeW / 2, lvlBadgeY + 11);
+
     // Enseigne du magasin au-dessus de la porte
     ctx.save();
     if (hasNeonSign) {
       ctx.shadowColor = '#38bdf8';
       ctx.shadowBlur = 8;
     }
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
     ctx.beginPath();
-    ctx.roundRect(x + 10, y + 22, b.width - 20, 22, 6);
+    ctx.roundRect(x + 8, y + 25, b.width - 16, 22, 6);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+    ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.restore();
 
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 11px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(biz.icon + ' ' + biz.name, x + b.width / 2, y + 37);
-
-    // Badge de niveau
-    ctx.fillStyle = '#1e293b';
-    ctx.beginPath();
-    ctx.roundRect(x + 6, y + 18, 26, 15, 4);
-    ctx.fill();
-    ctx.fillStyle = '#38bdf8';
-    ctx.font = '900 9px "Cairo", sans-serif';
-    ctx.fillText('L' + level, x + 19, y + 29);
+    ctx.fillText(biz.icon + ' ' + biz.name, x + b.width / 2, y + 40);
 
     // --- GRANDE PORTE ARABE TRADITIONNELLE (باب عربي مرصّع بالمسامير النحاسية) ---
     const doorW = Math.min(42, b.width * 0.38);
@@ -2478,29 +2486,24 @@ export class QuartierAnimator {
     const doorInteractX = doorX - 8;
     const doorInteractY = doorY - 10;
 
-    // Petit indicateur discret et élégant au sol devant la porte
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-    ctx.beginPath();
-    ctx.roundRect(doorX - 2, groundY - 20, doorW + 4, 16, 4);
-    ctx.fill();
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.fillStyle = '#38bdf8';
+    // Inscription gravée discrète et raffinée directement sur le bois de la porte
+    ctx.save();
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.9)';
     ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🚪 ادخل', doorX + doorW / 2, groundY - 8);
+    ctx.fillText('🚪 ادخل', doorX + doorW / 2, doorY + doorH - 8);
+    ctx.restore();
 
-    // Plaque de niveau cliquable au-dessus de la porte
-    const upgBadgeW = 44;
+    // Plaque d'amélioration élégante au-dessus de la porte
+    const upgBadgeW = 48;
     const upgBadgeH = 16;
     const upgBadgeX = doorX + (doorW - upgBadgeW) / 2;
     const upgBadgeY = doorY - 18;
-    ctx.fillStyle = canAfford ? '#10b981' : 'rgba(30, 41, 59, 0.9)';
+    ctx.fillStyle = canAfford ? '#059669' : 'rgba(30, 41, 59, 0.9)';
     ctx.beginPath();
     ctx.roundRect(upgBadgeX, upgBadgeY, upgBadgeW, upgBadgeH, 4);
     ctx.fill();
-    ctx.strokeStyle = canAfford ? '#34d399' : '#64748b';
+    ctx.strokeStyle = canAfford ? '#6ee7b7' : '#64748b';
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.fillStyle = '#ffffff';
@@ -2522,6 +2525,14 @@ export class QuartierAnimator {
       y: upgBadgeY - 4,
       w: upgBadgeW + 8,
       h: upgBadgeH + 8,
+      action: 'upgrade',
+      bizId: b.id
+    });
+    this.interactiveHitboxes.push({
+      x: lvlBadgeX - 4,
+      y: lvlBadgeY - 4,
+      w: lvlBadgeW + 8,
+      h: lvlBadgeH + 8,
       action: 'upgrade',
       bizId: b.id
     });
@@ -2673,32 +2684,41 @@ export class QuartierAnimator {
   }
 
   drawCrossroad(ctx, cItem, x, groundY, h, timestamp) {
-    const w = cItem.width || 125;
+    const w = cItem.width || 135;
     const roadY = groundY + 20;
 
     ctx.save();
 
-    // 1. Perspective de la rue perpendiculaire avec façades lointaines illuminées
-    const backTopY = Math.max(82, groundY - 98);
-    const topW = w * 0.46;
+    // 1. Perspective de la route royale / autoroute menant aux autres villes tunisiennes
+    const backTopY = Math.max(76, groundY - 110);
+    const topW = w * 0.52;
     const topX = x + (w - topW) / 2;
 
-    // Bâtiments de fond de ruelle
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(topX - 10, backTopY - 22, topW * 0.55, 24);
+    // Collines ou paysages tunisiens au loin (silhouettes d'oliviers et minaret)
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(topX + topW * 0.42, backTopY - 30, topW * 0.65, 32);
-    // Petites fenêtres éclairées au fond
-    ctx.fillStyle = 'rgba(254, 240, 138, 0.65)';
-    ctx.fillRect(topX - 4, backTopY - 16, 4, 5);
-    ctx.fillRect(topX + 4, backTopY - 16, 4, 5);
-    ctx.fillRect(topX + topW * 0.52, backTopY - 24, 4, 5);
-    ctx.fillRect(topX + topW * 0.72, backTopY - 24, 4, 5);
+    ctx.beginPath();
+    ctx.arc(topX + topW * 0.3, backTopY + 2, 22, Math.PI, 0, false);
+    ctx.arc(topX + topW * 0.7, backTopY + 2, 28, Math.PI, 0, false);
+    ctx.fill();
 
-    // Chaussée de la ruelle en perspective
+    // Petit minaret tunisien lointain à l'horizon
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(topX + topW * 0.48, backTopY - 26, 7, 26);
+    ctx.beginPath();
+    ctx.moveTo(topX + topW * 0.48 - 1, backTopY - 26);
+    ctx.lineTo(topX + topW * 0.48 + 3.5, backTopY - 33);
+    ctx.lineTo(topX + topW * 0.48 + 8, backTopY - 26);
+    ctx.closePath();
+    ctx.fill();
+    // Lanterne du minaret dorée
+    ctx.fillStyle = '#fde047';
+    ctx.fillRect(topX + topW * 0.48 + 2, backTopY - 24, 3, 3);
+
+    // Chaussée royale d'autoroute en perspective avec asphalte moderne et reflets dorés
     const alleyGrad = ctx.createLinearGradient(0, backTopY, 0, roadY);
-    alleyGrad.addColorStop(0, '#090d16');
-    alleyGrad.addColorStop(1, '#1e293b');
+    alleyGrad.addColorStop(0, '#0c1322');
+    alleyGrad.addColorStop(0.5, '#1e293b');
+    alleyGrad.addColorStop(1, '#0f172a');
     ctx.fillStyle = alleyGrad;
     ctx.beginPath();
     ctx.moveTo(topX, backTopY);
@@ -2708,12 +2728,16 @@ export class QuartierAnimator {
     ctx.closePath();
     ctx.fill();
 
-    // Trottoirs latéraux en perspective (3D curb)
-    ctx.fillStyle = '#475569';
+    // Trottoirs latéraux et glissières de sécurité en pierre taillée Kadhel
+    const curbGrad = ctx.createLinearGradient(x, 0, x + w, 0);
+    curbGrad.addColorStop(0, '#78350f');
+    curbGrad.addColorStop(0.5, '#b45309');
+    curbGrad.addColorStop(1, '#78350f');
+    ctx.fillStyle = curbGrad;
     ctx.beginPath();
     ctx.moveTo(topX - 6, backTopY);
     ctx.lineTo(topX, backTopY);
-    ctx.lineTo(x + 8, roadY);
+    ctx.lineTo(x + 10, roadY);
     ctx.lineTo(x - 4, roadY);
     ctx.closePath();
     ctx.fill();
@@ -2722,29 +2746,72 @@ export class QuartierAnimator {
     ctx.moveTo(topX + topW, backTopY);
     ctx.lineTo(topX + topW + 6, backTopY);
     ctx.lineTo(x + w + 4, roadY);
-    ctx.lineTo(x + w - 8, roadY);
+    ctx.lineTo(x + w - 10, roadY);
     ctx.closePath();
     ctx.fill();
 
-    // Bordures jaunes et noires de sécurité
-    ctx.strokeStyle = '#facc15';
+    // Lignes de guidage dorées lumineuses sur l'autoroute
+    ctx.strokeStyle = '#fbbf24';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(topX, backTopY);
-    ctx.lineTo(x + 6, roadY);
+    ctx.lineTo(x + 8, roadY);
     ctx.moveTo(topX + topW, backTopY);
-    ctx.lineTo(x + w - 6, roadY);
+    ctx.lineTo(x + w - 8, roadY);
     ctx.stroke();
 
-    // Ligne médiane pointillée de la rue secondaire
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([7, 7]);
+    // Ligne centrale lumineuse avec tirets animés de route
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.75)';
+    ctx.lineWidth = 2.2;
+    ctx.setLineDash([8, 8]);
     ctx.beginPath();
-    ctx.moveTo(x + w / 2, backTopY + 8);
-    ctx.lineTo(x + w / 2, roadY - 14);
+    ctx.moveTo(x + w / 2, backTopY + 4);
+    ctx.lineTo(x + w / 2, roadY - 10);
     ctx.stroke();
     ctx.setLineDash([]);
+
+    // GRANDE ARCHE MONUMENTALE TUNISIENNE (باب المدينة / قوس السفر)
+    const archW = Math.min(w - 6, 126);
+    const archH = 96;
+    const archX = x + (w - archW) / 2;
+    const archY = groundY - archH + 6;
+
+    // Deux piliers en pierre sculptée
+    const pillarW = 14;
+    const archPillarGrad = ctx.createLinearGradient(0, archY, 0, groundY);
+    archPillarGrad.addColorStop(0, '#fef3c7');
+    archPillarGrad.addColorStop(0.5, '#fde68a');
+    archPillarGrad.addColorStop(1, '#d97706');
+    ctx.fillStyle = archPillarGrad;
+    ctx.strokeStyle = '#92400e';
+    ctx.lineWidth = 1.5;
+
+    // Pilier gauche
+    ctx.fillRect(archX, archY + 22, pillarW, archH - 22);
+    ctx.strokeRect(archX, archY + 22, pillarW, archH - 22);
+    // Pilier droit
+    ctx.fillRect(archX + archW - pillarW, archY + 22, pillarW, archH - 22);
+    ctx.strokeRect(archX + archW - pillarW, archY + 22, pillarW, archH - 22);
+
+    // Chapiteaux sculptés dorés
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(archX - 2, archY + 20, pillarW + 4, 5);
+    ctx.fillRect(archX + archW - pillarW - 2, archY + 20, pillarW + 4, 5);
+
+    // Fronton et arc outrepassé supérieur
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.beginPath();
+    ctx.roundRect(archX - 2, archY, archW + 4, 24, 6);
+    ctx.fill();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Inscription monumentale au fronton de la porte
+    ctx.fillStyle = '#fde047';
+    ctx.font = '900 10.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏛️ باب العبور بين المدن', archX + archW / 2, archY + 16);
 
     // Lampadaire tunisien à halo chaud au coin du carrefour
     const lampX = x + w - 12;
@@ -2849,37 +2916,43 @@ export class QuartierAnimator {
     ctx.textAlign = 'center';
     ctx.fillText(`🪧 ${cItem.streetName}`, signX + signW / 2, signY + 14);
 
-    // 5. Panneaux directionnels cliquables : quartier suivant ET quartier précédent (navigation bidirectionnelle)
+    // 5. Portes et Bannières de voyage entre villes cliquables et prestigieuses
     const signs = [];
-    if (cItem.nextZoneId && cItem.nextZoneLabel) signs.push({ id: cItem.nextZoneId, label: `⬅️ ${cItem.nextZoneLabel}`, c0: '#10b981', c1: '#047857', edge: '#a7f3d0' });
-    if (cItem.prevZoneId && cItem.prevZoneLabel) signs.push({ id: cItem.prevZoneId, label: `${cItem.prevZoneLabel} ➡️`, c0: '#6366f1', c1: '#4338ca', edge: '#c7d2fe' });
+    if (cItem.nextZoneId && cItem.nextZoneLabel) signs.push({ id: cItem.nextZoneId, label: `سافر إلى ${cItem.nextZoneLabel} ⬅️`, c0: '#047857', c1: '#064e3b', edge: '#6ee7b7', glow: '#10b981' });
+    if (cItem.prevZoneId && cItem.prevZoneLabel) signs.push({ id: cItem.prevZoneId, label: `➡️ عودة إلى ${cItem.prevZoneLabel}`, c0: '#1d4ed8', c1: '#1e3a8a', edge: '#93c5fd', glow: '#3b82f6' });
     signs.forEach((s, i) => {
-      const dirW = Math.min(w - 8, 116);
-      const dirH = 24;
-      const dirX = x + (w - dirW) / 2 + 4;
-      const dirY = groundY - 58 - i * 28;
+      const dirW = Math.min(w - 6, 122);
+      const dirH = 26;
+      const dirX = x + (w - dirW) / 2;
+      const dirY = groundY - 56 - i * 30;
+
+      // Halo d'attraction
+      ctx.save();
+      ctx.shadowColor = s.glow;
+      ctx.shadowBlur = 6;
 
       const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
       signGrad.addColorStop(0, s.c0);
       signGrad.addColorStop(1, s.c1);
       ctx.fillStyle = signGrad;
       ctx.strokeStyle = s.edge;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.roundRect(dirX, dirY, dirW, dirH, 12);
+      ctx.roundRect(dirX, dirY, dirW, dirH, 8);
       ctx.fill();
       ctx.stroke();
+      ctx.restore();
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 10px "Cairo", sans-serif';
+      ctx.font = '900 10.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(s.label, dirX + dirW / 2, dirY + 16);
+      ctx.fillText(s.label, dirX + dirW / 2, dirY + 17.5);
 
       this.interactiveHitboxes.push({
-        x: dirX,
-        y: dirY,
-        w: dirW,
-        h: dirH,
+        x: dirX - 2,
+        y: dirY - 2,
+        w: dirW + 4,
+        h: dirH + 4,
         action: 'switch_zone',
         bizId: s.id
       });
@@ -3316,6 +3389,14 @@ export class QuartierAnimator {
 
     // 1. Petites icônes d'offres 3D en haut à droite DANS le ciel de l'image
     const rightIcons = [
+      {
+        action: 'hud_map',
+        icon: '🗺️',
+        sub: 'خريطة',
+        bg: '#047857',
+        border: '#34d399',
+        badgeBg: '#10b981'
+      },
       {
         action: 'hud_boost',
         icon: '🚀',

@@ -1,6 +1,9 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(street,anim,hud): direct HUD map, monumental city gates, discrete door entry, 3s auto-close drawer
+- feat(street,anim,hud): direct HUD map, monumental city gates, discrete door entry, 3s auto-close drawer
+- feat(street,anim,hud): direct HUD map access, monumental Bab El Medina crossroad gates, discrete door engraving, level badge above store sign, 3s auto-dismiss drawer and Tunisian Bourse ticker
 - feat(map-street): fix highway buttons door entry vector characters and copy
 - feat(map,cities,economy,anim): 14 Tunisian cities map, authentic Bab Arbi doors, advanced store animations, 7arif terminology and corporate expenses system
 - feat(icon,ui,anim): new app icon, uncropped project texts, vector animated employees
