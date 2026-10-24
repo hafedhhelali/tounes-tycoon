@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Suppression totale des panneaux d'alertes DOM (`#questBox`, `#eventBanner`, `#dilemmaBanner`, `#luckyDropEl`) qui se réactivaient dans `tick()` et `checkDilemmasUI()` et détruisaient le layout.
-Remplacement dans le Canvas (`drawInCanvasOffersHUD`) par de petites icônes circulaires (32x32px) discrètes en haut de l'image avec mini-pastille de notification.
-Chaque quartier possède ses propres projets dédiés, des maisons tunisiennes (`drawHouse`) et des carrefours animés (`drawCrossroad`). Tests: npm test = 12/12 PASS.
+Refonte graphique & fluidité 60 FPS : transitions cinématiques royales entre quartiers (écusson doré, halo radial, sous-titres thématiques), skyline enrichie (croissant de lune, dômes, minarets) et icônes d'offres/alertes 3D bombées dans le ciel du Canvas.
+Modales 100% Zéro-Scroll en mode paysage (grille 2 colonnes sur `bizDetailModal`, `settingsModal`, `legalModal`, `zonesModal`, roue compacte 145px).
+Ajout du Guide de Démarrage Rapide (`#startGuideModal` + bouton `❓` dans le header + ouverture auto au 1er lancement). Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

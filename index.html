@@ -778,90 +778,94 @@
       40%, 80% { transform: translateX(6px); }
     }
 
-    /* MODAL DE CÉLÉBRATION TYCOON & OVERLAYS */
+    /* MODAL DE CÉLÉBRATION TYCOON & OVERLAYS (COMPACT PAYSAGE ZÉRO SCROLL) */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(2, 6, 23, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 6px 12px;
       z-index: 200;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
-      overflow-y: auto;
+      transition: opacity 0.22s ease;
+      overflow: hidden;
     }
     .modal-overlay.active {
       opacity: 1;
       pointer-events: auto;
     }
     .modal-card {
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      background: linear-gradient(180deg, #1e293b 0%, #090d16 100%);
       border: 2px solid var(--gold);
-      border-radius: 20px;
-      padding: 16px 14px;
+      border-radius: 18px;
+      padding: 10px 16px;
       text-align: center;
       width: 100%;
-      max-width: 420px;
+      max-width: 480px;
       max-height: 94vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(251, 191, 36, 0.3);
-      transform: scale(0.85);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 28px rgba(251, 191, 36, 0.25);
+      transform: scale(0.88);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      gap: 6px;
     }
     .modal-overlay.active .modal-card {
       transform: scale(1);
     }
     .modal-icon-glow {
-      font-size: 54px;
-      filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.6));
+      font-size: 36px;
+      line-height: 1;
+      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.6));
       animation: bounce 1.5s infinite alternate ease-in-out;
     }
     @keyframes bounce {
       from { transform: translateY(0); }
-      to { transform: translateY(-8px); }
+      to { transform: translateY(-5px); }
     }
     .modal-title {
-      font-size: 22px;
+      font-size: 17px;
       font-weight: 900;
       color: #f8fafc;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
     }
     .modal-subtitle {
-      font-size: 13px;
+      font-size: 11.5px;
       color: var(--text-muted);
       font-weight: 600;
+      line-height: 1.25;
     }
     .modal-reward-badge {
       background: rgba(251, 191, 36, 0.15);
       border: 1px solid var(--gold);
       color: var(--gold);
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 900;
-      padding: 8px 24px;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
-      margin: 8px 0;
+      padding: 4px 18px;
+      border-radius: 12px;
+      box-shadow: 0 0 16px rgba(251, 191, 36, 0.2);
+      margin: 2px 0;
     }
     .modal-btn {
       width: 100%;
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       border: 1px solid #10b981;
       color: white;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 15px;
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
       font-weight: 900;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
       transition: transform 0.1s ease;
     }
     .modal-btn:active { transform: scale(0.97); }
@@ -1184,12 +1188,12 @@
       border: 1px solid white;
     }
 
-    /* ROUE DE LA FORTUNE MODALE */
+    /* ROUE DE LA FORTUNE MODALE COMPACTE ZÉRO SCROLL */
     .wheel-spinner-disc {
-      width: 220px;
-      height: 220px;
+      width: 145px;
+      height: 145px;
       border-radius: 50%;
-      border: 6px solid #f59e0b;
+      border: 5px solid #f59e0b;
       background: conic-gradient(
         #ef4444 0deg 72deg,
         #3b82f6 72deg 144deg,
@@ -1197,9 +1201,9 @@
         #f59e0b 216deg 288deg,
         #8b5cf6 288deg 360deg
       );
-      box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.5), inset 0 0 16px rgba(0, 0, 0, 0.6);
       position: relative;
-      margin: 14px auto;
+      margin: 4px auto;
       transition: transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1);
       display: flex;
       align-items: center;
@@ -1207,27 +1211,27 @@
     }
     .wheel-center-pointer {
       position: absolute;
-      top: -12px;
+      top: -10px;
       left: 50%;
       transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 12px solid transparent;
-      border-right: 12px solid transparent;
-      border-top: 20px solid #f8fafc;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 16px solid #f8fafc;
       z-index: 10;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
     .wheel-center-cap {
-      width: 48px;
-      height: 48px;
+      width: 38px;
+      height: 38px;
       background: #1e1b4b;
-      border: 3px solid #fbbf24;
+      border: 2.5px solid #fbbf24;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 16px;
       z-index: 5;
     }
 
@@ -1335,49 +1339,50 @@
     body.zone-hammamet { background-image: radial-gradient(circle at 50% -10%, #2e260c 0%, #070a12 75%); }
     body.zone-djerba { background-image: radial-gradient(circle at 50% -10%, #31104b 0%, #070a12 75%); }
 
-    /* SETTINGS & PROFILE MODAL STYLES */
+    /* SETTINGS & PROFILE MODAL STYLES (PAYSAGE 2 COLONNES ZÉRO SCROLL) */
     .settings-modal-card {
-      max-width: 440px;
-      width: 95%;
-      max-height: 88vh;
+      max-width: 640px;
+      width: 96%;
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      gap: 14px;
+      padding: 10px 14px;
+      gap: 8px;
       direction: rtl;
       text-align: right;
-      border: 1px solid rgba(245, 158, 11, 0.35);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
       background: linear-gradient(180deg, #131a29 0%, #0a0f1d 100%);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(245, 158, 11, 0.15);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.15);
+      overflow: hidden;
     }
     .settings-modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 10px;
+      padding-bottom: 6px;
       width: 100%;
     }
     .settings-modal-title-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .settings-title-icon {
-      font-size: 20px;
+      font-size: 18px;
     }
     .settings-close-btn {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #94a3b8;
       border-radius: 8px;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 900;
       transition: all 0.15s ease;
     }
@@ -1387,22 +1392,21 @@
       color: #f87171;
     }
     .settings-modal-body {
-      overflow-y: auto;
-      padding-left: 2px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
       width: 100%;
-      -webkit-overflow-scrolling: touch;
     }
     .settings-section {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 14px;
-      padding: 12px;
+      border-radius: 10px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
+      justify-content: space-between;
     }
     .settings-sec-title {
       font-size: 12px;
@@ -1823,11 +1827,11 @@
     .biz-store-stage {
       position: relative;
       width: 100%;
-      height: 200px;
+      height: 118px;
       background: radial-gradient(ellipse at 50% 20%, #1e293b 0%, #090d16 100%);
-      border-radius: 16px;
+      border-radius: 12px;
       border: 1.5px solid rgba(245, 158, 11, 0.45);
-      box-shadow: inset 0 2px 14px rgba(0,0,0,0.85), 0 6px 20px rgba(0,0,0,0.5);
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.85), 0 4px 12px rgba(0,0,0,0.5);
       overflow: hidden;
       user-select: none;
       contain: content;
@@ -2164,6 +2168,7 @@
           <button class="quick-pill-btn ad-pill" id="adCashBtn" style="display: none;"><span id="cashRewardHint"></span></button>
           <button class="quick-pill-btn gold" id="prestigeOpenBtn" style="display: none;"><span id="prestigeInfoLabel"></span></button>
           <button class="icon-pill-btn" id="soundToggleBtn" title="صوت">🔊</button>
+          <button class="icon-pill-btn" id="openGuideBtn" title="دليل البداية وكيفاش تلعب" style="border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc;">❓</button>
           <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية">📜</button>
           <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات وبروفيل">⚙️</button>
           <button class="icon-pill-btn exit-pill-btn" id="headerExitBtn" title="خروج من اللعبة" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">🚪</button>
@@ -2349,41 +2354,51 @@
 
   <!-- MODAL ROUE DE LA FORTUNE ('عجلة الحظ التونسية') -->
   <div class="modal-overlay" id="wheelModal">
-    <div class="modal-card" style="border-color: #e11d48; max-width: 360px;">
-      <div class="modal-icon-glow" style="font-size: 42px;">🎡</div>
-      <div class="modal-title">عجلة الحظ التونسية !</div>
-      <div class="modal-subtitle">دوّر العجلة ودبّر صابة فلوس، تيربو سريع، ولا كساكروت مجانية</div>
+    <div class="modal-card" style="border-color: #e11d48; max-width: 440px; padding: 10px 14px; gap: 6px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="modal-icon-glow" style="font-size: 28px;">🎡</div>
+        <div>
+          <div class="modal-title" style="font-size: 16px;">عجلة الحظ التونسية !</div>
+          <div class="modal-subtitle" style="font-size: 10.5px;">دوّر العجلة ودبّر صابة فلوس، تيربو سريع، ولا كساكروت مجانية</div>
+        </div>
+      </div>
 
-      <div style="position: relative; width: 220px; height: 220px; margin: 10px auto;">
+      <div style="position: relative; width: 145px; height: 145px; margin: 4px auto;">
         <div class="wheel-center-pointer"></div>
         <div class="wheel-spinner-disc" id="wheelDisc">
           <div class="wheel-center-cap">🇹🇳</div>
         </div>
       </div>
 
-      <div style="font-size: 13px; font-weight: 800; color: #fbbf24;" id="wheelResultLabel">
+      <div style="font-size: 12px; font-weight: 800; color: #fbbf24;" id="wheelResultLabel">
         جرّب حظّك واربح بالوقت !
       </div>
 
-      <button class="modal-btn" id="spinWheelBtn" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border-color: #fda4af;">
-        🎰 دوّر العجلة توّا !
-      </button>
-      <button id="closeWheelBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; font-weight: 800; cursor: pointer; padding: 6px;">
-        سكّر
-      </button>
+      <div style="display: flex; gap: 8px; width: 100%; align-items: center;">
+        <button class="modal-btn" id="spinWheelBtn" style="flex: 1; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border-color: #fda4af; padding: 8px;">
+          🎰 دوّر العجلة توّا !
+        </button>
+        <button id="closeWheelBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #cbd5e1; font-size: 12px; font-weight: 800; cursor: pointer; padding: 8px 14px;">
+          سكّر
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- MODAL CARTE DES QUARTIERS (غزو تونس) -->
   <div class="modal-overlay" id="zonesModal">
-    <div class="modal-card" style="border-color: #6366f1; max-width: 390px;">
-      <div class="modal-icon-glow" style="font-size: 40px;">🗺️</div>
-      <div class="modal-title">خريطة تونس والاستثمار</div>
-      <div class="modal-subtitle">كل حيّ تفتحه يعطيك بونيس إنتاج وطابع تونسي فريد !</div>
+    <div class="modal-card" style="border-color: #6366f1; max-width: 520px; padding: 10px 14px; gap: 6px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="modal-icon-glow" style="font-size: 28px;">🗺️</div>
+        <div style="text-align: right;">
+          <div class="modal-title" style="font-size: 16px;">خريطة تونس والاستثمار</div>
+          <div class="modal-subtitle" style="font-size: 10.5px;">كل حيّ تفتحه يعطيك بونيس إنتاج وطابع تونسي فريد !</div>
+        </div>
+      </div>
 
-      <div id="modalZonesList" style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-height: 280px; overflow-y: auto; padding: 4px;"></div>
+      <div id="modalZonesList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; padding: 2px;"></div>
 
-      <button class="modal-btn" id="closeZonesModalBtn" style="background: #4f46e5; border-color: #818cf8; margin-top: 8px;">
+      <button class="modal-btn" id="closeZonesModalBtn" style="background: #4f46e5; border-color: #818cf8; padding: 7px;">
         رجوع للمشروع 💼
       </button>
     </div>
@@ -2391,12 +2406,12 @@
 
   <!-- MODAL EXPERT TYCOON REWARD (AdMob / Offline) -->
   <div class="modal-overlay" id="rewardModal">
-    <div class="modal-card">
-      <div class="modal-icon-glow" id="modalEmoji">🎉</div>
-      <div class="modal-title" id="modalTitle">صحّة وفرحة !</div>
-      <div class="modal-subtitle" id="modalSub">الكاسة تعمّرت</div>
-      <div class="modal-reward-badge" id="modalRewardAmount">+30.00 د.ت</div>
-      <button class="modal-btn" id="modalCloseBtn">اقبض الصّابة 💰</button>
+    <div class="modal-card" style="max-width: 400px; padding: 12px 16px; gap: 6px;">
+      <div class="modal-icon-glow" id="modalEmoji" style="font-size: 34px;">🎉</div>
+      <div class="modal-title" id="modalTitle" style="font-size: 17px;">صحّة وفرحة !</div>
+      <div class="modal-subtitle" id="modalSub" style="font-size: 11.5px;">الكاسة تعمّرت</div>
+      <div class="modal-reward-badge" id="modalRewardAmount" style="font-size: 19px; padding: 4px 16px;">+30.00 د.ت</div>
+      <button class="modal-btn" id="modalCloseBtn" style="padding: 8px;">اقبض الصّابة 💰</button>
     </div>
   </div>
 
@@ -2507,142 +2522,194 @@
     </div>
   </div>
 
-  <!-- MODAL DÉTAIL & PLAN INTÉRIEUR DU PROJET (ادخل للمحلّ) -->
+  <!-- MODAL DÉTAIL & PLAN INTÉRIEUR DU PROJET (ادخل للمحلّ) — FORMAT PAYSAGE 2 COLONNES ZÉRO SCROLL -->
   <div class="modal-overlay" id="bizDetailModal">
-    <div class="modal-card biz-detail-card" style="max-width: 440px; width: 95%; max-height: 90vh; padding: 14px; gap: 10px; direction: rtl; text-align: right; border-color: var(--gold);">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div id="bizDetailIcon" style="font-size: 32px;">🏪</div>
+    <div class="modal-card biz-detail-card" style="max-width: 660px; width: 96%; max-height: 94vh; padding: 10px 14px; gap: 8px; direction: rtl; text-align: right; border-color: var(--gold); overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div id="bizDetailIcon" style="font-size: 26px;">🏪</div>
           <div>
-            <div id="bizDetailTitle" style="font-size: 16px; font-weight: 900; color: #f8fafc;">اسم المحلّ</div>
-            <div id="bizDetailTagline" style="font-size: 11px; color: #94a3b8;">شعار المحلّ</div>
+            <div id="bizDetailTitle" style="font-size: 15px; font-weight: 900; color: #f8fafc;">اسم المحلّ</div>
+            <div id="bizDetailTagline" style="font-size: 10px; color: #94a3b8;">شعار المحلّ</div>
           </div>
         </div>
         <button class="settings-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
       </div>
 
-      <!-- SCÈNE VISUELLE TYCOON 2D HAUTE DÉFINITION (CANVAS 60 FPS CUTAWAY STORE) -->
-      <div class="biz-store-stage" id="bizDetailVisualStage" style="display: flex; align-items: center; justify-content: center; position: relative;">
-        <canvas id="bizStoreCanvas" style="display: block; width: 100%; height: 200px; border-radius: 14px; cursor: pointer;"></canvas>
-      </div>
-
-      <!-- BLOC FINANCIER & ÉVOLUTION PREVISIONNELLE DU PROJET -->
-      <div class="biz-income-evolution-card">
-        <div class="biz-income-header">
-          <div class="biz-income-stat">
-            <span class="stat-label">💰 المربوح مع كل كليان (كل طلبية)</span>
-            <div class="stat-main-value" id="bizDetailIncome">+0.00 د.ت</div>
+      <div style="display: grid; grid-template-columns: 1.05fr 1fr; gap: 10px; width: 100%; align-items: stretch;">
+        <!-- Colonne Droite (RTL) : Scène 2D animée + Évolution financière -->
+        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
+          <div class="biz-store-stage" id="bizDetailVisualStage" style="display: flex; align-items: center; justify-content: center; position: relative; height: 118px;">
+            <canvas id="bizStoreCanvas" style="display: block; width: 100%; height: 118px; border-radius: 12px; cursor: pointer;"></canvas>
           </div>
-          <div class="biz-income-stat stat-cadence">
-            <span class="stat-label">⚡ الوتيرة الحينية</span>
-            <div class="stat-sub-value" id="bizDetailRate">+0.00 د.ت / ثانية</div>
-          </div>
-        </div>
 
-        <div class="biz-evolution-banner">
-          <div class="evo-info-pane">
-            <div class="evo-level-badge-wrap">
-              <span class="evo-badge">⬆️ الترقية القادمة</span>
-              <span class="evo-target" id="bizDetailNextLvlText">المستوى 2</span>
-              <div class="evo-gain-pill">
-                <span>📈</span>
-                <span id="bizDetailNextGain">+0.80 د.ت إضافي</span>
+          <div class="biz-income-evolution-card" style="padding: 7px 10px; gap: 6px;">
+            <div class="biz-income-header" style="padding: 5px 8px;">
+              <div class="biz-income-stat">
+                <span class="stat-label" style="font-size: 9px;">💰 المربوح / كليان</span>
+                <div class="stat-main-value" id="bizDetailIncome" style="font-size: 13px;">+0.00 د.ت</div>
+              </div>
+              <div class="biz-income-stat stat-cadence">
+                <span class="stat-label" style="font-size: 9px;">⚡ الوتيرة الحينية</span>
+                <div class="stat-sub-value" id="bizDetailRate" style="font-size: 11px;">+0.00 د.ت / ث</div>
               </div>
             </div>
-            <div class="evo-milestone-hint" id="bizDetailMilestoneHint">
-              🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !
+
+            <div class="biz-evolution-banner" style="padding: 6px 8px;">
+              <div class="evo-info-pane" style="gap: 2px;">
+                <div class="evo-level-badge-wrap" style="gap: 4px;">
+                  <span class="evo-badge" style="font-size: 9px;">⬆️ الترقية</span>
+                  <span class="evo-target" id="bizDetailNextLvlText" style="font-size: 11px;">المستوى 2</span>
+                  <div class="evo-gain-pill" style="font-size: 9.5px; padding: 1px 5px;">
+                    <span>📈</span>
+                    <span id="bizDetailNextGain">+0.80 د.ت</span>
+                  </div>
+                </div>
+                <div class="evo-milestone-hint" id="bizDetailMilestoneHint" style="font-size: 9px;">
+                  🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !
+                </div>
+              </div>
+              <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn" style="padding: 6px 10px; min-width: 96px; min-height: 38px;">
+                <span class="evo-btn-action" style="font-size: 11px;">طوّر المحلّ 🚀</span>
+                <span class="evo-btn-cost" id="bizDetailUpgradeCost" style="font-size: 10px;">5.35 د.ت</span>
+              </button>
             </div>
           </div>
-          <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn">
-            <span class="evo-btn-action">طوّر المحلّ 🚀</span>
-            <span class="evo-btn-cost" id="bizDetailUpgradeCost">5.35 د.ت</span>
-          </button>
         </div>
-      </div>
 
-      <!-- Navigation 3 Onglets intérieurs -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-top: 2px;">
-        <button class="quick-pill-btn active" id="bizTabBtnStaff" style="justify-content: center; font-size: 10px;">👥 الخدّامة</button>
-        <button class="quick-pill-btn" id="bizTabBtnRecipe" style="justify-content: center; font-size: 10px;">📜 الوصفة</button>
-        <button class="quick-pill-btn" id="bizTabBtnActivity" style="justify-content: center; font-size: 10px;">⚡ النشاط</button>
-      </div>
-
-      <!-- Panneau 1 : Plan des Employés -->
-      <div id="bizDetailPanelStaff" style="display: flex; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto; padding-right: 2px;">
-        <div id="bizDetailStaffList" style="display: flex; flex-direction: column; gap: 6px;"></div>
-      </div>
-
-      <!-- Panneau 2 : Décomposition de la Recette -->
-      <div id="bizDetailPanelRecipe" style="display: none; flex-direction: column; gap: 6px; max-height: 280px; overflow-y: auto;">
-        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 2px;">🥖 المنتوجات التونسية الأكثر طلباً في هذا المحلّ :</div>
-        <div id="bizDetailRecipeList" style="display: flex; flex-direction: column; gap: 6px;"></div>
-      </div>
-
-      <!-- Panneau 3 : Simulation d'activité en direct -->
-      <div id="bizDetailPanelActivity" style="display: none; flex-direction: column; gap: 8px;">
-        <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); text-align: center;">
-          <div style="font-size: 12px; color: #94a3b8;">جوّ المحلّ والإقبال الحيني :</div>
-          <div id="bizDetailCrowdLevel" style="font-size: 18px; font-weight: 900; color: #f59e0b; margin: 4px 0;">الحانوت معبي للكرومة 🔥</div>
-          <div style="display: flex; justify-content: space-around; margin-top: 8px; font-size: 11px;">
-            <div>👥 كليونات/دقيقة : <b id="bizDetailCustomersRate" style="color:#38bdf8;">14</b></div>
-            <div>⭐ نسبة الرضا : <b id="bizDetailSatisfaction" style="color:#34d399;">96%</b></div>
+        <!-- Colonne Gauche (RTL) : Employés / Recette / Activité sans scroll -->
+        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; justify-content: space-between;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
+            <button class="quick-pill-btn active" id="bizTabBtnStaff" style="justify-content: center; font-size: 10px; padding: 5px;">👥 الخدّامة</button>
+            <button class="quick-pill-btn" id="bizTabBtnRecipe" style="justify-content: center; font-size: 10px; padding: 5px;">📜 الوصفة</button>
+            <button class="quick-pill-btn" id="bizTabBtnActivity" style="justify-content: center; font-size: 10px; padding: 5px;">⚡ النشاط</button>
           </div>
-        </div>
-        <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px; font-size: 11px; color: #a7f3d0;" id="bizDetailLiveTicker">
-          💬 كليان دخل يطلب في كعيبات سخان... الكاسة تسجّل في المرابيح !
+
+          <div id="bizDetailPanelStaff" style="display: flex; flex-direction: column; gap: 5px; flex: 1; justify-content: center;">
+            <div id="bizDetailStaffList" style="display: flex; flex-direction: column; gap: 5px;"></div>
+          </div>
+
+          <div id="bizDetailPanelRecipe" style="display: none; flex-direction: column; gap: 5px; flex: 1; justify-content: center;">
+            <div style="font-size: 10px; color: #94a3b8;">🥖 المنتوجات التونسية الأكثر طلباً :</div>
+            <div id="bizDetailRecipeList" style="display: flex; flex-direction: column; gap: 5px;"></div>
+          </div>
+
+          <div id="bizDetailPanelActivity" style="display: none; flex-direction: column; gap: 6px; flex: 1; justify-content: center;">
+            <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); text-align: center;">
+              <div style="font-size: 11px; color: #94a3b8;">جوّ المحلّ والإقبال الحيني :</div>
+              <div id="bizDetailCrowdLevel" style="font-size: 15px; font-weight: 900; color: #f59e0b; margin: 3px 0;">الحانوت معبي للكرومة 🔥</div>
+              <div style="display: flex; justify-content: space-around; margin-top: 6px; font-size: 10.5px;">
+                <div>👥 كليونات/دقيقة : <b id="bizDetailCustomersRate" style="color:#38bdf8;">14</b></div>
+                <div>⭐ نسبة الرضا : <b id="bizDetailSatisfaction" style="color:#34d399;">96%</b></div>
+              </div>
+            </div>
+            <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 6px 8px; font-size: 10px; color: #a7f3d0;" id="bizDetailLiveTicker">
+              💬 كليان دخل يطلب في كعيبات سخان... الكاسة تسجّل في المرابيح !
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL MENTIONS LÉGALES & CONFIDENTIALITÉ -->
+  <!-- MODAL MENTIONS LÉGALES & CONFIDENTIALITÉ (2 COLONNES ZÉRO SCROLL) -->
   <div class="modal-overlay" id="legalModal">
-    <div class="modal-card" style="max-width: 440px; width: 95%; max-height: 85vh; padding: 20px; text-align: right; direction: rtl; gap: 14px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-        <div style="font-size: 16px; font-weight: 900; color: #fbbf24;">📜 الشروط القانونية وحماية المعطيات</div>
+    <div class="modal-card" style="max-width: 600px; width: 96%; max-height: 94vh; padding: 12px 16px; text-align: right; direction: rtl; gap: 8px; overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
+        <div style="font-size: 15px; font-weight: 900; color: #fbbf24;">📜 الشروط القانونية وحماية المعطيات</div>
         <button class="settings-close-btn" id="closeLegalModalBtn">✕</button>
       </div>
-      <div style="overflow-y: auto; max-height: 60vh; font-size: 12px; color: #cbd5e1; line-height: 1.6; display: flex; flex-direction: column; gap: 12px; padding-left: 4px;">
-        <div>
-          <strong style="color: #f8fafc; font-size: 13px;">1. الناشر والملكية الفكرية :</strong><br>
-          لعبة <strong>Tounes Tycoon (تونس تايكون)</strong> مطوّرة ومملوكة حصرياً لـ <strong>© EOLabs 2026</strong>. جميع الحقوق محفوظة، بما في ذلك الرسوم والأكواد والتسميات التجارية.
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10.5px; color: #cbd5e1; line-height: 1.4; width: 100%;">
+        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+          <strong style="color: #f8fafc; font-size: 11px;">1. الناشر والملكية الفكرية :</strong><br>
+          لعبة <strong>Tounes Tycoon</strong> مطوّرة ومملوكة لـ <strong>© EOLabs 2026</strong>. جميع الحقوق محفوظة.
         </div>
-        <div>
-          <strong style="color: #f8fafc; font-size: 13px;">2. حماية المعطيات الشخصية (Privacy) :</strong><br>
-          لا تقوم اللعبة بجمع أو تخزين أو نقل أي بيانات شخصية أو هواتف أو مواقع جغرافية للمستخدمين إلى خوادم خارجية. يتم تخزين تقدمك في اللعبة محلياً وبشكل مشفر في ذاكرة هاتفك (Local Storage).
+        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+          <strong style="color: #f8fafc; font-size: 11px;">2. حماية المعطيات (Privacy) :</strong><br>
+          لا نجمع أي بيانات شخصية خارجية. يتم حفظ تقدمك محلياً في ذاكرة هاتفك فقط.
         </div>
-        <div>
-          <strong style="color: #f8fafc; font-size: 13px;">3. الإعلانات والخدمات الخارجية :</strong><br>
-          تستخدم اللعبة شبكة Google AdMob لعرض إعلانات المكافآت الاختيارية (Rewarded Ads). تخضع هذه الإعلانات لسياسة الخصوصية المعتمدة من شركة Google.
+        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+          <strong style="color: #f8fafc; font-size: 11px;">3. الإعلانات (Google AdMob) :</strong><br>
+          تُعرض إعلانات المكافآت الاختيارية وفق سياسة الخصوصية المعتمدة من Google.
         </div>
-        <div>
-          <strong style="color: #f8fafc; font-size: 13px;">4. شروط الاستخدام :</strong><br>
-          اللعبة ترفيهية خفيفة تحاكي الاقتصاد التونسي الشعبي بروح فكاهية ووطنية. العملة الافتراضية (د.ت) داخل اللعبة وهمية وليس لها أي قيمة مالية حقيقية.
-        </div>
-        <div>
-          <strong style="color: #f8fafc; font-size: 13px;">5. الاتصال والدعم :</strong><br>
-          لأي استفسار أو اقتراح، يمكنكم التواصل مع فريق التطوير عبر البريد : <code>contact@eolabs.tn</code>
+        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+          <strong style="color: #f8fafc; font-size: 11px;">4. شروط الاستخدام والاتصال :</strong><br>
+          العملة الافتراضية (د.ت) ترفيهية وهمية. للتواصل : <code>contact@eolabs.tn</code>
         </div>
       </div>
-      <button class="modal-btn" id="confirmLegalBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 10px;">
+      <button class="modal-btn" id="confirmLegalBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px;">
         فهمت وموافق ✓
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL GUIDE DE DÉMARRAGE RAPIDE (دليل البداية السريع — ZÉRO SCROLL) -->
+  <div class="modal-overlay" id="startGuideModal">
+    <div class="modal-card" style="max-width: 620px; width: 96%; max-height: 94vh; padding: 12px 16px; text-align: right; direction: rtl; gap: 8px; border-color: #38bdf8; overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 24px;">🇹🇳</span>
+          <div>
+            <div style="font-size: 16px; font-weight: 900; color: #fef08a;">دليل البداية : كيفاش تولّي معلّم كبير في تونس تايكون ؟</div>
+            <div style="font-size: 10.5px; color: #38bdf8; font-weight: 700;">4 خطوات بسيطة باش تبني إمبراطوريتك من باب سويقة للعالمية !</div>
+          </div>
+        </div>
+        <button class="settings-close-btn" id="closeGuideModalBtn">✕</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 8px 10px; display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 26px;">🏪</span>
+          <div>
+            <div style="font-size: 12px; font-weight: 900; color: #fbbf24;">1. افتح وطوّر مشاريعك</div>
+            <div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.35;">انزل على <b>«🔑 افتح المحلّ»</b> أو <b>«⬆️ Lx»</b> في الشارع باش تشري وتكبّر حوانتك وتضاعف المرابيح.</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 8px 10px; display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 26px;">👔</span>
+          <div>
+            <div style="font-size: 12px; font-weight: 900; color: #38bdf8;">2. ادخل للمحلّ وخدّم الصنّاع</div>
+            <div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.35;">انزل على <b>«🏪 ادخل»</b> على أي بناية باش تشوف الخدّامة والكليونات وتنتدب معلّمية يخدموا وحدهم !</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 10px; padding: 8px 10px; display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 26px;">🚦</span>
+          <div>
+            <div style="font-size: 12px; font-weight: 900; color: #34d399;">3. حوّس بين الأحياء والمفترقات</div>
+            <div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.35;">حرّك الشارع بصبعك وانزل على بلايك المفترقات <b>«⬅️ حلق الوادي / البحيرة»</b> باش تستكشف مشاريع كل حيّ !</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 10px; padding: 8px 10px; display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 26px;">🎁</span>
+          <div>
+            <div style="font-size: 12px; font-weight: 900; color: #fda4af;">4. اقبض البونيس من أيقونات السماء</div>
+            <div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.35;">تفقّد الأيقونات الدائرية الفوق في السماء (🚀 تيربو، 🎡 عجلة الحظ، 🎯 مهمات، 🃏 شكبة) لربح الدنانير !</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="modal-btn" id="startPlayingGuideBtn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: #38bdf8; padding: 8px;">
+        🚀 توكّلنا على الله، ابدأ اللعب توّا !
       </button>
     </div>
   </div>
 
   <!-- MODAL CONFIRMATION SORTIE DE L'APPLICATION (BOUTON RETOUR ANDROID) -->
   <div class="modal-overlay" id="exitAppModal">
-    <div class="modal-card" style="max-width: 340px; padding: 22px; gap: 14px; text-align: center;">
-      <div style="font-size: 44px;">🚪</div>
-      <div class="modal-title" style="font-size: 18px;">تحبّ تخرج من تونس تايكون ؟</div>
-      <div class="modal-subtitle" style="font-size: 12px; color: #94a3b8;">
+    <div class="modal-card" style="max-width: 360px; padding: 14px 18px; gap: 8px; text-align: center;">
+      <div style="font-size: 34px;">🚪</div>
+      <div class="modal-title" style="font-size: 17px;">تحبّ تخرج من تونس تايكون ؟</div>
+      <div class="modal-subtitle" style="font-size: 11.5px; color: #94a3b8;">
         مشاريعك والفلوس الكل مسجّلة وتلقاها في بلاصتها كي ترجع ! 🇹🇳
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 6px;">
-        <button class="modal-btn" id="confirmExitAppBtn" style="background: #dc2626; border-color: #ef4444; padding: 10px; font-size: 13px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 4px;">
+        <button class="modal-btn" id="confirmExitAppBtn" style="background: #dc2626; border-color: #ef4444; padding: 8px; font-size: 13px;">
           نعم، اخرج
         </button>
-        <button class="modal-btn" id="cancelExitAppBtn" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); color: #f8fafc; padding: 10px; font-size: 13px;">
+        <button class="modal-btn" id="cancelExitAppBtn" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); color: #f8fafc; padding: 8px; font-size: 13px;">
           كمّل العب 🎮
         </button>
       </div>
@@ -2651,17 +2718,19 @@
 
   <!-- MODAL REWARD AD LUCKY DROP -->
   <div class="modal-overlay" id="luckyAdModal">
-    <div class="modal-card" style="max-width: 360px; border-color: #f59e0b;">
-      <div class="modal-icon-glow" style="font-size: 44px;" id="luckyAdEmoji">🎁</div>
-      <div class="modal-title" id="luckyAdTitle">تفتوفة الحومة طاحت !</div>
-      <div class="modal-subtitle" id="luckyAdSub">تفرّج في فيديو واربح البونيس كامل</div>
-      <div class="modal-reward-badge" id="luckyAdAmount">+15.00 د.ت</div>
-      <button class="modal-btn" id="claimLuckyAdBtn" style="background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);">
-        🎬 تفرّج في إشهار واربح البونيس 🔥
-      </button>
-      <button id="closeLuckyAdBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 4px;">
-        سكّر
-      </button>
+    <div class="modal-card" style="max-width: 380px; border-color: #f59e0b; padding: 12px 16px; gap: 6px;">
+      <div class="modal-icon-glow" style="font-size: 34px;" id="luckyAdEmoji">🎁</div>
+      <div class="modal-title" id="luckyAdTitle" style="font-size: 17px;">تفتوفة الحومة طاحت !</div>
+      <div class="modal-subtitle" id="luckyAdSub" style="font-size: 11px;">تفرّج في فيديو واربح البونيس كامل</div>
+      <div class="modal-reward-badge" id="luckyAdAmount" style="font-size: 19px; padding: 4px 16px;">+15.00 د.ت</div>
+      <div style="display: flex; gap: 8px; width: 100%; align-items: center;">
+        <button class="modal-btn" id="claimLuckyAdBtn" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); padding: 8px;">
+          🎬 تفرّج واربح البونيس 🔥
+        </button>
+        <button id="closeLuckyAdBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #94a3b8; font-size: 12px; cursor: pointer; padding: 8px 12px;">
+          سكّر
+        </button>
+      </div>
     </div>
   </div>
 
@@ -4128,6 +4197,40 @@
       confirmLegalBtn.onclick = () => legalModal.classList.remove('active');
     }
 
+    // --- GESTION DU GUIDE DE DÉMARRAGE RAPIDE (دليل البداية السريع) ---
+    const startGuideModal = document.getElementById('startGuideModal');
+    const openGuideBtn = document.getElementById('openGuideBtn');
+    const closeGuideModalBtn = document.getElementById('closeGuideModalBtn');
+    const startPlayingGuideBtn = document.getElementById('startPlayingGuideBtn');
+
+    function closeGuide() {
+      if (startGuideModal) startGuideModal.classList.remove('active');
+      localStorage.setItem('tounes_tycoon_guide_seen', '1');
+    }
+
+    if (openGuideBtn && startGuideModal) {
+      openGuideBtn.onclick = () => {
+        soundEngine.playCoin();
+        startGuideModal.classList.add('active');
+      };
+    }
+    if (closeGuideModalBtn) closeGuideModalBtn.onclick = closeGuide;
+    if (startPlayingGuideBtn) {
+      startPlayingGuideBtn.onclick = () => {
+        soundEngine.playMilestoneFanfare();
+        closeGuide();
+      };
+    }
+
+    // Affichage automatique du Guide de Démarrage pour un nouveau joueur (1ère visite)
+    if (!localStorage.getItem('tounes_tycoon_guide_seen') && startGuideModal) {
+      setTimeout(() => {
+        if (!document.querySelector('.modal-overlay.active')) {
+          startGuideModal.classList.add('active');
+        }
+      }, 650);
+    }
+
     // --- GESTION DU MODAL DE SORTIE ET BOUTON RETOUR (ANDROID HARDWARE + BROWSER) ---
     const exitAppModal = document.getElementById('exitAppModal');
     const confirmExitAppBtn = document.getElementById('confirmExitAppBtn');
@@ -4216,128 +4319,79 @@
     if (bizTabBtnRecipe) bizTabBtnRecipe.onclick = () => switchBizDetailTab('recipe');
     if (bizTabBtnActivity) bizTabBtnActivity.onclick = () => switchBizDetailTab('activity');
 
-    // Boucle de rendu fluide 60 FPS
+    // Boucle de rendu fluide 60 FPS (Optimisée zéro-reflow inutile)
     let lastSave = Date.now();
+    let lastDisplayedDinars = '';
+    let lastDisplayedTitle = '';
+    let lastUiSyncAt = 0;
+    const titleBadgeEl = document.getElementById('playerTitleBadge');
+    const claimQuestBtn = document.getElementById('claimQuestBtn');
+
     function tick() {
       const now = Date.now();
       engine.update(now);
 
-      dinarsDisplay.innerHTML = formatCurrency(engine.dinars);
-
-      // Titre honorifique du joueur
-      const titleBadge = document.getElementById('playerTitleBadge');
-      if (titleBadge) titleBadge.innerText = engine.playerTitle;
-
-      // Prestige Button & Multiplier Info
-      if (prestigeInfoLabel) {
-        prestigeInfoLabel.innerText = `x${engine.getPrestigeMultiplier().toFixed(2)}`;
-      }
-      if (prestigeOpenBtn) {
-        const pendingPts = engine.calculatePendingPrestigePoints();
-        prestigeOpenBtn.innerHTML = engine.canPrestige() 
-          ? `<span>👑 بيع</span> <span id="prestigeInfoLabel">+${pendingPts}</span>` 
-          : `<span>👑 بيع</span> <span id="prestigeInfoLabel">x${engine.getPrestigeMultiplier().toFixed(2)}</span>`;
+      const formattedDinars = formatCurrency(engine.dinars);
+      if (formattedDinars !== lastDisplayedDinars) {
+        dinarsDisplay.innerHTML = formattedDinars;
+        lastDisplayedDinars = formattedDinars;
       }
 
-      // Spawn conditionnel de Lucky Drop
-      if (now >= nextLuckyDropAt && luckyDropEl && luckyDropEl.dataset.active !== '1') {
-        spawnLuckyDrop();
+      if (titleBadgeEl && engine.playerTitle !== lastDisplayedTitle) {
+        titleBadgeEl.innerText = engine.playerTitle;
+        lastDisplayedTitle = engine.playerTitle;
       }
 
-      // Vérification des quêtes achevées
-      const claimableQuests = engine.checkQuests();
-      const questBox = document.getElementById('questBox');
-      const questTitle = document.getElementById('questTitle');
-      const claimQuestBtn = document.getElementById('claimQuestBtn');
+      // Synchronisation périodique (5 fois/sec) des états secondaires pour fluidité 60 FPS maximale
+      if (now - lastUiSyncAt > 200) {
+        lastUiSyncAt = now;
 
-      if (claimableQuests.length > 0) {
-        const topQuest = claimableQuests[0];
-        claimQuestBtn.onclick = () => {
-          const claimed = engine.claimQuest(topQuest.id);
-          if (claimed) {
-            soundEngine.playEventFanfare();
-            showRewardModalUI('🏆', 'يعطيك الصحة، معلّم !', `ربحت لقب جديد : ${claimed.titleEarned}`, `+${formatCurrency(claimed.rewardDinars, 0)}`);
-            renderDOM();
-            updateSynergiesUI();
-          }
-        };
-      }
-
-      // Mise à jour hint cadeau AdMob
-      let currentRate = 0;
-      engine.businesses.forEach(b => { if (b.level > 0) currentRate += (engine.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
-      const potentialCash = Math.max(5.0, Math.floor(currentRate * 180));
-      cashRewardHint.innerHTML = `+${formatCurrency(potentialCash, 0)} توّا`;
-
-      // Statut Boost 2x AdMob
-      if (engine.isAdBoostActive(now)) {
-        const remainingHours = Math.floor((engine.adBoostEndsAt - now) / 3600000);
-        const remainingMins = Math.floor(((engine.adBoostEndsAt - now) % 3600000) / 60000);
-        adBoostStatus.innerHTML = `<span class="num-ltr">${remainingHours}h${remainingMins}m</span>`;
-      } else {
-        adBoostStatus.innerText = 'طافي';
-      }
-
-      // Progression continue des jauges + Onde de choc dorée à l'achèvement + Micro-animations avatar
-      engine.businesses.forEach(biz => {
-        const bar = document.getElementById(`prog-${biz.id}`);
-        const avatar = document.getElementById(`avatar-${biz.id}`);
-        if (bar && biz.level > 0) {
-          const pct = Math.min(100, (biz.progressMs / biz.cycleDurationMs) * 100);
-          bar.style.width = pct + '%';
-
-          // Animation d'état avatar (is-producing vs is-idle-breathing)
-          if (avatar && !avatar.classList.contains('is-upgraded')) {
-            const isProducing = biz.isProducing || biz.hasManager || biz.progressMs > 0;
-            if (isProducing) {
-              avatar.classList.remove('is-idle-breathing');
-              avatar.classList.add('is-producing');
-            } else {
-              avatar.classList.remove('is-producing');
-              avatar.classList.add('is-idle-breathing');
-            }
-          }
-
-          // Détecter la fin de cycle pour déclencher l'onde de choc
-          if (pct >= 98 && !bar.dataset.pulsing) {
-            bar.dataset.pulsing = '1';
-            const card = document.getElementById(`card-${biz.id}`);
-            if (card) {
-              card.classList.add('biz-shockwave');
-              setTimeout(() => card.classList.remove('biz-shockwave'), 450);
-            }
-          } else if (pct < 15) {
-            delete bar.dataset.pulsing;
-          }
+        if (now >= nextLuckyDropAt && luckyDropEl && luckyDropEl.dataset.active !== '1') {
+          spawnLuckyDrop();
         }
-      });
 
-      // Vérification des dilemmes moraux
-      checkDilemmasUI();
-      updateWheelBtnState();
+        const claimableQuests = engine.checkQuests();
+        if (claimableQuests.length > 0 && claimQuestBtn) {
+          const topQuest = claimableQuests[0];
+          claimQuestBtn.onclick = () => {
+            const claimed = engine.claimQuest(topQuest.id);
+            if (claimed) {
+              soundEngine.playEventFanfare();
+              showRewardModalUI('🏆', 'يعطيك الصحة، معلّم !', `ربحت لقب جديد : ${claimed.titleEarned}`, `+${formatCurrency(claimed.rewardDinars, 0)}`);
+              renderDOM();
+              updateSynergiesUI();
+            }
+          };
+        }
 
-      // Synchronisation des offres & alertes avec le moteur Canvas 2D
-      if (quartierEngine) {
-        const pendingPts = engine.calculatePendingPrestigePoints();
-        const isBoost = engine.isAdBoostActive(now);
-        const remHours = Math.floor((engine.adBoostEndsAt - now) / 3600000);
-        const remMins = Math.floor(((engine.adBoostEndsAt - now) % 3600000) / 60000);
-        const remEventSec = engine.activeEvent ? Math.max(0, Math.ceil((engine.activeEvent.endsAt - now) / 1000)) : 0;
+        let currentRate = 0;
+        engine.businesses.forEach(b => { if (b.level > 0) currentRate += (engine.getRevenue(b, now)/(b.cycleDurationMs/1000)); });
+        const potentialCash = Math.max(5.0, Math.floor(currentRate * 180));
 
-        quartierEngine.updateHudOffers({
-          adBoostActive: isBoost,
-          adBoostText: isBoost ? `${remHours}h${remMins}m` : 'تيربو x2',
-          adCashText: `+${formatCurrencyPlain(potentialCash, 0)}`,
-          prestigeText: engine.canPrestige() ? `بيع (+${pendingPts})` : `x${engine.getPrestigeMultiplier().toFixed(1)}`,
-          canPrestige: engine.canPrestige(),
-          wheelReady: engine.canSpinWheel(),
-          hasQuest: claimableQuests.length > 0,
-          hasEvent: !!engine.activeEvent,
-          eventTimer: `${remEventSec}s`,
-          hasDilemma: !!engine.activeDilemma,
-          hasLuckyDrop: luckyDropEl && luckyDropEl.dataset.active === '1',
-          luckyDropIcon: luckyDropIcon ? luckyDropIcon.innerText : '🎁'
-        });
+        updateWheelBtnState();
+
+        if (quartierEngine) {
+          const pendingPts = engine.calculatePendingPrestigePoints();
+          const isBoost = engine.isAdBoostActive(now);
+          const remHours = Math.floor((engine.adBoostEndsAt - now) / 3600000);
+          const remMins = Math.floor(((engine.adBoostEndsAt - now) % 3600000) / 60000);
+          const remEventSec = engine.activeEvent ? Math.max(0, Math.ceil((engine.activeEvent.endsAt - now) / 1000)) : 0;
+
+          quartierEngine.updateHudOffers({
+            adBoostActive: isBoost,
+            adBoostText: isBoost ? `${remHours}h${remMins}m` : 'تيربو x2',
+            adCashText: `+${formatCurrencyPlain(potentialCash, 0)}`,
+            prestigeText: engine.canPrestige() ? `بيع (+${pendingPts})` : `x${engine.getPrestigeMultiplier().toFixed(1)}`,
+            canPrestige: engine.canPrestige(),
+            wheelReady: engine.canSpinWheel(),
+            hasQuest: claimableQuests.length > 0,
+            hasEvent: !!engine.activeEvent,
+            eventTimer: `${remEventSec}s`,
+            hasDilemma: !!engine.activeDilemma,
+            hasLuckyDrop: luckyDropEl && luckyDropEl.dataset.active === '1',
+            luckyDropIcon: luckyDropIcon ? luckyDropIcon.innerText : '🎁'
+          });
+        }
       }
 
       // Sauvegarde automatique toutes les 5s

@@ -1083,8 +1083,24 @@ export class QuartierAnimator {
     const changed = this.currentZoneId !== zoneId || this.streetLayout.length === 0;
     this.currentZoneId = zoneId;
     this.transitionBannerText = zoneName || 'حيّ جديد';
+    const zoneIcons = {
+      bab_souika: '🕌',
+      la_goulette: '⚓',
+      lac_2: '🏙️',
+      hammamet: '🏖️',
+      djerba_holding: '👑'
+    };
+    const zoneSubtitles = {
+      bab_souika: 'قلب العاصمة التونسية وأصل الحرفة والتجارة',
+      la_goulette: 'نسمة البحر وحركية الكورنيش والتاكسي الجماعي',
+      lac_2: 'الأبراج الزجاجية والمشاريع العصرية الكبرى',
+      hammamet: 'السياحة الفاخرة والنزل العالمية والمولات',
+      djerba_holding: 'قمة الاستثمار الدولي وأسطول طيران الغزالة'
+    };
+    this.transitionZoneIcon = zoneIcons[zoneId] || '🇹🇳';
+    this.transitionSubtitle = zoneSubtitles[zoneId] || 'أجواء جديدة وتوسّع استثماري تونسي';
     this.transitionAlpha = 1.0;
-    this.transitionTimer = 1.6;
+    this.transitionTimer = 1.5;
 
     if (changed) {
       this.buildZoneLayout(zoneId);
@@ -1415,48 +1431,133 @@ export class QuartierAnimator {
 
     if (this.transitionAlpha > 0) {
       ctx.save();
-      ctx.fillStyle = `rgba(15, 23, 42, ${this.transitionAlpha * 0.75})`;
+      const progress = Math.max(0, Math.min(1, 1 - (this.transitionTimer / 1.5)));
+      const fadeAlpha = Math.sin(Math.min(1, this.transitionAlpha) * Math.PI * 0.5);
+
+      // Rideau cinématique royal avec halo central
+      const radGrad = ctx.createRadialGradient(w / 2, h / 2, 15, w / 2, h / 2, Math.max(w, h) * 0.7);
+      radGrad.addColorStop(0, `rgba(30, 27, 75, ${fadeAlpha * 0.88})`);
+      radGrad.addColorStop(1, `rgba(2, 6, 23, ${fadeAlpha * 0.96})`);
+      ctx.fillStyle = radGrad;
       ctx.fillRect(0, 0, w, h);
 
-      ctx.fillStyle = '#fef08a';
-      ctx.font = '900 22px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`✨ ${this.transitionBannerText} ✨`, w / 2, h / 2 - 10);
+      // Bandes cinématiques dorées haut et bas qui glissent
+      const barSlide = (1 - Math.abs(progress - 0.5) * 2);
+      ctx.fillStyle = `rgba(245, 158, 11, ${fadeAlpha * 0.85})`;
+      ctx.fillRect(0, h / 2 - 58, w * Math.min(1, progress * 2.2), 2.5);
+      ctx.fillRect(w * (1 - Math.min(1, progress * 2.2)), h / 2 + 54, w * Math.min(1, progress * 2.2), 2.5);
 
+      // Médaillon royal du quartier au centre
+      const scaleAnim = 0.85 + Math.sin(progress * Math.PI) * 0.18;
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(scaleAnim, scaleAnim);
+      ctx.globalAlpha = fadeAlpha;
+
+      // Écusson / Cartouche de quartier
+      const boxW = Math.min(w - 40, 380);
+      const boxH = 92;
+      const boxGrad = ctx.createLinearGradient(0, -boxH / 2, 0, boxH / 2);
+      boxGrad.addColorStop(0, 'rgba(30, 41, 59, 0.96)');
+      boxGrad.addColorStop(1, 'rgba(15, 23, 42, 0.98)');
+      ctx.fillStyle = boxGrad;
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(-boxW / 2, -boxH / 2, boxW, boxH, 18);
+      ctx.fill();
+      ctx.stroke();
+
+      // Icône du quartier dans un cercle d'or
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+      ctx.beginPath();
+      ctx.arc(0, -18, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = '20px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(this.transitionZoneIcon || '🇹🇳', 0, -17);
+
+      // Titre du quartier
+      ctx.fillStyle = '#fef08a';
+      ctx.font = '900 18px "Cairo", sans-serif';
+      ctx.fillText(`✨ ${this.transitionBannerText} ✨`, 0, 12);
+
+      // Sous-titre d'ambiance
       ctx.fillStyle = '#38bdf8';
-      ctx.font = '700 13px "Cairo", sans-serif';
-      ctx.fillText('أجواء جديدة وتوسّع استثماري تونسي', w / 2, h / 2 + 18);
+      ctx.font = '700 11.5px "Cairo", sans-serif';
+      ctx.fillText(this.transitionSubtitle || 'أجواء جديدة وتوسّع استثماري تونسي', 0, 33);
+
       ctx.restore();
     }
   }
 
   drawSkylineBackground(ctx, camX, w, h, groundY = 245) {
     ctx.save();
-    ctx.fillStyle = '#1e1b4b';
-    ctx.globalAlpha = 0.55;
 
-    const hillX = 200 - camX * 0.15;
+    // Lune en croissant doré & halo céleste
+    const moonX = w - 95 - (camX * 0.03);
+    const moonY = 38;
+    const moonGlow = ctx.createRadialGradient(moonX, moonY, 4, moonX, moonY, 38);
+    moonGlow.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
+    moonGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+    ctx.fillStyle = moonGlow;
     ctx.beginPath();
-    ctx.moveTo(hillX - 250, groundY);
-    ctx.quadraticCurveTo(hillX, groundY - 100, hillX + 350, groundY);
+    ctx.arc(moonX, moonY, 38, 0, Math.PI * 2);
     ctx.fill();
 
-    for (let x = -100; x < this.worldWidth; x += 450) {
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = this.currentZoneId === 'la_goulette' ? '#0c4a6e' : '#0f172a';
+    ctx.beginPath();
+    ctx.arc(moonX - 4, moonY - 3, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Collines lointaines en parallaxe douce (Sidi Bou Saïd / Boukornine)
+    ctx.fillStyle = '#1e1b4b';
+    ctx.globalAlpha = 0.55;
+    const hillX = 200 - camX * 0.12;
+    ctx.beginPath();
+    ctx.moveTo(hillX - 280, groundY);
+    ctx.quadraticCurveTo(hillX, groundY - 105, hillX + 360, groundY);
+    ctx.quadraticCurveTo(hillX + 580, groundY - 85, hillX + 860, groundY);
+    ctx.fill();
+
+    // Silhouettes architecturales tunisiennes (Minarets, Coupoles, Horloge Habib Bourguiba)
+    for (let x = -80; x < this.worldWidth; x += 380) {
       const sx = x - camX * 0.2;
-      if (sx > -100 && sx < w + 100) {
-        ctx.fillRect(sx + 50, groundY - 95, 24, 95);
+      if (sx > -120 && sx < w + 120) {
+        ctx.fillStyle = '#1e1b4b';
+        ctx.globalAlpha = 0.65;
+
+        // Mosquée à coupole et minaret
+        ctx.fillRect(sx + 48, groundY - 98, 22, 98);
         ctx.beginPath();
-        ctx.moveTo(sx + 45, groundY - 95);
-        ctx.lineTo(sx + 62, groundY - 125);
-        ctx.lineTo(sx + 79, groundY - 95);
+        ctx.moveTo(sx + 44, groundY - 98);
+        ctx.lineTo(sx + 59, groundY - 126);
+        ctx.lineTo(sx + 74, groundY - 98);
         ctx.fill();
 
-        ctx.fillRect(sx + 240, groundY - 110, 20, 110);
+        // Coupole adjacente
         ctx.beginPath();
-        ctx.arc(sx + 250, groundY - 90, 6, 0, Math.PI * 2);
+        ctx.arc(sx + 95, groundY - 45, 22, Math.PI, 0);
+        ctx.fill();
+        ctx.fillRect(sx + 73, groundY - 45, 44, 45);
+
+        // Tour de l'Horloge illuminée
+        ctx.fillRect(sx + 235, groundY - 112, 22, 112);
+        ctx.beginPath();
+        ctx.moveTo(sx + 232, groundY - 112);
+        ctx.lineTo(sx + 246, groundY - 134);
+        ctx.lineTo(sx + 260, groundY - 112);
+        ctx.fill();
+
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.arc(sx + 246, groundY - 92, 6.5, 0, Math.PI * 2);
         ctx.fillStyle = '#fef08a';
         ctx.fill();
-        ctx.fillStyle = '#1e1b4b';
       }
     }
     ctx.restore();
@@ -2204,75 +2305,104 @@ export class QuartierAnimator {
 
   drawInCanvasOffersHUD(ctx, w, h, timestamp) {
     const o = this.hudOffers;
-    const pulse = Math.sin(timestamp * 0.006) * 2.5;
-    const r = 16; // Rayon des petites icônes rondes (32x32px)
-    const topY = 24;
+    const r = 16; // Rayon des petites icônes rondes 3D (32x32px)
+    const topY = 23;
 
     ctx.save();
 
-    // 1. Petites icônes d'offres rondes en haut à droite DANS le ciel de l'image
+    const draw3DOrbIcon = (cx, cy, icon, baseColor, borderColor, badgeText, badgeBg) => {
+      // Ombre portée
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.48)';
+      ctx.beginPath();
+      ctx.arc(cx, cy + 2.5, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Dégradé radial métallique / verre 3D
+      const orbGrad = ctx.createRadialGradient(cx - 5, cy - 5, 2, cx, cy, r);
+      orbGrad.addColorStop(0, borderColor);
+      orbGrad.addColorStop(0.35, baseColor);
+      orbGrad.addColorStop(1, '#090d16');
+      ctx.fillStyle = orbGrad;
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Reflet spéculaire supérieur (effet bijou / verre bombé)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy - 7, r * 0.62, r * 0.28, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Icône centrale
+      ctx.font = '15px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(icon, cx, cy + 1);
+
+      // Pastille de notification
+      if (badgeText) {
+        ctx.fillStyle = badgeBg || '#ef4444';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(cx + 11, cy - 11, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 8px "Cairo", sans-serif';
+        ctx.fillText(badgeText, cx + 11, cy - 10.5);
+      }
+    };
+
+    // 1. Petites icônes d'offres 3D en haut à droite DANS le ciel de l'image
     const rightIcons = [
       {
         action: 'hud_boost',
         icon: '🚀',
         sub: o.adBoostActive ? 'x2' : '',
-        bg: o.adBoostActive ? 'rgba(16, 185, 129, 0.92)' : 'rgba(15, 23, 42, 0.82)',
-        border: o.adBoostActive ? '#34d399' : '#38bdf8'
+        bg: o.adBoostActive ? '#059669' : '#0284c7',
+        border: o.adBoostActive ? '#6ee7b7' : '#7dd3fc',
+        badgeBg: '#10b981'
       },
       {
         action: 'hud_cash',
         icon: '🎁',
         sub: '+',
-        bg: 'rgba(15, 23, 42, 0.82)',
-        border: '#38bdf8'
+        bg: '#0369a1',
+        border: '#38bdf8',
+        badgeBg: '#f59e0b'
       },
       {
         action: 'hud_prestige',
         icon: '👑',
         sub: o.canPrestige ? '!' : '',
-        bg: o.canPrestige ? 'rgba(245, 158, 11, 0.92)' : 'rgba(15, 23, 42, 0.82)',
-        border: '#fbbf24'
+        bg: o.canPrestige ? '#d97706' : '#334155',
+        border: '#fde047',
+        badgeBg: '#ef4444'
       },
       {
         action: 'hud_wheel',
         icon: '🎡',
         sub: o.wheelReady ? '!' : '',
-        bg: o.wheelReady ? 'rgba(225, 29, 72, 0.92)' : 'rgba(15, 23, 42, 0.82)',
-        border: '#fda4af'
+        bg: o.wheelReady ? '#e11d48' : '#881337',
+        border: '#fda4af',
+        badgeBg: '#10b981'
       }
     ];
 
     let rightX = w - 24;
     rightIcons.forEach(item => {
-      ctx.fillStyle = item.bg;
-      ctx.strokeStyle = item.border;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(rightX, topY, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.font = '15px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(item.icon, rightX, topY + 1);
-
-      if (item.sub) {
-        ctx.fillStyle = '#ef4444';
-        ctx.beginPath();
-        ctx.arc(rightX + 11, topY - 11, 6.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '900 8.5px "Cairo", sans-serif';
-        ctx.fillText(item.sub, rightX + 11, topY - 10.5);
-      }
+      draw3DOrbIcon(rightX, topY, item.icon, item.bg, item.border, item.sub, item.badgeBg);
 
       this.interactiveHitboxes.push({
-        x: rightX - r - 3,
-        y: topY - r - 3,
-        w: (r + 3) * 2,
-        h: (r + 3) * 2,
+        x: rightX - r - 4,
+        y: topY - r - 4,
+        w: (r + 4) * 2,
+        h: (r + 4) * 2,
         action: item.action,
         bizId: null
       });
@@ -2280,55 +2410,34 @@ export class QuartierAnimator {
       rightX -= (r * 2 + 8);
     });
 
-    // 2. Petites icônes d'alertes rondes animées en haut à gauche DANS le ciel de l'image
+    // 2. Petites icônes d'alertes 3D animées en haut à gauche DANS le ciel de l'image
     const leftAlerts = [];
     if (o.hasQuest) {
-      leftAlerts.push({ action: 'hud_quest', icon: '🎯', bg: 'rgba(16, 185, 129, 0.95)', border: '#a7f3d0', dot: '!' });
+      leftAlerts.push({ action: 'hud_quest', icon: '🎯', bg: '#059669', border: '#6ee7b7', dot: '!' });
     }
     if (o.hasEvent) {
-      leftAlerts.push({ action: 'hud_event', icon: '🃏', bg: 'rgba(220, 38, 38, 0.95)', border: '#fca5a5', dot: '🔥' });
+      leftAlerts.push({ action: 'hud_event', icon: '🃏', bg: '#dc2626', border: '#fca5a5', dot: '🔥' });
     }
     if (o.hasDilemma) {
-      leftAlerts.push({ action: 'hud_dilemma', icon: '⚖️', bg: 'rgba(147, 51, 234, 0.95)', border: '#e9d5ff', dot: '!' });
+      leftAlerts.push({ action: 'hud_dilemma', icon: '⚖️', bg: '#7e22ce', border: '#d8b4fe', dot: '!' });
     }
     if (o.hasLuckyDrop) {
-      leftAlerts.push({ action: 'hud_luckydrop', icon: o.luckyDropIcon || '🎁', bg: 'rgba(245, 158, 11, 0.95)', border: '#fef08a', dot: '✨' });
+      leftAlerts.push({ action: 'hud_luckydrop', icon: o.luckyDropIcon || '🎁', bg: '#d97706', border: '#fef08a', dot: '✨' });
     }
 
     let leftX = 24;
     leftAlerts.forEach((a, idx) => {
       const cy = topY + Math.sin(timestamp * 0.008 + idx) * 2.5;
 
-      // Halo lumineux discret autour de la petite icône d'alerte
+      // Halo lumineux autour de l'alerte
       ctx.fillStyle = a.border;
       ctx.globalAlpha = 0.25 + (Math.sin(timestamp * 0.01) * 0.15);
       ctx.beginPath();
-      ctx.arc(leftX, cy, r + 4, 0, Math.PI * 2);
+      ctx.arc(leftX, cy, r + 4.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalAlpha = 1.0;
 
-      ctx.fillStyle = a.bg;
-      ctx.strokeStyle = a.border;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(leftX, cy, r, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.font = '15px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(a.icon, leftX, cy + 1);
-
-      // Petite pastille de notification
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(leftX + 11, cy - 11, 6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#0f172a';
-      ctx.font = '900 8px "Cairo", sans-serif';
-      ctx.fillText(a.dot, leftX + 11, cy - 10.5);
+      draw3DOrbIcon(leftX, cy, a.icon, a.bg, a.border, a.dot, '#f59e0b');
 
       this.interactiveHitboxes.push({
         x: leftX - r - 4,

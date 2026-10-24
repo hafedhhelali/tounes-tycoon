@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(ui,graphics,guide): zero-scroll landscape modals, 3D orb icons, cinematic zone transitions, 60fps tick optimization and quick start guide
 - fix(ui,canvas): remove DOM alert banners breaking layout and replace with compact circular icons inside canvas
 - feat(world): zone-specific projects, Tunisian houses and animated crossroads per neighborhood
 - chore(ci): sort artifacts by workflow run id descending in fetch_apk.ps1
