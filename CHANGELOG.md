@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(graphics,assets): modular procedural assets library, Tunisian palettes and FX engine
+- feat(graphics,assets): modular procedural assets library (assets_library.js), Tunisian color palettes, Chibi characters, vehicles and zero-allocation FX engine
 - feat(street,anim,hud): direct HUD map, monumental city gates, discrete door entry, 3s auto-close drawer
 - feat(street,anim,hud): direct HUD map, monumental city gates, discrete door entry, 3s auto-close drawer
 - feat(street,anim,hud): direct HUD map access, monumental Bab El Medina crossroad gates, discrete door engraving, level badge above store sign, 3s auto-dismiss drawer and Tunisian Bourse ticker
