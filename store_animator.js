@@ -236,57 +236,6 @@ export class CanvasStoreEngine {
       wallGrad.addColorStop(0, '#1c2833');
       wallGrad.addColorStop(0.6, '#131e29');
       wallGrad.addColorStop(1, '#0c141c');
-    } else if (bizId === 'attariya') {
-      // Comptoir de découpe et balance mécanique tunisienne vintage (ميزان العطّار ذو الكفتين)
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(x + 4, y - 16, 36, 16);
-      ctx.strokeStyle = '#64748b';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(x + 4, y - 16, 36, 16);
-
-      // Mât central de la balance
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(x + 22, y - 16);
-      ctx.lineTo(x + 22, y - 28);
-      ctx.stroke();
-
-      // Fléau oscillant de la balance (حركة الميزان أثناء الوزن)
-      const balanceTilt = isBusy ? Math.sin(timeSec * 5) * 0.18 : 0.05;
-      ctx.save();
-      ctx.translate(x + 22, y - 28);
-      ctx.rotate(balanceTilt);
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.moveTo(-11, 0);
-      ctx.lineTo(11, 0);
-      ctx.stroke();
-
-      // Plateaux de pesée en laiton
-      ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(-11, 0); ctx.lineTo(-11, 6);
-      ctx.moveTo(11, 0); ctx.lineTo(11, 6);
-      ctx.stroke();
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(-11, 6, 4, 0, Math.PI);
-      ctx.arc(11, 6, 4, 0, Math.PI);
-      ctx.fill();
-      ctx.restore();
-
-      // Poids en fonte (عيار النحاس) et meule de fromage Sicilien / Ricotta
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(x + 6, y - 20, 5, 4);
-      ctx.fillStyle = '#fde047';
-      ctx.beginPath();
-      ctx.arc(x + 32, y - 20, 4.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#d97706';
-      ctx.stroke();
     } else if (bizId === 'patisserie') {
       wallGrad.addColorStop(0, '#38203f');
       wallGrad.addColorStop(0.6, '#24132a');
@@ -444,21 +393,25 @@ export class CanvasStoreEngine {
         ctx.fillText('🥚', x, 84);
       }
 
-      // Ardoise menu du casse-croûte tunisien
+      // Ardoise menu suspendue au mur du fond (calée haut pour zéro chevauchement avec le caissier)
+      const menuTitle = bizId === 'fricasse' ? 'فريكاسي وبمبلوني' : 'كسكروت عياري';
+      const menuL1 = bizId === 'fricasse' ? 'بمبلوني سخون 🍩' : 'تنّ وزيتون 🫒';
+      const menuL2 = bizId === 'fricasse' ? 'عسل وسكّر ✨' : 'عظام مروبة ✨';
+
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(46, 32, 50, 50);
+      ctx.fillRect(40, 18, 54, 40);
       ctx.strokeStyle = '#ca8a04';
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(46, 32, 50, 50);
+      ctx.strokeRect(40, 18, 54, 40);
       ctx.fillStyle = '#fde047';
-      ctx.font = 'bold 9px "Cairo", sans-serif';
+      ctx.font = 'bold 8.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('كسكروت تونسي', 71, 46);
-      ctx.font = '8px sans-serif';
+      ctx.fillText(menuTitle, 67, 30);
+      ctx.font = '7.5px sans-serif';
       ctx.fillStyle = '#38bdf8';
-      ctx.fillText('تنّ وزيتون', 71, 59);
+      ctx.fillText(menuL1, 67, 42);
       ctx.fillStyle = '#34d399';
-      ctx.fillText('عظام مروبة ✨', 71, 72);
+      ctx.fillText(menuL2, 67, 53);
       ctx.textAlign = 'left';
 
       // Bocaux et ingrédients nobles (olives, câpres, huile d'olive)
@@ -619,8 +572,15 @@ export class CanvasStoreEngine {
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    const plateText = bizRef ? (bizRef.name.length > 14 ? bizRef.name.slice(0, 14) + '..' : bizRef.name) : '';
-    ctx.fillText(plateText, counterX + deskW / 2, counterY + 38);
+    const fullPlateName = bizRef ? bizRef.name : '';
+    let plateFont = 8.5;
+    ctx.font = '900 ' + plateFont + 'px "Cairo", sans-serif';
+    let pWidth = ctx.measureText(fullPlateName).width;
+    if (pWidth > deskW - 14) {
+      plateFont = Math.max(6.5, Math.floor((deskW - 16) / pWidth * plateFont));
+      ctx.font = '900 ' + plateFont + 'px "Cairo", sans-serif';
+    }
+    ctx.fillText(fullPlateName, counterX + deskW / 2, counterY + 38);
 
     // Icône du projet sur le comptoir
     ctx.font = '20px sans-serif';
@@ -633,7 +593,7 @@ export class CanvasStoreEngine {
 
     if (cashierSlot && cashierSlot.hired) {
       this.drawWorker(ctx, cashierX + 16, counterY + 16, 0, isBusy, timeSec);
-      this.drawRoleTag(ctx, cashierX + 16, counterY - 54, cashierSlot.role);
+      this.drawRoleTag(ctx, cashierX + 16, counterY - 32, cashierSlot.role);
 
       const statusIcon = isBusy ? '✨' : '💤';
       ctx.font = '14px sans-serif';
@@ -666,7 +626,7 @@ export class CanvasStoreEngine {
         this.drawWorker(ctx, stationX + 22, baseY, idx + 1, isBusy, timeSec);
         this.drawRoleTag(ctx, stationX + 22, baseY + 4, slot.role);
 
-        const effIcon = isBusy ? (detail.staffSlots && detail.staffSlots[idx + 1] && detail.staffSlots[idx + 1].icon ? detail.staffSlots[idx + 1].icon : '⚡') : '💤';
+        const effIcon = isBusy ? (slot.icon || '⚡') : '💤';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(effIcon, stationX + 22, baseY - 54 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
@@ -842,6 +802,59 @@ export class CanvasStoreEngine {
       ctx.beginPath();
       ctx.arc(x + 34, y - 2, 5, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    // 3.5. ATTARIYA / GROCER : Comptoir de découpe et balance mécanique tunisienne vintage
+    else if (bizId === 'attariya') {
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(x + 4, y - 16, 36, 16);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 4, y - 16, 36, 16);
+
+      // Mât central de la balance
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x + 22, y - 16);
+      ctx.lineTo(x + 22, y - 28);
+      ctx.stroke();
+
+      // Fléau oscillant de la balance (حركة الميزان أثناء الوزن)
+      const balanceTilt = isBusy ? Math.sin(timeSec * 5) * 0.18 : 0.05;
+      ctx.save();
+      ctx.translate(x + 22, y - 28);
+      ctx.rotate(balanceTilt);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(-11, 0);
+      ctx.lineTo(11, 0);
+      ctx.stroke();
+
+      // Plateaux de pesée en laiton
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-11, 0); ctx.lineTo(-11, 6);
+      ctx.moveTo(11, 0); ctx.lineTo(11, 6);
+      ctx.stroke();
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(-11, 6, 4, 0, Math.PI);
+      ctx.arc(11, 6, 4, 0, Math.PI);
+      ctx.fill();
+      ctx.restore();
+
+      // Poids en fonte (عيار النحاس) et meule de fromage Sicilien / Ricotta
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(x + 6, y - 20, 5, 4);
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.arc(x + 32, y - 20, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#d97706';
+      ctx.stroke();
     }
 
     // 4. BAKERY / MAKROUDH (KAIROUAN) : Pâtisserie, façonnage de pâte et éclat de miel
@@ -1221,30 +1234,32 @@ export class CanvasStoreEngine {
 
       ctx.restore();
 
-      // Bulle de commande / réaction compacte et élégante
+      // Bulle de commande / réaction compacte et élégante PLACÉE AU-DESSUS DE LA TÊTE (ZÉRO MASQUAGE DU VISAGE)
       const bubbleX = c.x + 12;
-      const bubbleY = c.y - 36 - bounce;
+      const bubbleY = c.y - 52 - bounce; // Dégage complètement la tête et la chéchia
       const bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
 
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
       ctx.beginPath();
-      ctx.roundRect(bubbleX - 10, bubbleY - 10, 20, 18, 6);
+      ctx.roundRect(bubbleX - 10, bubbleY - 9, 20, 17, 5);
       ctx.fill();
       ctx.strokeStyle = '#f59e0b';
       ctx.lineWidth = 1.2;
       ctx.stroke();
 
+      // Petite pointe de bulle pointant vers le sommet de la tête
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.moveTo(bubbleX - 2, bubbleY + 8);
-      ctx.lineTo(bubbleX + 2, bubbleY + 8);
-      ctx.lineTo(bubbleX, bubbleY + 11);
+      ctx.moveTo(bubbleX - 2.5, bubbleY + 8);
+      ctx.lineTo(bubbleX + 2.5, bubbleY + 8);
+      ctx.lineTo(bubbleX, bubbleY + 12);
       ctx.closePath();
       ctx.fill();
 
-      ctx.font = '10px sans-serif';
+      ctx.font = '10.5px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(bubbleIcon, bubbleX, bubbleY + 3);
+      ctx.textBaseline = 'middle';
+      ctx.fillText(bubbleIcon, bubbleX, bubbleY);
 
       ctx.restore();
     }
@@ -1283,24 +1298,32 @@ export class CanvasStoreEngine {
 
     const signBiz = this.getBiz();
     if (signBiz) {
-      const signW = Math.min(180, w * 0.42);
+      const signW = Math.min(260, Math.max(190, w * 0.55));
       const sx = (w - signW) / 2;
       const flicker = 0.88 + 0.12 * Math.sin(t * 7) * Math.sin(t * 3.1);
       ctx.save();
       ctx.shadowColor = 'rgba(251, 191, 36, ' + (0.8 * flicker) + ')';
       ctx.shadowBlur = 14;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
       ctx.strokeStyle = 'rgba(251, 191, 36, ' + flicker + ')';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(sx, 26, signW, 26, 13);
+      ctx.roundRect(sx, 22, signW, 28, 14);
       ctx.fill();
       ctx.stroke();
       ctx.shadowBlur = 0;
       ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 12px "Cairo", sans-serif';
+
+      const signFullName = (signBiz.icon ? (signBiz.icon + ' ') : '') + signBiz.name;
+      let sFont = 12;
+      ctx.font = '900 ' + sFont + 'px "Cairo", sans-serif';
+      let sWidth = ctx.measureText(signFullName).width;
+      if (sWidth > signW - 20) {
+        sFont = Math.max(8.5, Math.floor((signW - 22) / sWidth * sFont));
+        ctx.font = '900 ' + sFont + 'px "Cairo", sans-serif';
+      }
       ctx.textAlign = 'center';
-      ctx.fillText(signBiz.icon + ' ' + signBiz.name.slice(0, 20), w / 2, 43);
+      ctx.fillText(signFullName, w / 2, 40);
       ctx.restore();
     }
 
@@ -1554,7 +1577,8 @@ export class QuartierAnimator {
     this.resize();
   }
 
-  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone }) {
+  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone, onOpenMap }) {
+    if (onOpenMap) this.onOpenMap = onOpenMap;
     if (onInspect) this.onInspectBiz = onInspect;
     if (onUpgrade) this.onUpgradeBiz = onUpgrade;
     if (onCollect) this.onCollectBiz = onCollect;
@@ -1874,14 +1898,18 @@ export class QuartierAnimator {
   }
 
   triggerAction(action, bizId) {
-    if (action === 'inspect' && this.onInspectBiz) {
+    if (action === 'open_map' || action === 'switch_zone') {
+      if (this.onOpenMap) {
+        this.onOpenMap(bizId);
+      } else if (this.onSwitchZone) {
+        this.onSwitchZone(bizId);
+      }
+    } else if (action === 'inspect' && this.onInspectBiz) {
       this.onInspectBiz(bizId);
     } else if (action === 'upgrade' && this.onUpgradeBiz) {
       this.onUpgradeBiz(bizId);
     } else if (action === 'collect' && this.onCollectBiz) {
       this.onCollectBiz(bizId);
-    } else if (action === 'switch_zone' && this.onSwitchZone) {
-      this.onSwitchZone(bizId);
     } else if (action.startsWith('hud_') && this.onHudAction) {
       this.onHudAction(action);
     }
@@ -3072,53 +3100,60 @@ export class QuartierAnimator {
       }
     }
 
-    // 4 & 5. Portique autoroutier 3D UNIQUE, moderne et épuré (sans aucun chevauchement)
-    const targetCityLabel = cItem.nextZoneLabel || cItem.prevZoneLabel || 'تونس';
-    const targetCityId = cItem.nextZoneId || cItem.prevZoneId || 'tunis';
-
-    const dirW = Math.min(w - 12, 118);
-    const dirH = 28;
+    // 4 & 5. Portique autoroutier 3D avec bouton interactif « تحب تسافر ؟ افتح الخريطة 🗺️ »
+    const dirW = Math.min(w - 8, 126);
+    const dirH = 32;
     const dirX = x + (w - dirW) / 2;
-    const dirY = groundY - 68;
+    const dirY = groundY - 70;
 
     ctx.save();
+    // Halo lumineux pulsé invitant au voyage
+    const travelPulse = Math.sin(timestamp * 0.005) * 3 + 4;
+    ctx.shadowColor = '#38bdf8';
+    ctx.shadowBlur = travelPulse;
+
     // Effet 3D : ombre portée biseautée
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.beginPath();
-    ctx.roundRect(dirX + 2, dirY + 3, dirW, dirH, 6);
+    ctx.roundRect(dirX + 2, dirY + 3, dirW, dirH, 8);
     ctx.fill();
 
-    // Dégradé autoroutier vert émeraude 3D
+    // Dégradé royal autoroutier bleu méditerranée / cyan 3D
     const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
-    signGrad.addColorStop(0, '#059669');
-    signGrad.addColorStop(0.4, '#047857');
-    signGrad.addColorStop(1, '#064e3b');
+    signGrad.addColorStop(0, '#0284c7');
+    signGrad.addColorStop(0.5, '#0369a1');
+    signGrad.addColorStop(1, '#075985');
     ctx.fillStyle = signGrad;
-    ctx.strokeStyle = '#6ee7b7';
+    ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 1.8;
     ctx.beginPath();
-    ctx.roundRect(dirX, dirY, dirW, dirH, 6);
+    ctx.roundRect(dirX, dirY, dirW, dirH, 8);
     ctx.fill();
     ctx.stroke();
 
-    // Reflet supérieur
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-    ctx.fillRect(dirX + 2, dirY + 1, dirW - 4, 3);
+    // Reflet supérieur vitré
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+    ctx.fillRect(dirX + 3, dirY + 2, dirW - 6, 4);
 
-    // Texte épuré : UNIQUEMENT LE NOM DE LA VILLE
+    // Titre accrocheur et clair : invitation à voyager vers la carte de Tunisie
+    ctx.shadowBlur = 0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 11px "Cairo", sans-serif';
+    ctx.font = '900 10.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`⬅️ ${targetCityLabel}`, dirX + dirW / 2, dirY + 17);
+    ctx.fillText('🗺️ تحب تسافر ؟', dirX + dirW / 2, dirY + 14);
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '800 9px "Cairo", sans-serif';
+    ctx.fillText('افتح خريطة تونس 🚗', dirX + dirW / 2, dirY + 26);
     ctx.restore();
 
     this.interactiveHitboxes.push({
-      x: dirX - 2,
-      y: dirY - 2,
-      w: dirW + 4,
-      h: dirH + 4,
-      action: 'switch_zone',
-      bizId: targetCityId
+      x: dirX - 4,
+      y: dirY - 4,
+      w: dirW + 8,
+      h: dirH + 8,
+      action: 'open_map',
+      bizId: null
     });
 
     ctx.restore();
@@ -4069,14 +4104,18 @@ export class TunisiaMapEngine {
     this.caravan = {
       from: fromCity,
       to: city,
+      targetCity: city,
       startTime: performance.now(),
-      duration: 1200 // ms
+      duration: 2200 // 2.2s pour savourer l'animation de traversée de la Tunisie
     };
 
     this.engine.currentCityId = city.id;
     this.engine.currentZoneId = city.id;
 
-    if (this.onTravel) this.onTravel(city);
+    // Déclencher le son de démarrage de moteur / route si dispo
+    if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
+      window.soundFX.playCoin();
+    }
     return true;
   }
 
@@ -4480,39 +4519,82 @@ export class TunisiaMapEngine {
     const from = this.caravan.from;
     const to = this.caravan.to;
 
-    // Position interpolée
+    // Trajectoire fluide interpolée
     const curX = from.x + (to.x - from.x) * progress;
     const curY = from.y + (to.y - from.y) * progress;
 
-    ctx.save();
-    // Éclat doré autour du convoi
-    ctx.shadowColor = '#f59e0b';
-    ctx.shadowBlur = 14;
+    // Angle de la route pour orienter la voiture
+    const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
-    // Silhouette de voiture animée le long de la route
+    ctx.save();
+
+    // 1. Traînée lumineuse d'accélération dorée (Golden Speed Trail)
+    const trailLen = 8;
+    for (let k = 1; k <= trailLen; k++) {
+      const trailProgress = Math.max(0, progress - (k * 0.015));
+      const tx = from.x + (to.x - from.x) * trailProgress;
+      const ty = from.y + (to.y - from.y) * trailProgress;
+      ctx.fillStyle = `rgba(251, 191, 36, ${(trailLen - k) / trailLen * 0.45})`;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 6 - k * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 2. Halo d'énergie autour du véhicule
+    ctx.shadowColor = '#f59e0b';
+    ctx.shadowBlur = 18;
     ctx.fillStyle = '#fbbf24';
     ctx.beginPath();
-    ctx.arc(curX, curY, 9, 0, Math.PI * 2);
+    ctx.arc(curX, curY, 11, 0, Math.PI * 2);
     ctx.fill();
 
-    // Faisceau de phares avant
-    const dirX = to.x >= from.x ? 1 : -1;
-    ctx.fillStyle = 'rgba(254, 240, 138, 0.45)';
+    // 3. Faisceau de phares avant illuminant la route en direction de la destination
+    ctx.save();
+    ctx.translate(curX, curY);
+    ctx.rotate(angle);
+
+    const beamGrad = ctx.createRadialGradient(8, 0, 2, 40, 0, 30);
+    beamGrad.addColorStop(0, 'rgba(254, 240, 138, 0.7)');
+    beamGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+    ctx.fillStyle = beamGrad;
     ctx.beginPath();
-    ctx.moveTo(curX + dirX * 6, curY);
-    ctx.lineTo(curX + dirX * 22, curY - 7);
-    ctx.lineTo(curX + dirX * 22, curY + 7);
+    ctx.moveTo(8, -4);
+    ctx.lineTo(46, -18);
+    ctx.lineTo(46, 18);
+    ctx.lineTo(8, 4);
     ctx.closePath();
     ctx.fill();
 
-    ctx.font = '17px sans-serif';
+    // Voiture tunisienne stylisée
+    ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🚗', curX, curY + 6);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🚗', 0, 0);
+    ctx.restore();
+
+    // 4. Bulle d'ambiance de voyage animée au-dessus du convoi
+    const bubbleY = curY - 26;
+    const kmPct = Math.round(progress * 100);
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(curX - 44, bubbleY - 10, 88, 20, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '900 9.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`في الطريق إلى ${to.name.slice(0, 8)} (${kmPct}%)`, curX, bubbleY + 3);
 
     ctx.restore();
 
     if (progress >= 1.0) {
+      const arrivedCity = this.caravan.targetCity || to;
       this.caravan = null;
+      if (this.onTravel) this.onTravel(arrivedCity);
     }
   }
 

@@ -1390,15 +1390,15 @@
     .biz-hud-top > *, .biz-hud-bottom > * { pointer-events: auto; }
     .biz-hud-top { top: 0; background: linear-gradient(180deg, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.55) 70%, rgba(2,6,23,0) 100%); padding-bottom: 14px; }
     .biz-hud-bottom { bottom: 0; background: linear-gradient(0deg, rgba(2,6,23,0.92) 0%, rgba(2,6,23,0.7) 75%, rgba(2,6,23,0) 100%); padding-top: 14px; }
-    .biz-hud-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
-    .biz-hud-icon { font-size: 26px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)); }
-    .biz-hud-names { min-width: 0; }
-    .biz-hud-title { font-size: 14px; line-height: 1.5; font-weight: 900; color: #f8fafc; text-shadow: 0 2px 6px #000; overflow: visible; }
-    .biz-hud-tagline { font-size: 10px; line-height: 1.45; color: #cbd5e1; overflow: visible; }
-    .biz-hud-stats { display: flex; gap: 6px; flex-shrink: 0; }
-    .biz-chip { display: flex; flex-direction: column; background: rgba(15,23,42,0.72); border: 1px solid rgba(251,191,36,0.4); border-radius: 10px; padding: 3px 9px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-    .biz-chip-k { font-size: 9px; line-height: 1.5; color: #94a3b8; font-weight: 800; white-space: nowrap; }
-    .biz-chip b { font-size: 12px; line-height: 1.4; color: #fbbf24; font-weight: 950; white-space: nowrap; }
+    .biz-hud-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 0 1 36%; max-width: 360px; overflow: hidden; }
+    .biz-hud-icon { font-size: 24px; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)); }
+    .biz-hud-names { min-width: 0; flex: 1; overflow: hidden; }
+    .biz-hud-title { font-size: 13.5px; line-height: 1.4; font-weight: 900; color: #f8fafc; text-shadow: 0 2px 6px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .biz-hud-tagline { font-size: 9.5px; line-height: 1.35; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .biz-hud-stats { display: flex; gap: 5px; flex-shrink: 0; align-items: center; justify-content: flex-end; }
+    .biz-chip { display: flex; flex-direction: column; background: rgba(15,23,42,0.85); border: 1px solid rgba(251,191,36,0.45); border-radius: 8px; padding: 2px 7px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .biz-chip-k { font-size: 8.5px; line-height: 1.3; color: #94a3b8; font-weight: 800; white-space: nowrap; }
+    .biz-chip b { font-size: 11px; line-height: 1.3; color: #fbbf24; font-weight: 950; white-space: nowrap; }
     .biz-close-btn { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: rgba(15,23,42,0.8); border: 1.5px solid rgba(255,255,255,0.3); color: #f1f5f9; font-size: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
     .biz-close-btn:active { transform: scale(0.9); background: rgba(239,68,68,0.45); }
     .biz-upgrade-btn { flex-shrink: 0; min-width: 118px; min-height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; border: 1.5px solid #fde68a; background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #1a0f02; cursor: pointer; padding: 4px 10px; box-shadow: 0 4px 14px rgba(245,158,11,0.45), inset 0 1px 0 rgba(255,255,255,0.45); touch-action: manipulation; }
@@ -1425,7 +1425,18 @@
     .biz-activity-row { display: flex; justify-content: space-around; gap: 6px; flex-wrap: wrap; font-size: 10.5px; line-height: 1.5; color: #e2e8f0; }
     .biz-ticker { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.35); border-radius: 8px; padding: 4px 8px; font-size: 10px; line-height: 1.5; color: #a7f3d0; }
     @media (max-height: 380px) { .biz-hud-tagline { display: none; } .biz-tab { min-height: 40px; } .biz-upgrade-btn { min-height: 40px; } .biz-drawer { bottom: 58px; max-height: 58%; } }
-    @media (max-width: 560px) { .biz-evo-info { display: none; } .biz-hud-bottom { justify-content: space-between; } .biz-chip { padding: 2px 6px; } }
+    @media (max-width: 680px) { 
+      .biz-hud-tagline { display: none; }
+      .biz-chip-k { font-size: 7.5px; }
+      .biz-chip b { font-size: 10px; }
+      .biz-chip { padding: 2px 5px; border-radius: 6px; }
+    }
+    @media (max-width: 560px) { 
+      .biz-evo-info { display: none; } 
+      .biz-hud-bottom { justify-content: space-between; } 
+      .biz-chip { padding: 1px 4px; } 
+      .biz-hud-id { flex: 0 1 30%; }
+    }
 
     /* SETTINGS & PROFILE MODAL STYLES (PAYSAGE 2 COLONNES ULTRA-COMPACT ZÉRO SCROLL) */
     .settings-modal-card {
@@ -4093,22 +4104,13 @@
             luckyDropEl.click();
           }
         },
+        onOpenMap: () => {
+          soundEngine.playCoin();
+          switchTab('zones');
+        },
         onSwitchZone: (targetZoneId) => {
-          const z = engine.getZones().find(item => item.id === targetZoneId);
-          if (!z) return;
-          if (engine.unlockZone(targetZoneId)) {
-            soundEngine.playMilestoneFanfare();
-            applyZoneTheme();
-            renderZonesUI();
-            renderDOM();
-            showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, `انتقلت عبر المفترق إلى الحيّ الجديد وتفعل البونيس :`, z.bonusDesc);
-          } else {
-            soundEngine.playCoin();
-            engine.currentZoneId = targetZoneId;
-            applyZoneTheme();
-            renderZonesUI();
-            renderDOM();
-          }
+          soundEngine.playCoin();
+          switchTab('zones');
         }
       });
       quartierEngine.start();

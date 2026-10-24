@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(anomalies,travel,hud): fix interior overlapping text, elevated customer bubbles, enlarged neon sign and interactive travel map button
 - feat(attariya,anim,signs,car): authentic grocery interior, item pickup animation, rooftop level badge and car travel
 - feat(attariya,anim,signs,car): authentic grocery interior, item pickup animation, rooftop level badge, clean 3D crossroad and car travel
 - feat(street,anim,cats,ui): floating progress bar, prominent L badge, 3D crossroad, walking cats, authentic kaskrout
