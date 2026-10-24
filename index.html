@@ -3840,7 +3840,7 @@
             applyZoneTheme();
             renderZonesUI();
             if (window.soundFX && window.soundFX.playCoin) window.soundFX.playCoin();
-            showFeedbackToast(`✈️ مرحباً بك في ${city.name} ! تم تفعيل البونيس الجهوي بنجاح.`);
+            showFeedbackToast(`🚗 مرحباً بك في ${city.name} ! تم تفعيل البونيس الجهوي بنجاح.`);
           },
           onSelect: (city) => {
             const badge = document.getElementById('mapActiveCityBadge');
@@ -3882,7 +3882,7 @@
               <div style="font-size: 11px; font-weight: 900; color: #34d399;">نشيط ✓</div>
             ` : isUnlocked ? `
               <button class="upg-buy-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);" id="zone-move-${z.id}">
-                ✈️ سافر للولاية
+                🚗 سافر للولاية
               </button>
             ` : canUnlock ? `
               <button class="upg-buy-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" id="zone-move-${z.id}">
@@ -3934,7 +3934,7 @@
           <div>
             ${isCurrent ? '<span style="font-size: 10px; font-weight: 900; color: #34d399;">الحالي</span>' : (isUnlocked || canUnlock) ? `
               <button class="upg-buy-btn" style="padding: 3px 8px; font-size: 9.5px; ${isUnlocked ? 'background: #3b82f6;' : ''}" id="modal-zone-move-${z.id}">
-                ${isUnlocked ? 'سافر ✈️' : 'افتح 🚀'}
+                ${isUnlocked ? 'سافر 🚗' : 'افتح 🚀'}
               </button>
             ` : '<span style="font-size: 9.5px; color: #ef4444;">🔒 مقفول</span>'}
           </div>
