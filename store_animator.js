@@ -1053,20 +1053,35 @@ export class QuartierAnimator {
     }
 
     this.taxis = [
-      { x: 150, speed: 95, dir: 1, type: 'taxi_collectif' },
-      { x: 650, speed: 110, dir: 1, type: 'taxi_citadin' },
-      { x: 1100, speed: 90, dir: -1, type: 'taxi_collectif' },
-      { x: 1450, speed: 120, dir: 1, type: 'citadine_rouge' }
+      { x: 120, speed: 95, dir: 1, type: 'taxi_collectif' },
+      { x: 520, speed: 112, dir: 1, type: 'taxi_citadin' },
+      { x: 920, speed: 92, dir: -1, type: 'louage' },
+      { x: 1280, speed: 124, dir: 1, type: 'citadine_rouge' },
+      { x: 1580, speed: 105, dir: -1, type: 'taxi_collectif' }
     ];
 
-    const avatars = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓', '🧑‍🎓', '🤹'];
+    const charStyles = [
+      { coat: '#dc2626', pants: '#1e293b', skin: '#fcd34d', hat: 'chechia', prop: 'bag' },
+      { coat: '#0284c7', pants: '#0f172a', skin: '#fde68a', hat: 'hijab', prop: 'couffin' },
+      { coat: '#059669', pants: '#1e293b', skin: '#f59e0b', hat: 'hair', prop: 'coffee' },
+      { coat: '#7c3aed', pants: '#334155', skin: '#fcd34d', hat: 'chechia', prop: 'none' },
+      { coat: '#d97706', pants: '#0f172a', skin: '#fde68a', hat: 'cap', prop: 'bag' },
+      { coat: '#e11d48', pants: '#1e293b', skin: '#fcd34d', hat: 'hijab', prop: 'couffin' },
+      { coat: '#2563eb', pants: '#0f172a', skin: '#f59e0b', hat: 'hair', prop: 'none' }
+    ];
     this.pedestrians = [];
-    for (let i = 0; i < 16; i++) {
+    for (let i = 0; i < 18; i++) {
+      const style = charStyles[i % charStyles.length];
       this.pedestrians.push({
         x: 50 + Math.random() * Math.max(300, this.worldWidth - 100),
-        yOffset: (Math.random() - 0.5) * 16,
-        speed: (24 + Math.random() * 32) * (Math.random() > 0.5 ? 1 : -1),
-        avatar: avatars[i % avatars.length],
+        yOffset: (Math.random() - 0.5) * 14,
+        speed: (26 + Math.random() * 28) * (Math.random() > 0.5 ? 1 : -1),
+        coat: style.coat,
+        pants: style.pants,
+        skin: style.skin,
+        hat: style.hat,
+        prop: style.prop,
+        phase: Math.random() * Math.PI * 2,
         bubbleText: null,
         bubbleTimer: 0,
         visitTimer: 3 + Math.random() * 6
@@ -1990,14 +2005,26 @@ export class QuartierAnimator {
 
     ctx.save();
 
-    // 1. Perspective de la rue perpendiculaire qui s'enfonce dans le quartier
-    const backTopY = Math.max(85, groundY - 95);
-    const topW = w * 0.48;
+    // 1. Perspective de la rue perpendiculaire avec façades lointaines illuminées
+    const backTopY = Math.max(82, groundY - 98);
+    const topW = w * 0.46;
     const topX = x + (w - topW) / 2;
 
-    // Ciel / fond de ruelle
+    // Bâtiments de fond de ruelle
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(topX - 10, backTopY - 22, topW * 0.55, 24);
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(topX + topW * 0.42, backTopY - 30, topW * 0.65, 32);
+    // Petites fenêtres éclairées au fond
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.65)';
+    ctx.fillRect(topX - 4, backTopY - 16, 4, 5);
+    ctx.fillRect(topX + 4, backTopY - 16, 4, 5);
+    ctx.fillRect(topX + topW * 0.52, backTopY - 24, 4, 5);
+    ctx.fillRect(topX + topW * 0.72, backTopY - 24, 4, 5);
+
+    // Chaussée de la ruelle en perspective
     const alleyGrad = ctx.createLinearGradient(0, backTopY, 0, roadY);
-    alleyGrad.addColorStop(0, '#0f172a');
+    alleyGrad.addColorStop(0, '#090d16');
     alleyGrad.addColorStop(1, '#1e293b');
     ctx.fillStyle = alleyGrad;
     ctx.beginPath();
@@ -2008,39 +2035,85 @@ export class QuartierAnimator {
     ctx.closePath();
     ctx.fill();
 
-    // Bordures de trottoir de la rue perpendiculaire
+    // Trottoirs latéraux en perspective (3D curb)
+    ctx.fillStyle = '#475569';
+    ctx.beginPath();
+    ctx.moveTo(topX - 6, backTopY);
+    ctx.lineTo(topX, backTopY);
+    ctx.lineTo(x + 8, roadY);
+    ctx.lineTo(x - 4, roadY);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(topX + topW, backTopY);
+    ctx.lineTo(topX + topW + 6, backTopY);
+    ctx.lineTo(x + w + 4, roadY);
+    ctx.lineTo(x + w - 8, roadY);
+    ctx.closePath();
+    ctx.fill();
+
+    // Bordures jaunes et noires de sécurité
     ctx.strokeStyle = '#facc15';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(topX, backTopY);
-    ctx.lineTo(x, roadY);
+    ctx.lineTo(x + 6, roadY);
     ctx.moveTo(topX + topW, backTopY);
-    ctx.lineTo(x + w, roadY);
+    ctx.lineTo(x + w - 6, roadY);
     ctx.stroke();
 
     // Ligne médiane pointillée de la rue secondaire
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
     ctx.lineWidth = 2;
-    ctx.setLineDash([8, 8]);
+    ctx.setLineDash([7, 7]);
     ctx.beginPath();
-    ctx.moveTo(x + w / 2, backTopY + 10);
-    ctx.lineTo(x + w / 2, roadY);
+    ctx.moveTo(x + w / 2, backTopY + 8);
+    ctx.lineTo(x + w / 2, roadY - 14);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 2. Passage piéton zébré (Passage clouté) sur le carrefour
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.78)';
-    for (let zx = x + 10; zx < x + w - 12; zx += 16) {
-      ctx.fillRect(zx, groundY + 3, 9, 14);
+    // Lampadaire tunisien à halo chaud au coin du carrefour
+    const lampX = x + w - 12;
+    const lampTopY = groundY - 64;
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(lampX, groundY + 2);
+    ctx.lineTo(lampX, lampTopY);
+    ctx.arc(lampX - 6, lampTopY, 6, 0, Math.PI, true);
+    ctx.stroke();
+
+    const lampGlow = ctx.createRadialGradient(lampX - 12, lampTopY + 2, 2, lampX - 12, lampTopY + 2, 24);
+    lampGlow.addColorStop(0, 'rgba(254, 240, 138, 0.65)');
+    lampGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+    ctx.fillStyle = lampGlow;
+    ctx.beginPath();
+    ctx.arc(lampX - 12, lampTopY + 2, 24, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(lampX - 12, lampTopY + 2, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. Passages piétons 3D bicolores (Zebra crossing horizontal & vertical)
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    for (let zx = x + 12; zx < x + w - 14; zx += 14) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
+      ctx.fillRect(zx + 1, groundY + 4, 8, 13);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+      ctx.fillRect(zx, groundY + 3, 8, 13);
     }
 
-    // Passage piéton vertical sur le boulevard principal
     const boulevardH = Math.max(36, h - roadY);
-    for (let zy = roadY + 4; zy < roadY + boulevardH - 6; zy += 11) {
-      ctx.fillRect(x + 6, zy, 18, 6);
+    for (let zy = roadY + 4; zy < roadY + boulevardH - 6; zy += 10) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
+      ctx.fillRect(x + 7, zy + 1, 18, 5);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillRect(x + 6, zy, 18, 5);
     }
 
-    // 3. Feu tricolore animé (🚦) au coin du carrefour
+    // 3. Feu tricolore animé (🚦) avec halos lumineux
     const poleX = x + 14;
     const poleBottomY = groundY + 4;
     const poleTopY = groundY - 68;
@@ -2052,36 +2125,46 @@ export class QuartierAnimator {
     ctx.lineTo(poleX, poleTopY);
     ctx.stroke();
 
-    // Boîtier du feu tricolore
     ctx.fillStyle = '#090d16';
-    ctx.strokeStyle = '#475569';
+    ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.roundRect(poleX - 7, poleTopY - 6, 14, 34, 4);
     ctx.fill();
     ctx.stroke();
 
-    const lightCycle = Math.floor(timestamp / 2000) % 3; // 0: vert, 1: orange, 2: rouge
-    const colors = [
-      lightCycle === 2 ? '#ef4444' : '#450a0a',
-      lightCycle === 1 ? '#facc15' : '#422006',
-      lightCycle === 0 ? '#10b981' : '#064e3b'
-    ];
-    colors.forEach((col, idx) => {
-      ctx.fillStyle = col;
-      ctx.beginPath();
-      ctx.arc(poleX, poleTopY + 1 + idx * 10, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-    });
+    const lightCycle = Math.floor(timestamp / 2000) % 3;
+    const activeColors = ['#ef4444', '#facc15', '#10b981'];
+    const dimColors = ['#450a0a', '#422006', '#064e3b'];
+    const activeIdx = lightCycle === 2 ? 0 : lightCycle === 1 ? 1 : 2;
 
-    // 4. Plaque de rue tunisienne (bleue & blanche)
-    const signW = Math.min(w - 16, 108);
+    for (let idx = 0; idx < 3; idx++) {
+      const ly = poleTopY + 1 + idx * 10;
+      if (idx === activeIdx) {
+        ctx.save();
+        ctx.shadowColor = activeColors[idx];
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = activeColors[idx];
+        ctx.beginPath();
+        ctx.arc(poleX, ly, 3.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else {
+        ctx.fillStyle = dimColors[idx];
+        ctx.beginPath();
+        ctx.arc(poleX, ly, 3.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // 4. Plaque de rue tunisienne émaillée (bleue & bordure blanche)
+    const signW = Math.min(w - 14, 110);
     const signH = 20;
-    const signX = x + (w - signW) / 2 + 6;
-    const signY = groundY - 82;
+    const signX = x + (w - signW) / 2 + 4;
+    const signY = groundY - 84;
 
     ctx.fillStyle = '#1e3a8a';
-    ctx.strokeStyle = '#ffffff';
+    ctx.strokeStyle = '#f8fafc';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.roundRect(signX, signY, signW, signH, 4);
@@ -2095,12 +2178,15 @@ export class QuartierAnimator {
 
     // 5. Panneau directionnel cliquable vers le quartier suivant !
     if (cItem.nextZoneId && cItem.nextZoneLabel) {
-      const dirW = Math.min(w - 10, 114);
+      const dirW = Math.min(w - 8, 116);
       const dirH = 24;
-      const dirX = x + (w - dirW) / 2 + 6;
-      const dirY = groundY - 56;
+      const dirX = x + (w - dirW) / 2 + 4;
+      const dirY = groundY - 58;
 
-      ctx.fillStyle = 'rgba(16, 185, 129, 0.92)';
+      const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
+      signGrad.addColorStop(0, '#10b981');
+      signGrad.addColorStop(1, '#047857');
+      ctx.fillStyle = signGrad;
       ctx.strokeStyle = '#a7f3d0';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -2199,71 +2285,264 @@ export class QuartierAnimator {
 
   drawVehicle(ctx, x, y, t, timestamp) {
     ctx.save();
-    const bob = Math.sin(timestamp * 0.015 + x) * 1;
+    const bob = Math.sin(timestamp * 0.018 + x * 0.1) * 0.8;
+    const isRight = t.dir > 0;
+    const vW = (t.type === 'taxi_collectif' || t.type === 'louage') ? 62 : 50;
 
-    if (t.type === 'taxi_collectif') {
-      ctx.fillStyle = '#fef08a';
+    // Ombre portée sous le véhicule
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
+    ctx.beginPath();
+    ctx.ellipse(x + vW / 2, y + 2, vW * 0.48, 4.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Orientation automatique selon la direction de circulation
+    ctx.translate(x + vW / 2, y + bob);
+    if (!isRight) ctx.scale(-1, 1);
+    ctx.translate(-vW / 2, 0);
+
+    if (t.type === 'taxi_collectif' || t.type === 'louage') {
+      const isLouage = t.type === 'louage';
+      // Carrosserie minibus (Jaune Taxi Collectif ou Blanc Louage)
+      ctx.fillStyle = isLouage ? '#f8fafc' : '#facc15';
+      ctx.strokeStyle = isLouage ? '#cbd5e1' : '#ca8a04';
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
-      ctx.roundRect(x, y - 22 + bob, 56, 18, 4);
+      ctx.roundRect(0, -24, 62, 19, [5, 8, 3, 3]);
+      ctx.fill();
+      ctx.stroke();
+
+      // Bande latérale officielle (Bleue pour Taxi Collectif, Rouge pour Louage)
+      ctx.fillStyle = isLouage ? '#dc2626' : '#2563eb';
+      ctx.fillRect(1, -13, 60, 4);
+
+      // Galerie de toit + enseigne lumineuse
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(12, -26, 28, 2);
+      ctx.fillStyle = isLouage ? '#2563eb' : '#ef4444';
+      ctx.beginPath();
+      ctx.roundRect(22, -30, 16, 5, 2);
       ctx.fill();
 
-      ctx.fillStyle = '#2563eb';
-      ctx.fillRect(x, y - 13 + bob, 56, 4);
-
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(x + 22, y - 27 + bob, 12, 5);
+      // Vitres passagers teintées avec reflets
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(6, -22, 13, 8);
+      ctx.fillRect(22, -22, 14, 8);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(39, -22, 16, 8);
     } else {
-      ctx.fillStyle = t.type === 'citadine_rouge' ? '#dc2626' : '#eab308';
+      // Berline (Taxi individuel jaune tunisien ou Citadine rouge)
+      const isRed = t.type === 'citadine_rouge';
+      ctx.fillStyle = isRed ? '#e11d48' : '#eab308';
+      ctx.strokeStyle = isRed ? '#9f1239' : '#a16207';
+      ctx.lineWidth = 1.2;
+
+      // Bas de caisse
       ctx.beginPath();
-      ctx.roundRect(x, y - 18 + bob, 46, 14, 5);
+      ctx.roundRect(0, -14, 50, 10, [3, 5, 2, 2]);
+      ctx.fill();
+      ctx.stroke();
+
+      // Habitacle profilé
+      ctx.beginPath();
+      ctx.moveTo(8, -14);
+      ctx.lineTo(14, -22);
+      ctx.lineTo(34, -22);
+      ctx.lineTo(41, -14);
+      ctx.closePath();
+      ctx.fill();
+
+      // Lumineux "TAXI" sur le toit du taxi individuel
+      if (!isRed) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(21, -26, 9, 4);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(23, -25, 5, 2);
+      }
+
+      // Vitres
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(11, -14);
+      ctx.lineTo(15, -20);
+      ctx.lineTo(24, -20);
+      ctx.lineTo(24, -14);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(26, -14);
+      ctx.lineTo(26, -20);
+      ctx.lineTo(33, -20);
+      ctx.lineTo(39, -14);
       ctx.fill();
     }
 
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(x + 10, y - 20 + bob, 12, 7);
-    ctx.fillRect(x + 26, y - 20 + bob, 14, 7);
+    // Pare-chocs chromés
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(-1, -7, 4, 3);
+    ctx.fillRect(vW - 3, -7, 4, 3);
 
-    ctx.fillStyle = '#020617';
+    // Faisceau de phare avant & feu arrière
+    const beamGrad = ctx.createLinearGradient(vW, -10, vW + 28, -6);
+    beamGrad.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
+    beamGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+    ctx.fillStyle = beamGrad;
     ctx.beginPath();
-    ctx.arc(x + 12, y - 2 + bob, 5, 0, Math.PI * 2);
-    ctx.arc(x + 42, y - 2 + bob, 5, 0, Math.PI * 2);
+    ctx.moveTo(vW, -12);
+    ctx.lineTo(vW + 28, -17);
+    ctx.lineTo(vW + 28, -3);
+    ctx.lineTo(vW, -7);
+    ctx.closePath();
     ctx.fill();
 
     ctx.fillStyle = '#fef08a';
-    if (t.dir > 0) {
-      ctx.fillRect(x + 52, y - 16 + bob, 3, 5);
-    } else {
-      ctx.fillRect(x + 1, y - 16 + bob, 3, 5);
-    }
+    ctx.fillRect(vW - 2, -12, 3, 4);
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(0, -12, 2.5, 4);
+
+    // Roues avec jantes métalliques en rotation
+    const wheelPositions = [12, vW - 13];
+    const wheelAngle = (timestamp * 0.015) % (Math.PI * 2);
+    wheelPositions.forEach(wx => {
+      ctx.fillStyle = '#020617';
+      ctx.beginPath();
+      ctx.arc(wx, -3, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.beginPath();
+      ctx.arc(wx, -3, 2.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(wx - Math.cos(wheelAngle) * 2.5, -3 - Math.sin(wheelAngle) * 2.5);
+      ctx.lineTo(wx + Math.cos(wheelAngle) * 2.5, -3 + Math.sin(wheelAngle) * 2.5);
+      ctx.stroke();
+    });
 
     ctx.restore();
   }
 
   drawPedestrian(ctx, x, y, p, timestamp) {
     ctx.save();
-    const step = Math.sin(timestamp * 0.008 + p.x) * 2;
+    const walkCycle = timestamp * 0.01 + (p.phase || 0) + p.x * 0.08;
+    const stride = Math.sin(walkCycle) * 4.5;
+    const bounce = Math.abs(Math.cos(walkCycle)) * 1.8;
+    const dir = p.speed >= 0 ? 1 : -1;
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    // Ombre portée au sol
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
     ctx.beginPath();
-    ctx.ellipse(x, y + 6, 8, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y + 6, 7, 2.8, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.font = '18px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(p.avatar, x, y + step);
+    ctx.save();
+    ctx.translate(x, y - bounce);
+    if (dir < 0) ctx.scale(-1, 1);
 
+    // Jambes animées en marche
+    ctx.strokeStyle = p.pants || '#1e293b';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-1, -4);
+    ctx.lineTo(-1 - stride * 0.7, 5);
+    ctx.moveTo(1, -4);
+    ctx.lineTo(1 + stride * 0.7, 5);
+    ctx.stroke();
+
+    // Buste / Tunique / Veste
+    ctx.fillStyle = p.coat || '#0284c7';
+    ctx.beginPath();
+    ctx.roundRect(-4.5, -14, 9, 11, 3.5);
+    ctx.fill();
+
+    // Bras oscillant + accessoire tunisien (Couffin, Sac, Café)
+    ctx.strokeStyle = p.coat || '#0284c7';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(0, -12);
+    ctx.lineTo(stride * 0.6, -5);
+    ctx.stroke();
+
+    if (p.prop === 'couffin') {
+      // Couffin tunisien en osier tressé
+      ctx.fillStyle = '#eab308';
+      ctx.strokeStyle = '#a16207';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(stride * 0.6 - 4, -4);
+      ctx.lineTo(stride * 0.6 + 4, -4);
+      ctx.lineTo(stride * 0.6 + 3, 2);
+      ctx.lineTo(stride * 0.6 - 3, 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    } else if (p.prop === 'bag') {
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(stride * 0.6 - 2.5, -4, 5, 5.5);
+    }
+
+    // Tête
+    ctx.fillStyle = p.skin || '#fcd34d';
+    ctx.beginPath();
+    ctx.arc(0, -18, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Coiffure / Chéchia rouge / Foulard / Casquette
+    if (p.hat === 'chechia') {
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(0, -19.5, 4.5, Math.PI, 0);
+      ctx.fill();
+      // Gland noir de la chéchia
+      ctx.strokeStyle = '#090d16';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(-2, -22);
+      ctx.lineTo(-4.5, -19);
+      ctx.stroke();
+    } else if (p.hat === 'hijab') {
+      ctx.fillStyle = p.coat || '#e11d48';
+      ctx.beginPath();
+      ctx.arc(-0.5, -18.2, 4.8, Math.PI * 0.65, Math.PI * 2.15);
+      ctx.fill();
+    } else if (p.hat === 'cap') {
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.arc(0, -19.5, 4.5, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(1, -20, 5.5, 1.5);
+    } else {
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(-0.5, -19.5, 4.5, Math.PI * 0.85, Math.PI * 2.05);
+      ctx.fill();
+    }
+
+    // Oeil expressif
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(1.8, -18.8, 1.3, 1.3);
+
+    ctx.restore();
+
+    // Bulle de dialogue tunisienne
     if (p.bubbleText) {
-      ctx.font = '900 11px "Cairo", sans-serif';
+      ctx.font = '900 10.5px "Cairo", sans-serif';
       const textW = ctx.measureText(p.bubbleText).width;
       const bW = textW + 14;
-      const bH = 20;
+      const bH = 19;
       const bX = x - bW / 2;
-      const bY = y - 28;
+      const bY = y - 41;
 
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.roundRect(bX, bY, bW, bH, 6);
       ctx.fill();
+      ctx.stroke();
 
       ctx.beginPath();
       ctx.moveTo(x - 3, bY + bH);
@@ -2273,7 +2552,8 @@ export class QuartierAnimator {
       ctx.fill();
 
       ctx.fillStyle = '#0f172a';
-      ctx.fillText(p.bubbleText, x, bY + 14);
+      ctx.textAlign = 'center';
+      ctx.fillText(p.bubbleText, x, bY + 13);
     }
 
     ctx.restore();

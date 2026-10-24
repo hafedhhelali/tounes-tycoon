@@ -995,6 +995,7 @@ export class TycoonEngine {
     this.totalDinarsEarned = 5.0;
     this.manualServesCount = 0;
     this.activeEvent = null;
+    this.currentZoneId = 'bab_souika';
 
     // Calcul du nouveau titre de prestige
     this.updatePlayerPrestigeTitle();

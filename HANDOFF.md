@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Refonte graphique & fluidité 60 FPS : transitions cinématiques royales entre quartiers (écusson doré, halo radial, sous-titres thématiques), skyline enrichie (croissant de lune, dômes, minarets) et icônes d'offres/alertes 3D bombées dans le ciel du Canvas.
-Modales 100% Zéro-Scroll en mode paysage (grille 2 colonnes sur `bizDetailModal`, `settingsModal`, `legalModal`, `zonesModal`, roue compacte 145px).
-Ajout du Guide de Démarrage Rapide (`#startGuideModal` + bouton `❓` dans le header + ouverture auto au 1er lancement). Tests: npm test = 12/12 PASS.
+Animations 2D haute précision : passants vectoriels articulés (marche sinusoïdale, chéchia, hijab, couffin tunisien), véhicules détaillés (Taxi Collectif, Louage blanc/rouge, faisceaux de phares, jantes rotatives) et carrefours 3D enrichis (ruelles illuminées, lampadaires à halo chaud, passages piétons 3D, feux tricolores).
+Correctifs UX & Bugs : fermeture automatique de toute modale au clic à l'extérieur (`.modal-overlay`), correction du crash `.balance-box` qui bloquait les toasts d'erreur + remplacement de "تخصّك" par "ناقصك فلوس", et retour systématique au 1er quartier (`bab_souika`) lors d'une réinitialisation ou d'un prestige.
+Modales 100% Zéro-Scroll en mode paysage + Guide de Démarrage Rapide (`#startGuideModal`). Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

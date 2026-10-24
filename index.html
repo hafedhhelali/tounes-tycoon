@@ -2838,9 +2838,12 @@
       if (res) {
         soundEngine.playChkobbaWin();
         prestigeModal.classList.remove('active');
-        showRewardModalUI('👑', 'مبروك الصعود لطبقة رجال الأعمال !', `ربحت ${res.pointsEarned} نقطة خبرة ومضروب دائم x${res.newMultiplier.toFixed(2)} :`, res.title);
+        applyZoneTheme();
+        renderZonesUI();
         renderDOM();
         updateSynergiesUI();
+        switchTab('businesses');
+        showRewardModalUI('👑', 'مبروك الصعود لطبقة رجال الأعمال !', `ربحت ${res.pointsEarned} نقطة خبرة ومضروب دائم x${res.newMultiplier.toFixed(2)} :`, res.title);
       }
     };
 
@@ -3140,20 +3143,28 @@
 
     // UI Helper: Toast de notification solde insuffisant
     let toastTimeout = null;
-    function triggerBalanceAlert(msg = 'الكاسة فارغة ! سربّي بيديك ولا دبّر تفتوفة 💰') {
+    if (errorToast) {
+      errorToast.onclick = () => {
+        clearTimeout(toastTimeout);
+        errorToast.classList.remove('show');
+      };
+    }
+    function triggerBalanceAlert(msg = 'ناقصك فلوس في الكاسة ! سربّي بيديك ولا دبّر تفتوفة 💰') {
       soundEngine.playBuzzer();
-      toastMsg.innerHTML = msg;
-      errorToast.classList.add('show');
+      if (toastMsg) toastMsg.innerHTML = msg;
+      if (errorToast) errorToast.classList.add('show');
 
       // Effet Shake sur le solde
-      const balanceBox = document.querySelector('.balance-box');
-      balanceBox.classList.add('shake-balance');
-      setTimeout(() => balanceBox.classList.remove('shake-balance'), 450);
+      const balanceBox = document.querySelector('.balance-hero');
+      if (balanceBox) {
+        balanceBox.classList.add('shake-balance');
+        setTimeout(() => balanceBox.classList.remove('shake-balance'), 450);
+      }
 
       clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
-        errorToast.classList.remove('show');
-      }, 2600);
+        if (errorToast) errorToast.classList.remove('show');
+      }, 2200);
     }
 
     // UI Helper: Fenêtre de célébration Tycoon (sans alert() navigateur)
@@ -3310,7 +3321,7 @@
             const manque = (currentCost - engine.dinars);
             buyBtn.classList.add('shake-btn');
             setTimeout(() => buyBtn.classList.remove('shake-btn'), 420);
-            triggerBalanceAlert(`مازالت ناقصتك ${formatCurrencyPlain(manque)} ! سربّي ولا دبّر تفتوفة 💰`);
+            triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس ! سربّي ولا دبّر تفتوفة 💰`);
           }
         };
 
@@ -3370,7 +3381,7 @@
               const manque = (nextMgr.cost - engine.dinars);
               mgrBtn.classList.add('shake-btn');
               setTimeout(() => mgrBtn.classList.remove('shake-btn'), 420);
-              triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(manque)} باش تخدّمو ! 👔`);
+              triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تخدّمو ! 👔`);
             }
           };
         }
@@ -3581,7 +3592,7 @@
                 renderTacticalUpgradesUI();
                 renderDOM();
               } else {
-                triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(u.cost - engine.dinars)} باش تشري سرّ الصنعة !`);
+                triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(u.cost - engine.dinars)} فلوس باش تشري سرّ الصنعة !`);
               }
             };
           }
@@ -3769,17 +3780,6 @@
       }, 3600);
     };
 
-    // --- DILEMMES MORAUX & DÉCISIONS DU QUARTIER ---
-    const dilemmaBanner = document.getElementById('dilemmaBanner');
-    const dilemmaTitle = document.getElementById('dilemmaTitle');
-    const dilemmaDesc = document.getElementById('dilemmaDesc');
-    const dilemmaChoiceABtn = document.getElementById('dilemmaChoiceABtn');
-    const dilemmaChoiceBBtn = document.getElementById('dilemmaChoiceBBtn');
-
-    function checkDilemmasUI() {
-      // Les dilemmes s'affichent uniquement sous forme de petite icône dans le Canvas
-    }
-
     // --- MOTEUR PANORAMIQUE 2D 60 FPS DU QUARTIER TUNISIEN VIVANT (LANDSCAPE) ---
     const quartierCanvas = document.getElementById('quartierMainCanvas');
     const currentQuartierBadge = document.getElementById('currentQuartierBadge');
@@ -3809,7 +3809,8 @@
               renderDOM();
               updateSynergiesUI();
             } else {
-              triggerBalanceAlert(`مازالت تخصّك فلوس باش تطوّر المشروع ! 💰`);
+              const manque = Math.max(0, engine.getCost(biz) - engine.dinars);
+              triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تطوّر المشروع ! 💰`);
             }
           }
         },
@@ -3982,10 +3983,13 @@
         localStorage.removeItem('tounes_tycoon_save');
         localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
         settingsModal.classList.remove('active');
+        applyZoneTheme();
+        renderZonesUI();
         renderDOM();
         updateSynergiesUI();
         renderSettingsAndProfileUI();
-        triggerBalanceAlert('تمّ إعلان إفلاس المشروع بنجاح ! ابدأ من الصفر يا معلّم 🚀');
+        switchTab('businesses');
+        triggerBalanceAlert('تمّ إعلان إفلاس المشروع بنجاح ! رجعنا لباب سويقة من الصفر 🚀');
       };
     }
 
@@ -4039,7 +4043,7 @@
                 renderBizDetailContent();
                 renderDOM();
               } else {
-                triggerBalanceAlert('مازالت تخصّك فلوس باش تخدّمو ! 👔');
+                triggerBalanceAlert('ناقصك فلوس باش تخدّمو ! 👔');
               }
             }
           });
@@ -4090,7 +4094,8 @@
             renderDOM();
             updateSynergiesUI();
           } else {
-            triggerBalanceAlert(`مازالت تخصّك فلوس باش تطوّر المشروع ! 💰`);
+            const manque = Math.max(0, engine.getCost(biz) - engine.dinars);
+            triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تطوّر المشروع ! 💰`);
           }
         };
       }
@@ -4129,7 +4134,7 @@
                 renderDOM();
                 updateSynergiesUI();
               } else {
-                triggerBalanceAlert(`مازالت تخصّك فلوس باش تخدّمو ! 👔`);
+                triggerBalanceAlert(`ناقصك فلوس باش تخدّمو ! 👔`);
               }
             };
           }
@@ -4235,6 +4240,25 @@
     const exitAppModal = document.getElementById('exitAppModal');
     const confirmExitAppBtn = document.getElementById('confirmExitAppBtn');
     const cancelExitAppBtn = document.getElementById('cancelExitAppBtn');
+
+    // Fermeture automatique de toute popup en cliquant en dehors (.modal-overlay)
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('pointerdown', (e) => {
+        if (e.target === overlay) {
+          if (overlay.id === 'wheelModal' && isSpinningWheel) return;
+          overlay.classList.remove('active');
+          if (overlay.id === 'bizDetailModal' && storeSimulation) {
+            storeSimulation.stop();
+          }
+          if (overlay.id === 'startGuideModal') {
+            localStorage.setItem('tounes_tycoon_guide_seen', '1');
+          }
+          if (overlay.id === 'minigameModal' && chkobbaTimer) {
+            clearInterval(chkobbaTimer);
+          }
+        }
+      });
+    });
 
     function handleBackNavigation() {
       // 1. Si le modal de sortie est ouvert, on le ferme
