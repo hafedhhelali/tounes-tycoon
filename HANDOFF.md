@@ -2,13 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Nouvelle icône d'appli (pièce dorée + emblème tunisien sur fond rouge, `scripts/gen_icon.ps1` régénère mipmaps + assets/icon.png); textes de la vue projet plus cropés (line-height, wrap, tiroir scrollable si besoin, rôle auto-ajusté); employés dessinés en vectoriel animé (`drawWorker`: toque/casque/chéchia, bras actifs, clignement).
-Fix: toast d'erreur au-dessus des popups (z 500, en haut) → achats/recrutements impossibles = enfin visibles; boucles rAF (tick, Quartier, Store) protégées par try/catch; navigation quartiers bidirectionnelle (panneaux suivant+précédent par carrefour); tap sur la scène = servir (revenu); boutons « خدّم » lisibles (halo + prix); plus de mention « caisse »; chip الرصيد live dans la vue projet.
-Vue « ادخل للمحلّ » immersive : canvas `CanvasStoreEngine` plein popup (échelle uniforme, hauteur logique 200, clics remappés), HUD en superposition (barre haute: identité+chiffres+✕, barre basse: amélioration+onglets), tiroir glass `#bizDrawer` fermé par défaut (Staff/Recette/Activité), ambiance animée (lanternes, rayons, poussière, vignette).
-Acquis: roue = pub systématique, cartes Chkobba lisibles, popups zéro-scroll, passants/véhicules/carrefours détaillés, clic hors popup, toast `ناقصك فلوس`, reset → `bab_souika`.
-Tests: npm test = 12/12 PASS.
-Correctifs UX & Bugs : roue de la fortune déclenchant systématiquement la publicité vidéo (`showRewardedBoost`), correction de l'affichage des cartes du mini-jeu Chkobba (contraste `.card-val`/`.card-suit` + layout paysage 2 colonnes), fermeture au clic hors popup, toast `ناقصك فلوس` et retour au 1er quartier (`bab_souika`) sur reset/prestige.
-Modales 100% Zéro-Scroll en mode paysage sur toutes les popups (`minigameModal`, `wheelModal`, `prestigeModal`, `bizDetailModal`, `settingsModal`, `legalModal`, `zonesModal`, `startGuideModal`). Tests: npm test = 12/12 PASS.
+Conquête Nationale : 14 villes tunisiennes (Tunis à Djerba Holding x5) reliées par une vraie carte vectorielle SVG avec autoroutes dorées animées et critères de passage déterministes.
+Ambiance & Économie Réelle : terminologie « حريف / حرفاء », portes cloutées Bab Arbi, animations intérieures spectaculaires (marmites Lablabi, Zazoua sur Kanoun, pressoir d'huile Sfax, Makroudh Kairouan, radar Holding), charges périodiques (salaires, matériel, STEG/SONEDE, impôts) et cadence posée.
+Tests: npm test = 22/22 PASS (zéro régression). Livraison Android Capacitor synchronisée.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

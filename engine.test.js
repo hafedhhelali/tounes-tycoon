@@ -297,6 +297,245 @@ test('getBusinessDetail returns complete inner breakdown for immersive view', ()
   assert.ok(['متوسط', 'قوي', 'شاعل'].includes(detail.crowdLevel));
 });
 
+test('Tunisian 14 cities progression: listing, retrieval and initial state', () => {
+  const engine = new TycoonEngine();
+  const cities = engine.getCities();
+  assert.equal(cities.length, 14);
+
+  // Ville de départ : Tunis
+  assert.equal(engine.currentCityId, 'tunis');
+  assert.equal(engine.currentZoneId, 'tunis');
+  assert.deepEqual(engine.unlockedCityIds, ['tunis']);
+
+  const currentCity = engine.getCurrentCity();
+  assert.equal(currentCity.id, 'tunis');
+  assert.equal(currentCity.name, 'تونس العاصمة');
+
+  // getCityById
+  const bizerte = engine.getCityById('bizerte');
+  assert.ok(bizerte);
+  assert.equal(bizerte.name, 'بنزرت');
+  assert.equal(bizerte.costDinars, 2500);
+
+  const nonExistent = engine.getCityById('mars');
+  assert.equal(nonExistent, null);
+});
+
+test('City unlock criteria: Bizerte (2,500 DT + 1 biz L10)', () => {
+  const engine = new TycoonEngine();
+
+  // Critère non rempli au départ
+  assert.equal(engine.checkCityUnlockCriteria('bizerte'), false);
+  assert.equal(engine.unlockCity('bizerte'), false);
+
+  // Assez d'argent mais pas de biz L10
+  engine.dinars = 3000;
+  assert.equal(engine.checkCityUnlockCriteria('bizerte'), false);
+  assert.equal(engine.unlockCity('bizerte'), false);
+
+  // Niveau 10 atteint sur un commerce
+  engine.businesses[0].level = 10;
+  assert.equal(engine.checkCityUnlockCriteria('bizerte'), true);
+
+  // Déblocage réussi : prélèvement de 2,500 DT et passage à Bizerte
+  const unlocked = engine.unlockCity('bizerte');
+  assert.equal(unlocked, true);
+  assert.equal(engine.dinars, 500); // 3000 - 2500 = 500
+  assert.equal(engine.currentCityId, 'bizerte');
+  assert.equal(engine.currentZoneId, 'bizerte');
+  assert.ok(engine.unlockedCityIds.includes('bizerte'));
+
+  // Re-voyage sans prélèvement
+  const reenter = engine.unlockCity('bizerte');
+  assert.equal(reenter, true);
+  assert.equal(engine.dinars, 500);
+});
+
+test('City unlock criteria: Nabeul/Hammamet (8,000 DT + 1 manager)', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 10000;
+  assert.equal(engine.unlockCity('nabeul_hammamet'), false);
+
+  // Embauche d'un manager
+  engine.businesses[0].hasManager = true;
+  engine.businesses[0].hiredManagersCount = 1;
+  assert.equal(engine.checkCityUnlockCriteria('nabeul_hammamet'), true);
+
+  assert.equal(engine.unlockCity('nabeul_hammamet'), true);
+  assert.equal(engine.dinars, 2000); // 10000 - 8000 = 2000
+  assert.equal(engine.currentCityId, 'nabeul_hammamet');
+});
+
+test('City unlock criteria: Béja (22,000 DT + 2 biz L20)', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 30000;
+  engine.businesses[0].level = 20;
+  assert.equal(engine.unlockCity('beja'), false); // seulement 1 biz L20
+
+  engine.businesses[1].level = 20;
+  assert.equal(engine.checkCityUnlockCriteria('beja'), true);
+  assert.equal(engine.unlockCity('beja'), true);
+  assert.equal(engine.dinars, 8000); // 30000 - 22000 = 8000
+  assert.equal(engine.currentCityId, 'beja');
+});
+
+test('City unlock criteria: Le Kef (60,000 DT + 50k total dinars)', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 70000;
+  engine.lifetimeDinarsEarned = 10000;
+  engine.totalDinarsEarned = 10000;
+  assert.equal(engine.unlockCity('le_kef'), false);
+
+  engine.lifetimeDinarsEarned = 60000;
+  assert.equal(engine.checkCityUnlockCriteria('le_kef'), true);
+  assert.equal(engine.unlockCity('le_kef'), true);
+  assert.equal(engine.dinars, 10000);
+  assert.equal(engine.currentCityId, 'le_kef');
+});
+
+test('City unlock criteria: Sousse (150,000 DT + Prestige 1)', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 200000;
+  assert.equal(engine.unlockCity('sousse'), false);
+
+  engine.prestigeLevel = 1;
+  assert.equal(engine.checkCityUnlockCriteria('sousse'), true);
+  assert.equal(engine.unlockCity('sousse'), true);
+  assert.equal(engine.dinars, 50000);
+  assert.equal(engine.currentCityId, 'sousse');
+});
+
+test('City unlock criteria: Monastir/Mahdia, Kairouan, Sfax, Gafsa, Tozeur, Gabes, Médenine', () => {
+  const engine = new TycoonEngine();
+
+  // Monastir (350k + 5 managers)
+  engine.dinars = 400000;
+  for (let i = 0; i < 5; i++) {
+    engine.businesses[i].hasManager = true;
+    engine.businesses[i].hiredManagersCount = 1;
+  }
+  assert.equal(engine.unlockCity('monastir_mahdia'), true);
+
+  // Kairouan (800k + 4 biz L35)
+  engine.dinars = 900000;
+  for (let i = 0; i < 4; i++) {
+    engine.businesses[i].level = 35;
+  }
+  assert.equal(engine.unlockCity('kairouan'), true);
+
+  // Sfax (2,000,000 DT + Prestige 2)
+  engine.dinars = 2500000;
+  engine.prestigeLevel = 2;
+  assert.equal(engine.unlockCity('sfax'), true);
+
+  // Gafsa (4,500,000 DT)
+  engine.dinars = 5000000;
+  assert.equal(engine.unlockCity('gafsa'), true);
+
+  // Tozeur (10,000,000 DT + 1 biz L100)
+  engine.dinars = 11000000;
+  engine.businesses[0].level = 100;
+  assert.equal(engine.unlockCity('tozeur'), true);
+
+  // Gabès (25,000,000 DT + 10 managers)
+  engine.dinars = 26000000;
+  for (let i = 0; i < 10; i++) {
+    engine.businesses[i].hasManager = true;
+    engine.businesses[i].hiredManagersCount = 1;
+  }
+  assert.equal(engine.unlockCity('gabes'), true);
+
+  // Médenine (60,000,000 DT + Prestige 3)
+  engine.dinars = 70000000;
+  engine.prestigeLevel = 3;
+  assert.equal(engine.unlockCity('medenine_zarzis'), true);
+});
+
+test('Djerba / Holding National: Legend title requirement + Holding Status x5 multiplier', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 200000000;
+  engine.prestigeLevel = 5;
+  assert.equal(engine.unlockCity('djerba_holding'), false);
+
+  // Atteinte du titre Légende (Prestige 10)
+  engine.prestigeLevel = 10;
+  engine.updatePlayerPrestigeTitle();
+  assert.equal(engine.playerTitle, 'إمبراطور تونس الكبير');
+  assert.equal(engine.checkCityUnlockCriteria('djerba_holding'), true);
+
+  const unlocked = engine.unlockCity('djerba_holding');
+  assert.equal(unlocked, true);
+  assert.equal(engine.dinars, 50000000); // 200M - 150M = 50M
+  assert.equal(engine.currentCityId, 'djerba_holding');
+
+  // Holding Status multiplier x5 sur tous les commerces
+  engine.businesses[0].level = 1; // kaskrout baseRevenue = 0.8
+  const baseRevenue = engine.businesses[0].baseRevenue;
+  const holdingMultiplier = engine.getZoneMultiplier(engine.businesses[0].id);
+  assert.equal(holdingMultiplier, 5.0);
+  assert.ok(engine.getRevenue(engine.businesses[0]) >= baseRevenue * 5.0);
+});
+
+test('Backward compatibility with legacy zones and saves', () => {
+  // 1. Map legacy zone IDs
+  const engine = new TycoonEngine();
+  assert.equal(engine.unlockZone('bab_souika'), true);
+  assert.equal(engine.currentCityId, 'tunis');
+  assert.equal(engine.currentZoneId, 'tunis');
+
+  // 2. Load legacy save state containing currentZoneId: 'bab_souika'
+  const legacyState = {
+    dinars: 1000,
+    currentZoneId: 'bab_souika',
+    businesses: [{ id: 'kaskrout', level: 5 }]
+  };
+  const restoredEngine = new TycoonEngine(legacyState);
+  assert.equal(restoredEngine.currentZoneId, 'tunis');
+  assert.equal(restoredEngine.currentCityId, 'tunis');
+  assert.deepEqual(restoredEngine.unlockedCityIds, ['tunis']);
+  assert.equal(restoredEngine.businesses[0].level, 5);
+
+  // 3. Export includes both currentZoneId and currentCityId
+  const exported = restoredEngine.exportState();
+  assert.equal(exported.currentZoneId, 'tunis');
+  assert.equal(exported.currentCityId, 'tunis');
+  assert.ok(Array.isArray(exported.unlockedCityIds));
+});
+
+test('Expenses & charges system calculates realistic corporate deductions', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 500.0;
+  engine.buyBusiness('kaskrout'); // level 1
+  engine.buyBusiness('fricasse'); // level 1
+
+  // 1. Calcul de la décomposition des charges
+  const breakdown = engine.calculateExpensesBreakdown(100.0);
+  assert.equal(breakdown.salaries, 4.0); // 4%
+  assert.equal(breakdown.maintenance, 3.0); // 3%
+  assert.equal(breakdown.utilities, 2.5); // 2.5%
+  assert.equal(breakdown.taxes, 2.5); // 2.5%
+  assert.equal(breakdown.total, 12.0); // 12% au total
+  assert.equal(breakdown.effectiveRatePct, 12);
+
+  // 2. Résumé pour affichage dans le panneau financier
+  const summary = engine.getCurrentExpensesSummary();
+  assert.ok(summary.grossMinute > 0);
+  assert.ok(summary.totalCycle > 0);
+  assert.equal(summary.effectiveRatePct, 12);
+
+  // 3. Déduction périodique (60s)
+  const initialDinars = engine.dinars;
+  const t0 = 1000000;
+  engine.lastExpensesDeductionAt = t0;
+  engine.lastTimestamp = t0;
+
+  // À t0 + 65s, un cycle périodique de dépenses se déclenche
+  engine.update(t0 + 65000);
+  assert.ok(engine.totalExpensesPaid > 0);
+  assert.ok(engine.lastExpensesBreakdown.total > 0);
+  assert.ok(engine.dinars > 0); // Le joueur n'est jamais bloqué à 0
+});
+
 
 
 

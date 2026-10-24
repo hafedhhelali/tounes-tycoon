@@ -288,7 +288,7 @@ export const TUNISIAN_QUESTS = [
   },
   {
     id: 'serve_kaskrout_10',
-    title: 'سربّي الكليونات 10 مرّات بيديك',
+    title: 'سربّي الحرفاء 10 مرّات بيديك',
     targetType: 'manual_serves',
     targetValue: 10,
     rewardDinars: 15.0,
@@ -457,7 +457,7 @@ export const DAILY_LOGIN_REWARDS = [
 ];
 
 export const DAILY_CHALLENGES_POOL = [
-  { id: 'dc_serves', title: 'سربيس سخون', desc: 'سربّي 30 كليان يدويّا باليد', target: 30, type: 'serves', rewardDinars: 500, rewardPrestige: 2 },
+  { id: 'dc_serves', title: 'سربيس سخون', desc: 'سربّي 30 حريف يدويّا باليد', target: 30, type: 'serves', rewardDinars: 500, rewardPrestige: 2 },
   { id: 'dc_upgrades', title: 'عمارة واستثمار', desc: 'اشري أو طلّع 3 مستويات في المشاريع', target: 3, type: 'upgrades', rewardDinars: 1200, rewardPrestige: 3 },
   { id: 'dc_chkobba', title: 'معلّم كارطة', desc: 'اربح طرح شكبة في القهوة', target: 1, type: 'chkobba_wins', rewardDinars: 2500, rewardPrestige: 5 },
   { id: 'dc_spin', title: 'عجلة الحظ', desc: 'دوّر عجلة الحظ مرّة اليوم', target: 1, type: 'wheel_spins', rewardDinars: 800, rewardPrestige: 2 }
@@ -469,7 +469,188 @@ export const PRESTIGE_RANKS = [
   { minLevel: 2, title: 'رجل أعمال الحومة', badge: 'معلّم 2★' },
   { minLevel: 3, title: 'ملياردير باب سويقة', badge: 'مستثمر 3★' },
   { minLevel: 5, title: 'بارون التجارة والصناعة', badge: 'كابو 4★' },
-  { minLevel: 10, title: 'إمبراطور تونس الكبير', badge: 'أسطورة 5★' }
+  { minLevel: 10, title: 'إمبراطور تونس الكبير', badge: 'أسطورة 5★', isLegend: true }
+];
+
+export const TUNISIAN_CITIES = [
+  {
+    id: 'tunis',
+    name: 'تونس العاصمة',
+    icon: '🕌',
+    tagline: 'نقطة البداية، أصل التجارة، نصبة كسكروت وفريكاسي في قلب المدينة العربي',
+    costDinars: 0,
+    criteriaDesc: 'نقطة البداية',
+    minPrestige: 0,
+    reqDinars: 0,
+    bonusDesc: 'مشاريع العاصمة : كسكروت، فريكاسي، قهوة (+25%)',
+    themeClass: 'zone-bab-souika'
+  },
+  {
+    id: 'bizerte',
+    name: 'بنزرت',
+    icon: '⛵',
+    tagline: 'قنال بنزرت، الحوت المشوي، الكورنيش العتيق وحركة الميناء',
+    costDinars: 2500,
+    criteriaDesc: '2,500 د.ت + مشروع واحد مستوى 10',
+    minPrestige: 0,
+    reqDinars: 2500,
+    reqBizLevel: { count: 1, minLevel: 10 },
+    bonusDesc: 'مشاريع بنزرت والميناء (+25%)',
+    themeClass: 'zone-bizerte'
+  },
+  {
+    id: 'nabeul_hammamet',
+    name: 'نابل / الحمامات',
+    icon: '🏖️',
+    tagline: 'الفخار، ياسمين الحمامات، زهر نابل والنزل السياحية الفاخرة',
+    costDinars: 8000,
+    criteriaDesc: '8,000 د.ت + 1 معلّم / مدير مسيّر',
+    minPrestige: 0,
+    reqDinars: 8000,
+    reqManagers: 1,
+    bonusDesc: 'سياحة الحمامات وحلويات نابل (+30%)',
+    themeClass: 'zone-hammamet'
+  },
+  {
+    id: 'beja',
+    name: 'باجة',
+    icon: '🧀',
+    tagline: 'مطماطة الشمال، قمح وسمن، مخارق وزلابية وجبن باجة المعتّق',
+    costDinars: 22000,
+    criteriaDesc: '22,000 د.ت + مشروعين مستوى 20',
+    minPrestige: 0,
+    reqDinars: 22000,
+    reqBizLevel: { count: 2, minLevel: 20 },
+    bonusDesc: 'الخيرات والمخبوزات الباجية (+30%)',
+    themeClass: 'zone-beja'
+  },
+  {
+    id: 'le_kef',
+    name: 'الكاف',
+    icon: '🏰',
+    tagline: 'القصبة العالية، سيدي بومخلوف، برنوس الجبل والتجارة العريقة',
+    costDinars: 60000,
+    criteriaDesc: '60,000 د.ت + كسب 50 ألف دينار جملي',
+    minPrestige: 0,
+    reqDinars: 60000,
+    reqTotalDinars: 50000,
+    bonusDesc: 'مشاريع الجبل والقصبة (+35%)',
+    themeClass: 'zone-le-kef'
+  },
+  {
+    id: 'sousse',
+    name: 'سوسة جوهرة الساحل',
+    icon: '💎',
+    tagline: 'بوجعفر، القنطاوي، التجارة البحرية وصالونات الشاي العصرية',
+    costDinars: 150000,
+    criteriaDesc: '150,000 د.ت + برستيج 1',
+    minPrestige: 1,
+    reqDinars: 150000,
+    bonusDesc: 'صالونات سوسة والمطاعم الفاخرة (+35%)',
+    themeClass: 'zone-sousse'
+  },
+  {
+    id: 'monastir_mahdia',
+    name: 'المنستير / المهدية',
+    icon: '⚓',
+    tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الشامي الأزرق',
+    costDinars: 350000,
+    criteriaDesc: '350,000 د.ت + 5 معلّمين مسيّرين',
+    minPrestige: 0,
+    reqDinars: 350000,
+    reqManagers: 5,
+    bonusDesc: 'مشاريع الساحل والنزل الكبرى (+40%)',
+    themeClass: 'zone-monastir'
+  },
+  {
+    id: 'kairouan',
+    name: 'القيروان عاصمة الأغالبة',
+    icon: '🕌',
+    tagline: 'فسقية الأغالبة، مقروض القيروان والزرابي الصوفية الفاخرة',
+    costDinars: 800000,
+    criteriaDesc: '800,000 د.ت + 4 مشاريع مستوى 35',
+    minPrestige: 0,
+    reqDinars: 800000,
+    reqBizLevel: { count: 4, minLevel: 35 },
+    bonusDesc: 'حلويات القيروان والحرف التقليدية (+40%)',
+    themeClass: 'zone-kairouan'
+  },
+  {
+    id: 'sfax',
+    name: 'صفاقس عاصمة الجنوب والهمّة',
+    icon: '🏭',
+    tagline: 'باب الديوان، الزيتونة المباركة، الصناعات الكبرى والخدمة الحارة',
+    costDinars: 2000000,
+    criteriaDesc: '2,000,000 د.ت + برستيج 2',
+    minPrestige: 2,
+    reqDinars: 2000000,
+    bonusDesc: 'الصناعات الصفاقسية والتجارة الكبرى (+50%)',
+    themeClass: 'zone-sfax'
+  },
+  {
+    id: 'gafsa',
+    name: 'قفصة',
+    icon: '⛏️',
+    tagline: 'الحوض المنجمي، البركة الرومانية ونخيل قفصة الجبلي التاريخي',
+    costDinars: 4500000,
+    criteriaDesc: '4,500,000 د.ت',
+    minPrestige: 0,
+    reqDinars: 4500000,
+    bonusDesc: 'نقل قفصة وتجارتها المركزية (+50%)',
+    themeClass: 'zone-gafsa'
+  },
+  {
+    id: 'tozeur',
+    name: 'توزر والجريد',
+    icon: '🌴',
+    tagline: 'دقلة النور، الشبيكة وتامغزة، والواحات الصحراوية العالمية',
+    costDinars: 10000000,
+    criteriaDesc: '10,000,000 د.ت + مشروع واحد مستوى 100',
+    minPrestige: 0,
+    reqDinars: 10000000,
+    reqBizLevel: { count: 1, minLevel: 100 },
+    bonusDesc: 'سياحة الصحراء ووكالات الأسفار (+60%)',
+    themeClass: 'zone-tozeur'
+  },
+  {
+    id: 'gabes',
+    name: 'قابس بوابة الصحراء والبحر',
+    icon: '🌊',
+    tagline: 'الحناء الجبسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
+    costDinars: 25000000,
+    criteriaDesc: '25,000,000 د.ت + 10 معلّمين مسيّرين',
+    minPrestige: 0,
+    reqDinars: 25000000,
+    reqManagers: 10,
+    bonusDesc: 'سوق قابس والمجمعات الصناعية (+75%)',
+    themeClass: 'zone-gabes'
+  },
+  {
+    id: 'medenine_zarzis',
+    name: 'مدنين / جرجيس',
+    icon: '🏺',
+    tagline: 'قصور مدنين، بحر جرجيس والزيتون الروماني العريق',
+    costDinars: 60000000,
+    criteriaDesc: '60,000,000 د.ت + برستيج 3',
+    minPrestige: 3,
+    reqDinars: 60000000,
+    bonusDesc: 'الموانئ والتجارة المغاربية الجنوبية (x2)',
+    themeClass: 'zone-medenine'
+  },
+  {
+    id: 'djerba_holding',
+    name: 'جربة / الهولدينغ الوطني',
+    icon: '👑',
+    tagline: 'جزيرة الأحلام ومقر الهولدينغ التونسي الوطني الدولي الشامل',
+    costDinars: 150000000,
+    criteriaDesc: '150,000,000 د.ت + لقب الأسطورة (برستيج 10)',
+    minPrestige: 10,
+    reqDinars: 150000000,
+    reqLegendTitle: true,
+    bonusDesc: 'مضاعف الهولدينغ الوطني الشامل لجميع المداخيل (x5) !',
+    holdingMultiplier: 5.0,
+    themeClass: 'zone-djerba'
+  }
 ];
 
 export class TycoonEngine {
@@ -512,8 +693,10 @@ export class TycoonEngine {
     this.speedBoostEndsAt = 0;
     this.speedBoostMultiplier = 1.0;
 
-    // Quartier actif (Zone de conquête urbaine)
-    this.currentZoneId = 'bab_souika';
+    // Quartier / Ville active de conquête (compatibilité ascendante)
+    this.currentZoneId = 'tunis';
+    this.currentCityId = 'tunis';
+    this.unlockedCityIds = ['tunis'];
 
     // Améliorations tactiques achetées (Set d'IDs)
     this.purchasedUpgrades = [];
@@ -544,88 +727,145 @@ export class TycoonEngine {
       challenges: []
     };
 
+    // Système réaliste de dépenses et charges d'entreprise (المصاريف والأداءات التونسية)
+    this.lastExpensesDeductionAt = Date.now();
+    this.expensesCycleIntervalMs = 60000; // Cycle de charges toutes les 60 secondes
+    this.totalExpensesPaid = 0;
+    this.lastExpensesBreakdown = {
+      salaries: 0,
+      maintenance: 0,
+      utilities: 0,
+      taxes: 0,
+      total: 0,
+      effectiveRatePct: 12
+    };
+
     if (initialState) {
       this.loadState(initialState);
     }
   }
 
-  // --- ZONES URBAINES DE CONQUÊTE TUNISIENNE ---
-  getZones() {
-    return [
-      {
-        id: 'bab_souika',
-        name: 'باب سويقة والمدينة العربي',
-        icon: '🕌',
-        tagline: 'أصل التجارة، نصبة كسكروت، فريكاسي، قهوة شعبية وحانوت عطار في قلب الحومة',
-        minPrestige: 0,
-        reqDinars: 0,
-        bonusDesc: 'مشاريع الحيّ : كسكروت، فريكاسي، قهوة، حانوت عطار (+25%)',
-        themeClass: 'zone-bab-souika'
-      },
-      {
-        id: 'la_goulette',
-        name: 'حلق الوادي والكورنيش',
-        icon: '⚓',
-        tagline: 'ريحة البحر، ديار سيدي بوسعيد، باتيسري، محطة التاكسي الجماعي وعطّار عصري',
-        minPrestige: 0,
-        reqDinars: 250,
-        bonusDesc: 'مشاريع الحيّ : حلويات، تاكسي جماعي، سوبرات (+30%)',
-        themeClass: 'zone-la-goulette'
-      },
-      {
-        id: 'lac_2',
-        name: 'البحيرة 2 ولاك سنتر',
-        icon: '🏙️',
-        tagline: 'عمارات زجاجية، مغازة كبرى، صالونات شاي فاخرة، مطعم ووكالة أسفار',
-        minPrestige: 0,
-        reqDinars: 15000,
-        bonusDesc: 'مشاريع الحيّ : مغازة، صالون شاي، مطعم، وكالة أسفار (+40%)',
-        themeClass: 'zone-lac-2'
-      },
-      {
-        id: 'hammamet',
-        name: 'ياسمين الحمامات وقمرت',
-        icon: '🏖️',
-        tagline: 'فيلات فخمة، نزل 5 نجوم، مول تجاري ومعمل المصبّرات الكبرى',
-        minPrestige: 0,
-        reqDinars: 800000,
-        bonusDesc: 'مشاريع الحيّ : نزل، مول تجاري، معمل هريسة (+50%)',
-        themeClass: 'zone-hammamet'
-      },
-      {
-        id: 'djerba_holding',
-        name: 'إمبراطورية تونس الدولية',
-        icon: '👑',
-        tagline: 'قصور فاخرة، دار كراهب، بعث عقاري وأسطول طيران الغزالة العالمي',
-        minPrestige: 0,
-        reqDinars: 25000000,
-        bonusDesc: 'مشاريع الحيّ الكبرى : كراهب، عقارات، طيران الغزالة (x2)',
-        themeClass: 'zone-djerba'
-      }
-    ];
+  // --- 14 CITIES PROGRESSION & VILLES TUNISIENNES ---
+  getCities() {
+    return TUNISIAN_CITIES;
   }
 
-  getCurrentZone() {
-    const zones = this.getZones();
-    return zones.find(z => z.id === this.currentZoneId) || zones[0];
+  getCityById(cityId) {
+    if (!cityId) return null;
+    return TUNISIAN_CITIES.find(c => c.id === cityId) || null;
   }
 
-  unlockZone(zoneId) {
-    const zone = this.getZones().find(z => z.id === zoneId);
-    if (!zone) return false;
-    if (this.prestigeLevel < zone.minPrestige) return false;
-    if (this.lifetimeDinarsEarned < zone.reqDinars && this.totalDinarsEarned < zone.reqDinars) return false;
-    this.currentZoneId = zoneId;
+  getCurrentCity() {
+    return this.getCityById(this.currentCityId) || TUNISIAN_CITIES[0];
+  }
+
+  checkCityUnlockCriteria(cityOrId) {
+    const city = typeof cityOrId === 'string' ? this.getCityById(cityOrId) : cityOrId;
+    if (!city) return false;
+    if (this.unlockedCityIds.includes(city.id)) return true;
+
+    // 1. Condition Dinars en caisse (costDinars)
+    if (city.costDinars > 0 && this.dinars < city.costDinars) return false;
+
+    // 2. Condition Prestige minimal
+    if (city.minPrestige > 0 && this.prestigeLevel < city.minPrestige) return false;
+
+    // 3. Condition cumuls de dinars gagnés (lifetime / total)
+    if (city.reqTotalDinars && (this.lifetimeDinarsEarned || 0) < city.reqTotalDinars && (this.totalDinarsEarned || 0) < city.reqTotalDinars) {
+      return false;
+    }
+
+    // 4. Condition gérants / managers recrutés
+    if (city.reqManagers && city.reqManagers > 0) {
+      const totalManagers = this.businesses.reduce((sum, b) => sum + (b.hiredManagersCount || (b.hasManager ? 1 : 0)), 0);
+      if (totalManagers < city.reqManagers) return false;
+    }
+
+    // 5. Condition niveaux de business (ex: 1 biz L10, 2 biz L20, 4 biz L35, 1 biz L100)
+    if (city.reqBizLevel) {
+      const { count = 1, minLevel = 1 } = city.reqBizLevel;
+      const qualified = this.businesses.filter(b => (b.level || 0) >= minLevel).length;
+      if (qualified < count) return false;
+    }
+
+    // 6. Condition Titre Légende (Prestige 10 / badge أسطورة 5★)
+    if (city.reqLegendTitle) {
+      const isLegend = (this.prestigeLevel >= 10) ||
+        (this.playerTitle && (this.playerTitle.includes('إمبراطور') || this.playerTitle.includes('أسطورة')));
+      if (!isLegend) return false;
+    }
+
     return true;
   }
 
+  unlockCity(cityId) {
+    const city = this.getCityById(cityId);
+    if (!city) return false;
+
+    // Déjà débloquée -> simple voyage / basculement
+    if (this.unlockedCityIds.includes(city.id)) {
+      this.currentCityId = city.id;
+      this.currentZoneId = city.id;
+      return true;
+    }
+
+    // Vérification stricte des critères
+    if (!this.checkCityUnlockCriteria(city)) return false;
+
+    // Prélèvement du coût d'ouverture si > 0
+    if (city.costDinars > 0) {
+      this.dinars -= city.costDinars;
+    }
+
+    this.unlockedCityIds.push(city.id);
+    this.currentCityId = city.id;
+    this.currentZoneId = city.id;
+    return true;
+  }
+
+  // --- ZONES URBAINES DE CONQUÊTE TUNISIENNE (Rétrocompatibilité Totale) ---
+  getZones() {
+    // Fournit les 14 villes tunisiennes dans le format historique attendu par l'UI
+    return this.getCities();
+  }
+
+  getCurrentZone() {
+    return this.getCurrentCity();
+  }
+
+  unlockZone(zoneId) {
+    const mappedId = (zoneId === 'bab_souika') ? 'tunis'
+      : (zoneId === 'la_goulette') ? 'bizerte'
+      : (zoneId === 'lac_2') ? 'nabeul_hammamet'
+      : (zoneId === 'hammamet') ? 'sousse'
+      : zoneId;
+    return this.unlockCity(mappedId);
+  }
+
   getZoneMultiplier(businessId) {
-    const zone = this.getCurrentZone();
-    if (!zone || zone.id === 'bab_souika') return 1.0; // Zone par défaut neutre pour préserver les tests unitaires
-    if (zone.id === 'la_goulette' && ['taxi_collectif', 'patisserie'].includes(businessId)) return 1.30;
-    if (zone.id === 'lac_2' && ['salon_de_the', 'superette', 'supermarche'].includes(businessId)) return 1.40;
-    if (zone.id === 'hammamet' && ['hotel', 'restaurant', 'centre_commercial'].includes(businessId)) return 1.50;
-    if (zone.id === 'djerba_holding' && ['tayaran_el_ghzela', 'promoteur_immobilier', 'showroom_auto', 'usine_conserves'].includes(businessId)) return 2.0;
+    const city = this.getCurrentCity();
+    if (!city) return 1.0;
+
+    // Djerba / Holding National applique un multiplicateur massif x5 sur tous les commerces
+    if (city.id === 'djerba_holding') {
+      return 5.0;
+    }
+
+    // Multiplicateurs locaux thématiques par ville
+    if (city.id === 'tunis') return 1.0; // Zone par défaut neutre
+    if (city.id === 'bizerte' && ['taxi_collectif', 'patisserie'].includes(businessId)) return 1.25;
+    if (city.id === 'nabeul_hammamet' && ['hotel', 'restaurant', 'patisserie'].includes(businessId)) return 1.30;
+    if (city.id === 'beja' && ['kaskrout', 'attariya', 'usine_conserves'].includes(businessId)) return 1.30;
+    if (city.id === 'le_kef' && ['kahwa', 'fricasse', 'superette'].includes(businessId)) return 1.35;
+    if (city.id === 'sousse' && ['salon_de_the', 'restaurant', 'hotel'].includes(businessId)) return 1.35;
+    if (city.id === 'monastir_mahdia' && ['patisserie', 'agence_voyages', 'hotel'].includes(businessId)) return 1.40;
+    if (city.id === 'kairouan' && ['patisserie', 'attariya', 'supermarche'].includes(businessId)) return 1.40;
+    if (city.id === 'sfax' && ['supermarche', 'usine_conserves', 'centre_commercial', 'showroom_auto'].includes(businessId)) return 1.50;
+    if (city.id === 'gafsa' && ['taxi_collectif', 'agence_voyages', 'usine_conserves'].includes(businessId)) return 1.50;
+    if (city.id === 'tozeur' && ['agence_voyages', 'hotel', 'restaurant'].includes(businessId)) return 1.60;
+    if (city.id === 'gabes' && ['supermarche', 'centre_commercial', 'usine_conserves'].includes(businessId)) return 1.75;
+    if (city.id === 'medenine_zarzis' && ['agence_voyages', 'promoteur_immobilier', 'showroom_auto'].includes(businessId)) return 2.0;
+
     return 1.0;
   }
 
@@ -661,7 +901,7 @@ export class TycoonEngine {
         id: 'upg_hrissa_arbi',
         businessId: 'kaskrout',
         name: 'هريسة عربي بالثوم والكروية',
-        tagline: 'سرّ الخلطة اللي يخلّي الكليونات يشدّو الصف على الكسكروت',
+        tagline: 'سرّ الخلطة اللي يخلّي الحرفاء يشدّو الصف على الكسكروت',
         cost: 45.0,
         multiplier: 2.5,
         icon: '🌶️'
@@ -995,7 +1235,9 @@ export class TycoonEngine {
     this.totalDinarsEarned = 5.0;
     this.manualServesCount = 0;
     this.activeEvent = null;
-    this.currentZoneId = 'bab_souika';
+    this.currentCityId = 'tunis';
+    this.currentZoneId = 'tunis';
+    this.unlockedCityIds = ['tunis'];
 
     // Calcul du nouveau titre de prestige
     this.updatePlayerPrestigeTitle();
@@ -1569,10 +1811,109 @@ export class TycoonEngine {
       }
     }
 
+    // Déduction des dépenses d'entreprise périodiques (salaires خدامة، صيانة، ستاغ وصوناد، قباضة)
+    // S'applique par cycle périodique (toutes les 60s) sans bloquer le joueur
+    const interval = this.expensesCycleIntervalMs || 60000;
+    if (this.lastExpensesDeductionAt === 0) {
+      this.lastExpensesDeductionAt = now;
+    }
+
+    if (now - this.lastExpensesDeductionAt >= interval) {
+      this.processPeriodicExpenses(now);
+    }
+
     this.dinars += revenueEarned;
     this.totalDinarsEarned += revenueEarned;
     this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + revenueEarned;
     return revenueEarned;
+  }
+
+  // --- SYSTÈME RÉALISTE DE DÉPENSES & CHARGES D'ENTREPRISE (المصاريف والأداءات) ---
+  processPeriodicExpenses(now = Date.now()) {
+    const activeBusinesses = this.businesses.filter(b => b.level > 0);
+    if (activeBusinesses.length === 0) {
+      this.lastExpensesDeductionAt = now;
+      return null;
+    }
+
+    // Calcul du revenu brut moyen d'une minute d'activité
+    let grossRatePerSec = 0;
+    activeBusinesses.forEach(b => {
+      grossRatePerSec += (this.getRevenue(b, now) / (b.cycleDurationMs / 1000));
+    });
+
+    const grossMinuteRevenue = grossRatePerSec * 60;
+    const breakdown = this.calculateExpensesBreakdown(grossMinuteRevenue);
+
+    // Déduction réaliste et équilibrée sans jamais bloquer le joueur à 0 ni dépasser son solde
+    if (breakdown.total > 0 && this.dinars > 0) {
+      const maxDeductible = Math.min(breakdown.total, this.dinars * 0.15); // max 15% du solde ou montant total
+      const deducted = Math.min(breakdown.total, maxDeductible);
+      this.dinars = Math.max(0, this.dinars - deducted);
+      this.totalExpensesPaid = (this.totalExpensesPaid || 0) + deducted;
+    }
+
+    this.lastExpensesBreakdown = breakdown;
+    this.lastExpensesDeductionAt = now;
+    return breakdown;
+  }
+
+  calculateExpensesBreakdown(grossRevenue = 0) {
+    const activeBusinesses = this.businesses.filter(b => b.level > 0);
+    const activeCount = activeBusinesses.length;
+    if (activeCount === 0 || grossRevenue <= 0) {
+      return {
+        salaries: 0,
+        maintenance: 0,
+        utilities: 0,
+        taxes: 0,
+        total: 0,
+        effectiveRatePct: 0
+      };
+    }
+
+    // Répartition réaliste et équilibrée (total 12% des gains bruts) :
+    // 1. شهريات الخدّامة (Salaires des employés) : 4%
+    // 2. صيانة وتصليح الماتريال (Maintenance et amortissement) : 3%
+    // 3. فواتير الستاغ والصوناد (Factures STEG / SONEDE) : 2.5%
+    // 4. القباضة والأداءات الجبائية (Impôts et taxes d'entreprise) : 2.5%
+    const salaries = Math.round(grossRevenue * 0.04 * 100) / 100;
+    const maintenance = Math.round(grossRevenue * 0.03 * 100) / 100;
+    const utilities = Math.round(grossRevenue * 0.025 * 100) / 100;
+    const taxes = Math.round(grossRevenue * 0.025 * 100) / 100;
+    const total = salaries + maintenance + utilities + taxes;
+
+    return {
+      salaries,
+      maintenance,
+      utilities,
+      taxes,
+      total,
+      effectiveRatePct: 12
+    };
+  }
+
+  getCurrentExpensesSummary() {
+    let grossRatePerSec = 0;
+    this.businesses.forEach(b => {
+      if (b.level > 0) {
+        grossRatePerSec += (this.getRevenue(b) / (b.cycleDurationMs / 1000));
+      }
+    });
+
+    const grossCycleEstimate = grossRatePerSec * 60; // Base estimée sur 1 minute de production
+    const breakdown = this.calculateExpensesBreakdown(grossCycleEstimate);
+    return {
+      grossRatePerSec,
+      grossMinute: grossCycleEstimate,
+      salaries: breakdown.salaries,
+      maintenance: breakdown.maintenance,
+      utilities: breakdown.utilities,
+      taxes: breakdown.taxes,
+      totalCycle: breakdown.total,
+      totalExpensesPaid: this.totalExpensesPaid || 0,
+      effectiveRatePct: breakdown.effectiveRatePct || 12
+    };
   }
 
   // Calcul du gain hors ligne au retour du joueur
@@ -1624,6 +1965,8 @@ export class TycoonEngine {
       prestigePoints: this.prestigePoints || 0,
       lifetimeDinars: lifetime,
       currentDinars: this.dinars || 0,
+      totalExpensesPaid: this.totalExpensesPaid || 0,
+      expensesSummary: this.getCurrentExpensesSummary(),
       totalPlayTimeSeconds: playTimeSeconds
     };
   }
@@ -1658,7 +2001,9 @@ export class TycoonEngine {
     this.adBoostEndsAt = 0;
     this.speedBoostEndsAt = 0;
     this.speedBoostMultiplier = 1.0;
-    this.currentZoneId = 'bab_souika';
+    this.currentCityId = 'tunis';
+    this.currentZoneId = 'tunis';
+    this.unlockedCityIds = ['tunis'];
     this.purchasedUpgrades = [];
     this.lastFreeWheelSpin = 0;
     this.resolvedDilemmas = [];
@@ -1679,6 +2024,17 @@ export class TycoonEngine {
       dateKey: null,
       challenges: []
     };
+
+    this.lastExpensesDeductionAt = Date.now();
+    this.totalExpensesPaid = 0;
+    this.lastExpensesBreakdown = {
+      salaries: 0,
+      maintenance: 0,
+      utilities: 0,
+      taxes: 0,
+      total: 0,
+      effectiveRatePct: 12
+    };
   }
 
   // Sauvegarde / Restauration
@@ -1690,6 +2046,9 @@ export class TycoonEngine {
       dinars: this.dinars,
       totalDinarsEarned: this.totalDinarsEarned,
       lifetimeDinarsEarned: this.lifetimeDinarsEarned || this.totalDinarsEarned,
+      totalExpensesPaid: this.totalExpensesPaid || 0,
+      lastExpensesDeductionAt: this.lastExpensesDeductionAt || Date.now(),
+      lastExpensesBreakdown: this.lastExpensesBreakdown || null,
       manualServesCount: this.manualServesCount,
       completedQuestIds: this.completedQuestIds,
       playerTitle: this.playerTitle,
@@ -1699,7 +2058,9 @@ export class TycoonEngine {
       activeEvent: this.activeEvent,
       adBoostEndsAt: this.adBoostEndsAt,
       speedBoostEndsAt: this.speedBoostEndsAt || 0,
-      currentZoneId: this.currentZoneId || 'bab_souika',
+      currentZoneId: this.currentZoneId || this.currentCityId || 'tunis',
+      currentCityId: this.currentCityId || this.currentZoneId || 'tunis',
+      unlockedCityIds: this.unlockedCityIds || ['tunis'],
       purchasedUpgrades: this.purchasedUpgrades || [],
       lastFreeWheelSpin: this.lastFreeWheelSpin || 0,
       dailyLogin: this.dailyLogin || { lastClaimDate: null, currentStreak: 0 },
@@ -1724,6 +2085,9 @@ export class TycoonEngine {
     this.dinars = state.dinars ?? this.dinars;
     this.totalDinarsEarned = state.totalDinarsEarned ?? this.totalDinarsEarned;
     this.lifetimeDinarsEarned = state.lifetimeDinarsEarned ?? this.totalDinarsEarned;
+    this.totalExpensesPaid = state.totalExpensesPaid ?? 0;
+    this.lastExpensesDeductionAt = state.lastExpensesDeductionAt ?? Date.now();
+    this.lastExpensesBreakdown = state.lastExpensesBreakdown ?? this.lastExpensesBreakdown;
     this.manualServesCount = state.manualServesCount ?? 0;
     this.completedQuestIds = Array.isArray(state.completedQuestIds) ? state.completedQuestIds : [];
     this.playerTitle = state.playerTitle ?? this.playerTitle;
@@ -1733,7 +2097,20 @@ export class TycoonEngine {
     this.activeEvent = state.activeEvent ?? null;
     this.adBoostEndsAt = state.adBoostEndsAt ?? 0;
     this.speedBoostEndsAt = state.speedBoostEndsAt ?? 0;
-    this.currentZoneId = state.currentZoneId ?? 'bab_souika';
+    const rawZone = state.currentCityId ?? state.currentZoneId ?? 'tunis';
+    const mappedZone = (rawZone === 'bab_souika') ? 'tunis'
+      : (rawZone === 'la_goulette') ? 'bizerte'
+      : (rawZone === 'lac_2') ? 'nabeul_hammamet'
+      : (rawZone === 'hammamet') ? 'sousse'
+      : rawZone;
+    this.currentCityId = mappedZone;
+    this.currentZoneId = mappedZone;
+    this.unlockedCityIds = Array.isArray(state.unlockedCityIds) && state.unlockedCityIds.length > 0
+      ? state.unlockedCityIds
+      : ['tunis'];
+    if (!this.unlockedCityIds.includes(this.currentCityId)) {
+      this.unlockedCityIds.push(this.currentCityId);
+    }
     this.purchasedUpgrades = Array.isArray(state.purchasedUpgrades) ? state.purchasedUpgrades : [];
     this.lastFreeWheelSpin = state.lastFreeWheelSpin ?? 0;
     this.dailyLogin = state.dailyLogin ?? { lastClaimDate: null, currentStreak: 0 };

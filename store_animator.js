@@ -2,7 +2,8 @@
  * store_animator.js
  * Moteur d'Animation Graphique Canvas 2D 60 FPS Haute Définition pour Tounes Tycoon.
  * Simulation visuelle cutaway vivante et détaillée des commerces tunisiens.
- * © EOLabs 2026. Pur JavaScript, zéro dépendance, gestion DPR fluide, zéro fuite mémoire.
+ * Moteur Cartographique Vectoriel de la Tunisie (14 Villes Géographiques & Routes Commerciales).
+ * © EOLabs 2026. Pur JavaScript, zéro dépendance, gestion DPR fluide, 60 FPS garanti.
  */
 
 export class CanvasStoreEngine {
@@ -22,12 +23,14 @@ export class CanvasStoreEngine {
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
+    this.steamWisps = [];
 
     // Interaction clickable regions
     this.clickZones = [];
 
     this.onHireClick = null;
     this.onUpgradeClick = null;
+    this.onServeClick = null;
 
     // Émotes & répertoires d'articles authentiques et spécifiques pour CHAQUE projet
     this.orderIcons = {
@@ -44,7 +47,7 @@ export class CanvasStoreEngine {
       agence_voyages: ['✈️', '🎫', '🏝️', '🧳'],
       hotel: ['🛎️', '🍸', '🛏️', '🏊'],
       centre_commercial: ['🛍️', '👗', '👟', '🎮'],
-      usine_conserves: ['🥫', '🐟', '🍅', '📦'],
+      usine_conserves: ['🥫', '🐟', '🍅', '🫒'],
       showroom_auto: ['🚗', '🚘', '🔑', '🏎️'],
       promoteur_immobilier: ['🏢', '🏗️', '📐', '🏡'],
       tayaran_el_ghzela: ['✈️', '🛫', '💺', '🌍'],
@@ -67,8 +70,6 @@ export class CanvasStoreEngine {
 
   resize() {
     if (!this.canvas) return;
-    // Scène remplissant tout le popup : hauteur logique fixe (200), mise à l'échelle uniforme.
-    // clientWidth/Height ignorent le transform scale() de l'animation d'ouverture.
     const parent = this.canvas.parentElement;
     const cssW = Math.max(300, parent ? parent.clientWidth : 360);
     const cssH = Math.max(180, parent ? parent.clientHeight : 200);
@@ -80,8 +81,8 @@ export class CanvasStoreEngine {
 
     this.canvas.width = Math.floor(cssW * this.dpr);
     this.canvas.height = Math.floor(cssH * this.dpr);
-    this.canvas.style.width = `${cssW}px`;
-    this.canvas.style.height = `${cssH}px`;
+    this.canvas.style.width = cssW + 'px';
+    this.canvas.style.height = cssH + 'px';
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.scale(this.dpr * this.scale, this.dpr * this.scale);
@@ -93,9 +94,9 @@ export class CanvasStoreEngine {
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
+    this.steamWisps = [];
     this.spawnTimer = 0.5;
     this.resize();
-    // Le popup finit de se dimensionner pendant son animation d'ouverture : on recalcule ensuite
     this.resizeTimer = setTimeout(() => this.resize(), 300);
     window.addEventListener('resize', this.onWindowResize);
     this.lastTime = performance.now();
@@ -120,6 +121,7 @@ export class CanvasStoreEngine {
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
+    this.steamWisps = [];
     this.clickZones = [];
     if (this.ctx && this.width && this.height) {
       this.ctx.clearRect(0, 0, this.width, this.height);
@@ -162,32 +164,32 @@ export class CanvasStoreEngine {
   triggerPayment(customer, isProducing) {
     const biz = this.getBiz();
     const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
-    const gainText = cycleRevenue > 0 ? `+${cycleRevenue.toFixed(1)} DT` : '+د.ت';
+    const gainText = cycleRevenue > 0 ? ('+' + cycleRevenue.toFixed(1) + ' DT') : '+د.ت';
 
     // Money float puff
     this.moneyPuffs.push({
       x: customer.x - 10,
       y: customer.y - 45,
       vy: -35,
-      text: `✨ ${gainText} 🪙`,
+      text: '✨ ' + gainText + ' 🪙',
       life: 0.9,
       maxLife: 0.9,
       alpha: 1.0
     });
 
-    // Golden sparkles / coin particles
-    const count = isProducing ? 14 : 7;
+    // Golden sparkles / coin shower particles
+    const count = isProducing ? 16 : 8;
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
-      const speed = 35 + Math.random() * 55;
+      const speed = 40 + Math.random() * 60;
       this.particles.push({
         x: 48,
         y: 135,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 20,
+        vy: Math.sin(angle) * speed - 22,
         color: Math.random() > 0.3 ? '#fbbf24' : '#f59e0b',
-        radius: 1.5 + Math.random() * 2,
-        life: 0.6 + Math.random() * 0.3,
+        radius: 1.8 + Math.random() * 2.2,
+        life: 0.7 + Math.random() * 0.3,
         maxLife: 0.8,
         isSparkle: true
       });
@@ -196,7 +198,6 @@ export class CanvasStoreEngine {
 
   handleCanvasClick(event) {
     const rect = this.canvas.getBoundingClientRect();
-    // Conversion pixels écran → coordonnées logiques de la scène (échelle uniforme)
     const ratio = rect.width > 0 ? this.width / rect.width : 1;
     const clickX = (event.clientX - rect.left) * ratio;
     const clickY = (event.clientY - rect.top) * ratio;
@@ -215,247 +216,263 @@ export class CanvasStoreEngine {
       }
     }
 
-    // Tap dans la scène (hors zone de recrutement) = servir un client et encaisser
+    // Tap dans la scène = servir et encaisser
     if (this.onServeClick) this.onServeClick(this.bizId);
     this.moneyPuffs.push({ x: clickX, y: clickY - 10, vy: -40, text: '🪙', life: 0.7, maxLife: 0.7, alpha: 1 });
   }
 
-  // --- RENDU D'ARRIÈRE-PLAN TUNISIEN DÉTAILLÉ & ARCHITECTURE DU COMMERCE ---
+  // --- RENDU D'ARRIÈRE-PLAN TUNISIEN DÉTAILLÉ & ARCHITECTURE EN PERSPECTIVE ---
   drawBackdrop(ctx, bizId, now) {
     const w = this.width;
     const h = this.height;
 
-    // 1. Fond mural avec dégradé d'ambiance
+    // 1. Fond mural d'ambiance avec dégradé chaud et perspective de pièce
     let wallGrad = ctx.createLinearGradient(0, 0, 0, h - 54);
     if (bizId === 'kahwa') {
-      wallGrad.addColorStop(0, '#1c1917');
-      wallGrad.addColorStop(0.6, '#292524');
-      wallGrad.addColorStop(1, '#1c1917');
+      wallGrad.addColorStop(0, '#261a12');
+      wallGrad.addColorStop(0.6, '#3a271d');
+      wallGrad.addColorStop(1, '#1b120c');
     } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
-      wallGrad.addColorStop(0, '#1e293b');
-      wallGrad.addColorStop(0.7, '#0f172a');
-      wallGrad.addColorStop(1, '#020617');
+      wallGrad.addColorStop(0, '#1c2833');
+      wallGrad.addColorStop(0.6, '#131e29');
+      wallGrad.addColorStop(1, '#0c141c');
     } else if (bizId === 'patisserie') {
-      wallGrad.addColorStop(0, '#312e81');
-      wallGrad.addColorStop(0.7, '#1e1b4b');
-      wallGrad.addColorStop(1, '#0f172a');
+      wallGrad.addColorStop(0, '#38203f');
+      wallGrad.addColorStop(0.6, '#24132a');
+      wallGrad.addColorStop(1, '#150a1a');
     } else if (bizId === 'attariya') {
-      wallGrad.addColorStop(0, '#0f291e');
-      wallGrad.addColorStop(0.7, '#064e3b');
-      wallGrad.addColorStop(1, '#022c22');
-    } else if (bizId === 'taxi_collectif') {
-      wallGrad.addColorStop(0, '#172554');
-      wallGrad.addColorStop(0.6, '#1e3a8a');
-      wallGrad.addColorStop(1, '#0f172a');
+      wallGrad.addColorStop(0, '#102e23');
+      wallGrad.addColorStop(0.6, '#0b2019');
+      wallGrad.addColorStop(1, '#05130e');
+    } else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier') {
+      wallGrad.addColorStop(0, '#0f172a');
+      wallGrad.addColorStop(0.6, '#1e293b');
+      wallGrad.addColorStop(1, '#090e17');
     } else {
-      wallGrad.addColorStop(0, '#1e293b');
-      wallGrad.addColorStop(1, '#090d16');
+      wallGrad.addColorStop(0, '#1f2937');
+      wallGrad.addColorStop(0.6, '#111827');
+      wallGrad.addColorStop(1, '#0b0f19');
     }
     ctx.fillStyle = wallGrad;
     ctx.fillRect(0, 0, w, h - 54);
 
-    // 2. Frise ou Zellige tunisien en haut de mur
+    // 2. Frise supérieure sculptée en plâtre ciselé / Zellige (نقش حديدة وتزويق تونسي)
     ctx.save();
-    ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
-    ctx.fillRect(0, 0, w, 16);
+    ctx.fillStyle = 'rgba(251, 191, 36, 0.18)';
+    ctx.fillRect(0, 0, w, 18);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, 18);
+    ctx.lineTo(w, 18);
+    ctx.stroke();
+
     ctx.fillStyle = '#fbbf24';
     ctx.font = '10px monospace';
     for (let x = 6; x < w; x += 22) {
-      ctx.fillText('◆', x, 12);
+      ctx.fillText('❖', x, 13);
     }
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, 16.5);
-    ctx.lineTo(w, 16.5);
-    ctx.stroke();
     ctx.restore();
 
-    // 3. Décoration de fond spécifique par commerce
+    // 3. Grands Arcs Tunisiens en relief (أقواس حدوة الحصان الأندلسية) sur le mur du fond
+    ctx.save();
+    const archW = Math.min(100, (w - 60) / 3);
+    const archCount = Math.max(2, Math.floor((w - 40) / archW));
+    for (let i = 0; i < archCount; i++) {
+      const ax = 20 + i * (archW + 14);
+      const ay = 24;
+      const aw = archW;
+      const ah = h - 84;
+
+      // Niche en retrait avec ombre
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
+      ctx.beginPath();
+      ctx.moveTo(ax, ay + ah);
+      ctx.lineTo(ax, ay + 30);
+      ctx.bezierCurveTo(ax, ay, ax + aw, ay, ax + aw, ay + 30);
+      ctx.lineTo(ax + aw, ay + ah);
+      ctx.closePath();
+      ctx.fill();
+
+      // Arc en pierre de Kadhel sculpté
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 4. Décoration de fond spécifique par commerce
     this.drawStoreProps(ctx, bizId, now, w, h);
 
-    // 4. Sol tunisien soigné (Damier / Pavés / Zellige vernis)
+    // 5. Sol tunisien soigné en perspective avec dalles de zellige vernis
     const floorY = h - 54;
     const floorH = 54;
     let floorGrad = ctx.createLinearGradient(0, floorY, 0, h);
-    floorGrad.addColorStop(0, '#27272a');
-    floorGrad.addColorStop(1, '#09090b');
+    floorGrad.addColorStop(0, '#22252a');
+    floorGrad.addColorStop(0.3, '#1a1d22');
+    floorGrad.addColorStop(1, '#0b0d10');
     ctx.fillStyle = floorGrad;
     ctx.fillRect(0, floorY, w, floorH);
 
-    // Bordure dorée délimitant le comptoir/sol
+    // Bordure en marbre poli Kadhel / frise dorée
     ctx.strokeStyle = '#d97706';
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(0, floorY + 1);
-    ctx.lineTo(w, floorY + 1);
+    ctx.moveTo(0, floorY + 1.5);
+    ctx.lineTo(w, floorY + 1.5);
     ctx.stroke();
 
-    // Lignes de carrelage en perspective
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    // Perspective des carreaux de zellige (damier)
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.lineWidth = 1;
-    for (let x = -10; x < w + 60; x += 38) {
+    for (let x = -20; x < w + 80; x += 36) {
       ctx.beginPath();
       ctx.moveTo(x, floorY);
-      ctx.lineTo(x - 22, h);
+      ctx.lineTo(x - 28, h);
       ctx.stroke();
     }
     ctx.beginPath();
-    ctx.moveTo(0, floorY + 22);
-    ctx.lineTo(w, floorY + 22);
-    ctx.moveTo(0, floorY + 40);
-    ctx.lineTo(w, floorY + 40);
+    ctx.moveTo(0, floorY + 16);
+    ctx.lineTo(w, floorY + 16);
+    ctx.moveTo(0, floorY + 34);
+    ctx.lineTo(w, floorY + 34);
     ctx.stroke();
+
+    // Reflets de lumière sur le carrelage
+    ctx.fillStyle = 'rgba(251, 191, 36, 0.03)';
+    ctx.fillRect(0, floorY, w, 20);
+    ctx.restore();
   }
 
-  // Éléments architecturaux et accessoires caractéristiques
+  // --- ACCESSOIRES DE FOND RICHES SELON LE MÉTIER ---
   drawStoreProps(ctx, bizId, now, w, h) {
     ctx.save();
     const timeSec = now / 1000;
 
     if (bizId === 'kahwa') {
-      // Étagères de verres à thé dorés et kawanen
       ctx.fillStyle = '#78350f';
-      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(95, 46, w - 115, 6);
       ctx.fillStyle = '#b45309';
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(95, 82, w - 115, 6);
       ctx.font = '16px serif';
-      for (let x = 115; x < w - 30; x += 32) {
-        ctx.fillText('🍵', x, 46);
-        ctx.fillText('☕', x, 82);
+      for (let x = 110; x < w - 30; x += 32) {
+        ctx.fillText('🍵', x, 44);
+        ctx.fillText('☕', x, 80);
       }
-      // Horloge murale tunisienne
       ctx.fillStyle = '#451a03';
       ctx.beginPath();
-      ctx.arc(62, 52, 14, 0, Math.PI * 2);
+      ctx.arc(58, 50, 15, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 2;
       ctx.stroke();
       ctx.fillStyle = '#fef08a';
-      ctx.font = '9px sans-serif';
-      ctx.fillText('🕐', 56, 56);
+      ctx.font = 'bold 9px sans-serif';
+      ctx.fillText('🕐', 51, 54);
+
+      ctx.fillStyle = '#1c1917';
+      ctx.fillRect(w - 74, 38, 52, 38);
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(w - 74, 38, 52, 38);
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 8px "Cairo", sans-serif';
+      ctx.fillText('طرح شكبة', w - 66, 52);
+      ctx.font = '11px sans-serif';
+      ctx.fillText('♠️♥️', w - 60, 68);
     } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
-      // Étagères de baguettes croustillantes & bocaux d'harissa
       ctx.fillStyle = '#854d0e';
-      ctx.fillRect(110, 52, w - 130, 6);
+      ctx.fillRect(105, 50, w - 125, 6);
       ctx.fillStyle = '#a16207';
-      ctx.fillRect(110, 88, w - 130, 6);
+      ctx.fillRect(105, 86, w - 125, 6);
       ctx.font = '16px serif';
-      for (let x = 120; x < w - 25; x += 34) {
-        ctx.fillText('🥖', x, 50);
-        ctx.fillText('🌶️', x, 86);
+      for (let x = 118; x < w - 25; x += 34) {
+        ctx.fillText('🥖', x, 48);
+        ctx.fillText('🌶️', x, 84);
       }
-      // Ardoise menu
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(50, 36, 44, 46);
+      ctx.fillRect(48, 34, 46, 48);
       ctx.strokeStyle = '#ca8a04';
-      ctx.strokeRect(50, 36, 44, 46);
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(48, 34, 46, 48);
       ctx.fillStyle = '#fde047';
+      ctx.font = 'bold 9px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('عياري حار', 71, 48);
       ctx.font = '8px sans-serif';
-      ctx.fillText('عياري', 58, 52);
-      ctx.fillText('حار 🔥', 58, 66);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('4.5 DT', 71, 62);
+      ctx.fillText('تن وعظام 🔥', 71, 74);
+      ctx.textAlign = 'left';
+
+      ctx.font = '14px serif';
+      ctx.fillText('🌶️', w - 40, 42);
+      ctx.fillText('🌶️', w - 40, 58);
+      ctx.fillText('🧄', w - 40, 74);
     } else if (bizId === 'patisserie') {
-      // Vitrine à gâteaux et cloches dorées
       ctx.fillStyle = '#581c87';
-      ctx.fillRect(110, 52, w - 130, 6);
+      ctx.fillRect(105, 50, w - 125, 6);
       ctx.fillStyle = '#6b21a8';
-      ctx.fillRect(110, 88, w - 130, 6);
+      ctx.fillRect(105, 86, w - 125, 6);
       ctx.font = '16px serif';
-      for (let x = 122; x < w - 25; x += 36) {
-        ctx.fillText('🍯', x, 50);
-        ctx.fillText('🥐', x, 86);
+      for (let x = 118; x < w - 25; x += 34) {
+        ctx.fillText('🍯', x, 48);
+        ctx.fillText('🥐', x, 84);
       }
-      // Lustre suspendu avec lueur
       const glow = Math.sin(timeSec * 2) * 2;
       ctx.strokeStyle = '#eab308';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(70, 16);
-      ctx.lineTo(70, 36);
+      ctx.moveTo(68, 18);
+      ctx.lineTo(68, 38);
       ctx.stroke();
-      ctx.font = '18px serif';
-      ctx.fillText('✨', 61, 48 + glow);
-    } else if (bizId === 'attariya') {
-      // Bocaux et boîtes empilées
-      ctx.fillStyle = '#064e3b';
-      ctx.fillRect(100, 50, w - 120, 6);
-      ctx.fillRect(100, 86, w - 120, 6);
-      ctx.font = '16px serif';
-      for (let x = 112; x < w - 25; x += 32) {
-        ctx.fillText('🥫', x, 48);
-        ctx.fillText('🧀', x, 84);
-      }
-      // Carnet d'ardoise suspendu
-      ctx.font = '16px serif';
-      ctx.fillText('📖', 58, 58);
-    } else if (bizId === 'taxi_collectif') {
-      // Panneaux routiers & banderole station
-      ctx.fillStyle = '#1e3a8a';
-      ctx.fillRect(40, 32, w - 80, 22);
-      ctx.strokeStyle = '#60a5fa';
-      ctx.strokeRect(40, 32, w - 80, 22);
-      ctx.fillStyle = '#f8fafc';
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🚖 محطّة التاكسي الجماعي - باب عليوة', w / 2, 47);
-      ctx.textAlign = 'left';
-    } else if (bizId === 'centre_commercial') {
-      ctx.fillStyle = '#1e1b4b';
-      ctx.fillRect(40, 32, w - 80, 22);
-      ctx.strokeStyle = '#a855f7';
-      ctx.strokeRect(40, 32, w - 80, 22);
-      ctx.fillStyle = '#f8fafc';
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🛍️ المركز التجاري ومحلات الموضة', w / 2, 47);
-      ctx.textAlign = 'left';
+      ctx.font = '20px serif';
+      ctx.fillText('✨', 57, 50 + glow);
     } else if (bizId === 'usine_conserves') {
-      ctx.fillStyle = '#3f3f46';
-      ctx.fillRect(110, 52, w - 130, 6);
-      ctx.fillStyle = '#52525b';
-      ctx.fillRect(110, 88, w - 130, 6);
-      ctx.font = '16px serif';
-      for (let x = 120; x < w - 25; x += 32) {
-        ctx.fillText('🥫', x, 50);
-        ctx.fillText('🐟', x, 86);
-      }
-    } else if (bizId === 'showroom_auto') {
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(40, 32, w - 80, 22);
-      ctx.strokeStyle = '#38bdf8';
-      ctx.strokeRect(40, 32, w - 80, 22);
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🏎️ قاعة عرض السيارات الفاخرة', w / 2, 47);
-      ctx.textAlign = 'left';
-    } else if (bizId === 'promoteur_immobilier') {
-      ctx.fillStyle = '#064e3b';
-      ctx.fillRect(40, 32, w - 80, 22);
-      ctx.strokeStyle = '#34d399';
-      ctx.strokeRect(40, 32, w - 80, 22);
-      ctx.fillStyle = '#ecfdf5';
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🏢 الشركة العقارية - اللجّ الأزرق', w / 2, 47);
-      ctx.textAlign = 'left';
-    } else if (bizId === 'tayaran_el_ghzela') {
-      ctx.fillStyle = '#7f1d1d';
-      ctx.fillRect(40, 32, w - 80, 22);
-      ctx.strokeStyle = '#f87171';
-      ctx.strokeRect(40, 32, w - 80, 22);
-      ctx.fillStyle = '#fef2f2';
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🛫 الخطوط التونسية - طيران الغزالة', w / 2, 47);
-      ctx.textAlign = 'left';
-    } else {
-      // Décor générique chaleureux
       ctx.fillStyle = '#334155';
-      ctx.fillRect(110, 60, w - 130, 6);
+      ctx.fillRect(105, 48, w - 125, 6);
+      ctx.fillRect(105, 84, w - 125, 6);
       ctx.font = '16px serif';
-      for (let x = 120; x < w - 30; x += 36) {
-        ctx.fillText('📦', x, 56);
+      for (let x = 118; x < w - 25; x += 32) {
+        ctx.fillText('🥫', x, 46);
+        ctx.fillText('🫒', x, 82);
+      }
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(60, 50, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.font = '12px sans-serif';
+      ctx.fillText('⚙️', 54, 54);
+    } else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier') {
+      const glassW = w - 120;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+      ctx.fillRect(100, 32, glassW, 60);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(100, 32, glassW, 60);
+
+      ctx.font = '20px serif';
+      const planeX = 110 + ((timeSec * 30) % (glassW - 30));
+      ctx.fillText('🛫', planeX, 72);
+      ctx.font = '14px serif';
+      ctx.fillText('☁️', 120, 50);
+      ctx.fillText('☁️', glassW + 50, 48);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 8px monospace';
+      ctx.fillText('TUNIS 18:30', 44, 44);
+      ctx.fillText('PARIS 19:30', 44, 58);
+      ctx.fillText('DUBAI 21:30', 44, 72);
+    } else {
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(100, 56, w - 120, 6);
+      ctx.font = '16px serif';
+      for (let x = 112; x < w - 25; x += 34) {
+        ctx.fillText('📦', x, 52);
       }
     }
     ctx.restore();
@@ -465,58 +482,65 @@ export class CanvasStoreEngine {
   drawCashierCounter(ctx, detail, isBusy, now) {
     const timeSec = now / 1000;
     const counterX = 14;
-    const counterY = 110;
-    const deskW = 76;
-    const deskH = 46;
+    const counterY = 106;
+    const deskW = 78;
+    const deskH = 50;
 
-    // 1. Écran de comptoir : icône du projet (remplace l'ancienne caisse enregistreuse)
     ctx.save();
     const bounce = isBusy ? Math.sin(timeSec * 8) * 2 : 0;
     const counterBiz = this.getBiz();
-    ctx.font = '22px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(counterBiz ? counterBiz.icon : '🏪', counterX + deskW - 16, counterY + 52 + bounce);
 
-    // 2. Meuble Comptoir en bois vernis tunisien
+    // 1. Meuble Comptoir en bois vernis d'olivier et marbre Kadhel
     const woodGrad = ctx.createLinearGradient(counterX, counterY + 12, counterX, counterY + 12 + deskH);
     woodGrad.addColorStop(0, '#b45309');
-    woodGrad.addColorStop(0.5, '#92400e');
+    woodGrad.addColorStop(0.4, '#92400e');
     woodGrad.addColorStop(1, '#78350f');
     ctx.fillStyle = woodGrad;
     ctx.beginPath();
     ctx.roundRect(counterX, counterY + 12, deskW, deskH, [8, 8, 4, 4]);
     ctx.fill();
 
+    // Dessus en marbre poli blanc/crème
+    ctx.fillStyle = '#fef3c7';
+    ctx.fillRect(counterX - 2, counterY + 10, deskW + 4, 5);
+
     // Bordure dorée du comptoir
     ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.lineWidth = 1.8;
+    ctx.strokeRect(counterX, counterY + 12, deskW, deskH);
 
-    // Plaque dorée : nom du projet (aucune mention de « caisse »)
+    // Tiroir-caisse avec clochette en cuivre
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(counterX + deskW - 14, counterY + 24, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Plaque dorée gravée au nom du commerce
     const bizRef = this.getBiz();
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 9.5px sans-serif';
+    ctx.font = 'bold 9.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(bizRef ? bizRef.name.slice(0, 13) : '', counterX + deskW / 2, counterY + 38);
+    ctx.fillText(bizRef ? bizRef.name.slice(0, 14) : '', counterX + deskW / 2, counterY + 40);
 
-    // 3. Responsable du poste (derrière le comptoir)
+    // Icône du projet sur le comptoir
+    ctx.font = '20px sans-serif';
+    ctx.fillText(counterBiz ? counterBiz.icon : '🏪', counterX + deskW - 16, counterY + 2 + bounce);
+
+    // 2. Responsable du poste (derrière le comptoir)
     const cashierSlot = detail.staffSlots && detail.staffSlots[0];
     const cashierX = counterX + 22;
     const cashierY = counterY - 2;
 
     if (cashierSlot && cashierSlot.hired) {
-      // Responsable dessiné en vectoriel, animé (respiration, bras qui s'activent, clignement)
       this.drawWorker(ctx, cashierX + 16, counterY + 16, 0, isBusy, timeSec);
       this.drawRoleTag(ctx, cashierX + 16, counterY - 54, cashierSlot.role);
 
-      // Bulle de statut au-dessus
       const statusIcon = isBusy ? '✨' : '💤';
       ctx.font = '14px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(statusIcon, cashierX + 44, cashierY - 18 + (isBusy ? -Math.abs(Math.sin(timeSec * 6) * 4) : 0));
     } else {
-      // Emplacement de recrutement cliquable pour le poste de responsable
-      this.drawHireButton(ctx, counterX + 6, counterY - 44, 64, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
+      this.drawHireButton(ctx, counterX + 6, counterY - 44, 66, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
     }
     ctx.restore();
   }
@@ -527,7 +551,7 @@ export class CanvasStoreEngine {
     const timeSec = now / 1000;
     const startX = 104;
     const baseY = 148;
-    const spacing = 58;
+    const spacing = 62;
 
     detail.staffSlots.slice(1).forEach((slot, idx) => {
       const stationX = startX + idx * spacing;
@@ -536,28 +560,268 @@ export class CanvasStoreEngine {
       ctx.save();
 
       // 1. Machine ou poste thématique au sol
-      this.drawMachineProp(ctx, this.bizId, stationX, baseY, isBusy, timeSec);
+      this.drawMachineProp(ctx, this.bizId, stationX, baseY, isBusy, timeSec, slot);
 
       if (slot.hired) {
-        // 2. Ouvrier vectoriel animé + étiquette de rôle complète
-        this.drawWorker(ctx, stationX + 20, baseY, idx + 1, isBusy, timeSec);
-        this.drawRoleTag(ctx, stationX + 20, baseY + 4, slot.role);
+        this.drawWorker(ctx, stationX + 22, baseY, idx + 1, isBusy, timeSec);
+        this.drawRoleTag(ctx, stationX + 22, baseY + 4, slot.role);
 
-        // Effet actif : vapeur, friture, étincelles
         const effIcon = isBusy ? '♨️' : '💤';
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(effIcon, stationX + 20, baseY - 54 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
+        ctx.fillText(effIcon, stationX + 22, baseY - 54 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
       } else {
-        // Bouton de recrutement interactif sur le poste
-        this.drawHireButton(ctx, stationX, baseY - 56, 48, 54, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
+        this.drawHireButton(ctx, stationX + 2, baseY - 56, 48, 54, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
       }
 
       ctx.restore();
     });
   }
 
-  // --- PERSONNAGE VECTORIEL : employé animé (respiration, bras actifs, clignement, coiffe selon le métier) ---
+  // --- DESSIN DES MACHINES ET ANIMATIONS ÉLÉVÉES SELON LE MÉTIER ---
+  drawMachineProp(ctx, bizId, x, y, isBusy, timeSec, slot) {
+    ctx.save();
+
+    // 1. TRADITIONAL FOOD / LABLABI / KASKROUT : marmite fumante, découpe de baguette, louche en mouvement
+    if (bizId === 'kaskrout' || bizId === 'fricasse' || bizId === 'restaurant') {
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(x + 4, y - 20, 36, 20);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 4, y - 20, 36, 20);
+
+      // Flammes de cuisson bleues et jaunes sous la marmite
+      if (isBusy) {
+        ctx.fillStyle = Math.sin(timeSec * 15) > 0 ? '#38bdf8' : '#f59e0b';
+        ctx.fillRect(x + 8, y - 2, 8, 2);
+        ctx.fillRect(x + 22, y - 2, 8, 2);
+      }
+
+      // Marmite en cuivre traditionnelle (قدرة نحاس)
+      const potGrad = ctx.createLinearGradient(x + 6, y - 32, x + 38, y - 20);
+      potGrad.addColorStop(0, '#b45309');
+      potGrad.addColorStop(0.5, '#d97706');
+      potGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = potGrad;
+      ctx.beginPath();
+      ctx.arc(x + 22, y - 18, 13, 0, Math.PI, false);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Poignées de la marmite
+      ctx.strokeStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(x + 8, y - 22, 3, 0, Math.PI * 2);
+      ctx.arc(x + 36, y - 22, 3, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Louche en cuivre (غراف نحاس) avec mouvement animé de service
+      const ladleAngle = isBusy ? Math.sin(timeSec * 4) * 0.35 : 0.1;
+      ctx.save();
+      ctx.translate(x + 22, y - 26);
+      ctx.rotate(ladleAngle);
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(8, -12);
+      ctx.stroke();
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.arc(0, 2, 4, 0, Math.PI);
+      ctx.fill();
+      ctx.restore();
+
+      // Planche à découper avec baguette de pain
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(x + 2, y - 6, 14, 4);
+      ctx.fillStyle = '#fde047';
+      ctx.fillRect(x + 4, y - 8, 10, 3);
+    }
+
+    // 2. CAFÉ ARBI : Zazoua en cuivre sur كانون فخار مع جمر مشتعل ورغوة التاي
+    else if (bizId === 'kahwa' || bizId === 'salon_de_the') {
+      ctx.fillStyle = '#9a3412';
+      ctx.beginPath();
+      ctx.moveTo(x + 8, y - 1);
+      ctx.lineTo(x + 36, y - 1);
+      ctx.lineTo(x + 32, y - 18);
+      ctx.lineTo(x + 12, y - 18);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#c2410c';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      const glow = Math.sin(timeSec * 6) * 0.2 + 0.8;
+      ctx.fillStyle = 'rgba(239, 68, 68, ' + glow + ')';
+      ctx.beginPath();
+      ctx.arc(x + 22, y - 18, 9, 0, Math.PI, true);
+      ctx.fill();
+
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(x + 18, y - 19, 2.5, 0, Math.PI * 2);
+      ctx.arc(x + 26, y - 19, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      const zazX = x + 18;
+      const zazY = y - 28;
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.moveTo(zazX, zazY + 10);
+      ctx.lineTo(zazX + 10, zazY + 10);
+      ctx.lineTo(zazX + 8, zazY);
+      ctx.lineTo(zazX + 2, zazY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#d97706';
+      ctx.stroke();
+
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(zazX + 2, zazY + 3);
+      ctx.lineTo(zazX - 7, zazY - 4);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(254, 240, 138, 0.7)';
+      ctx.fillRect(x + 32, y - 12, 6, 10);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x + 32, y - 14, 6, 2.5);
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(x + 34, y - 15, 2, 2);
+    }
+
+    // 3. OLIVE OIL MILL (SFAX) : Meules en pierre rotatives et filet d'huile dorée
+    else if (bizId === 'usine_conserves') {
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(x + 4, y - 12, 36, 12);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.strokeRect(x + 4, y - 12, 36, 12);
+
+      const millAngle = (timeSec * (isBusy ? 2.5 : 0.6)) % (Math.PI * 2);
+      const stoneGrad = ctx.createLinearGradient(x + 10, y - 32, x + 34, y - 12);
+      stoneGrad.addColorStop(0, '#94a3b8');
+      stoneGrad.addColorStop(0.5, '#64748b');
+      stoneGrad.addColorStop(1, '#334155');
+      ctx.fillStyle = stoneGrad;
+
+      ctx.save();
+      ctx.translate(x + 22, y - 22);
+      ctx.scale(1, 0.55);
+      ctx.beginPath();
+      ctx.arc(0, 0, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.rotate(millAngle);
+      ctx.strokeStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.moveTo(-12, 0);
+      ctx.lineTo(12, 0);
+      ctx.moveTo(0, -12);
+      ctx.lineTo(0, 12);
+      ctx.stroke();
+      ctx.restore();
+
+      if (isBusy) {
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(x + 34, y - 14);
+        ctx.lineTo(x + 34, y - 3);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#c2410c';
+      ctx.beginPath();
+      ctx.arc(x + 34, y - 2, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 4. BAKERY / MAKROUDH (KAIROUAN) : Pâtisserie, façonnage de pâte et éclat de miel
+    else if (bizId === 'patisserie') {
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.moveTo(x + 12, y - 22);
+      ctx.lineTo(x + 18, y - 25);
+      ctx.lineTo(x + 24, y - 22);
+      ctx.lineTo(x + 18, y - 19);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.stroke();
+
+      const stampY = y - 28 + (isBusy ? Math.sin(timeSec * 6) * 4 : 0);
+      ctx.fillStyle = '#d97706';
+      ctx.fillRect(x + 15, stampY, 6, 8);
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(x + 18, stampY, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      const honeyGlow = Math.sin(timeSec * 8) * 0.4 + 0.6;
+      ctx.fillStyle = 'rgba(251, 191, 36, ' + honeyGlow + ')';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('✨', x + 26, y - 24);
+    }
+
+    // 5. HOLDING HEADQUARTERS / AIR FALCON / SHOWROOM : Ticker boursier, radar & table de conférence
+    else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier' || bizId === 'centre_commercial') {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(x + 4, y - 26, 36, 26);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 4, y - 26, 36, 26);
+
+      const radarSweep = (timeSec * 3) % (Math.PI * 2);
+      ctx.fillStyle = '#022c22';
+      ctx.beginPath();
+      ctx.arc(x + 22, y - 13, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.strokeStyle = '#34d399';
+      ctx.beginPath();
+      ctx.moveTo(x + 22, y - 13);
+      ctx.lineTo(x + 22 + Math.cos(radarSweep) * 8, y - 13 + Math.sin(radarSweep) * 8);
+      ctx.stroke();
+
+      ctx.fillStyle = '#090d16';
+      ctx.fillRect(x + 2, y - 36, 40, 9);
+      ctx.fillStyle = '#22c55e';
+      ctx.font = 'bold 7px monospace';
+      ctx.fillText('BVMT ▲+2%', x + 4, y - 29);
+    }
+
+    // Décor par défaut
+    else {
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(x + 6, y - 18, 32, 18);
+      ctx.strokeStyle = '#64748b';
+      ctx.strokeRect(x + 6, y - 18, 32, 18);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('📦', x + 16, y - 5);
+    }
+
+    ctx.restore();
+  }
+
+  // --- PERSONNAGE VECTORIEL : employé animé ---
   drawWorker(ctx, x, footY, seed, isBusy, timeSec) {
     const palettes = [
       { coat: '#2563eb', skin: '#fcd34d', apron: '#f8fafc' },
@@ -566,11 +830,8 @@ export class CanvasStoreEngine {
       { coat: '#dc2626', skin: '#fbbf24', apron: '#fff7ed' }
     ];
     const pal = palettes[seed % palettes.length];
-    const food = ['kaskrout', 'fricasse', 'kahwa', 'patisserie', 'restaurant', 'salon_de_the', 'hotel', 'usine_conserves'].includes(this.bizId);
-    const industrial = ['usine_conserves', 'promoteur_immobilier', 'showroom_auto'].includes(this.bizId);
     const phase = timeSec * (isBusy ? 7 : 2) + seed * 1.3;
     const bob = Math.sin(phase) * (isBusy ? 1.8 : 0.8);
-    const blink = (Math.sin(timeSec * 0.9 + seed * 2) > 0.985);
 
     ctx.save();
     ctx.translate(x, footY);
@@ -593,7 +854,7 @@ export class CanvasStoreEngine {
 
     ctx.translate(0, bob);
 
-    // Bras arrière (derrière le corps)
+    // Bras arrière
     const armSwing = isBusy ? Math.sin(phase * 1.6) : Math.sin(phase) * 0.15;
     ctx.strokeStyle = pal.coat;
     ctx.lineCap = 'round';
@@ -619,7 +880,7 @@ export class CanvasStoreEngine {
     ctx.fillStyle = 'rgba(0,0,0,0.12)';
     ctx.fillRect(-0.5, -27, 1, 15);
 
-    // Bras avant avec outil (spatule / tasse) qui s'active
+    // Bras avant avec outil qui s'active
     const handX = 11 + (isBusy ? Math.sin(phase * 1.6 + 1.5) * 4 : 0);
     const handY = -22 - (isBusy ? Math.abs(Math.sin(phase * 1.6)) * 7 : Math.sin(phase) * 0.8);
     ctx.strokeStyle = pal.coat;
@@ -632,215 +893,130 @@ export class CanvasStoreEngine {
     ctx.beginPath();
     ctx.arc(handX, handY, 2.6, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = food ? '#e2e8f0' : '#94a3b8';
-    ctx.lineWidth = 1.8;
-    ctx.beginPath();
-    ctx.moveTo(handX, handY);
-    ctx.lineTo(handX + 5, handY - 6);
-    ctx.stroke();
-    if (food) {
-      ctx.fillStyle = '#e2e8f0';
-      ctx.beginPath();
-      ctx.ellipse(handX + 6, handY - 7.5, 3, 1.8, -0.7, 0, Math.PI * 2);
-      ctx.fill();
-    }
 
-    // Tête
+    // Cou et tête
     ctx.fillStyle = pal.skin;
+    ctx.fillRect(-2, -35, 4, 4);
     ctx.beginPath();
-    ctx.arc(0, -41, 8, 0, Math.PI * 2);
+    ctx.arc(0, -41, 7.5, 0, Math.PI * 2);
     ctx.fill();
-    // Joues
-    ctx.fillStyle = 'rgba(244, 63, 94, 0.28)';
-    ctx.beginPath();
-    ctx.arc(-4.8, -39, 1.8, 0, Math.PI * 2);
-    ctx.arc(4.8, -39, 1.8, 0, Math.PI * 2);
-    ctx.fill();
-    // Yeux (clignement) + sourire
-    ctx.fillStyle = '#0f172a';
-    if (blink) {
-      ctx.fillRect(-4, -42, 3, 1);
-      ctx.fillRect(1, -42, 3, 1);
-    } else {
-      ctx.beginPath();
-      ctx.arc(-2.6, -42, 1.1, 0, Math.PI * 2);
-      ctx.arc(2.6, -42, 1.1, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.strokeStyle = '#7c2d12';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(0, -39.5, isBusy ? 3 : 2.2, 0.15 * Math.PI, 0.85 * Math.PI);
-    ctx.stroke();
 
-    // Coiffe selon le métier : toque de chef, casque de chantier ou chéchia rouge
-    if (industrial) {
-      ctx.fillStyle = '#facc15';
-      ctx.beginPath();
-      ctx.arc(0, -43, 8.6, Math.PI, 0);
-      ctx.fill();
-      ctx.fillRect(-9.5, -44, 19, 2.5);
-    } else if (food) {
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(-4, -50, 4.5, 0, Math.PI * 2);
-      ctx.arc(4, -50, 4.5, 0, Math.PI * 2);
-      ctx.arc(0, -53, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillRect(-7, -50, 14, 7);
-      ctx.fillStyle = '#e2e8f0';
-      ctx.fillRect(-7, -44.5, 14, 1.6);
-    } else {
-      ctx.fillStyle = '#b91c1c';
-      ctx.beginPath();
-      ctx.roundRect(-6.5, -53, 13, 11, [6, 6, 1, 1]);
-      ctx.fill();
-      ctx.strokeStyle = '#111827';
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(6, -51);
-      ctx.quadraticCurveTo(10, -47 + Math.sin(phase) * 1.5, 8, -42);
-      ctx.stroke();
-    }
+    // Chéchia rouge tunisienne (شاشية تونسية)
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    ctx.arc(0, -45, 6, Math.PI, 0, false);
+    ctx.fill();
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-0.5, -45, 1, 4);
+
+    // Visage souriant
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(2, -43, 2, 2);
+    ctx.beginPath();
+    ctx.arc(3, -39, 2.5, 0, Math.PI);
+    ctx.stroke();
 
     ctx.restore();
   }
 
-  // Étiquette de rôle : texte COMPLET, la police s'ajuste à la largeur (jamais tronqué)
+  // Étiquette de rôle complète
   drawRoleTag(ctx, cx, y, role) {
-    const text = role || 'عامل';
+    if (!role) return;
     ctx.save();
-    let size = 9.5;
-    ctx.font = `bold ${size}px sans-serif`;
-    let tw = ctx.measureText(text).width;
-    const maxW = 62;
-    if (tw > maxW) {
-      size = Math.max(7, size * (maxW / tw));
-      ctx.font = `bold ${size}px sans-serif`;
-      tw = ctx.measureText(text).width;
-    }
-    const pw = tw + 10;
-    ctx.fillStyle = 'rgba(2, 6, 23, 0.82)';
-    ctx.strokeStyle = '#38bdf8';
+    ctx.font = 'bold 8px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    const textW = ctx.measureText(role).width;
+    const pad = 6;
+    const rw = textW + pad * 2;
+    const rh = 13;
+    const rx = cx - rw / 2;
+    const ry = y - rh / 2;
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.beginPath();
+    ctx.roundRect(rx, ry, rw, rh, 4);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
     ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(cx - pw / 2, y, pw, 15, 6);
-    ctx.fill();
     ctx.stroke();
-    ctx.fillStyle = '#e0f2fe';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, cx, y + 8);
+
+    ctx.fillStyle = '#fef08a';
+    ctx.fillText(role, cx, ry + 9.5);
     ctx.restore();
   }
 
-  // Machines et accessoires dynamiques par métier
-  drawMachineProp(ctx, bizId, x, y, isBusy, timeSec) {
-    ctx.save();
-    if (bizId === 'kahwa') {
-      // Machine à Espresso chromée avec manomètres
-      ctx.fillStyle = '#94a3b8';
-      ctx.fillRect(x + 4, y - 26, 32, 26);
-      ctx.strokeStyle = '#cbd5e1';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(x + 4, y - 26, 32, 26);
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = '14px sans-serif';
-      ctx.fillText('☕', x + 12, y - 8);
-    } else if (bizId === 'kaskrout') {
-      // Grill à sandwichs / plancha
-      ctx.fillStyle = '#475569';
-      ctx.fillRect(x + 4, y - 18, 32, 18);
-      ctx.fillStyle = isBusy ? '#ef4444' : '#64748b';
-      ctx.fillRect(x + 8, y - 14, 24, 4);
-    } else if (bizId === 'fricasse') {
-      // Bassine à friture d'huile bouillante
-      ctx.fillStyle = '#713f12';
-      ctx.beginPath();
-      ctx.arc(x + 20, y - 8, 14, Math.PI, 0, false);
-      ctx.fill();
-      ctx.fillStyle = isBusy ? '#eab308' : '#ca8a04';
-      ctx.fillRect(x + 10, y - 12, 20, 4);
-    } else if (bizId === 'patisserie') {
-      // Four rotatif doré
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(x + 4, y - 28, 32, 28);
-      ctx.strokeStyle = '#fbbf24';
-      ctx.strokeRect(x + 4, y - 28, 32, 28);
-      ctx.fillStyle = isBusy ? '#f59e0b' : '#451a03';
-      ctx.fillRect(x + 10, y - 22, 20, 16);
-    } else {
-      // Plan de travail standard
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(x + 6, y - 18, 28, 18);
-      ctx.strokeStyle = '#64748b';
-      ctx.strokeRect(x + 6, y - 18, 28, 18);
-    }
-    ctx.restore();
-  }
-
-  // Dessin d'un bouton de recrutement très lisible : halo pulsant, icône, libellé et prix
+  // Dessin d'un bouton de recrutement très lisible
   drawHireButton(ctx, x, y, width, height, label, slotIndex, type, cost = null, now = 0) {
-    this.clickZones.push({ x: x - 4, y: y - 4, width: width + 8, height: height + 8, slotIndex, type });
-
-    const affordable = cost === null || this.engine.dinars >= cost;
-    const pulse = 0.5 + 0.5 * Math.sin(now / 260);
     ctx.save();
-    // Halo pulsant
-    ctx.shadowColor = affordable ? 'rgba(52, 211, 153, 0.9)' : 'rgba(251, 191, 36, 0.7)';
-    ctx.shadowBlur = 8 + pulse * 10;
-    const g = ctx.createLinearGradient(x, y, x, y + height);
-    g.addColorStop(0, affordable ? 'rgba(16, 185, 129, 0.85)' : 'rgba(120, 53, 15, 0.85)');
-    g.addColorStop(1, affordable ? 'rgba(4, 120, 87, 0.9)' : 'rgba(69, 26, 3, 0.9)');
-    ctx.fillStyle = g;
-    ctx.strokeStyle = affordable ? '#a7f3d0' : '#fbbf24';
-    ctx.lineWidth = 1.8;
-    ctx.beginPath();
-    ctx.roundRect(x, y, width, height, 10);
-    ctx.fill();
-    ctx.stroke();
-    ctx.shadowBlur = 0;
+    const canAfford = cost === null || (this.engine.dinars >= cost);
+    const pulse = Math.sin(now * 0.006) * 0.15 + 0.85;
 
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.font = 'bold 15px sans-serif';
-    ctx.fillText('➕', x + width / 2, y + 17);
-    ctx.font = 'bold 10px sans-serif';
-    ctx.fillText(label, x + width / 2, y + 30);
-    if (cost !== null) {
-      ctx.fillStyle = affordable ? '#d1fae5' : '#fde68a';
-      ctx.font = 'bold 9px sans-serif';
-      ctx.fillText(`${this.fmtCost(cost)} د.ت`, x + width / 2, y + height - 5);
+    if (canAfford) {
+      ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
+      ctx.shadowBlur = 8 * pulse;
     }
+
+    const grad = ctx.createLinearGradient(x, y, x, y + height);
+    if (canAfford) {
+      grad.addColorStop(0, '#f59e0b');
+      grad.addColorStop(1, '#b45309');
+    } else {
+      grad.addColorStop(0, '#475569');
+      grad.addColorStop(1, '#1e293b');
+    }
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(x, y, width, height, 8);
+    ctx.fill();
+
+    ctx.strokeStyle = canAfford ? '#fef08a' : '#64748b';
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 11px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('➕ ' + label, x + width / 2, y + 18);
+
+    if (cost !== null) {
+      ctx.fillStyle = canAfford ? '#fef08a' : '#94a3b8';
+      ctx.font = 'bold 9px "Cairo", sans-serif';
+      ctx.fillText(this.formatNumber(cost) + ' DT', x + width / 2, y + 33);
+    }
+
+    this.clickZones.push({
+      x,
+      y,
+      width,
+      height,
+      slotIndex,
+      type
+    });
+
     ctx.restore();
   }
 
-  fmtCost(n) {
-    if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B`;
-    if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
-    if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K`;
-    return `${Math.round(n)}`;
+  formatNumber(n) {
+    if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+    return '' + Math.round(n);
   }
 
   // --- CLIENTS VIVANTS AVEC BULLES DE COMMANDE ET DÉPLACEMENT ---
   drawCustomers(ctx, now) {
-    const timeSec = now / 1000;
-
     for (const c of this.customers) {
       ctx.save();
-
-      // Ombre portée au sol
       ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
       ctx.beginPath();
       ctx.ellipse(c.x + 12, c.y + 4, 12, 4, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Rebond organique pendant la marche
       const isWalking = c.state === 'walking_in' || c.state === 'walking_out';
       const bounce = isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 4 : 0;
       const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.05 : 0;
 
-      // Dessin de l'avatar
       ctx.translate(c.x + 12, c.y - 12 - bounce);
       ctx.rotate(tilt);
       ctx.font = '26px sans-serif';
@@ -849,7 +1025,6 @@ export class CanvasStoreEngine {
       ctx.rotate(-tilt);
       ctx.translate(-(c.x + 12), -(c.y - 12 - bounce));
 
-      // Bulle de pensée / commande au-dessus de la tête
       const bubbleX = c.x + 12;
       const bubbleY = c.y - 42 - bounce;
       const bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
@@ -862,7 +1037,6 @@ export class CanvasStoreEngine {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Pointe de bulle
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.moveTo(bubbleX - 3, bubbleY + 10);
@@ -871,7 +1045,6 @@ export class CanvasStoreEngine {
       ctx.closePath();
       ctx.fill();
 
-      // Émote dans la bulle
       ctx.font = '13px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(bubbleIcon, bubbleX, bubbleY + 3);
@@ -892,11 +1065,10 @@ export class CanvasStoreEngine {
       ctx.restore();
     }
 
-    // Liasses / Jaillissement de monnaie textuel
     for (const m of this.moneyPuffs) {
       ctx.save();
       ctx.globalAlpha = Math.max(0, m.life / m.maxLife);
-      ctx.font = 'bold 13px sans-serif';
+      ctx.font = 'bold 13px "Cairo", sans-serif';
       ctx.fillStyle = '#fef08a';
       ctx.shadowColor = '#000000';
       ctx.shadowBlur = 4;
@@ -906,23 +1078,22 @@ export class CanvasStoreEngine {
     }
   }
 
-  // --- AMBIANCE CRÉATIVE : lanternes tunisiennes balancées, rayons de lumière, poussière dorée, vignette ---
+  // --- AMBIANCE CRÉATIVE : lanternes tunisiennes, rayons de lumière, poussière dorée ---
   drawAmbience(ctx, now, isProducing) {
     const w = this.width;
     const h = this.height;
     const t = now / 1000;
 
-    // 0. Enseigne néon du projet au centre du mur (nom + icône)
     const signBiz = this.getBiz();
     if (signBiz) {
-      const signW = Math.min(170, w * 0.4);
+      const signW = Math.min(180, w * 0.42);
       const sx = (w - signW) / 2;
-      const flicker = 0.85 + 0.15 * Math.sin(t * 7) * Math.sin(t * 3.1);
+      const flicker = 0.88 + 0.12 * Math.sin(t * 7) * Math.sin(t * 3.1);
       ctx.save();
-      ctx.shadowColor = `rgba(251, 191, 36, ${0.8 * flicker})`;
+      ctx.shadowColor = 'rgba(251, 191, 36, ' + (0.8 * flicker) + ')';
       ctx.shadowBlur = 14;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
-      ctx.strokeStyle = `rgba(251, 191, 36, ${flicker})`;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.strokeStyle = 'rgba(251, 191, 36, ' + flicker + ')';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.roundRect(sx, 26, signW, 26, 13);
@@ -930,39 +1101,19 @@ export class CanvasStoreEngine {
       ctx.stroke();
       ctx.shadowBlur = 0;
       ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 12px sans-serif';
+      ctx.font = 'bold 12px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`${signBiz.icon} ${signBiz.name.slice(0, 20)}`, w / 2, 43);
+      ctx.fillText(signBiz.icon + ' ' + signBiz.name.slice(0, 20), w / 2, 43);
       ctx.restore();
     }
 
-    // 1. Rayons de lumière chaude traversant la boutique
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 3; i++) {
-      const baseX = w * (0.2 + i * 0.3) + Math.sin(t * 0.4 + i) * 14;
-      const g = ctx.createLinearGradient(baseX, 0, baseX + 60, h - 54);
-      g.addColorStop(0, 'rgba(253, 224, 71, 0.10)');
-      g.addColorStop(1, 'rgba(253, 224, 71, 0)');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.moveTo(baseX - 8, 16);
-      ctx.lineTo(baseX + 14, 16);
-      ctx.lineTo(baseX + 74, h - 54);
-      ctx.lineTo(baseX + 24, h - 54);
-      ctx.closePath();
-      ctx.fill();
-    }
-    ctx.restore();
-
-    // 2. Lanternes suspendues qui se balancent (lueur plus vive quand ça travaille)
     const count = Math.max(3, Math.floor(w / 130));
     for (let i = 0; i < count; i++) {
       const lx = (w / count) * (i + 0.5);
       const swing = Math.sin(t * 1.3 + i * 1.7) * 0.12;
       const len = 22 + (i % 2) * 10;
       ctx.save();
-      ctx.translate(lx, 16);
+      ctx.translate(lx, 18);
       ctx.rotate(swing);
       ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
       ctx.lineWidth = 1;
@@ -970,8 +1121,8 @@ export class CanvasStoreEngine {
       ctx.moveTo(0, 0);
       ctx.lineTo(0, len);
       ctx.stroke();
-      const glow = ctx.createRadialGradient(0, len + 6, 1, 0, len + 6, isProducing ? 26 : 19);
-      glow.addColorStop(0, 'rgba(253, 186, 116, 0.55)');
+      const glow = ctx.createRadialGradient(0, len + 6, 1, 0, len + 6, isProducing ? 28 : 20);
+      glow.addColorStop(0, 'rgba(253, 186, 116, 0.6)');
       glow.addColorStop(1, 'rgba(253, 186, 116, 0)');
       ctx.fillStyle = glow;
       ctx.fillRect(-30, len - 24, 60, 60);
@@ -985,7 +1136,6 @@ export class CanvasStoreEngine {
       ctx.restore();
     }
 
-    // 3. Poussière dorée flottante
     ctx.save();
     ctx.fillStyle = 'rgba(254, 240, 138, 0.5)';
     for (let i = 0; i < 14; i++) {
@@ -1009,7 +1159,7 @@ export class CanvasStoreEngine {
     ctx.fillRect(0, 0, w, h);
   }
 
-  // --- BOUCLE D'ANIMATION 60 FPS (une exception de rendu ne doit jamais figer la scène) ---
+  // --- BOUCLE D'ANIMATION 60 FPS ---
   step(now) {
     if (!this.lastTime) this.lastTime = now;
     const dt = Math.min((now - this.lastTime) / 1000, 0.1);
@@ -1019,21 +1169,21 @@ export class CanvasStoreEngine {
     const detail = this.engine.getBusinessDetail ? this.engine.getBusinessDetail(this.bizId) : null;
     const isProducing = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
 
-    // 1. Spawner de clients
+    // 1. Spawner de حرفاء (rythme posé, naturel et gratifiant)
     this.spawnTimer += dt;
-    const spawnThreshold = isProducing ? 1.6 : 3.2;
-    if (this.spawnTimer > spawnThreshold && this.customers.length < 5) {
+    const spawnThreshold = isProducing ? 2.6 : 4.8;
+    if (this.spawnTimer > spawnThreshold && this.customers.length < 4) {
       this.spawnCustomer();
       this.spawnTimer = 0;
     }
 
-    // 2. Mise à jour de la physique des clients
+    // 2. Mise à jour de la physique des حرفاء
     for (let i = this.customers.length - 1; i >= 0; i--) {
       const c = this.customers[i];
       c.walkCycle += dt;
 
       if (c.state === 'walking_in') {
-        const speed = isProducing ? 85 : 55;
+        const speed = isProducing ? 58 : 42;
         c.x -= speed * dt;
         if (c.x <= c.targetX) {
           c.x = c.targetX;
@@ -1047,7 +1197,7 @@ export class CanvasStoreEngine {
           c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
         }
       } else if (c.state === 'walking_out') {
-        c.x -= 75 * dt;
+        c.x -= 52 * dt;
         if (c.x < -40) {
           this.customers.splice(i, 1);
           continue;
@@ -1056,15 +1206,14 @@ export class CanvasStoreEngine {
     }
 
     // 3. Particules d'ambiance et vapeur active
-    if (isProducing && Math.random() < 0.35) {
-      // Vapeur de café ou fumée de cuisson
+    if (isProducing && Math.random() < 0.4) {
       const sourceX = 110 + Math.random() * (this.width - 150);
       this.particles.push({
         x: sourceX,
         y: 120,
         vx: Math.random() * 8 - 4,
-        vy: -20 - Math.random() * 25,
-        color: 'rgba(255, 255, 255, 0.35)',
+        vy: -22 - Math.random() * 25,
+        color: 'rgba(255, 255, 255, 0.38)',
         radius: 2 + Math.random() * 3,
         life: 0.9,
         maxLife: 0.9,
@@ -1108,12 +1257,7 @@ export class CanvasStoreEngine {
   }
 }
 
-/**
- * QuartierAnimator
- * Moteur Panoramique Canvas 2D 60 FPS du Quartier Tunisien Vivant pour Tounes Tycoon (Landscape).
- * Gère les transitions cinématiques de quartiers, les évolutions visuelles de paliers (25, 50, 100, 200),
- * les animations de véhicules, piétons, fumée, drapeaux et bulles de gains.
- */
+
 export class QuartierAnimator {
   constructor(canvasEl, engineRef) {
     this.canvas = canvasEl;
@@ -1374,11 +1518,11 @@ export class QuartierAnimator {
     }
 
     this.taxis = [
-      { x: 120, speed: 95, dir: 1, type: 'taxi_collectif' },
-      { x: 520, speed: 112, dir: 1, type: 'taxi_citadin' },
-      { x: 920, speed: 92, dir: -1, type: 'louage' },
-      { x: 1280, speed: 124, dir: 1, type: 'citadine_rouge' },
-      { x: 1580, speed: 105, dir: -1, type: 'taxi_collectif' }
+      { x: 120, speed: 68, dir: 1, type: 'taxi_collectif' },
+      { x: 520, speed: 76, dir: 1, type: 'taxi_citadin' },
+      { x: 920, speed: 64, dir: -1, type: 'louage' },
+      { x: 1280, speed: 82, dir: 1, type: 'citadine_rouge' },
+      { x: 1580, speed: 70, dir: -1, type: 'taxi_collectif' }
     ];
 
     const charStyles = [
@@ -1396,7 +1540,7 @@ export class QuartierAnimator {
       this.pedestrians.push({
         x: 50 + Math.random() * Math.max(300, this.worldWidth - 100),
         yOffset: (Math.random() - 0.5) * 14,
-        speed: (26 + Math.random() * 28) * (Math.random() > 0.5 ? 1 : -1),
+        speed: (18 + Math.random() * 18) * (Math.random() > 0.5 ? 1 : -1),
         coat: style.coat,
         pants: style.pants,
         skin: style.skin,
@@ -1573,10 +1717,19 @@ export class QuartierAnimator {
 
       p.visitTimer -= dt;
       if (p.visitTimer <= 0) {
-        p.visitTimer = 5 + Math.random() * 8;
-        const tunisianQuips = ['بنينة ! 🤤', 'عزّ الطلة 👌', 'تبارك الله 🔥', 'صحة ! ☕', 'ملا جو 🇹🇳', 'الكاسة تعمرت 💰'];
+        p.visitTimer = 7 + Math.random() * 10;
+        const tunisianQuips = [
+          'بنينة تشره ! 🤤',
+          'عزّ الطلة والسرفيس 👌',
+          'تبارك الله على الصنعة 🔥',
+          'صحة وبشفا يا معلّم ! ☕',
+          'ملا جو وملا حومة 🇹🇳',
+          'الكاسة تصبّ في الخير 💰',
+          'سلعة طازة وريحة تفحفح 🌿',
+          'سيرفيس مريڤل والخدمة نظيفة 👏'
+        ];
         p.bubbleText = tunisianQuips[Math.floor(Math.random() * tunisianQuips.length)];
-        p.bubbleTimer = 2.2;
+        p.bubbleTimer = 2.4;
       }
       if (p.bubbleTimer > 0) {
         p.bubbleTimer -= dt;
@@ -1967,27 +2120,36 @@ export class QuartierAnimator {
 
     ctx.save();
 
+    // Ombre au sol réaliste
     ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
     ctx.beginPath();
     ctx.ellipse(x + b.width / 2, groundY, b.width * 0.55, 8, 0, 0, Math.PI * 2);
     ctx.fill();
 
+    // Cas 1 : Commerce non encore débloqué
     if (!isUnlocked) {
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
       ctx.strokeStyle = '#334155';
       ctx.lineWidth = 2;
       ctx.fillRect(x, y + 20, b.width, bHeight - 20);
       ctx.strokeRect(x, y + 20, b.width, bHeight - 20);
 
+      // Arche en pierre fermée
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+      ctx.beginPath();
+      ctx.arc(x + b.width / 2, y + 46, 20, Math.PI, 0, false);
+      ctx.stroke();
+
       ctx.fillStyle = '#f59e0b';
-      ctx.font = '900 13px "Cairo", sans-serif';
+      ctx.font = '900 14px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(biz ? biz.icon : '🚧', x + b.width / 2, y + 52);
+      ctx.fillText(biz ? biz.icon : '🚧', x + b.width / 2, y + 54);
+
       ctx.fillStyle = '#cbd5e1';
       ctx.font = '700 11px "Cairo", sans-serif';
-      ctx.fillText(biz ? biz.name : 'مشروع جديد', x + b.width / 2, y + 72);
+      ctx.fillText(biz ? biz.name : 'مشروع جديد', x + b.width / 2, y + 74);
 
-      const btnW = Math.min(b.width - 20, 110);
+      const btnW = Math.min(b.width - 20, 114);
       const btnH = 26;
       const btnX = x + (b.width - btnW) / 2;
       const btnY = y + bHeight - 28;
@@ -2014,6 +2176,7 @@ export class QuartierAnimator {
       return;
     }
 
+    // Cas 2 : Commerce actif - Façade architecturale évolutive tunisienne
     let tierBorder = 'rgba(255, 255, 255, 0.2)';
     let tierBorderWidth = 2;
     let hasGoldAura = false;
@@ -2043,9 +2206,11 @@ export class QuartierAnimator {
       ctx.shadowBlur = pulse;
     }
 
+    // Corps de façade en pierre blanchie ou aux teintes traditionnelles
     const grad = ctx.createLinearGradient(x, y, x, groundY);
-    grad.addColorStop(0, b.color);
-    grad.addColorStop(1, '#0f172a');
+    grad.addColorStop(0, b.color || '#f8fafc');
+    grad.addColorStop(0.7, '#f1f5f9');
+    grad.addColorStop(1, '#e2e8f0');
     ctx.fillStyle = grad;
     ctx.strokeStyle = tierBorder;
     ctx.lineWidth = tierBorderWidth;
@@ -2056,7 +2221,8 @@ export class QuartierAnimator {
 
     if (hasGoldAura) ctx.restore();
 
-    ctx.fillStyle = b.roofColor;
+    // Toit traditionnel : tuiles ou créneaux de médina (شرفات أندلسية)
+    ctx.fillStyle = b.roofColor || '#0284c7';
     ctx.beginPath();
     ctx.moveTo(x - 6, y + 18);
     ctx.lineTo(x + b.width + 6, y + 18);
@@ -2065,64 +2231,145 @@ export class QuartierAnimator {
     ctx.closePath();
     ctx.fill();
 
+    // Créneaux tunisiens dentelés blancs
     ctx.fillStyle = '#ffffff';
     for (let rx = x; rx < x + b.width; rx += 16) {
       ctx.fillRect(rx, y + 4, 8, 14);
     }
 
+    // Drapeau tunisien au sommet
     this.drawTunisianFlag(ctx, x + b.width - 24, y - 10, timestamp);
 
+    // Enseigne du magasin au-dessus de la porte
     ctx.save();
     if (hasNeonSign) {
       ctx.shadowColor = '#38bdf8';
       ctx.shadowBlur = 8;
     }
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
     ctx.beginPath();
     ctx.roundRect(x + 10, y + 22, b.width - 20, 22, 6);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
     ctx.restore();
 
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 11px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`${biz.icon} ${biz.name}`, x + b.width / 2, y + 37);
+    ctx.fillText(biz.icon + ' ' + biz.name, x + b.width / 2, y + 37);
 
+    // Badge de niveau
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
     ctx.roundRect(x + 6, y + 18, 26, 15, 4);
     ctx.fill();
     ctx.fillStyle = '#38bdf8';
     ctx.font = '900 9px "Cairo", sans-serif';
-    ctx.fillText(`L${level}`, x + 19, y + 29);
+    ctx.fillText('L' + level, x + 19, y + 29);
 
-    const winY = y + 48;
-    const winH = Math.max(26, bHeight - 86);
-    ctx.fillStyle = isProducing ? 'rgba(254, 240, 138, 0.28)' : 'rgba(30, 41, 59, 0.4)';
+    // --- GRANDE PORTE ARABE TRADITIONNELLE (باب عربي مرصّع بالمسامير النحاسية) ---
+    const doorW = Math.min(42, b.width * 0.38);
+    const doorH = Math.max(48, bHeight - 74);
+    const doorX = x + (b.width - doorW) / 2;
+    const doorY = groundY - doorH - 32;
+
+    // 1. Cadre en pierre de Kadhel avec arc outrepassé et claveaux alternés
+    ctx.save();
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 2.5;
+    ctx.fillStyle = '#fef3c7';
     ctx.beginPath();
-    ctx.roundRect(x + 12, winY, b.width - 24, winH, 6);
+    ctx.arc(doorX + doorW / 2, doorY + doorW / 2, doorW / 2 + 5, Math.PI, 0, false);
+    ctx.lineTo(doorX + doorW + 5, doorY + doorH);
+    ctx.lineTo(doorX - 5, doorY + doorH);
+    ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.stroke();
 
-    const iconCenterY = winY + winH / 2 + 5;
-    ctx.font = '15px serif';
-    if (b.id === 'kaskrout') {
-      ctx.fillText('🥖', x + 24, iconCenterY);
-      ctx.fillText('👨‍🍳', x + b.width / 2, iconCenterY);
-      ctx.fillText('🥪', x + b.width - 24, iconCenterY);
-    } else if (b.id === 'kahwa') {
-      ctx.fillText('☕', x + 22, iconCenterY);
-      ctx.fillText('🃏', x + b.width / 2, iconCenterY);
-      ctx.fillText('👴', x + b.width - 24, iconCenterY);
-    } else if (b.id === 'taxi_collectif') {
-      ctx.fillText('🚖', x + 25, iconCenterY);
-      ctx.fillText('🏁', x + b.width / 2, iconCenterY);
-      ctx.fillText('🕶️', x + b.width - 25, iconCenterY);
-    } else {
-      ctx.fillText(biz.icon, x + b.width / 2, iconCenterY);
+    // Frise de Zellige encadrant la porte (زليج قلالين أزرق وأصفر)
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(doorX - 7, doorY + 6, doorW + 14, doorH - 4);
+    ctx.restore();
+
+    // 2. Vantail de la porte en bois peint (Bleu Sidi Bou Saïd / Ocre / Vert Médina)
+    let doorColor = '#1d4ed8'; // Bleu Sidi Bou Saïd par défaut
+    if (b.id === 'kaskrout' || b.id === 'fricasse') doorColor = '#eab308'; // Ocre jaune chaleureux
+    else if (b.id === 'patisserie' || b.id === 'attariya') doorColor = '#059669'; // Vert émeraude médina
+    else if (b.id === 'tayaran_el_ghzela' || b.id === 'showroom_auto') doorColor = '#1e293b'; // Noir / Bleu marine luxueux
+
+    ctx.fillStyle = doorColor;
+    ctx.beginPath();
+    ctx.arc(doorX + doorW / 2, doorY + doorW / 2, doorW / 2, Math.PI, 0, false);
+    ctx.lineTo(doorX + doorW, doorY + doorH);
+    ctx.lineTo(doorX, doorY + doorH);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Ligne centrale de battant
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.beginPath();
+    ctx.moveTo(doorX + doorW / 2, doorY + 2);
+    ctx.lineTo(doorX + doorW / 2, doorY + doorH);
+    ctx.stroke();
+
+    // 3. Clous de cuivre noircis et dorés en motif authentique (سروة ونجمة وهلال بالمسامير)
+    ctx.fillStyle = '#fbbf24';
+    const nailPattern = [
+      { dx: 0.5, dy: 0.28 },
+      { dx: 0.35, dy: 0.45 }, { dx: 0.65, dy: 0.45 },
+      { dx: 0.5, dy: 0.55 },
+      { dx: 0.3, dy: 0.7 }, { dx: 0.7, dy: 0.7 },
+      { dx: 0.5, dy: 0.82 }
+    ];
+    for (const np of nailPattern) {
+      ctx.beginPath();
+      ctx.arc(doorX + doorW * np.dx, doorY + doorH * np.dy, 1.4, 0, Math.PI * 2);
+      ctx.fill();
     }
 
+    // Deux heurtoirs en cuivre forgé (خوّاصة نحاسية مدوّرة)
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.arc(doorX + doorW * 0.35, doorY + doorH * 0.6, 3, 0, Math.PI * 2);
+    ctx.arc(doorX + doorW * 0.65, doorY + doorH * 0.6, 3, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 4. Balcon en fer forgé / Moucharabieh à l'étage supérieur (درابزين حديد مشغّل زلابية)
+    const balcY = y + 48;
+    if (doorY - balcY >= 18) {
+      const balcW = Math.min(b.width - 26, 68);
+      const balcX = x + (b.width - balcW) / 2;
+      const balcH = 14;
+
+      // Volets médina en bois ouverts
+      ctx.fillStyle = '#1e3a8a';
+      ctx.fillRect(balcX + 4, balcY - 12, 10, 16);
+      ctx.fillRect(balcX + balcW - 14, balcY - 12, 10, 16);
+
+      // Fenêtre éclairée
+      ctx.fillStyle = isProducing ? '#fef08a' : 'rgba(15, 23, 42, 0.6)';
+      ctx.fillRect(balcX + 16, balcY - 12, balcW - 32, 16);
+
+      // Garde-corps galbé en fer forgé noir (حديد زلابية)
+      ctx.strokeStyle = '#090d16';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(balcX, balcY, balcW, balcH);
+      for (let bx = balcX + 4; bx < balcX + balcW; bx += 8) {
+        ctx.beginPath();
+        ctx.moveTo(bx, balcY);
+        ctx.lineTo(bx, balcY + balcH);
+        ctx.stroke();
+      }
+    }
+
+    // Barre de progression du cycle de production
     const barW = b.width - 24;
     const barH = 5;
     const barX = x + 12;
@@ -2136,6 +2383,7 @@ export class QuartierAnimator {
       ctx.fillRect(barX, barY, barW * pct, barH);
     }
 
+    // Boutons d'interaction : Inspecter la boutique & Améliorer
     const btnW = (b.width - 28) / 2;
     const btnH = 22;
     const btnInspectX = x + 10;
@@ -2158,7 +2406,7 @@ export class QuartierAnimator {
     ctx.fill();
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 10px "Cairo", sans-serif';
-    ctx.fillText(`⬆️ L${biz.level + 1}`, btnUpgradeX + btnW / 2, btnY + 15);
+    ctx.fillText('⬆️ L' + (biz.level + 1), btnUpgradeX + btnW / 2, btnY + 15);
 
     this.interactiveHitboxes.push({
       x: btnInspectX,
@@ -2189,6 +2437,7 @@ export class QuartierAnimator {
 
     ctx.restore();
   }
+
 
   drawHouse(ctx, hItem, x, groundY, timestamp) {
     const maxAllowedH = Math.max(95, groundY - 46);
@@ -3058,6 +3307,852 @@ export class QuartierAnimator {
 
       leftX += (r * 2 + 10);
     });
+
+    ctx.restore();
+  }
+}
+
+
+
+// Implementation of TunisiaMapEngine
+export class TunisiaMapEngine {
+  constructor(canvasEl, engineRef, options = {}) {
+    this.canvas = canvasEl;
+    this.ctx = canvasEl.getContext('2d');
+    this.engine = engineRef;
+    this.options = options;
+    this.onTravel = options.onTravel || null;
+    this.onSelect = options.onSelect || null;
+
+    this.animId = null;
+    this.lastTime = 0;
+    this.dpr = 1;
+    this.width = 440;
+    this.height = 580;
+    this.scale = 1;
+
+    // Selected city for floating details card
+    this.selectedCityId = null;
+    this.hoverCityId = null;
+
+    // Caravan transport animation for seamless travel
+    this.caravan = null;
+
+    // Les 14 Villes Géographiques de Tunisie avec coordonnées réelles (viewBox 440 x 580)
+    this.cities = [
+      {
+        id: 'bizerte',
+        name: 'بنزرت',
+        fullName: 'بنزرت - عروس الشمال',
+        icon: '⚓',
+        x: 210,
+        y: 60,
+        tagline: 'ميناء الصيد العتيق، القنال والجسر المتحرّك وشواطئ الرفراف',
+        reqDinars: 0,
+        bonusDesc: 'مشاريع الصيد البحري، الموانئ والتجارة الساحلية (+25%)',
+        themeClass: 'zone-bizerte'
+      },
+      {
+        id: 'beja',
+        name: 'باجة',
+        fullName: 'باجة - مطمورة روما',
+        icon: '🌾',
+        x: 140,
+        y: 110,
+        tagline: 'مملكة القمح والحبوب، الأجبان التقليدية وطبيعة الشمال الغربي الخلابة',
+        reqDinars: 150,
+        bonusDesc: 'مشاريع الفلاحة، القمح والأجبان والمخابز (+25%)',
+        themeClass: 'zone-beja'
+      },
+      {
+        id: 'tunis',
+        name: 'تونس العاصمة',
+        fullName: 'تونس العاصمة والمدينة العربي',
+        icon: '🕌',
+        x: 240,
+        y: 115,
+        tagline: 'باب سويقة، جامع الزيتونة المعمور، جامع الحلفاوين وقلب الاقتصاد التونسي',
+        reqDinars: 500,
+        bonusDesc: 'مشاريع الحومة : كسكروت، فريكاسي، قهوة شعبية وعطار ولد الحومة (+30%)',
+        themeClass: 'zone-bab-souika'
+      },
+      {
+        id: 'nabeul',
+        name: 'نابل',
+        fullName: 'نابل والوطن القبلي',
+        icon: '🏺',
+        x: 308,
+        y: 135,
+        tagline: 'عاصمة الفخار وقليبية، زهر النارنج، الهريسة العربي وبساتين القوارص',
+        reqDinars: 2500,
+        bonusDesc: 'مشاريع الفخار، معمل الهريسة والمصبّرات الغذائية الكبرى (+35%)',
+        themeClass: 'zone-nabeul'
+      },
+      {
+        id: 'kef',
+        name: 'الكاف',
+        fullName: 'الكاف العالية',
+        icon: '🏰',
+        x: 115,
+        y: 180,
+        tagline: 'قصبة الكاف التاريخية، سيدي بومخلوف، طاولة يوغرطة وعراقة الشمال الغربي',
+        reqDinars: 12000,
+        bonusDesc: 'مشاريع التراث الجبلي، المطاعم العريقة والحرف اليدوية (+35%)',
+        themeClass: 'zone-kef'
+      },
+      {
+        id: 'sousse',
+        name: 'سوسة',
+        fullName: 'سوسة - جوهرة الساحل',
+        icon: '🏖️',
+        x: 288,
+        y: 215,
+        tagline: 'ميناء القنطاوي السياحي، الكورنيش، النزل الفاخرة والأسواق النابضة',
+        reqDinars: 50000,
+        bonusDesc: 'مشاريع النزل، المراكز التجارية والمطاعم السياحية (+40%)',
+        themeClass: 'zone-sousse'
+      },
+      {
+        id: 'monastir',
+        name: 'المنستير',
+        fullName: 'المنستير والرباط',
+        icon: '⛵',
+        x: 312,
+        y: 238,
+        tagline: 'رباط المنستير العظيم، مارينا اليخوت، مصانع النسيج ومحطة التاكسي الجماعي',
+        reqDinars: 180000,
+        bonusDesc: 'مشاريع محطة التاكسي الجماعي، حلويات عربي وباتيسري (+40%)',
+        themeClass: 'zone-la-goulette'
+      },
+      {
+        id: 'kairouan',
+        name: 'القيروان',
+        fullName: 'القيروان - رابعة الثلاث',
+        icon: '🕌',
+        x: 215,
+        y: 230,
+        tagline: 'جامع عقبة بن نافع، فسقية الأغالبة، زربية القيروان وسرّ المقروض الأصيل',
+        reqDinars: 600000,
+        bonusDesc: 'مشاريع الحلويات التونسية، المقروض، النحاس والزربية (+50%)',
+        themeClass: 'zone-kairouan'
+      },
+      {
+        id: 'sfax',
+        name: 'صفاقس',
+        fullName: 'صفاقس - عاصمة الجنوب',
+        icon: '🫒',
+        x: 282,
+        y: 320,
+        tagline: 'معاصر زيت الزيتونة البكر، برج النار، التجارة النشيطة والصناعات الوطنية',
+        reqDinars: 2500000,
+        bonusDesc: 'معاصر زيت الزيتونة، المغازة العامة والمصانع الكبرى (+50%)',
+        themeClass: 'zone-sfax'
+      },
+      {
+        id: 'gafsa',
+        name: 'قفصة',
+        fullName: 'قفصة وبوابة الواحات',
+        icon: '⛏️',
+        x: 145,
+        y: 345,
+        tagline: 'المسبح الروماني، واحة قفصة الغنّاء ومناجم الفسفاط والحوض المنجمي',
+        reqDinars: 10000000,
+        bonusDesc: 'المشاريع الاستخراجية، النقل والمعدات الثقيلة والمغازات (+50%)',
+        themeClass: 'zone-gafsa'
+      },
+      {
+        id: 'tozeur',
+        name: 'توزر',
+        fullName: 'توزر - لؤلؤة الجريد',
+        icon: '🌴',
+        x: 95,
+        y: 400,
+        tagline: 'واحات النخيل، دقلة النور الذهبية، شط الجريد الساحر وهندسة الآجر الأصفر',
+        reqDinars: 40000000,
+        bonusDesc: 'سياحة الواحات، دقلة النور والمنتجعات الصحراوية الفاخرة (x2)',
+        themeClass: 'zone-tozeur'
+      },
+      {
+        id: 'gabes',
+        name: 'قابس',
+        fullName: 'قابس - واحة البحر',
+        icon: '🌊',
+        x: 235,
+        y: 400,
+        tagline: 'الواحة الساحلية الوحيدة في المتوسط، سوق الحناء، الرمان والميناء التجاري',
+        reqDinars: 150000000,
+        bonusDesc: 'الموانئ البحرية، مصانع التحويل والصناعات الكبرى (x2)',
+        themeClass: 'zone-gabes'
+      },
+      {
+        id: 'medenine',
+        name: 'مدنين',
+        fullName: 'مدنين وتطاوين',
+        icon: '🛖',
+        x: 260,
+        y: 465,
+        tagline: 'قصور مدنين وتطاوين الصحراوية الشامخة، ملتقى القوافل وبوابة الجنوب الكبير',
+        reqDinars: 500000000,
+        bonusDesc: 'الشركات العقارية، المشاريع الحجرية والتجارة الحدودية (x2)',
+        themeClass: 'zone-hammamet'
+      },
+      {
+        id: 'djerba',
+        name: 'جربة',
+        fullName: 'جربة - جزيرة الأحلام',
+        icon: '👑',
+        x: 330,
+        y: 440,
+        tagline: 'حومة السوق، القنطرة الرومانية، فنادق المليارديرات وأسطول طيران الغزالة',
+        reqDinars: 1500000000,
+        bonusDesc: 'شركة طيران الغزالة العالمية، قصر السيارات والعقارات الكبرى (x2.5)',
+        themeClass: 'zone-djerba'
+      }
+    ];
+
+    // Réseau des Autoroutes & Voies Commerciales Dorées (Golden Highway Network)
+    this.highways = [
+      { from: 'bizerte', to: 'tunis', name: 'A4' },
+      { from: 'beja', to: 'tunis', name: 'A3' },
+      { from: 'kef', to: 'beja', name: 'GP5' },
+      { from: 'tunis', to: 'nabeul', name: 'A1 Cap Bon' },
+      { from: 'tunis', to: 'sousse', name: 'A1 Nord' },
+      { from: 'sousse', to: 'monastir', name: 'C57 Sahel' },
+      { from: 'sousse', to: 'kairouan', name: 'GP2' },
+      { from: 'kef', to: 'kairouan', name: 'GP12' },
+      { from: 'kairouan', to: 'sfax', name: 'A1 Centre' },
+      { from: 'sousse', to: 'sfax', name: 'A1 Côtière' },
+      { from: 'kairouan', to: 'gafsa', name: 'GP3' },
+      { from: 'gafsa', to: 'tozeur', name: 'GP16 Oasis' },
+      { from: 'gafsa', to: 'gabes', name: 'GP15' },
+      { from: 'sfax', to: 'gabes', name: 'A1 Sud' },
+      { from: 'gabes', to: 'medenine', name: 'A1 Sud' },
+      { from: 'medenine', to: 'djerba', name: 'Voie Romaine El Kantara' }
+    ];
+
+    // Particules de caravanes commerciales en mouvement le long des autoroutes
+    this.tradeParticles = [];
+    for (let i = 0; i < 22; i++) {
+      const h = this.highways[i % this.highways.length];
+      this.tradeParticles.push({
+        highway: h,
+        progress: Math.random(),
+        speed: 0.12 + Math.random() * 0.15,
+        color: i % 2 === 0 ? '#fbbf24' : '#f59e0b'
+      });
+    }
+
+    this.handleClick = this.handleClick.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.onWindowResize = () => this.resize();
+
+    this.canvas.addEventListener('click', this.handleClick);
+    this.canvas.addEventListener('mousemove', this.handleMouseMove);
+    window.addEventListener('resize', this.onWindowResize);
+
+    this.resize();
+    this.start();
+  }
+
+  resize() {
+    if (!this.canvas) return;
+    const parent = this.canvas.parentElement;
+    const cssW = Math.max(300, parent ? parent.clientWidth : 440);
+    const cssH = Math.max(380, parent ? parent.clientHeight : 560);
+
+    this.width = 440;
+    this.height = 580;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+
+    this.canvas.width = Math.floor(cssW * this.dpr);
+    this.canvas.height = Math.floor(cssH * this.dpr);
+    this.canvas.style.width = `{cssW}px`;
+    this.canvas.style.height = `{cssH}px`;
+
+    // Uniform fit scale
+    const scaleX = cssW / this.width;
+    const scaleY = cssH / this.height;
+    this.scale = Math.min(scaleX, scaleY);
+
+    this.offsetX = (cssW - this.width * this.scale) / 2;
+    this.offsetY = (cssH - this.height * this.scale) / 2;
+  }
+
+  start() {
+    this.stop();
+    this.lastTime = performance.now();
+    this.loop = (now) => {
+      try {
+        this.step(now);
+      } catch (err) {
+        console.error('TunisiaMapEngine frame error', err);
+      }
+      this.animId = requestAnimationFrame(this.loop);
+    };
+    this.animId = requestAnimationFrame(this.loop);
+  }
+
+  stop() {
+    if (this.animId) {
+      cancelAnimationFrame(this.animId);
+      this.animId = null;
+    }
+  }
+
+  destroy() {
+    this.stop();
+    window.removeEventListener('resize', this.onWindowResize);
+    if (this.canvas) {
+      this.canvas.removeEventListener('click', this.handleClick);
+      this.canvas.removeEventListener('mousemove', this.handleMouseMove);
+    }
+  }
+
+  // Obtenir la ville active actuelle du joueur
+  getActiveCity() {
+    const currentZone = this.engine.getCurrentZone ? this.engine.getCurrentZone() : null;
+    const currentId = (currentZone && currentZone.id) || this.engine.currentZoneId || 'tunis';
+    // Mapping direct ou par zone
+    let found = this.cities.find(c => c.id === currentId || c.themeClass === currentZone?.themeClass);
+    if (!found) {
+      if (currentId === 'bab_souika') found = this.cities.find(c => c.id === 'tunis');
+      else if (currentId === 'la_goulette') found = this.cities.find(c => c.id === 'monastir');
+      else if (currentId === 'lac_2') found = this.cities.find(c => c.id === 'sfax');
+      else if (currentId === 'hammamet') found = this.cities.find(c => c.id === 'sousse');
+      else if (currentId === 'djerba_holding') found = this.cities.find(c => c.id === 'djerba');
+    }
+    return found || this.cities[0];
+  }
+
+  isCityUnlocked(city) {
+    const totalDinars = Math.max(this.engine.lifetimeDinarsEarned || 0, this.engine.dinars || 0, this.engine.totalDinarsEarned || 0);
+    return totalDinars >= city.reqDinars;
+  }
+
+  getNextCityToUnlock() {
+    const totalDinars = Math.max(this.engine.lifetimeDinarsEarned || 0, this.engine.dinars || 0, this.engine.totalDinarsEarned || 0);
+    return this.cities.find(c => totalDinars < c.reqDinars) || null;
+  }
+
+  getCityUnlockProgress(city) {
+    const totalDinars = Math.max(this.engine.lifetimeDinarsEarned || 0, this.engine.dinars || 0, this.engine.totalDinarsEarned || 0);
+    if (totalDinars >= city.reqDinars) return 1.0;
+    return Math.min(0.99, Math.max(0, totalDinars / city.reqDinars));
+  }
+
+  // Déplacement instantané vers une ville débloquée
+  travelTo(cityId) {
+    const city = this.cities.find(c => c.id === cityId);
+    if (!city || !this.isCityUnlocked(city)) return false;
+
+    const fromCity = this.getActiveCity();
+
+    // Déclencher l'animation de caravane dorée de voyage
+    this.caravan = {
+      from: fromCity,
+      to: city,
+      startTime: performance.now(),
+      duration: 1200 // ms
+    };
+
+    // Mettre à jour la zone dans le moteur
+    if (this.engine.unlockZone) {
+      this.engine.unlockZone(city.id);
+    }
+    this.engine.currentZoneId = city.id;
+
+    if (this.onTravel) this.onTravel(city);
+    return true;
+  }
+
+  handleClick(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const clientY = e.clientY - rect.top;
+
+    // Transformation coordonnées écran -> virtuelles (viewBox 440 x 580)
+    const x = (clientX - this.offsetX) / this.scale;
+    const y = (clientY - this.offsetY) / this.scale;
+
+    // Détection de clic sur les nœuds de villes
+    for (const c of this.cities) {
+      const dist = Math.hypot(x - c.x, y - c.y);
+      if (dist <= 18) {
+        this.selectedCityId = c.id;
+        if (this.onSelect) this.onSelect(c);
+
+        // Si la ville est déjà débloquée, proposer le voyage
+        if (this.isCityUnlocked(c) && c.id !== this.getActiveCity().id) {
+          this.travelTo(c.id);
+        }
+        return;
+      }
+    }
+  }
+
+  handleMouseMove(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const clientY = e.clientY - rect.top;
+
+    const x = (clientX - this.offsetX) / this.scale;
+    const y = (clientY - this.offsetY) / this.scale;
+
+    let hovered = null;
+    for (const c of this.cities) {
+      if (Math.hypot(x - c.x, y - c.y) <= 18) {
+        hovered = c.id;
+        break;
+      }
+    }
+    this.hoverCityId = hovered;
+    this.canvas.style.cursor = hovered ? 'pointer' : 'default';
+  }
+
+  step(now) {
+    const dt = Math.min((now - (this.lastTime || now)) / 1000, 0.1);
+    this.lastTime = now;
+    const t = now / 1000;
+
+    const ctx = this.ctx;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Appliquer le facteur DPR et l'échelle uniforme avec centrage
+    ctx.scale(this.dpr, this.dpr);
+    ctx.translate(this.offsetX, this.offsetY);
+    ctx.scale(this.scale, this.scale);
+
+    // 1. Fond Méditerranée avec reflets d'eau et grille nautique
+    this.drawSeaBackground(ctx, t);
+
+    // 2. Silhouette Vectorielle Réelle de la Tunisie (Côtes, Reliefs & Chott el Djerid)
+    this.drawTunisiaLandmass(ctx, t);
+
+    // 3. Réseau des Autoroutes & Voies Commerciales Dorées animées
+    this.drawHighwaysNetwork(ctx, dt, t);
+
+    // 4. Les 14 Nœuds de Villes avec Statuts et Pulsations
+    this.drawCityNodes(ctx, t);
+
+    // 5. Animation de caravane de voyage en cours
+    this.drawCaravanAnimation(ctx, now);
+
+    // 6. Carte flottante de la ville sélectionnée
+    this.drawSelectedCityOverlay(ctx);
+  }
+
+  drawSeaBackground(ctx, t) {
+    const seaGrad = ctx.createLinearGradient(0, 0, this.width, this.height);
+    seaGrad.addColorStop(0, '#0a192f');
+    seaGrad.addColorStop(0.5, '#0f2942');
+    seaGrad.addColorStop(1, '#071526');
+    ctx.fillStyle = seaGrad;
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    // Lignes de bathymétrie & méridiens nautiques discrets
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.06)';
+    ctx.lineWidth = 1;
+    for (let x = 40; x < this.width; x += 60) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, this.height);
+      ctx.stroke();
+    }
+    for (let y = 40; y < this.height; y += 60) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(this.width, y);
+      ctx.stroke();
+    }
+
+    // Ondulations marines subtiles
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    for (let i = 0; i < 6; i++) {
+      const waveX = (i * 75 + t * 14) % this.width;
+      const waveY = 80 + i * 65 + Math.sin(t + i) * 6;
+      ctx.fillRect(waveX, waveY, 32, 1.5);
+    }
+  }
+
+  drawTunisiaLandmass(ctx, t) {
+    ctx.save();
+
+    // Ombre portée de la masse continentale
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 6;
+
+    // Dégradé topographique réaliste (Verts du Nord -> Sahelo-steppes -> Sables dorés du Sahara)
+    const landGrad = ctx.createLinearGradient(0, 40, 0, 560);
+    landGrad.addColorStop(0, '#1c4d32'); // Nord verdoyant (Bizerte, Kroumirie)
+    landGrad.addColorStop(0.22, '#285a3c'); // Plaines de la Medjerda
+    landGrad.addColorStop(0.42, '#525a34'); // Sahel et Centre (Sousse, Kairouan)
+    landGrad.addColorStop(0.65, '#785b30'); // Steppes et Sfax
+    landGrad.addColorStop(0.85, '#92632b'); // Sud et Chotts
+    landGrad.addColorStop(1.0, '#b4732a'); // Sahara et dunes de Tataouine
+
+    // Tracé fidèle des côtes et frontières de la Tunisie
+    ctx.fillStyle = landGrad;
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+
+    const coastline = [
+      [95, 70], [145, 55], [198, 40], [230, 65], [236, 100], [260, 110], [320, 92], [330, 115],
+      [295, 145], [275, 165], [268, 190], [280, 215], [305, 235], [315, 265], [300, 288],
+      [275, 320], [245, 355], [228, 395], [248, 410], [270, 425], [310, 465], [325, 485],
+      [290, 515], [230, 545], [180, 535], [150, 490], [65, 405], [60, 390], [80, 360],
+      [95, 325], [90, 270], [75, 215], [80, 170], [82, 110], [95, 70]
+    ];
+
+    coastline.forEach((pt, idx) => {
+      if (idx === 0) ctx.moveTo(pt[0], pt[1]);
+      else ctx.lineTo(pt[0], pt[1]);
+    });
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+    // ÎLE DE DJERBA (جزيرة جربة - Découpage insulaire fidèle)
+    ctx.fillStyle = '#b4732a';
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(312, 424);
+    ctx.lineTo(338, 422);
+    ctx.lineTo(348, 436);
+    ctx.lineTo(334, 452);
+    ctx.lineTo(314, 448);
+    ctx.lineTo(306, 436);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Archipel des Kerkennah (جزر قرقنة)
+    ctx.fillStyle = '#655734';
+    ctx.beginPath();
+    ctx.ellipse(320, 312, 12, 4, 0.4, 0, Math.PI * 2);
+    ctx.ellipse(334, 304, 10, 3.5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // CHOTT EL DJERID (شط الجريد - Étendue saline scintillante)
+    ctx.fillStyle = 'rgba(207, 250, 254, 0.55)';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(85, 402);
+    ctx.lineTo(145, 392);
+    ctx.lineTo(178, 408);
+    ctx.lineTo(155, 424);
+    ctx.lineTo(95, 428);
+    ctx.lineTo(75, 414);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Reflets de sel étincelant sur le Chott
+    ctx.fillStyle = '#ffffff';
+    const shimmer = Math.sin(t * 3) * 0.4 + 0.6;
+    ctx.globalAlpha = shimmer;
+    ctx.fillText('✨', 115, 414);
+    ctx.globalAlpha = 1.0;
+
+    ctx.restore();
+  }
+
+  drawHighwaysNetwork(ctx, dt, t) {
+    ctx.save();
+
+    // 1. Tracé des autoroutes dorées (Base brillante)
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+    ctx.lineWidth = 3;
+    for (const h of this.highways) {
+      const c1 = this.cities.find(c => c.id === h.from);
+      const c2 = this.cities.find(c => c.id === h.to);
+      if (!c1 || !c2) continue;
+
+      ctx.beginPath();
+      ctx.moveTo(c1.x, c1.y);
+      ctx.lineTo(c2.x, c2.y);
+      ctx.stroke();
+    }
+
+    // 2. Ligne centrale néon dorée
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1.2;
+    for (const h of this.highways) {
+      const c1 = this.cities.find(c => c.id === h.from);
+      const c2 = this.cities.find(c => c.id === h.to);
+      if (!c1 || !c2) continue;
+
+      ctx.beginPath();
+      ctx.moveTo(c1.x, c1.y);
+      ctx.lineTo(c2.x, c2.y);
+      ctx.stroke();
+    }
+
+    // 3. Particules de caravanes commerciales en mouvement
+    for (const p of this.tradeParticles) {
+      p.progress = (p.progress + dt * p.speed) % 1.0;
+      const c1 = this.cities.find(c => c.id === p.highway.from);
+      const c2 = this.cities.find(c => c.id === p.highway.to);
+      if (!c1 || !c2) continue;
+
+      const px = c1.x + (c2.x - c1.x) * p.progress;
+      const py = c1.y + (c2.y - c1.y) * p.progress;
+
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = '#fbbf24';
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  drawCityNodes(ctx, t) {
+    const activeCity = this.getActiveCity();
+    const nextCity = this.getNextCityToUnlock();
+
+    for (const c of this.cities) {
+      const isActive = activeCity && activeCity.id === c.id;
+      const isUnlocked = this.isCityUnlocked(c);
+      const isNext = nextCity && nextCity.id === c.id;
+      const isHovered = this.hoverCityId === c.id;
+
+      ctx.save();
+
+      // Rayon d'onde radar pulsante pour la ville active
+      if (isActive) {
+        const pulse1 = (t * 22) % 32;
+        const pulseAlpha1 = Math.max(0, 1 - pulse1 / 32);
+        ctx.strokeStyle = `rgba(16, 185, 129, {pulseAlpha1})`;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, 14 + pulse1, 0, Math.PI * 2);
+        ctx.stroke();
+
+        const pulse2 = ((t * 22) + 16) % 32;
+        const pulseAlpha2 = Math.max(0, 1 - pulse2 / 32);
+        ctx.strokeStyle = `rgba(245, 158, 11, {pulseAlpha2})`;
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, 14 + pulse2, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Nœud Pin de la ville
+      const pinRadius = isActive ? 16 : (isHovered ? 15 : 13);
+
+      // Ombre du Pin
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y + pinRadius + 2, pinRadius * 0.8, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Corps du Pin selon le statut
+      if (isActive) {
+        ctx.fillStyle = '#10b981'; // Vert éclatant
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 2.8;
+      } else if (isUnlocked) {
+        ctx.fillStyle = '#0284c7'; // Bleu ciel méditerranéen
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+      } else if (isNext) {
+        ctx.fillStyle = '#d97706'; // Ambre doré en cours
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2.2;
+      } else {
+        ctx.fillStyle = '#334155'; // Gris métallique verrouillé
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.5;
+      }
+
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, pinRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Arc de progression circulaire pour la prochaine ville à débloquer
+      if (isNext && !isUnlocked) {
+        const pct = this.getCityUnlockProgress(c);
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, pinRadius + 3, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct, false);
+        ctx.stroke();
+      }
+
+      // Émote / Symbole au centre du Pin
+      ctx.font = `{isActive ? 14 : 12}px sans-serif`;
+      ctx.textAlign = 'center';
+      let pinEmoji = c.icon;
+      if (!isUnlocked && !isNext) pinEmoji = '🔒';
+      ctx.fillText(pinEmoji, c.x, c.y + 4.5);
+
+      // Étiquette du nom de la ville
+      ctx.font = '900 11px "Cairo", sans-serif';
+      const nameW = ctx.measureText(c.name).width;
+
+      ctx.fillStyle = isActive ? 'rgba(6, 78, 59, 0.95)' : 'rgba(15, 23, 42, 0.88)';
+      ctx.beginPath();
+      ctx.roundRect(c.x - nameW / 2 - 5, c.y - pinRadius - 16, nameW + 10, 15, 4);
+      ctx.fill();
+      ctx.strokeStyle = isActive ? '#34d399' : (isUnlocked ? '#38bdf8' : '#64748b');
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = isActive ? '#34d399' : (isUnlocked ? '#f8fafc' : '#94a3b8');
+      ctx.fillText(c.name, c.x, c.y - pinRadius - 4.5);
+
+      // Badge "مستقر فيه" pour la ville active
+      if (isActive) {
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 8.5px "Cairo", sans-serif';
+        ctx.fillText('📍 النشيط', c.x, c.y + pinRadius + 12);
+      } else if (isNext && !isUnlocked) {
+        const pctText = Math.round(this.getCityUnlockProgress(c) * 100) + '%';
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 8.5px "Cairo", sans-serif';
+        ctx.fillText(`🔓 {pctText}`, c.x, c.y + pinRadius + 12);
+      }
+
+      ctx.restore();
+    }
+  }
+
+  drawCaravanAnimation(ctx, now) {
+    if (!this.caravan) return;
+    const elapsed = now - this.caravan.startTime;
+    const progress = Math.min(1.0, elapsed / this.caravan.duration);
+
+    const from = this.caravan.from;
+    const to = this.caravan.to;
+
+    // Position interpolée
+    const curX = from.x + (to.x - from.x) * progress;
+    const curY = from.y + (to.y - from.y) * progress;
+
+    ctx.save();
+    // Éclat doré autour du convoi
+    ctx.shadowColor = '#f59e0b';
+    ctx.shadowBlur = 14;
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(curX, curY, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🚚', curX, curY + 5);
+
+    ctx.restore();
+
+    if (progress >= 1.0) {
+      this.caravan = null;
+    }
+  }
+
+  drawSelectedCityOverlay(ctx) {
+    if (!this.selectedCityId) return;
+    const c = this.cities.find(item => item.id === this.selectedCityId);
+    if (!c) return;
+
+    const isActive = this.getActiveCity().id === c.id;
+    const isUnlocked = this.isCityUnlocked(c);
+    const pct = this.getCityUnlockProgress(c);
+
+    ctx.save();
+
+    // Boîte Popover en bas de la carte
+    const cardW = this.width - 32;
+    const cardH = 92;
+    const cardX = 16;
+    const cardY = this.height - cardH - 12;
+
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+    ctx.shadowBlur = 18;
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY, cardW, cardH, 12);
+    ctx.fill();
+
+    ctx.strokeStyle = isActive ? '#10b981' : (isUnlocked ? '#38bdf8' : '#f59e0b');
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+
+    // Titre et icône
+    ctx.font = '22px sans-serif';
+    ctx.fillText(c.icon, cardX + cardW - 28, cardY + 30);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '900 13px "Cairo", sans-serif';
+    ctx.fillText(c.fullName, cardX + cardW - 40, cardY + 24);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '700 9.5px "Cairo", sans-serif';
+    ctx.fillText(c.tagline.slice(0, 48), cardX + cardW - 12, cardY + 42);
+
+    // Boni de production
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '800 10px "Cairo", sans-serif';
+    ctx.fillText(`🎁 {c.bonusDesc}`, cardX + cardW - 12, cardY + 60);
+
+    // Bouton d'action à gauche
+    const btnW = 105;
+    const btnH = 30;
+    const btnX = cardX + 12;
+    const btnY = cardY + 48;
+
+    if (isActive) {
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+      ctx.beginPath();
+      ctx.roundRect(btnX, btnY, btnW, btnH, 8);
+      ctx.fill();
+      ctx.strokeStyle = '#10b981';
+      ctx.stroke();
+
+      ctx.fillStyle = '#34d399';
+      ctx.textAlign = 'center';
+      ctx.font = '900 10.5px "Cairo", sans-serif';
+      ctx.fillText('أنت هنا حالياً 🇹🇳', btnX + btnW / 2, btnY + 19);
+    } else if (isUnlocked) {
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.roundRect(btnX, btnY, btnW, btnH, 8);
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.font = '900 10.5px "Cairo", sans-serif';
+      ctx.fillText('🚀 سافر الآن', btnX + btnW / 2, btnY + 19);
+    } else {
+      ctx.fillStyle = '#334155';
+      ctx.beginPath();
+      ctx.roundRect(btnX, btnY, btnW, btnH, 8);
+      ctx.fill();
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.textAlign = 'center';
+      ctx.font = '900 9.5px "Cairo", sans-serif';
+      ctx.fillText(`🔒 {Math.round(pct * 100)}% جاهز`, btnX + btnW / 2, btnY + 19);
+    }
 
     ctx.restore();
   }

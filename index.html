@@ -1347,11 +1347,19 @@
       cursor: not-allowed;
     }
 
-    /* THEMES DE QUARTIER TUNISIEN */
-    body.zone-bab-souika { background-image: radial-gradient(circle at 50% -10%, #311515 0%, #070a12 75%); }
-    body.zone-la-goulette { background-image: radial-gradient(circle at 50% -10%, #0c2a38 0%, #070a12 75%); }
-    body.zone-lac-2 { background-image: radial-gradient(circle at 50% -10%, #1e1b4b 0%, #070a12 75%); }
-    body.zone-hammamet { background-image: radial-gradient(circle at 50% -10%, #2e260c 0%, #070a12 75%); }
+    /* THEMES DE QUARTIER ET VILLES TUNISIENNES */
+    body.zone-bab-souika, body.zone-tunis { background-image: radial-gradient(circle at 50% -10%, #311515 0%, #070a12 75%); }
+    body.zone-la-goulette, body.zone-bizerte { background-image: radial-gradient(circle at 50% -10%, #0c2a38 0%, #070a12 75%); }
+    body.zone-lac-2, body.zone-sousse { background-image: radial-gradient(circle at 50% -10%, #1e1b4b 0%, #070a12 75%); }
+    body.zone-hammamet, body.zone-monastir { background-image: radial-gradient(circle at 50% -10%, #2e260c 0%, #070a12 75%); }
+    body.zone-beja { background-image: radial-gradient(circle at 50% -10%, #14351b 0%, #070a12 75%); }
+    body.zone-le-kef { background-image: radial-gradient(circle at 50% -10%, #2b1f13 0%, #070a12 75%); }
+    body.zone-kairouan { background-image: radial-gradient(circle at 50% -10%, #30172e 0%, #070a12 75%); }
+    body.zone-sfax { background-image: radial-gradient(circle at 50% -10%, #132438 0%, #070a12 75%); }
+    body.zone-gafsa { background-image: radial-gradient(circle at 50% -10%, #2e1d13 0%, #070a12 75%); }
+    body.zone-tozeur { background-image: radial-gradient(circle at 50% -10%, #3b2a0c 0%, #070a12 75%); }
+    body.zone-gabes { background-image: radial-gradient(circle at 50% -10%, #0c3330 0%, #070a12 75%); }
+    body.zone-medenine { background-image: radial-gradient(circle at 50% -10%, #2f1d2a 0%, #070a12 75%); }
     body.zone-djerba { background-image: radial-gradient(circle at 50% -10%, #31104b 0%, #070a12 75%); }
 
     /* --- MODAL IMMERSIVE PROJET : SCÈNE PLEIN POPUP + HUD EN SUPERPOSITION --- */
@@ -2168,6 +2176,52 @@
       80% { opacity: 1; transform: translateY(-24px) scale(1); }
       100% { opacity: 0; transform: translateY(-34px) scale(0.9); }
     }
+  
+    /* CARTE GÉOGRAPHIQUE VECTORIELLE DE LA TUNISIE */
+    .tunisia-map-card {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+    }
+    .tunisia-map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tunisia-map-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      background: radial-gradient(circle at center, #0f2942 0%, #0a192f 100%);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tunisia-map-canvas-wrap canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: manipulation;
+    }
+    @media (max-width: 480px) {
+      .tunisia-map-canvas-wrap {
+        height: 400px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -2309,10 +2363,25 @@
 
     <!-- PANNEAU 3 : CONQUÊTE DES QUARTIERS ET VILLES TUNISIENNES -->
     <div class="tab-content-panel" id="panelZones">
-      <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #94a3b8; text-align: right;">
-        🗺️ <b>خريطة تونس :</b> افتح أحياء جديدة، كل حيّ عنده بونيس خاص ومحيط يعيّشك في قلب البلاد !
+      <!-- CARTE GÉOGRAPHIQUE VECTORIELLE DE LA TUNISIE (14 VILLES & ROUTES COMMERCIALES) -->
+      <div class="tunisia-map-card">
+        <div class="tunisia-map-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 22px;">🗺️</span>
+            <div style="text-align: right;">
+              <div style="font-weight: 900; font-size: 14.5px; color: #f8fafc; line-height: 1.4;">خريطة الجمهورية التونسية والاستثمار الوطني</div>
+              <div style="font-size: 11px; color: #94a3b8; line-height: 1.4;">14 مدينة كبرى، مسالك تجارية ذهبية وبونيس جهوي لكل ولاية</div>
+            </div>
+          </div>
+          <div id="mapActiveCityBadge" class="badge-tn">تونس العاصمة 🇹🇳</div>
+        </div>
+        <div class="tunisia-map-canvas-wrap" id="tunisiaMapCanvasWrap">
+          <canvas id="tunisiaMapCanvas"></canvas>
+        </div>
       </div>
-      <div id="zonesListContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+      <!-- LISTE DES VILLES ET QUARTIERS -->
+      <div id="zonesListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; margin-top: 10px;"></div>
     </div>
 
     <!-- PANNEAU 4 : بطولة تجار تونس وصابة الأسبوع والتحديات -->
@@ -2579,6 +2648,51 @@
                 <strong class="stat-value" id="statPrestigeCount">0</strong>
               </div>
             </div>
+            <div class="settings-stat-card" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
+              <div class="stat-icon">🧾</div>
+              <div class="stat-info">
+                <span class="stat-label">المصاريف والأداءات المدفوعة</span>
+                <strong class="stat-value" id="statTotalExpenses" style="color:#f87171;">0 د.ت</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bloc 2 bis - المصاريف الجارية والتكاليف الدورية (Dépenses & Charges réelles) -->
+        <section class="settings-section" style="border-color: rgba(245, 158, 11, 0.35);">
+          <div class="settings-sec-title" style="color: #fde68a;">💼 المصاريف الجارية والأداءات (دورة كل 60 ثانية)</div>
+          <div style="font-size: 11px; color: #94a3b8; line-height: 1.4; margin-bottom: 8px;">
+            نظام محاسباتي تونسي واقعي : مصاريف خفيفة متوازنة (حوالي 12% من المداخيل) تسحب بانتظام من غير ما تعطّل نموّ المشاريع.
+          </div>
+          <div class="settings-stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 6px;">
+            <div class="settings-stat-card" style="padding: 6px 8px;">
+              <div class="stat-icon" style="font-size: 16px;">👥</div>
+              <div class="stat-info">
+                <span class="stat-label">شهريات الخدّامة</span>
+                <strong class="stat-value" id="expSalariesVal" style="font-size: 12px; color: #fca5a5;">0.00 د.ت</strong>
+              </div>
+            </div>
+            <div class="settings-stat-card" style="padding: 6px 8px;">
+              <div class="stat-icon" style="font-size: 16px;">🔧</div>
+              <div class="stat-info">
+                <span class="stat-label">صيانة وتصليح الماتريال</span>
+                <strong class="stat-value" id="expMaintVal" style="font-size: 12px; color: #fca5a5;">0.00 د.ت</strong>
+              </div>
+            </div>
+            <div class="settings-stat-card" style="padding: 6px 8px;">
+              <div class="stat-icon" style="font-size: 16px;">💡</div>
+              <div class="stat-info">
+                <span class="stat-label">فواتير الستاغ والصوناد</span>
+                <strong class="stat-value" id="expUtilitiesVal" style="font-size: 12px; color: #fca5a5;">0.00 د.ت</strong>
+              </div>
+            </div>
+            <div class="settings-stat-card" style="padding: 6px 8px;">
+              <div class="stat-icon" style="font-size: 16px;">🏛️</div>
+              <div class="stat-info">
+                <span class="stat-label">القباضة والأداءات</span>
+                <strong class="stat-value" id="expTaxesVal" style="font-size: 12px; color: #fca5a5;">0.00 د.ت</strong>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -2638,7 +2752,8 @@
         </div>
         <div class="biz-hud-stats">
           <div class="biz-chip"><span class="biz-chip-k">💵 الرصيد</span><b id="bizBalance">0.00</b></div>
-          <div class="biz-chip"><span class="biz-chip-k">💰 / كليان</span><b id="bizDetailIncome">+0.00 د.ت</b></div>
+          <div class="biz-chip"><span class="biz-chip-k">💰 / حريف</span><b id="bizDetailIncome">+0.00 د.ت</b></div>
+          <div class="biz-chip" style="border-color: rgba(52, 211, 153, 0.4);"><span class="biz-chip-k">🌿 صافي المربوح</span><b id="bizDetailNetRate" style="color:#34d399;">100% بعد المصاريف</b></div>
           <div class="biz-chip"><span class="biz-chip-k">⚡ الوتيرة</span><b id="bizDetailRate">+0.00 د.ت / ث</b></div>
         </div>
         <button class="biz-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
@@ -2658,10 +2773,10 @@
             <div class="biz-drawer-hint">جوّ المحلّ والإقبال الحيني :</div>
             <div id="bizDetailCrowdLevel" class="biz-crowd">الحانوت معبي للكرومة 🔥</div>
             <div class="biz-activity-row">
-              <div>👥 كليونات/دقيقة : <b id="bizDetailCustomersRate" style="color:#38bdf8;">14</b></div>
+              <div>👥 حرفاء/دقيقة : <b id="bizDetailCustomersRate" style="color:#38bdf8;">14</b></div>
               <div>⭐ نسبة الرضا : <b id="bizDetailSatisfaction" style="color:#34d399;">96%</b></div>
             </div>
-            <div class="biz-ticker" id="bizDetailLiveTicker">💬 كليان دخل يطلب... الكاسة تسجّل في المرابيح !</div>
+            <div class="biz-ticker" id="bizDetailLiveTicker">💬 حريف دخل يطلب... صافي المربوح بعد المصاريف يتسجّل في الكاسة !</div>
           </div>
         </div>
       </div>
@@ -2743,7 +2858,7 @@
           <span style="font-size: 26px;">👔</span>
           <div>
             <div style="font-size: 12px; font-weight: 900; color: #38bdf8;">2. ادخل للمحلّ وخدّم الصنّاع</div>
-            <div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.35;">انزل على <b>«🏪 ادخل»</b> على أي بناية باش تشوف الخدّامة والكليونات وتنتدب معلّمية يخدموا وحدهم !</div>
+            <div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.35;">انزل على <b>«🏪 ادخل»</b> على أي بناية باش تشوف الخدّامة والحرفاء وتنتدب معلّمية يخدموا وحدهم !</div>
           </div>
         </div>
 
@@ -2811,7 +2926,7 @@
     import { TycoonEngine } from './engine.js';
     import { soundEngine } from './audio.js';
     import { AdsService } from './ads_service.js';
-    import { CanvasStoreEngine, QuartierAnimator } from './store_animator.js';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -3349,7 +3464,7 @@
 
           <div class="biz-controls">
             <button class="btn-game btn-serve" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
-              ${biz.hasManager ? '⚡ يخدم وحدو' : '<span>سربّي الكليونات !</span> ⚡'}
+              ${biz.hasManager ? '⚡ يخدم وحدو' : '<span>سربّي الحرفاء !</span> ⚡'}
             </button>
             <button class="btn-game btn-upgrade ${canAfford ? 'can-afford' : ''}" id="buy-${biz.id}">
               ${buyLabel}
@@ -3493,7 +3608,10 @@
       if (panelLeague) panelLeague.classList.toggle('active', tabName === 'league');
 
       if (tabName === 'tactics') renderTacticalUpgradesUI();
-      if (tabName === 'zones') renderZonesUI();
+      if (tabName === 'zones') {
+        renderZonesUI();
+        initTunisiaMap();
+      }
       if (tabName === 'league') renderLeagueTabUI();
     }
 
@@ -3710,6 +3828,29 @@
       }
     }
 
+    
+    let tunisiaMap = null;
+    function initTunisiaMap() {
+      const mapCanvas = document.getElementById('tunisiaMapCanvas');
+      if (!mapCanvas) return;
+      if (!tunisiaMap) {
+        tunisiaMap = new TunisiaMapEngine(mapCanvas, engine, {
+          onTravel: (city) => {
+            applyZoneTheme();
+            renderZonesUI();
+            if (window.soundFX && window.soundFX.playCoin) window.soundFX.playCoin();
+            showFeedbackToast(`✈️ مرحباً بك في ${city.name} ! تم تفعيل البونيس الجهوي بنجاح.`);
+          },
+          onSelect: (city) => {
+            const badge = document.getElementById('mapActiveCityBadge');
+            if (badge) badge.innerText = `${city.name} 🇹🇳`;
+          }
+        });
+      } else {
+        tunisiaMap.resize();
+      }
+    }
+
     function renderZonesUI() {
       if (!zonesListContainer) return;
       zonesListContainer.innerHTML = '';
@@ -3718,7 +3859,8 @@
 
       zones.forEach(z => {
         const isCurrent = z.id === current.id;
-        const canUnlock = engine.prestigeLevel >= z.minPrestige && (engine.lifetimeDinarsEarned >= z.reqDinars || engine.totalDinarsEarned >= z.reqDinars);
+        const isUnlocked = engine.unlockedCityIds ? engine.unlockedCityIds.includes(z.id) : (isCurrent || false);
+        const canUnlock = engine.checkCityUnlockCriteria ? engine.checkCityUnlockCriteria(z.id) : (engine.prestigeLevel >= z.minPrestige && (engine.lifetimeDinarsEarned >= z.reqDinars || engine.totalDinarsEarned >= z.reqDinars));
 
         const card = document.createElement('div');
         card.className = `tactical-upg-card ${isCurrent ? 'bought' : ''}`;
@@ -3728,17 +3870,27 @@
             <div style="display: flex; align-items: center; gap: 6px;">
               <span style="font-weight: 900; font-size: 14px; color: #f8fafc;">${z.name}</span>
               ${isCurrent ? '<span style="font-size: 10px; background: #10b981; color: white; padding: 1px 6px; border-radius: 6px; font-weight: 900;">مستقرّ فيه حالياً</span>' : ''}
+              ${!isCurrent && isUnlocked ? '<span style="font-size: 10px; background: #3b82f6; color: white; padding: 1px 6px; border-radius: 6px; font-weight: 900;">مفتوح ✓</span>' : ''}
             </div>
             <div style="font-size: 11px; color: #94a3b8; margin: 2px 0;">${z.tagline}</div>
             <div style="font-size: 11px; font-weight: 800; color: #38bdf8;">🎁 ${z.bonusDesc}</div>
+            ${!isUnlocked && z.criteriaDesc ? `<div style="font-size: 10px; font-weight: 700; color: #fbbf24; margin-top: 2px;">🔒 الشرط : ${z.criteriaDesc}</div>` : ''}
           </div>
           <div>
             ${isCurrent ? `
               <div style="font-size: 11px; font-weight: 900; color: #34d399;">نشيط ✓</div>
-            ` : `
-              <button class="upg-buy-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" id="zone-move-${z.id}">
-                🚀 زُر الحيّ
+            ` : isUnlocked ? `
+              <button class="upg-buy-btn" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);" id="zone-move-${z.id}">
+                ✈️ سافر للولاية
               </button>
+            ` : canUnlock ? `
+              <button class="upg-buy-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" id="zone-move-${z.id}">
+                🚀 افتح (${z.costDinars ? z.costDinars.toLocaleString() + ' د.ت' : 'مجاناً'})
+              </button>
+            ` : `
+              <div style="font-size: 10px; font-weight: 900; color: #ef4444; text-align: center; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 4px 8px;">
+                🔒 مقفول
+              </div>
             `}
           </div>
         `;
@@ -3747,15 +3899,14 @@
         const moveBtn = card.querySelector(`#zone-move-${z.id}`);
         if (moveBtn) {
           moveBtn.onclick = () => {
-            if (!engine.unlockZone(z.id)) {
-              engine.currentZoneId = z.id;
+            if (engine.unlockCity ? engine.unlockCity(z.id) : engine.unlockZone(z.id)) {
+              soundEngine.playMilestoneFanfare();
+              applyZoneTheme();
+              renderZonesUI();
+              renderDOM();
+              switchTab('businesses');
+              showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, `انتقلت بنجاح وتفعلت مميزات الولاية :`, z.bonusDesc);
             }
-            soundEngine.playMilestoneFanfare();
-            applyZoneTheme();
-            renderZonesUI();
-            renderDOM();
-            switchTab('businesses');
-            showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, `انتقلت إلى الحيّ واستكشفت مشاريعه الخاصة :`, z.bonusDesc);
           };
         }
       });
@@ -3769,17 +3920,21 @@
 
       zones.forEach(z => {
         const isCurrent = z.id === current.id;
-        const canUnlock = engine.prestigeLevel >= z.minPrestige && (engine.lifetimeDinarsEarned >= z.reqDinars || engine.totalDinarsEarned >= z.reqDinars);
+        const isUnlocked = engine.unlockedCityIds ? engine.unlockedCityIds.includes(z.id) : (isCurrent || false);
+        const canUnlock = engine.checkCityUnlockCriteria ? engine.checkCityUnlockCriteria(z.id) : (engine.prestigeLevel >= z.minPrestige && (engine.lifetimeDinarsEarned >= z.reqDinars || engine.totalDinarsEarned >= z.reqDinars));
         const item = document.createElement('div');
-        item.style.cssText = `background: rgba(15,23,42,0.85); border: 1px solid ${isCurrent ? '#10b981' : 'rgba(255,255,255,0.1)'}; border-radius: 9px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; direction: rtl; text-align: right;`;
+        item.style.cssText = `background: rgba(15,23,42,0.85); border: 1px solid ${isCurrent ? '#10b981' : isUnlocked ? '#3b82f6' : 'rgba(255,255,255,0.1)'}; border-radius: 9px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; direction: rtl; text-align: right;`;
         item.innerHTML = `
           <div>
             <div style="font-weight: 900; color: #f8fafc; font-size: 11.5px; line-height: 1.15;">${z.icon} ${z.name}</div>
             <div style="font-size: 9.5px; color: #38bdf8; line-height: 1.1;">${z.bonusDesc}</div>
+            ${!isUnlocked && z.criteriaDesc ? `<div style="font-size: 8.5px; color: #fbbf24; line-height: 1.1;">🔒 ${z.criteriaDesc}</div>` : ''}
           </div>
           <div>
-            ${isCurrent ? '<span style="font-size: 10px; font-weight: 900; color: #34d399;">الحيّ الحالي</span>' : canUnlock ? `
-              <button class="upg-buy-btn" style="padding: 3px 8px; font-size: 9.5px;" id="modal-zone-move-${z.id}">انقل 🚀</button>
+            ${isCurrent ? '<span style="font-size: 10px; font-weight: 900; color: #34d399;">الحالي</span>' : (isUnlocked || canUnlock) ? `
+              <button class="upg-buy-btn" style="padding: 3px 8px; font-size: 9.5px; ${isUnlocked ? 'background: #3b82f6;' : ''}" id="modal-zone-move-${z.id}">
+                ${isUnlocked ? 'سافر ✈️' : 'افتح 🚀'}
+              </button>
             ` : '<span style="font-size: 9.5px; color: #ef4444;">🔒 مقفول</span>'}
           </div>
         `;
@@ -3788,12 +3943,12 @@
         const moveBtn = item.querySelector(`#modal-zone-move-${z.id}`);
         if (moveBtn) {
           moveBtn.onclick = () => {
-            if (engine.unlockZone(z.id)) {
+            if (engine.unlockCity ? engine.unlockCity(z.id) : engine.unlockZone(z.id)) {
               soundEngine.playMilestoneFanfare();
               applyZoneTheme();
               zonesModal.classList.remove('active');
               renderDOM();
-              showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, 'انتقلت بنجاح وتفعل البونيس الخاص :', z.bonusDesc);
+              showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, 'انتقلت بنجاح وتفعلت مميزات الولاية :', z.bonusDesc);
             }
           };
         }
@@ -3986,6 +4141,11 @@
     const statTotalManagers = document.getElementById('statTotalManagers');
     const statLifetimeDinars = document.getElementById('statLifetimeDinars');
     const statPrestigeCount = document.getElementById('statPrestigeCount');
+    const statTotalExpenses = document.getElementById('statTotalExpenses');
+    const expSalariesVal = document.getElementById('expSalariesVal');
+    const expMaintVal = document.getElementById('expMaintVal');
+    const expUtilitiesVal = document.getElementById('expUtilitiesVal');
+    const expTaxesVal = document.getElementById('expTaxesVal');
     const settingsSoundToggle = document.getElementById('settingsSoundToggle');
     const hardResetInitBtn = document.getElementById('hardResetInitBtn');
     const hardResetConfirmBox = document.getElementById('hardResetConfirmBox');
@@ -4005,6 +4165,14 @@
       if (statTotalManagers) statTotalManagers.innerText = `${stats.totalManagersHired}`;
       if (statLifetimeDinars) statLifetimeDinars.innerHTML = formatCurrency(stats.lifetimeDinars, 0);
       if (statPrestigeCount) statPrestigeCount.innerText = `${stats.prestigeCount}`;
+      if (statTotalExpenses) statTotalExpenses.innerHTML = formatCurrency(stats.totalExpensesPaid || 0, 0);
+
+      if (stats.expensesSummary) {
+        if (expSalariesVal) expSalariesVal.innerHTML = formatCurrency(stats.expensesSummary.salaries || 0);
+        if (expMaintVal) expMaintVal.innerHTML = formatCurrency(stats.expensesSummary.maintenance || 0);
+        if (expUtilitiesVal) expUtilitiesVal.innerHTML = formatCurrency(stats.expensesSummary.utilities || 0);
+        if (expTaxesVal) expTaxesVal.innerHTML = formatCurrency(stats.expensesSummary.taxes || 0);
+      }
 
       if (settingsSoundToggle) {
         settingsSoundToggle.innerText = soundEngine.enabled ? '🔊 مشعول' : '🔇 مطفي';
@@ -4163,10 +4331,10 @@
       const deltaRev = Math.max(0, nextRev - currentRev);
       const milestone = engine.getBusinessMilestones ? engine.getBusinessMilestones(biz) : { nextLevel: null, nextMultiplier: 1 };
 
-      if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / كليان`;
+      if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / حريف`;
       if (bizDetailRate) bizDetailRate.innerHTML = `+${formatCurrency(detail.dinarsPerSecond)}/ث`;
       if (bizDetailNextLvlText) bizDetailNextLvlText.innerText = `المستوى ${biz.level + 1}`;
-      if (bizDetailNextGain) bizDetailNextGain.innerHTML = `+${formatCurrency(deltaRev)} مربوح إضافي مع كل كليان`;
+      if (bizDetailNextGain) bizDetailNextGain.innerHTML = `+${formatCurrency(deltaRev)} مربوح إضافي مع كل حريف`;
 
       if (bizDetailMilestoneHint) {
         if (milestone.nextLevel) {
@@ -4258,8 +4426,8 @@
       if (bizDetailSatisfaction) bizDetailSatisfaction.innerText = `${detail.satisfactionPct}%`;
       if (bizDetailLiveTicker) {
         const sampleQuotes = [
-          `💬 زبون دخل يطلب بالوقت... الكاسة تخدم ومريڤلة !`,
-          `💬 تفتوفة باهية من طاولة كليونات راضيين على السرفيس.`,
+          `💬 حريف دخل يطلب بالوقت... الكاسة تخدم ومريڤلة !`,
+          `💬 تفتوفة باهية من طاولة حرفاء راضيين على السرفيس.`,
           `💬 الإقبال ممتاز والسلعة طازة ماشية بالباهي.`
         ];
         bizDetailLiveTicker.innerText = sampleQuotes[Math.floor(Math.random() * sampleQuotes.length)];
