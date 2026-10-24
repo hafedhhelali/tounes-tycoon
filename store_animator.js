@@ -382,6 +382,7 @@ export class CanvasStoreEngine {
       ctx.font = '11px sans-serif';
       ctx.fillText('♠️♥️', w - 60, 68);
     } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
+      // Étagères d'ingrédients authentiques (baguettes de pain chaud, thon, olives, fromage)
       ctx.fillStyle = '#854d0e';
       ctx.fillRect(105, 50, w - 125, 6);
       ctx.fillStyle = '#a16207';
@@ -389,27 +390,31 @@ export class CanvasStoreEngine {
       ctx.font = '16px serif';
       for (let x = 118; x < w - 25; x += 34) {
         ctx.fillText('🥖', x, 48);
-        ctx.fillText('🌶️', x, 84);
+        ctx.fillText('🥚', x, 84);
       }
+
+      // Ardoise menu du casse-croûte tunisien
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(48, 34, 46, 48);
+      ctx.fillRect(46, 32, 50, 50);
       ctx.strokeStyle = '#ca8a04';
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(48, 34, 46, 48);
+      ctx.strokeRect(46, 32, 50, 50);
       ctx.fillStyle = '#fde047';
       ctx.font = 'bold 9px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('عياري حار', 71, 48);
+      ctx.fillText('كسكروت تونسي', 71, 46);
       ctx.font = '8px sans-serif';
       ctx.fillStyle = '#38bdf8';
-      ctx.fillText('4.5 DT', 71, 62);
-      ctx.fillText('تن وعظام 🔥', 71, 74);
+      ctx.fillText('تنّ وزيتون', 71, 59);
+      ctx.fillStyle = '#34d399';
+      ctx.fillText('عظام مروبة ✨', 71, 72);
       ctx.textAlign = 'left';
 
+      // Bocaux et ingrédients nobles (olives, câpres, huile d'olive)
       ctx.font = '14px serif';
-      ctx.fillText('🌶️', w - 40, 42);
-      ctx.fillText('🌶️', w - 40, 58);
-      ctx.fillText('🧄', w - 40, 74);
+      ctx.fillText('🫒', w - 40, 44);
+      ctx.fillText('🥫', w - 40, 60);
+      ctx.fillText('🥖', w - 40, 76);
     } else if (bizId === 'patisserie') {
       ctx.fillStyle = '#581c87';
       ctx.fillRect(105, 50, w - 125, 6);
@@ -524,9 +529,10 @@ export class CanvasStoreEngine {
     // Plaque dorée gravée au nom du commerce
     const bizRef = this.getBiz();
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 9.5px "Cairo", sans-serif';
+    ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(bizRef ? (bizRef.name.length > 16 ? bizRef.name.slice(0, 16) : bizRef.name) : '', counterX + deskW / 2, counterY + 40);
+    const plateText = bizRef ? (bizRef.name.length > 14 ? bizRef.name.slice(0, 14) + '..' : bizRef.name) : '';
+    ctx.fillText(plateText, counterX + deskW / 2, counterY + 38);
 
     // Icône du projet sur le comptoir
     ctx.font = '20px sans-serif';
@@ -1397,6 +1403,7 @@ export class QuartierAnimator {
     // Entities
     this.pedestrians = [];
     this.taxis = [];
+    this.cats = [];
     this.clouds = [];
     this.floatingCoins = [];
     this.smokePuffs = [];
@@ -1405,8 +1412,8 @@ export class QuartierAnimator {
     this.interactiveHitboxes = [];
 
     this.bizTemplates = {
-      kaskrout: { id: 'kaskrout', width: 145, height: 115, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
-      fricasse: { id: 'fricasse', width: 140, height: 118, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
+      kaskrout: { id: 'kaskrout', width: 155, height: 120, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
+      fricasse: { id: 'fricasse', width: 155, height: 122, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
       kahwa: { id: 'kahwa', width: 170, height: 132, style: 'cafe_terrasse', color: '#eab308', roofColor: '#1e3a8a' },
       attariya: { id: 'attariya', width: 155, height: 128, style: 'attariya_shop', color: '#10b981', roofColor: '#047857' },
       patisserie: { id: 'patisserie', width: 165, height: 138, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
@@ -1644,6 +1651,14 @@ export class QuartierAnimator {
       { x: 250, y: 40, speed: 28, wingPhase: 0 },
       { x: 900, y: 55, speed: 22, wingPhase: 1 }
     ];
+
+    // Petits chats tunisiens de quartier qui se baladent
+    this.cats = [
+      { x: 180, speed: 12, dir: 1, color: '#f59e0b', earColor: '#ea580c' },
+      { x: 620, speed: 14, dir: -1, color: '#ffffff', earColor: '#e2e8f0' },
+      { x: 1100, speed: 10, dir: 1, color: '#0f172a', earColor: '#334155' },
+      { x: 1650, speed: 15, dir: -1, color: '#f97316', earColor: '#c2410c' }
+    ];
   }
 
   transitionToZone(zoneId, zoneName) {
@@ -1824,6 +1839,12 @@ export class QuartierAnimator {
       }
     });
 
+    this.cats.forEach(c => {
+      c.x += c.speed * c.dir * dt;
+      if (c.x < 20) { c.x = 20; c.dir = 1; }
+      if (c.x > this.worldWidth - 20) { c.x = this.worldWidth - 20; c.dir = -1; }
+    });
+
     if (Math.random() < dt * 10) {
       this.smokePuffs.push({
         x: 120 + (Math.random() - 0.5) * 16,
@@ -1988,6 +2009,13 @@ export class QuartierAnimator {
       const screenX = p.x - camX;
       if (screenX > -50 && screenX < w + 50) {
         this.drawPedestrian(ctx, screenX, groundY + 12 + p.yOffset * 0.6, p, timestamp);
+      }
+    });
+
+    this.cats.forEach(c => {
+      const screenX = c.x - camX;
+      if (screenX > -30 && screenX < w + 30) {
+        this.drawCat(ctx, screenX, groundY + 14, c, timestamp);
       }
     });
 
@@ -2328,37 +2356,52 @@ export class QuartierAnimator {
     // Drapeau tunisien au sommet
     this.drawTunisianFlag(ctx, x + b.width - 24, y - 10, timestamp);
 
-    // Enseigne du magasin au-dessus de la porte avec petite mention discrète du niveau à côté
+    // Enseigne du magasin avec badge de niveau TRÈS VISIBLE et contrasté
+    const signW = b.width - 16;
+    const signH = 24;
+    const signX = x + 8;
+    const signY = y + 22;
+
+    // Fond enseigne
     ctx.save();
     if (hasNeonSign) {
       ctx.shadowColor = '#38bdf8';
       ctx.shadowBlur = 8;
     }
-    const signW = b.width - 16;
-    const signH = 22;
-    const signX = x + 8;
-    const signY = y + 22;
-
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
     ctx.beginPath();
     ctx.roundRect(signX, signY, signW, signH, 6);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
     ctx.stroke();
     ctx.restore();
 
-    // Nom du projet centré
+    // Badge Niveau TRÈS VISIBLE (Pastille brillante contrastée à gauche)
+    const lvlW = 30;
+    const lvlH = 16;
+    const lvlX = signX + 4;
+    const lvlY = signY + 4;
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.roundRect(lvlX, lvlY, lvlW, lvlH, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 9.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('L' + level, lvlX + lvlW / 2, lvlY + 11.5);
+
+    // Titre du projet calé avec précision pour ne JAMAIS déborder
+    const titleAvailW = signW - lvlW - 14;
+    const titleCenterX = signX + lvlW + 6 + titleAvailW / 2;
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 10.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(biz.icon + ' ' + biz.name, signX + signW / 2, signY + 15);
-
-    // Petite mention discrète et élégante du niveau à côté sur l'enseigne
-    ctx.fillStyle = '#38bdf8';
-    ctx.font = '900 8.5px "Cairo", sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('L' + level, signX + 5, signY + 15);
+    const bizDisplayName = (biz.name.length > 15) ? biz.name.slice(0, 15) : biz.name;
+    ctx.fillText(biz.icon + ' ' + bizDisplayName, titleCenterX, signY + 16);
 
     // --- PORTE TRADITIONNELLE ÉLÉGANTE ET BIEN PROPORTIONNÉE ---
     const doorW = Math.min(36, b.width * 0.32);
@@ -2432,9 +2475,9 @@ export class QuartierAnimator {
     ctx.arc(doorX + doorW * 0.65, doorY + doorH * 0.6, 3, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 4. Balcon en fer forgé / Moucharabieh à l'étage supérieur (درابزين حديد مشغّل زلابية)
-    const balcY = y + 48;
-    if (doorY - balcY >= 18) {
+    // 4. Balcon en fer forgé / Moucharabieh à l'étage supérieur (uniquement si espace suffisant)
+    const balcY = y + 54;
+    if (doorY - balcY >= 28 && bHeight >= 135) {
       const balcW = Math.min(b.width - 26, 68);
       const balcX = x + (b.width - balcW) / 2;
       const balcH = 14;
@@ -2460,19 +2503,29 @@ export class QuartierAnimator {
       }
     }
 
-    // Barre de progression du cycle de production
-    const barW = b.width - 24;
-    const barH = 5;
-    const barX = x + 12;
-    const barY = groundY - 36;
+    // Barre de progression du cycle de production : petite barre flottante au-dessus du bâtiment
+    const barW = Math.min(b.width - 24, 72);
+    const barH = 4;
+    const barX = x + (b.width - barW) / 2;
+    const barY = y - 6;
     const pct = Math.min(1, (biz.progressMs || 0) / (biz.cycleDurationMs || 1000));
 
-    ctx.fillStyle = '#090d16';
-    ctx.fillRect(barX, barY, barW, barH);
+    ctx.save();
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.beginPath();
+    ctx.roundRect(barX - 1.5, barY - 1.5, barW + 3, barH + 3, 3);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
     if (pct > 0) {
-      ctx.fillStyle = '#fbbf24';
-      ctx.fillRect(barX, barY, barW * pct, barH);
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barW * pct, barH, 2);
+      ctx.fill();
     }
+    ctx.restore();
 
     // Interaction épurée et authentique :
     // 1. Clic sur la porte tunisienne cloutée -> Entrer dans le projet
@@ -2881,46 +2934,54 @@ export class QuartierAnimator {
     ctx.textAlign = 'center';
     ctx.fillText(`🪧 ${cItem.streetName}`, signX + signW / 2, signY + 14);
 
-    // 5. Panneaux de voyage épurés : UNIQUEMENT LE NOM DE LA VILLE (zéro débordement)
-    const signs = [];
-    if (cItem.nextZoneId && cItem.nextZoneLabel) signs.push({ id: cItem.nextZoneId, label: `⬅️ ${cItem.nextZoneLabel}`, c0: '#047857', c1: '#064e3b', edge: '#6ee7b7', glow: '#10b981' });
-    if (cItem.prevZoneId && cItem.prevZoneLabel) signs.push({ id: cItem.prevZoneId, label: `${cItem.prevZoneLabel} ➡️`, c0: '#1d4ed8', c1: '#1e3a8a', edge: '#93c5fd', glow: '#3b82f6' });
-    signs.forEach((s, i) => {
-      const dirW = Math.min(w - 10, 115);
-      const dirH = 22;
-      const dirX = x + (w - dirW) / 2;
-      const dirY = groundY - 52 - i * 26;
+    // 5. Panneau autoroutier 3D UNIQUE, élégant et sans aucun chevauchement
+    // Chaque carrefour mène vers une seule destination claire (la ville suivante)
+    const targetCityLabel = cItem.nextZoneLabel || cItem.prevZoneLabel || 'تونس';
+    const targetCityId = cItem.nextZoneId || cItem.prevZoneId || 'tunis';
 
-      // Halo d'attraction
-      ctx.save();
-      ctx.shadowColor = s.glow;
-      ctx.shadowBlur = 6;
+    const dirW = Math.min(w - 14, 112);
+    const dirH = 25;
+    const dirX = x + (w - dirW) / 2;
+    const dirY = groundY - 58;
 
-      const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
-      signGrad.addColorStop(0, s.c0);
-      signGrad.addColorStop(1, s.c1);
-      ctx.fillStyle = signGrad;
-      ctx.strokeStyle = s.edge;
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.roundRect(dirX, dirY, dirW, dirH, 8);
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
+    ctx.save();
+    // Effet 3D : ombre portée biseautée
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.beginPath();
+    ctx.roundRect(dirX + 2, dirY + 3, dirW, dirH, 6);
+    ctx.fill();
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 10.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(s.label, dirX + dirW / 2, dirY + 17.5);
+    // Dégradé autoroutier vert émeraude 3D
+    const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
+    signGrad.addColorStop(0, '#059669');
+    signGrad.addColorStop(0.4, '#047857');
+    signGrad.addColorStop(1, '#064e3b');
+    ctx.fillStyle = signGrad;
+    ctx.strokeStyle = '#6ee7b7';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.roundRect(dirX, dirY, dirW, dirH, 6);
+    ctx.fill();
+    ctx.stroke();
 
-      this.interactiveHitboxes.push({
-        x: dirX - 2,
-        y: dirY - 2,
-        w: dirW + 4,
-        h: dirH + 4,
-        action: 'switch_zone',
-        bizId: s.id
-      });
+    // Reflet supérieur
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+    ctx.fillRect(dirX + 2, dirY + 1, dirW - 4, 3);
+
+    // Texte épuré : UNIQUEMENT LE NOM DE LA VILLE
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 11px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`⬅️ ${targetCityLabel}`, dirX + dirW / 2, dirY + 17);
+    ctx.restore();
+
+    this.interactiveHitboxes.push({
+      x: dirX - 2,
+      y: dirY - 2,
+      w: dirW + 4,
+      h: dirH + 4,
+      action: 'switch_zone',
+      bizId: targetCityId
     });
 
     ctx.restore();
@@ -3134,6 +3195,51 @@ export class QuartierAnimator {
       ctx.lineTo(wx + Math.cos(wheelAngle) * 2.5, -3 + Math.sin(wheelAngle) * 2.5);
       ctx.stroke();
     });
+
+    ctx.restore();
+  }
+
+  drawCat(ctx, x, y, c, timestamp) {
+    ctx.save();
+    const bob = Math.sin(timestamp * 0.015 + x * 0.2) * 1.2;
+    ctx.translate(x, y + bob);
+    if (c.dir < 0) ctx.scale(-1, 1);
+
+    // Ombre sous le chat
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.beginPath();
+    ctx.ellipse(0, 3, 7, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Corps du chat
+    ctx.fillStyle = c.color;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 6, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Tête
+    ctx.beginPath();
+    ctx.arc(5, -2, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Oreilles pointues
+    ctx.fillStyle = c.earColor;
+    ctx.beginPath();
+    ctx.moveTo(3.5, -5);
+    ctx.lineTo(5, -8);
+    ctx.lineTo(6.5, -5);
+    ctx.closePath();
+    ctx.fill();
+
+    // Queue ondulante
+    const tailWave = Math.sin(timestamp * 0.008 + x) * 2.5;
+    ctx.strokeStyle = c.color;
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-5, 0);
+    ctx.quadraticCurveTo(-9, -4 + tailWave, -11, -8);
+    ctx.stroke();
 
     ctx.restore();
   }

@@ -1,6 +1,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(street,anim,cats,ui): floating progress bar, prominent L badge, 3D crossroad, walking cats, authentic kaskrout
+- feat(street,anim,cats,ui): floating progress bar over roof, highly visible level badge, single 3D bevelled crossroad sign, walking Tunisian street cats, authentic kaskrout tuna/olives props and zero text overflow
 - fix(street,doors,ui): realistic doors, discreet level badge, city names on signs, concise roles
 - fix(street,doors,ui): realistic doors, discreet level badge, city names on signs, concise roles
 - fix(street,doors,ui): realistic doors, discreet level badge, city names on signs, concise roles
