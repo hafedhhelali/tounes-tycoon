@@ -16,6 +16,8 @@
 ﻿# CHANGELOG
 
 ## 2026-10-25
+- feat(v82): independent city business progression, street vendor cart for kaskrout, interactive pan-zoom map with arrival transition
+- feat(v82): independent city business progression, street vendor cart for kaskrout, interactive pan-zoom map with arrival transition
 - feat(v81): zero parasite memory lifecycle, clean map without grid, single city names, enhanced cafe & grocery
 
 ## 2026-10-24
@@ -186,3 +188,5 @@
 ## Avant
 - `f3abf70` Tayaran El Ghzela (compagnie aérienne).
 - `701ba84` recrutement multi-gérants, BGM Jaw Tounsi (remplacée), Ella9la9, centre commercial, usine conserves, showroom auto.
+
+- feat(v82): independent city business progression, street vendor cart for kaskrout, interactive pan-zoom map with arrival transition

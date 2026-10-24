@@ -3863,10 +3863,19 @@
       if (!tunisiaMap) {
         tunisiaMap = new TunisiaMapEngine(mapCanvas, engine, {
           onTravel: (city) => {
+            // Effet d'arrivée terminé -> fermeture de la map et basculement automatique vers la rue de la nouvelle ville
             applyZoneTheme();
             renderZonesUI();
+            renderDOM();
+            updateSynergiesUI();
+            if (quartierEngine) {
+              quartierEngine.buildZoneLayout(city.id);
+            }
             if (window.soundFX && window.soundFX.playCoin) window.soundFX.playCoin();
-            showFeedbackToast(`🚗 مرحباً بك في ${city.name} ! تم تفعيل البونيس الجهوي بنجاح.`);
+            soundEngine.playEventFanfare();
+            showFeedbackToast(`🎉 وصلت بالسلامة إلى ${city.name} ! الشوارع والمشاريع مفتوحة للاستثمار 🇹🇳`);
+            // Basculer vers l'onglet rue
+            switchTab('businesses');
           },
           onSelect: (city) => {
             const badge = document.getElementById('mapActiveCityBadge');

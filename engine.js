@@ -655,14 +655,9 @@ export const TUNISIAN_CITIES = [
 
 export class TycoonEngine {
   constructor(initialState = null) {
-    this.businesses = BUSINESS_CONFIGS.map(cfg => ({
-      ...cfg,
-      level: 0,
-      hiredManagersCount: 0,
-      hasManager: false,
-      progressMs: 0,
-      isProducing: false
-    }));
+    this.BUSINESS_CONFIGS = BUSINESS_CONFIGS;
+    this.cityBusinesses = {};
+    this.businesses = this.initCityBusinesses('tunis');
 
     // Économie
     this.dinars = 5.0; // Don de départ (pour acheter le 1er kiosque كسكروت عيّاري à 5 DT)
@@ -745,6 +740,38 @@ export class TycoonEngine {
     }
   }
 
+  initCityBusinesses(cityId) {
+    if (!this.cityBusinesses[cityId]) {
+      this.cityBusinesses[cityId] = this.BUSINESS_CONFIGS.map(cfg => ({
+        id: cfg.id,
+        name: cfg.name,
+        tagline: cfg.tagline,
+        icon: cfg.icon,
+        baseCost: cfg.baseCost,
+        baseRevenue: cfg.baseRevenue,
+        costMultiplier: cfg.costMultiplier,
+        cycleDurationMs: cfg.cycleDurationMs,
+        level: 0,
+        hiredManagersCount: 0,
+        hasManager: false,
+        progressMs: 0,
+        isProducing: false,
+        managers: cfg.managers
+      }));
+    }
+    return this.cityBusinesses[cityId];
+  }
+
+  switchCity(cityId) {
+    const city = this.getCityById(cityId);
+    if (!city) return false;
+    this.currentCityId = city.id;
+    this.currentZoneId = city.id;
+    this.initCityBusinesses(city.id);
+    this.businesses = this.cityBusinesses[city.id];
+    return true;
+  }
+
   // --- 14 CITIES PROGRESSION & VILLES TUNISIENNES ---
   getCities() {
     return TUNISIAN_CITIES;
@@ -784,7 +811,8 @@ export class TycoonEngine {
     // 5. Condition niveaux de business (ex: 1 biz L10, 2 biz L20, 4 biz L35, 1 biz L100)
     if (city.reqBizLevel) {
       const { count = 1, minLevel = 1 } = city.reqBizLevel;
-      const qualified = this.businesses.filter(b => (b.level || 0) >= minLevel).length;
+      const allEmpireBusinesses = Object.values(this.cityBusinesses).flat();
+      const qualified = allEmpireBusinesses.filter(b => (b.level || 0) >= minLevel).length;
       if (qualified < count) return false;
     }
 
@@ -802,10 +830,9 @@ export class TycoonEngine {
     const city = this.getCityById(cityId);
     if (!city) return false;
 
-    // Déjà débloquée -> simple voyage / basculement
+    // Déjà débloquée -> simple voyage / basculement vers la ville et ses projets
     if (this.unlockedCityIds.includes(city.id)) {
-      this.currentCityId = city.id;
-      this.currentZoneId = city.id;
+      this.switchCity(city.id);
       return true;
     }
 
@@ -818,8 +845,7 @@ export class TycoonEngine {
     }
 
     this.unlockedCityIds.push(city.id);
-    this.currentCityId = city.id;
-    this.currentZoneId = city.id;
+    this.switchCity(city.id);
     return true;
   }
 
@@ -1538,12 +1564,12 @@ export class TycoonEngine {
         agence_voyages: { name: 'سفاري وواحات الشبيكة وتوزر', icon: '🚙', tagline: 'رحلات بالرباعية في كثبان الشبيكة وتامغزة والشط' }
       },
       nabeul_hammamet: {
-        attariya: { name: 'فخار وخزف نابل التقليدي', icon: '🏺', tagline: 'جرار، أواني خزفية ومزهريات قلالين نابل العريقة' },
+        attariya: { name: 'عطريّة وزهر نابل الأصيل', icon: '🏪', tagline: 'بهارات نابلية فاوحة، ماء زهر مقطّر، فلفل شايح وهريسة دياري' },
         patisserie: { name: 'زهر نابل وياسمين الحمامات', icon: '🌸', tagline: 'تقطير ماء الزهر الحر، حلويات اللوز ونبلية نابلية' },
         hotel: { name: 'منتجع ياسمين الحمامات الفاخر', icon: '🏖️', tagline: 'شاطئ لازوردي، مسبح دافئ واستجمام على الطريقة النابلية' }
       },
       djerba_holding: {
-        attariya: { name: 'فخار قلالة وصناعات جربة التقليدية', icon: '🏺', tagline: 'أواني فخار قلالة، فليج وسعف المظلات وصياغة الفضة' },
+        attariya: { name: 'عطريّة حومة السوق العتيقة', icon: '🏪', tagline: 'توابل جربية نادرة، زيتون معتّق، سميد وخيرات الجزيرة' },
         supermarche: { name: 'سوق الحارة والمنسوجات الجربية', icon: '🧶', tagline: 'كليم جربي، بشكير حمام وحياكة صوف جزيرة الأحلام' },
         hotel: { name: 'منتجع الهولدينغ والمنزل الجربي 5 نجوم', icon: '👑', tagline: 'إقامة أندلسية بأقواس بيضاء وبحر قنطرة جربة' }
       },
@@ -1558,7 +1584,7 @@ export class TycoonEngine {
       },
       kairouan: {
         patisserie: { name: 'مقروض القيروان الملكي بالسمن', icon: '🍯', tagline: 'مقروض بالسمن الحر، التمر المعسل وجلجلان باب الجلادين' },
-        attariya: { name: 'زربية القيروان والصناعات التقليدية', icon: '🧵', tagline: 'زرابي صوفية عقدة عقدة، نحاس مطروق وبخور القيروان' }
+        attariya: { name: 'عطريّة رحبة الصوف القيروانية', icon: '🏪', tagline: 'حمص، عطورات وبخور، حكك هريسة وزيت زيتون عقارب' }
       }
     };
 
@@ -2119,7 +2145,20 @@ export class TycoonEngine {
         hasManager: b.hasManager,
         progressMs: b.progressMs,
         isProducing: b.isProducing
-      }))
+      })),
+      cityBusinesses: Object.fromEntries(
+        Object.entries(this.cityBusinesses).map(([cId, bList]) => [
+          cId,
+          bList.map(b => ({
+            id: b.id,
+            level: b.level,
+            hiredManagersCount: b.hiredManagersCount ?? (b.hasManager ? 1 : 0),
+            hasManager: b.hasManager,
+            progressMs: b.progressMs,
+            isProducing: b.isProducing
+          }))
+        ])
+      )
     };
   }
 
@@ -2162,6 +2201,28 @@ export class TycoonEngine {
     this.dailyLogin = state.dailyLogin ?? { lastClaimDate: null, currentStreak: 0 };
     this.league = state.league ?? { tierIndex: 0, seasonEnd: Date.now() + 7 * 86400000 };
     this.dailyChallenge = state.dailyChallenge ?? { dateKey: null, challenges: [] };
+
+    this.cityBusinesses = {};
+    if (state.cityBusinesses && typeof state.cityBusinesses === 'object') {
+      for (const [cId, bSavedList] of Object.entries(state.cityBusinesses)) {
+        const cBizList = this.initCityBusinesses(cId);
+        if (Array.isArray(bSavedList)) {
+          for (const saved of bSavedList) {
+            const b = cBizList.find(item => item.id === saved.id);
+            if (b) {
+              b.level = saved.level ?? 0;
+              b.hiredManagersCount = saved.hiredManagersCount ?? (saved.hasManager ? 1 : 0);
+              b.hasManager = saved.hasManager ?? (b.hiredManagersCount > 0);
+              b.progressMs = saved.progressMs ?? 0;
+              b.isProducing = saved.isProducing ?? false;
+            }
+          }
+        }
+      }
+    }
+
+    this.initCityBusinesses(this.currentCityId);
+    this.businesses = this.cityBusinesses[this.currentCityId];
 
     if (Array.isArray(state.businesses)) {
       for (const saved of state.businesses) {
