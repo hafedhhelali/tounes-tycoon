@@ -7,3 +7,5 @@ Aménagement Urbain & Façades : suppression arche monumentale, bouton voyage au
 Finitions Audio & Ergonomie : musique Malouf tunisien classique authentique (Oud/Kanoun), coupure automatique en veille/sortie, portes au sol avec badge « ادخل 🚪 » hyper visible, solde sans débordement et onglet « اللائحة ».
 
 <!-- v82 update 00:42:59 -->
+
+<!-- v83 update 00:47:45 -->

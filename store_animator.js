@@ -2463,6 +2463,92 @@ export class QuartierAnimator {
     ctx.ellipse(x + b.width / 2, groundY, b.width * 0.55, 8, 0, 0, Math.PI * 2);
     ctx.fill();
 
+    // Cas 0 : نصبة كسكروت عياري تمّ بيعها -> تحوّلت إلى حديقة عمومية خضراء جميلة ونافورة
+    const isKaskroutSold = (b.id === 'kaskrout') && ((biz && biz.isSold) || (this.engine.soldBusinesses && this.engine.soldBusinesses.includes('kaskrout')));
+    if (isKaskroutSold) {
+      const parkW = b.width;
+      const parkX = x;
+
+      ctx.save();
+      // 1. Pelouse verdoyante
+      const grassGrad = ctx.createLinearGradient(parkX, groundY - 18, parkX, groundY);
+      grassGrad.addColorStop(0, '#16a34a');
+      grassGrad.addColorStop(1, '#15803d');
+      ctx.fillStyle = grassGrad;
+      ctx.beginPath();
+      ctx.roundRect(parkX, groundY - 16, parkW, 16, [6, 6, 0, 0]);
+      ctx.fill();
+
+      // 2. Grand olivier ombragé
+      const treeX = parkX + 32;
+      const treeY = groundY - 16;
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(treeX - 4, treeY - 42, 8, 42);
+      ctx.fillStyle = '#166534';
+      ctx.beginPath();
+      ctx.arc(treeX, treeY - 50, 24, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.arc(treeX - 8, treeY - 56, 16, 0, Math.PI * 2);
+      ctx.arc(treeX + 10, treeY - 52, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 3. Fontaine tunisienne en faïence bleue et blanche zellige au centre
+      const fX = parkX + parkW / 2 + 10;
+      const fY = groundY - 16;
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.ellipse(fX, fY - 4, 22, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+
+      // Eau animée
+      ctx.fillStyle = '#38bdf8';
+      const fJetH = 14 + Math.sin(timestamp * 0.008) * 4;
+      ctx.beginPath();
+      ctx.moveTo(fX, fY - 6);
+      ctx.lineTo(fX - 4, fY - 6 - fJetH);
+      ctx.lineTo(fX + 4, fY - 6 - fJetH);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(fX, fY - 6 - fJetH, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 4. Banc public en fer forgé
+      const benchX = parkX + parkW - 36;
+      const benchY = groundY - 16;
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(benchX - 12, benchY - 8);
+      ctx.lineTo(benchX + 12, benchY - 8);
+      ctx.moveTo(benchX - 12, benchY - 8);
+      ctx.lineTo(benchX - 12, benchY - 16);
+      ctx.stroke();
+
+      // Panneau commémoratif du parc
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.roundRect(parkX + 10, y + 20, parkW - 20, 24, 6);
+      ctx.fill();
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#86efac';
+      ctx.font = '900 9.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🌳 منتزه باب سويقة الأخضر (مكان النصبة سابقاً) ⛲', parkX + parkW / 2, y + 36);
+
+      ctx.restore();
+      return;
+    }
+
     // Cas 1 : Commerce non encore débloqué
     if (!isUnlocked) {
       ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';

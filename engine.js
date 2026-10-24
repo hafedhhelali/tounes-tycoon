@@ -742,7 +742,14 @@ export class TycoonEngine {
 
   initCityBusinesses(cityId) {
     if (!this.cityBusinesses[cityId]) {
-      this.cityBusinesses[cityId] = this.BUSINESS_CONFIGS.map(cfg => ({
+      // نصبة كسكروت عياري : UNE SEULE, DANS la ville de départ ('tunis')
+      // Dans les autres villes, le premier commerce est le fricassé/bambalouni ou pâtisserie
+      const configs = this.BUSINESS_CONFIGS.filter(cfg => {
+        if (cfg.id === 'kaskrout' && cityId !== 'tunis') return false;
+        return true;
+      });
+
+      this.cityBusinesses[cityId] = configs.map(cfg => ({
         id: cfg.id,
         name: cfg.name,
         tagline: cfg.tagline,
@@ -756,7 +763,8 @@ export class TycoonEngine {
         hasManager: false,
         progressMs: 0,
         isProducing: false,
-        managers: cfg.managers
+        managers: cfg.managers,
+        isSold: false
       }));
     }
     return this.cityBusinesses[cityId];
@@ -1778,7 +1786,46 @@ export class TycoonEngine {
     const milestoneInfo = this.getBusinessMilestones ? this.getBusinessMilestones(business) : { multiplier: 1.0 };
     const milestoneMultiplier = milestoneInfo.multiplier || 1.0;
 
-    return business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier;
+    const rawRevenue = business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier;
+
+    // Équilibrage macro-économique tunisien : au-delà de 5 millions DT / cycle,
+    // amortissement d'échelle (loi des rendements décroissants réaliste)
+    if (rawRevenue > 5000000) {
+      const excess = rawRevenue - 5000000;
+      return 5000000 + Math.pow(excess, 0.85);
+    }
+    return rawRevenue;
+  }
+
+  // Vente du fonds de commerce : rembourse 70% de l'investissement cumulé
+  // Si c'est la نصبة كسكروت, elle disparaît définitivement et devient un parc public verdoyant
+  sellBusiness(bizId) {
+    const biz = this.businesses.find(b => b.id === bizId);
+    if (!biz || biz.level === 0 || biz.isSold) return null;
+
+    // Calcul de la valeur de revente (70% de la valeur cumulée investie)
+    let totalInvested = 0;
+    for (let lvl = 0; lvl < biz.level; lvl++) {
+      totalInvested += biz.baseCost * Math.pow(biz.costMultiplier, lvl);
+    }
+    const resaleValue = Math.floor(Math.max(biz.baseCost * 0.7, totalInvested * 0.7) * 100) / 100;
+
+    this.dinars += resaleValue;
+    biz.level = 0;
+    biz.isProducing = false;
+    biz.progressMs = 0;
+    biz.hasManager = false;
+    biz.hiredManagersCount = 0;
+
+    if (biz.id === 'kaskrout') {
+      biz.isSold = true;
+      if (!this.soldBusinesses) this.soldBusinesses = [];
+      if (!this.soldBusinesses.includes('kaskrout')) {
+        this.soldBusinesses.push('kaskrout');
+      }
+    }
+
+    return { resaleValue, isKaskroutPark: biz.id === 'kaskrout' };
   }
 
   buyBusiness(id) {
@@ -2133,6 +2180,7 @@ export class TycoonEngine {
       currentZoneId: this.currentZoneId || this.currentCityId || 'tunis',
       currentCityId: this.currentCityId || this.currentZoneId || 'tunis',
       unlockedCityIds: this.unlockedCityIds || ['tunis'],
+      soldBusinesses: this.soldBusinesses || [],
       purchasedUpgrades: this.purchasedUpgrades || [],
       lastFreeWheelSpin: this.lastFreeWheelSpin || 0,
       dailyLogin: this.dailyLogin || { lastClaimDate: null, currentStreak: 0 },
@@ -2196,6 +2244,7 @@ export class TycoonEngine {
     if (!this.unlockedCityIds.includes(this.currentCityId)) {
       this.unlockedCityIds.push(this.currentCityId);
     }
+    this.soldBusinesses = Array.isArray(state.soldBusinesses) ? state.soldBusinesses : [];
     this.purchasedUpgrades = Array.isArray(state.purchasedUpgrades) ? state.purchasedUpgrades : [];
     this.lastFreeWheelSpin = state.lastFreeWheelSpin ?? 0;
     this.dailyLogin = state.dailyLogin ?? { lastClaimDate: null, currentStreak: 0 };

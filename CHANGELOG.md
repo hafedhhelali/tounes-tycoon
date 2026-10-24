@@ -190,3 +190,5 @@
 - `701ba84` recrutement multi-gérants, BGM Jaw Tounsi (remplacée), Ella9la9, centre commercial, usine conserves, showroom auto.
 
 - feat(v82): independent city business progression, street vendor cart for kaskrout, interactive pan-zoom map with arrival transition
+
+- feat(v83): single kaskrout cart in start city, sell business mechanic, green park replacement, balanced realistic economy
