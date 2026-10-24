@@ -1,5 +1,5 @@
 ﻿# HANDOFF — Tounes Tycoon
-MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-10-25 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
 Adaptation Régionale & Carte Épurée : projets spécialisés par ville (Béja: lait/fromage, Tozeur: dattes, Nabeul: poterie, Djerba: artisanat, Sfax: poisson...), carte 14 villes épurée (Noms de ville ONLY), hauteur garantie 520px.

@@ -15,6 +15,9 @@
 
 ﻿# CHANGELOG
 
+## 2026-10-25
+- feat(v81): zero parasite memory lifecycle, clean map without grid, single city names, enhanced cafe & grocery
+
 ## 2026-10-24
 - feat(city-map-audio): regional adaptation, clean map, street decor & classic malouf
 - fix(anomalies,travel,hud): fix interior overlapping text, elevated customer bubbles, enlarged neon sign and interactive travel map button

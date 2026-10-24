@@ -229,27 +229,32 @@
     }
     .icon-pill-btn:active { transform: scale(0.92); }
 
-    /* SOLDE COMPACT HUD */
+    /* SOLDE HUD PRO - GRAND CONTRASTE & LISIBILITÉ PARFAITE */
     .balance-hero {
       display: flex;
       align-items: center;
-      gap: 4px;
-      background: rgba(245, 158, 11, 0.12);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      border-radius: 10px;
-      padding: 2px 8px;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.92) 100%);
+      border: 1.5px solid #f59e0b;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(254, 240, 138, 0.2);
+      border-radius: 12px;
+      padding: 4px 12px;
+      min-width: 140px;
+      justify-content: center;
     }
     .balance-label {
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 900;
+      color: #94a3b8;
     }
     .balance-val {
-      font-size: 15px;
+      font-size: 16.5px;
       font-weight: 900;
-      color: var(--gold);
-      text-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+      color: #fbbf24;
+      text-shadow: 0 0 14px rgba(251, 191, 36, 0.65);
       letter-spacing: -0.3px;
+      direction: ltr;
+      display: inline-block;
       transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .balance-val.bump {
@@ -2394,7 +2399,7 @@
       </div>
 
       <!-- LISTE DES VILLES ET QUARTIERS -->
-      <div id="zonesListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; margin-top: 10px;"></div>
+      <div id="zonesListContainer" style="display: none !important;"></div>
     </div>
 
     <!-- PANNEAU 4 : بطولة تجار تونس وصابة الأسبوع والتحديات -->
@@ -2591,7 +2596,7 @@
       <div class="modal-title" id="modalTitle" style="font-size: 17px;">صحّة وفرحة !</div>
       <div class="modal-subtitle" id="modalSub" style="font-size: 11.5px;">الكاسة تعمّرت</div>
       <div class="modal-reward-badge" id="modalRewardAmount" style="font-size: 19px; padding: 4px 16px;">+30.00 د.ت</div>
-      <button class="modal-btn" id="modalCloseBtn" style="padding: 8px;">اقبض الصّابة 💰</button>
+      <button class="modal-btn" id="modalCloseBtn" style="padding: 8px;">اقبض مداخيلك 💰</button>
     </div>
   </div>
 
@@ -3404,7 +3409,7 @@
     if (offlineGain > 0) {
       setTimeout(() => {
         soundEngine.playEventFanfare();
-        showRewardModalUI('☕', 'على سلامتكم ! يا مرحبا بيك نوّرت', 'هذي غلّة خدمتك وإنت غاطس :', `+${formatCurrency(offlineGain)}`);
+        showRewardModalUI('☕', 'على سلامتكم ! يا مرحبا بيك نوّرت', 'مداخيل فترة الغياب مسجّلة في كاستك :', `+${formatCurrency(offlineGain)}`);
       }, 400);
     }
 
@@ -4765,14 +4770,15 @@
 
     // Boucle principale : une exception ponctuelle ne doit jamais figer le solde
     function tick() {
+      if (isAppPaused) return;
       try {
         tickStep();
       } catch (err) {
         console.error('tick error', err);
       }
-      requestAnimationFrame(tick);
+      mainTickRafId = requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
+    mainTickRafId = requestAnimationFrame(tick);
   </script>
 </body>
 </html>

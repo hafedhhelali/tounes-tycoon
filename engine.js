@@ -33,7 +33,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'kahwa',
     name: 'قهوة شعبية',
-    tagline: 'كابوسين قارحة، دخان الكوانين وطرح شكبة للصباح، هوني وين تصنع الصفقات !',
+    tagline: 'تاي منعنع بالبندق، شيشة تفاح بالمعسل والجمر، وطرح شكبة كارطة للصباح !',
     icon: '☕',
     baseCost: 120.0,
     baseRevenue: 14.0,
@@ -47,7 +47,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'attariya',
     name: 'عطريّة ولد الحومة',
-    tagline: 'من حكّة الطماطم لخيط الصوف، السلعة مكدسة والكرني شاهد على ثقة ولاد الحومة.',
+    tagline: 'كسكسي، هريسة دياري، زيت زيتونة، حكك تن ومعجون، وشكارة السميد حاضرة.',
     icon: '🏪',
     baseCost: 800.0,
     baseRevenue: 55.0,
@@ -475,7 +475,7 @@ export const PRESTIGE_RANKS = [
 export const TUNISIAN_CITIES = [
   {
     id: 'tunis',
-    name: 'تونس العاصمة',
+    name: 'تونس',
     icon: '🕌',
     tagline: 'نقطة البداية، أصل التجارة، نصبة كسكروت وفريكاسي في قلب المدينة العربي',
     costDinars: 0,
@@ -500,7 +500,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'nabeul_hammamet',
-    name: 'نابل / الحمامات',
+    name: 'نابل',
     icon: '🏖️',
     tagline: 'الفخار، ياسمين الحمامات، زهر نابل والنزل السياحية الفاخرة',
     costDinars: 8000,
@@ -539,7 +539,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'sousse',
-    name: 'سوسة جوهرة الساحل',
+    name: 'سوسة',
     icon: '💎',
     tagline: 'بوجعفر، القنطاوي، التجارة البحرية وصالونات الشاي العصرية',
     costDinars: 150000,
@@ -551,7 +551,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'monastir_mahdia',
-    name: 'المنستير / المهدية',
+    name: 'المنستير',
     icon: '⚓',
     tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الشامي الأزرق',
     costDinars: 350000,
@@ -564,7 +564,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'kairouan',
-    name: 'القيروان عاصمة الأغالبة',
+    name: 'القيروان',
     icon: '🕌',
     tagline: 'فسقية الأغالبة، مقروض القيروان والزرابي الصوفية الفاخرة',
     costDinars: 800000,
@@ -577,7 +577,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'sfax',
-    name: 'صفاقس عاصمة الجنوب والهمّة',
+    name: 'صفاقس',
     icon: '🏭',
     tagline: 'باب الديوان، الزيتونة المباركة، الصناعات الكبرى والخدمة الحارة',
     costDinars: 2000000,
@@ -601,7 +601,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'tozeur',
-    name: 'توزر والجريد',
+    name: 'توزر',
     icon: '🌴',
     tagline: 'دقلة النور، الشبيكة وتامغزة، والواحات الصحراوية العالمية',
     costDinars: 10000000,
@@ -614,7 +614,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'gabes',
-    name: 'قابس بوابة الصحراء والبحر',
+    name: 'قابس',
     icon: '🌊',
     tagline: 'الحناء الجبسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
     costDinars: 25000000,
@@ -627,7 +627,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'medenine_zarzis',
-    name: 'مدنين / جرجيس',
+    name: 'مدنين',
     icon: '🏺',
     tagline: 'قصور مدنين، بحر جرجيس والزيتون الروماني العريق',
     costDinars: 60000000,
@@ -639,7 +639,7 @@ export const TUNISIAN_CITIES = [
   },
   {
     id: 'djerba_holding',
-    name: 'جربة / الهولدينغ الوطني',
+    name: 'جربة',
     icon: '👑',
     tagline: 'جزيرة الأحلام ومقر الهولدينغ التونسي الوطني الدولي الشامل',
     costDinars: 150000000,

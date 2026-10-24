@@ -371,16 +371,24 @@ export class CanvasStoreEngine {
       ctx.font = 'bold 9px sans-serif';
       ctx.fillText('🕐', 51, 54);
 
+      // Table de Chkobba & Chicha traditionnelle
+      const tableX = w - 86;
+      const tableY = 34;
       ctx.fillStyle = '#1c1917';
-      ctx.fillRect(w - 74, 38, 52, 38);
-      ctx.strokeStyle = '#b45309';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(w - 74, 38, 52, 38);
+      ctx.fillRect(tableX, tableY, 74, 46);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(tableX, tableY, 74, 46);
       ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 8px "Cairo", sans-serif';
-      ctx.fillText('طرح شكبة', w - 66, 52);
+      ctx.font = 'bold 9px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('طرح شكبة 🃏', tableX + 37, tableY + 14);
       ctx.font = '11px sans-serif';
-      ctx.fillText('♠️♥️', w - 60, 68);
+      ctx.fillText('♠️♥️ 🍵 شيشة 💨', tableX + 37, tableY + 30);
+      ctx.fillStyle = '#fde047';
+      ctx.font = '8px "Cairo", sans-serif';
+      ctx.fillText('تاي منعنع بالبندق', tableX + 37, tableY + 41);
+      ctx.textAlign = 'left';
     } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
       // Étagères d'ingrédients authentiques (baguettes de pain chaud, thon, olives, fromage)
       ctx.fillStyle = '#854d0e';
@@ -448,33 +456,36 @@ export class CanvasStoreEngine {
         ctx.fillText('🥫', x, 42);
         ctx.fillText('🥛', x, 76);
       }
-      // Casier d'œufs et baguettes au mur
-      ctx.font = '13px serif';
-      ctx.fillText('🥚', 84, 50);
-      ctx.fillText('🥖', 84, 76);
+      // Étagères diversifiées : couscous, harissa, thon, savon, huile
+      ctx.font = '15px serif';
+      ctx.fillText('🌶️', 84, 48); // Harissa دياري
+      ctx.fillText('🥖', 84, 76); // Pain baguette
 
-      // Tableau des prix / Carnet de crédit traditionnel (الكرني المفتوح)
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(44, 34, 48, 48);
+      // Tableau des prix & Carnet de crédit sur le mur droit (jamais masqué par moula el hanout)
+      const slateX = w - 82;
+      const slateY = 24;
+      ctx.fillStyle = '#091512';
+      ctx.fillRect(slateX, slateY, 68, 52);
       ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(44, 34, 48, 48);
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(slateX, slateY, 68, 52);
       ctx.fillStyle = '#34d399';
       ctx.font = 'bold 8.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('عطريّة الحومة', 68, 47);
+      ctx.fillText('عطريّة الحومة', slateX + 34, slateY + 14);
       ctx.fillStyle = '#fde047';
-      ctx.font = '8px sans-serif';
-      ctx.fillText('كرني الثقة 📖', 68, 60);
+      ctx.font = 'bold 8.5px "Cairo", sans-serif';
+      ctx.fillText('كرني الثقة 📖', slateX + 34, slateY + 28);
       ctx.fillStyle = '#ffffff';
-      ctx.fillText('سلعة دياري 🌿', 68, 73);
+      ctx.font = '8px "Cairo", sans-serif';
+      ctx.fillText('سلعة دياري 🌿', slateX + 34, slateY + 42);
       ctx.textAlign = 'left';
 
-      // Bocaux d'olives et bouteilles d'huile
-      ctx.font = '14px serif';
-      ctx.fillText('🫒', w - 38, 44);
-      ctx.fillText('🧀', w - 38, 64);
-      ctx.fillText('🧂', w - 38, 84);
+      // Bocaux et produits variés
+      ctx.font = '15px serif';
+      ctx.fillText('🫒', slateX - 22, 38);
+      ctx.fillText('🧀', slateX - 22, 60);
+      ctx.fillText('🥫', slateX - 22, 82);
     } else if (bizId === 'usine_conserves') {
       ctx.fillStyle = '#334155';
       ctx.fillRect(105, 48, w - 125, 6);
@@ -1594,10 +1605,8 @@ export class QuartierAnimator {
         { type: 'garden', name: 'حديقة الياسمين والزيتون', width: 95 },
         { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'la_goulette', nextZoneLabel: 'بنزرت' },
         { type: 'biz', id: 'fricasse' },
-        { type: 'service_station', name: 'عجيل تونس', width: 130 },
         { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
         { type: 'biz', id: 'kahwa' },
-        { type: 'bank_branch', name: 'بنك الإسكان والتنمية', width: 135 },
         { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'la_goulette', nextZoneLabel: 'بنزرت' },
         { type: 'biz', id: 'attariya' },
         { type: 'house', style: 'medina', name: 'دار سيدي محرز', width: 115, height: 120, wallColor: '#f8fafc', doorColor: '#0284c7' }
@@ -3216,51 +3225,46 @@ export class QuartierAnimator {
       }
     }
 
-    // 4 & 5. Portique autoroutier 3D avec bouton interactif « تحب تسافر ؟ افتح الخريطة 🗺️ »
-    const dirW = Math.min(w - 8, 126);
-    const dirH = 32;
+    // 4 & 5. Panneau autoroutier surélevé : Bouton unique clair "افتح خريطة تونس"
+    const dirW = Math.min(w - 6, 134);
+    const dirH = 34;
     const dirX = x + (w - dirW) / 2;
-    const dirY = groundY - 38;
+    const dirY = groundY - 62; // Remonté bien au-dessus de la route
 
     ctx.save();
-    // Halo lumineux pulsé invitant au voyage
-    const travelPulse = Math.sin(timestamp * 0.005) * 3 + 4;
+    const travelPulse = Math.sin(timestamp * 0.005) * 4 + 5;
     ctx.shadowColor = '#38bdf8';
     ctx.shadowBlur = travelPulse;
 
-    // Effet 3D : ombre portée biseautée
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    // Ombre 3D
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
     ctx.beginPath();
-    ctx.roundRect(dirX + 2, dirY + 3, dirW, dirH, 8);
+    ctx.roundRect(dirX + 2, dirY + 3, dirW, dirH, 10);
     ctx.fill();
 
-    // Dégradé royal autoroutier bleu méditerranée / cyan 3D
+    // Fond cyan / azur vibrant
     const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
     signGrad.addColorStop(0, '#0284c7');
     signGrad.addColorStop(0.5, '#0369a1');
     signGrad.addColorStop(1, '#075985');
     ctx.fillStyle = signGrad;
     ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(dirX, dirY, dirW, dirH, 8);
+    ctx.roundRect(dirX, dirY, dirW, dirH, 10);
     ctx.fill();
     ctx.stroke();
 
-    // Reflet supérieur vitré
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
-    ctx.fillRect(dirX + 3, dirY + 2, dirW - 6, 4);
+    // Reflet vitré supérieur
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.32)';
+    ctx.fillRect(dirX + 4, dirY + 2, dirW - 8, 4);
 
-    // Titre accrocheur et clair : invitation à voyager vers la carte de Tunisie
+    // Texte unique centré et lisible
     ctx.shadowBlur = 0;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 10.5px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('🗺️ تحب تسافر ؟', dirX + dirW / 2, dirY + 14);
-
     ctx.fillStyle = '#fef08a';
-    ctx.font = '800 9px "Cairo", sans-serif';
-    ctx.fillText('افتح خريطة تونس 🚗', dirX + dirW / 2, dirY + 26);
+    ctx.font = '900 12px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('افتح خريطة تونس 🚗', dirX + dirW / 2, dirY + 22);
     ctx.restore();
 
     this.interactiveHitboxes.push({
@@ -3753,12 +3757,12 @@ export class QuartierAnimator {
       }
     };
 
-    // 1. Petites icônes d'offres 3D en haut à droite DANS le ciel de l'image
+    // 1. HUD du ciel épuré : 2 boutons essentiels (Carte Tunisie agrandie + Boost x2)
     const rightIcons = [
       {
         action: 'hud_map',
         icon: '🗺️',
-        sub: 'خريطة',
+        sub: 'تونس',
         bg: '#047857',
         border: '#34d399',
         badgeBg: '#10b981'
@@ -3769,30 +3773,6 @@ export class QuartierAnimator {
         sub: o.adBoostActive ? 'x2' : '',
         bg: o.adBoostActive ? '#059669' : '#0284c7',
         border: o.adBoostActive ? '#6ee7b7' : '#7dd3fc',
-        badgeBg: '#10b981'
-      },
-      {
-        action: 'hud_cash',
-        icon: '🎁',
-        sub: '+',
-        bg: '#0369a1',
-        border: '#38bdf8',
-        badgeBg: '#f59e0b'
-      },
-      {
-        action: 'hud_prestige',
-        icon: '👑',
-        sub: o.canPrestige ? '!' : '',
-        bg: o.canPrestige ? '#d97706' : '#334155',
-        border: '#fde047',
-        badgeBg: '#ef4444'
-      },
-      {
-        action: 'hud_wheel',
-        icon: '🎡',
-        sub: o.wheelReady ? '!' : '',
-        bg: o.wheelReady ? '#e11d48' : '#881337',
-        border: '#fda4af',
         badgeBg: '#10b981'
       }
     ];
@@ -4340,19 +4320,14 @@ export class TunisiaMapEngine {
     ctx.fillStyle = seaGrad;
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // Lignes de bathymétrie & méridiens nautiques discrets
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.06)';
-    ctx.lineWidth = 1;
-    for (let x = 40; x < this.width; x += 60) {
+    // Vagues et brise marine animées sans aucun quadrillage ni carreaux
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+    ctx.lineWidth = 1.2;
+    for (let wave = 0; wave < 6; wave++) {
+      const wy = 60 + wave * 90 + Math.sin(t * 0.001 + wave) * 6;
       ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, this.height);
-      ctx.stroke();
-    }
-    for (let y = 40; y < this.height; y += 60) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(this.width, y);
+      ctx.moveTo(10, wy);
+      ctx.bezierCurveTo(this.width * 0.35, wy - 10, this.width * 0.65, wy + 10, this.width - 10, wy);
       ctx.stroke();
     }
 

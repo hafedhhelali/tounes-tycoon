@@ -309,7 +309,7 @@ test('Tunisian 14 cities progression: listing, retrieval and initial state', () 
 
   const currentCity = engine.getCurrentCity();
   assert.equal(currentCity.id, 'tunis');
-  assert.equal(currentCity.name, 'تونس العاصمة');
+  assert.equal(currentCity.name, 'تونس');
 
   // getCityById
   const bizerte = engine.getCityById('bizerte');
