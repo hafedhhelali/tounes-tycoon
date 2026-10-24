@@ -2204,143 +2204,142 @@ export class QuartierAnimator {
 
   drawInCanvasOffersHUD(ctx, w, h, timestamp) {
     const o = this.hudOffers;
-    const pulse = Math.sin(timestamp * 0.006) * 2;
+    const pulse = Math.sin(timestamp * 0.006) * 2.5;
+    const r = 16; // Rayon des petites icônes rondes (32x32px)
+    const topY = 24;
 
-    // 1. Piliers d'offres permanentes en haut à droite DANS le ciel du Canvas
-    const rightBadges = [
+    ctx.save();
+
+    // 1. Petites icônes d'offres rondes en haut à droite DANS le ciel de l'image
+    const rightIcons = [
       {
         action: 'hud_boost',
         icon: '🚀',
-        label: o.adBoostActive ? o.adBoostText : 'تيربو x2',
-        bg: o.adBoostActive ? 'rgba(16, 185, 129, 0.9)' : 'rgba(14, 165, 233, 0.85)',
+        sub: o.adBoostActive ? 'x2' : '',
+        bg: o.adBoostActive ? 'rgba(16, 185, 129, 0.92)' : 'rgba(15, 23, 42, 0.82)',
         border: o.adBoostActive ? '#34d399' : '#38bdf8'
       },
       {
         action: 'hud_cash',
         icon: '🎁',
-        label: o.adCashText || 'كاش بلاش',
-        bg: 'rgba(14, 165, 233, 0.85)',
+        sub: '+',
+        bg: 'rgba(15, 23, 42, 0.82)',
         border: '#38bdf8'
       },
       {
         action: 'hud_prestige',
         icon: '👑',
-        label: o.prestigeText || 'x1.0',
-        bg: o.canPrestige ? 'rgba(245, 158, 11, 0.92)' : 'rgba(30, 41, 59, 0.85)',
+        sub: o.canPrestige ? '!' : '',
+        bg: o.canPrestige ? 'rgba(245, 158, 11, 0.92)' : 'rgba(15, 23, 42, 0.82)',
         border: '#fbbf24'
       },
       {
         action: 'hud_wheel',
         icon: '🎡',
-        label: o.wheelReady ? 'بلاش !' : 'العجلة',
-        bg: o.wheelReady ? 'rgba(225, 29, 72, 0.92)' : 'rgba(136, 19, 55, 0.85)',
+        sub: o.wheelReady ? '!' : '',
+        bg: o.wheelReady ? 'rgba(225, 29, 72, 0.92)' : 'rgba(15, 23, 42, 0.82)',
         border: '#fda4af'
       }
     ];
 
-    let curX = w - 10;
-    const topY = 8;
-    const badgeH = 26;
-
-    ctx.save();
-    ctx.font = '900 10.5px "Cairo", sans-serif';
-    rightBadges.forEach(b => {
-      const textW = ctx.measureText(b.label).width;
-      const badgeW = Math.max(66, textW + 32);
-      curX -= badgeW;
-
-      ctx.fillStyle = b.bg;
-      ctx.strokeStyle = b.border;
-      ctx.lineWidth = 1.5;
+    let rightX = w - 24;
+    rightIcons.forEach(item => {
+      ctx.fillStyle = item.bg;
+      ctx.strokeStyle = item.border;
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(curX, topY, badgeW, badgeH, 13);
+      ctx.arc(rightX, topY, r, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#ffffff';
+      ctx.font = '15px serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`${b.icon} ${b.label}`, curX + badgeW / 2, topY + 17);
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(item.icon, rightX, topY + 1);
+
+      if (item.sub) {
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(rightX + 11, topY - 11, 6.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 8.5px "Cairo", sans-serif';
+        ctx.fillText(item.sub, rightX + 11, topY - 10.5);
+      }
 
       this.interactiveHitboxes.push({
-        x: curX,
-        y: topY,
-        w: badgeW,
-        h: badgeH,
-        action: b.action,
+        x: rightX - r - 3,
+        y: topY - r - 3,
+        w: (r + 3) * 2,
+        h: (r + 3) * 2,
+        action: item.action,
         bizId: null
       });
 
-      curX -= 6;
+      rightX -= (r * 2 + 8);
     });
 
-    // 2. Alertes dynamiques & Événements en haut à gauche DANS le ciel du Canvas
-    let leftX = 10;
-    const dynamicAlerts = [];
-
+    // 2. Petites icônes d'alertes rondes animées en haut à gauche DANS le ciel de l'image
+    const leftAlerts = [];
     if (o.hasQuest) {
-      dynamicAlerts.push({
-        action: 'hud_quest',
-        icon: '🎯',
-        label: 'اقبض البونيس !',
-        bg: 'rgba(16, 185, 129, 0.95)',
-        border: '#a7f3d0'
-      });
+      leftAlerts.push({ action: 'hud_quest', icon: '🎯', bg: 'rgba(16, 185, 129, 0.95)', border: '#a7f3d0', dot: '!' });
     }
     if (o.hasEvent) {
-      dynamicAlerts.push({
-        action: 'hud_event',
-        icon: '🃏',
-        label: `شكبة (${o.eventTimer || '🔥'})`,
-        bg: 'rgba(220, 38, 38, 0.95)',
-        border: '#fca5a5'
-      });
+      leftAlerts.push({ action: 'hud_event', icon: '🃏', bg: 'rgba(220, 38, 38, 0.95)', border: '#fca5a5', dot: '🔥' });
     }
     if (o.hasDilemma) {
-      dynamicAlerts.push({
-        action: 'hud_dilemma',
-        icon: '⚖️',
-        label: 'قرار الحومة !',
-        bg: 'rgba(147, 51, 234, 0.95)',
-        border: '#e9d5ff'
-      });
+      leftAlerts.push({ action: 'hud_dilemma', icon: '⚖️', bg: 'rgba(147, 51, 234, 0.95)', border: '#e9d5ff', dot: '!' });
     }
     if (o.hasLuckyDrop) {
-      dynamicAlerts.push({
-        action: 'hud_luckydrop',
-        icon: o.luckyDropIcon || '🎁',
-        label: 'تفتوفة طاحت !',
-        bg: 'rgba(245, 158, 11, 0.95)',
-        border: '#fef08a'
-      });
+      leftAlerts.push({ action: 'hud_luckydrop', icon: o.luckyDropIcon || '🎁', bg: 'rgba(245, 158, 11, 0.95)', border: '#fef08a', dot: '✨' });
     }
 
-    dynamicAlerts.forEach(a => {
-      const textW = ctx.measureText(a.label).width;
-      const badgeW = Math.max(78, textW + 34);
-      const by = topY + pulse * 0.5;
+    let leftX = 24;
+    leftAlerts.forEach((a, idx) => {
+      const cy = topY + Math.sin(timestamp * 0.008 + idx) * 2.5;
+
+      // Halo lumineux discret autour de la petite icône d'alerte
+      ctx.fillStyle = a.border;
+      ctx.globalAlpha = 0.25 + (Math.sin(timestamp * 0.01) * 0.15);
+      ctx.beginPath();
+      ctx.arc(leftX, cy, r + 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
 
       ctx.fillStyle = a.bg;
       ctx.strokeStyle = a.border;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(leftX, by, badgeW, badgeH, 13);
+      ctx.arc(leftX, cy, r, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#ffffff';
+      ctx.font = '15px serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`${a.icon} ${a.label}`, leftX + badgeW / 2, by + 17);
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(a.icon, leftX, cy + 1);
+
+      // Petite pastille de notification
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(leftX + 11, cy - 11, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '900 8px "Cairo", sans-serif';
+      ctx.fillText(a.dot, leftX + 11, cy - 10.5);
 
       this.interactiveHitboxes.push({
-        x: leftX,
-        y: topY,
-        w: badgeW,
-        h: badgeH + 4,
+        x: leftX - r - 4,
+        y: topY - r - 4,
+        w: (r + 4) * 2,
+        h: (r + 4) * 2,
         action: a.action,
         bizId: null
       });
 
-      leftX += badgeW + 6;
+      leftX += (r * 2 + 10);
     });
 
     ctx.restore();

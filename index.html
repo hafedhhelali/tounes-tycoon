@@ -341,18 +341,16 @@
     .ad-btn-sub { font-size: 9px; opacity: 0.9; font-weight: 700; }
     .ad-btn-sub { font-size: 10px; opacity: 0.9; font-weight: 700; }
 
-    /* BANDEAU ÉVÉNEMENT */
-    #eventBanner {
-      display: none;
-      background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
-      border: 1px solid var(--gold);
-      padding: 10px 14px;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(180, 83, 9, 0.45);
-      margin-top: 8px;
-      direction: rtl;
-      text-align: right;
-      animation: pulse 2s infinite ease-in-out;
+    /* BANDEAUX D'ALERTES & D'OFFRES DOM DÉSACTIVÉS : RENDUS COMME PETITES ICÔNES DANS LE CANVAS */
+    #questBox, #eventBanner, #dilemmaBanner, #luckyDropEl {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      width: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      left: -9999px !important;
     }
     #eventMiniGameBtn {
       background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
@@ -3710,41 +3708,7 @@
     const dilemmaChoiceBBtn = document.getElementById('dilemmaChoiceBBtn');
 
     function checkDilemmasUI() {
-      if (!dilemmaBanner) return;
-      if (engine.activeDilemma) {
-        const d = engine.activeDilemma;
-        dilemmaBanner.style.display = 'block';
-        dilemmaTitle.innerText = d.title;
-        dilemmaDesc.innerText = d.desc;
-        dilemmaChoiceABtn.innerHTML = `${d.choiceA.text} ${d.choiceA.cost > 0 ? `(${formatCurrency(d.choiceA.cost, 0)})` : ''}`;
-        dilemmaChoiceBBtn.innerHTML = `${d.choiceB.text} ${d.choiceB.cost > 0 ? `(${formatCurrency(d.choiceB.cost, 0)})` : ''}`;
-
-        dilemmaChoiceABtn.onclick = () => {
-          const res = engine.resolveDilemma('A');
-          if (res && res.success) {
-            soundEngine.playDilemmaSuccess();
-            dilemmaBanner.style.display = 'none';
-            showRewardModalUI('📜', 'قرار صائب في الحومة !', res.choice.effectDesc, 'مريڤل 🤝');
-            renderDOM();
-          } else if (res && res.reason === 'insufficient_funds') {
-            triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(res.cost - engine.dinars)} باش تنفّذ القرار !`);
-          }
-        };
-
-        dilemmaChoiceBBtn.onclick = () => {
-          const res = engine.resolveDilemma('B');
-          if (res && res.success) {
-            soundEngine.playDilemmaSuccess();
-            dilemmaBanner.style.display = 'none';
-            showRewardModalUI('📜', 'قرار صائب في الحومة !', res.choice.effectDesc, 'مريڤل 🤝');
-            renderDOM();
-          } else if (res && res.reason === 'insufficient_funds') {
-            triggerBalanceAlert(`مازالت تخصّك ${formatCurrencyPlain(res.cost - engine.dinars)} باش تنفّذ القرار !`);
-          }
-        };
-      } else {
-        dilemmaBanner.style.display = 'none';
-      }
+      // Les dilemmes s'affichent uniquement sous forme de petite icône dans le Canvas
     }
 
     // --- MOTEUR PANORAMIQUE 2D 60 FPS DU QUARTIER TUNISIEN VIVANT (LANDSCAPE) ---
@@ -4288,8 +4252,6 @@
 
       if (claimableQuests.length > 0) {
         const topQuest = claimableQuests[0];
-        questBox.style.display = 'flex';
-        questTitle.innerText = `${topQuest.title} (+${formatCurrencyPlain(topQuest.rewardDinars, 0)})`;
         claimQuestBtn.onclick = () => {
           const claimed = engine.claimQuest(topQuest.id);
           if (claimed) {
@@ -4299,8 +4261,6 @@
             updateSynergiesUI();
           }
         };
-      } else {
-        questBox.style.display = 'none';
       }
 
       // Mise à jour hint cadeau AdMob
@@ -4316,18 +4276,6 @@
         adBoostStatus.innerHTML = `<span class="num-ltr">${remainingHours}h${remainingMins}m</span>`;
       } else {
         adBoostStatus.innerText = 'طافي';
-      }
-
-      // Événement temporaire en cours
-      const eventBanner = document.getElementById('eventBanner');
-      if (engine.activeEvent) {
-        eventBanner.style.display = 'block';
-        document.getElementById('eventTitle').innerText = engine.activeEvent.event.title;
-        document.getElementById('eventDesc').innerText = engine.activeEvent.event.description;
-        const remainingSec = Math.max(0, Math.ceil((engine.activeEvent.endsAt - now) / 1000));
-        document.getElementById('eventTimer').innerHTML = `مازال على الفزعة : <span class="num-ltr">${remainingSec}</span> ثانية`;
-      } else {
-        eventBanner.style.display = 'none';
       }
 
       // Progression continue des jauges + Onde de choc dorée à l'achèvement + Micro-animations avatar

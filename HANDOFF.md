@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Chaque quartier (`bab_souika`, `la_goulette`, `lac_2`, `hammamet`, `djerba_holding`) possède désormais sa propre rue unique et ses propres projets dédiés (3 à 4 commerces spécifiques par quartier au lieu des 17 partout).
-Ajout de maisons tunisiennes authentiques (`drawHouse` : Dar Arbi médina, villas Sidi Bou Saïd, immeubles Lac 2, villas Hammamet, Houch Djerba) intercalées entre les projets.
-Ajout de carrefours animés (`drawCrossroad` : rue perpendiculaire en perspective, passages piétons zébrés, feu tricolore 🚦 animé, plaques de rues et panneau cliquable vers le quartier suivant). Tests: npm test = 12/12 PASS.
+Suppression totale des panneaux d'alertes DOM (`#questBox`, `#eventBanner`, `#dilemmaBanner`, `#luckyDropEl`) qui se réactivaient dans `tick()` et `checkDilemmasUI()` et détruisaient le layout.
+Remplacement dans le Canvas (`drawInCanvasOffersHUD`) par de petites icônes circulaires (32x32px) discrètes en haut de l'image avec mini-pastille de notification.
+Chaque quartier possède ses propres projets dédiés, des maisons tunisiennes (`drawHouse`) et des carrefours animés (`drawCrossroad`). Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

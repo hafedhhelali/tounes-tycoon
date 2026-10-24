@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(ui,canvas): remove DOM alert banners breaking layout and replace with compact circular icons inside canvas
 - feat(world): zone-specific projects, Tunisian houses and animated crossroads per neighborhood
 - chore(ci): sort artifacts by workflow run id descending in fetch_apk.ps1
 - fix(ui,canvas): remove bottom bar occlusion, render offer & alert icons inside 2D sky canvas, dynamic street groundY
