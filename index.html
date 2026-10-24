@@ -987,48 +987,63 @@
       100% { opacity: 0; transform: translate3d(calc(var(--bx) * 1.3), calc(var(--by) + 50px), 0) scale(0.8) rotate(360deg); }
     }
 
-    /* CHKOBBA MINI-GAME STYLES */
+    /* CHKOBBA MINI-GAME STYLES (COMPACT PAYSAGE ZÉRO SCROLL) */
     .chkobba-table {
       background: radial-gradient(circle, #065f46 0%, #064e3b 80%, #022c22 100%);
-      border: 3px solid #059669;
-      border-radius: 16px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
+      border: 2px solid #059669;
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
-      margin: 8px 0;
+      margin: 2px 0;
     }
     .chkobba-target-box {
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.45);
       border: 1px dashed #34d399;
-      border-radius: 12px;
-      padding: 8px 16px;
+      border-radius: 10px;
+      padding: 6px 10px;
       text-align: center;
     }
     .chkobba-card-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
       width: 100%;
     }
     .chkobba-card {
-      width: 72px;
-      height: 96px;
-      background: white;
+      width: 68px;
+      height: 86px;
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
       border-radius: 10px;
-      border: 2px solid #cbd5e1;
+      border: 2.5px solid #cbd5e1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 6px;
+      padding: 4px 6px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
       transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
       user-select: none;
+    }
+    .chkobba-card .card-val {
+      font-size: 20px;
+      font-weight: 950;
+      line-height: 1;
+    }
+    .chkobba-card .card-suit {
+      font-size: 24px;
+      line-height: 1;
+    }
+    .chkobba-card .card-name {
+      font-size: 9.5px;
+      font-weight: 900;
+      color: #334155;
+      line-height: 1;
     }
     .chkobba-card:active {
       transform: scale(0.92);
@@ -1339,15 +1354,15 @@
     body.zone-hammamet { background-image: radial-gradient(circle at 50% -10%, #2e260c 0%, #070a12 75%); }
     body.zone-djerba { background-image: radial-gradient(circle at 50% -10%, #31104b 0%, #070a12 75%); }
 
-    /* SETTINGS & PROFILE MODAL STYLES (PAYSAGE 2 COLONNES ZÉRO SCROLL) */
+    /* SETTINGS & PROFILE MODAL STYLES (PAYSAGE 2 COLONNES ULTRA-COMPACT ZÉRO SCROLL) */
     .settings-modal-card {
       max-width: 640px;
       width: 96%;
-      max-height: 94vh;
+      max-height: 96vh;
       display: flex;
       flex-direction: column;
-      padding: 10px 14px;
-      gap: 8px;
+      padding: 8px 12px;
+      gap: 6px;
       direction: rtl;
       text-align: right;
       border: 1.5px solid rgba(245, 158, 11, 0.45);
@@ -1360,7 +1375,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 6px;
+      padding-bottom: 4px;
       width: 100%;
     }
     .settings-modal-title-wrap {
@@ -1369,20 +1384,20 @@
       gap: 6px;
     }
     .settings-title-icon {
-      font-size: 18px;
+      font-size: 16px;
     }
     .settings-close-btn {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #94a3b8;
       border-radius: 8px;
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 900;
       transition: all 0.15s ease;
     }
@@ -1395,21 +1410,21 @@
       overflow: hidden;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
       width: 100%;
     }
     .settings-section {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      padding: 8px 10px;
+      border-radius: 8px;
+      padding: 6px 8px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       justify-content: space-between;
     }
     .settings-sec-title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 900;
       color: #fbbf24;
       letter-spacing: 0.2px;
@@ -1425,10 +1440,10 @@
       flex: 1;
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
-      padding: 8px 12px;
+      border-radius: 8px;
+      padding: 5px 8px;
       color: #f8fafc;
-      font-size: 13px;
+      font-size: 11.5px;
       font-weight: 700;
       outline: none;
       direction: rtl;
@@ -1443,9 +1458,9 @@
       border: 1px solid #fde68a;
       color: #1a0f02;
       font-weight: 900;
-      font-size: 12px;
-      padding: 8px 14px;
-      border-radius: 10px;
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 8px;
       cursor: pointer;
       white-space: nowrap;
       transition: transform 0.1s ease;
@@ -1455,41 +1470,41 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
     .empire-badge {
       background: rgba(245, 158, 11, 0.15);
       border: 1px solid rgba(245, 158, 11, 0.4);
       color: #fef08a;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 10px;
       font-weight: 900;
     }
     .empire-honor-title {
-      font-size: 12px;
+      font-size: 10.5px;
       font-weight: 800;
       color: #93c5fd;
     }
     .empire-progress-container {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 3px;
       background: rgba(0, 0, 0, 0.3);
-      padding: 8px 10px;
-      border-radius: 10px;
+      padding: 5px 8px;
+      border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
     .empire-progress-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 800;
       color: #cbd5e1;
     }
     .empire-progress-track {
       width: 100%;
-      height: 8px;
+      height: 6px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 999px;
       overflow: hidden;
@@ -1503,31 +1518,31 @@
     .settings-stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 5px;
     }
     .settings-stat-card {
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 8px 10px;
+      border-radius: 8px;
+      padding: 5px 7px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .settings-stat-card .stat-icon {
-      font-size: 20px;
+      font-size: 16px;
     }
     .settings-stat-card .stat-info {
       display: flex;
       flex-direction: column;
     }
     .settings-stat-card .stat-label {
-      font-size: 10px;
+      font-size: 9px;
       color: #94a3b8;
       font-weight: 700;
     }
     .settings-stat-card .stat-value {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 900;
       color: #f8fafc;
     }
@@ -1538,38 +1553,38 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 4px 0;
+      padding: 2px 0;
     }
     .option-desc {
       display: flex;
       flex-direction: column;
     }
     .option-title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       color: #f1f5f9;
     }
     .option-sub {
-      font-size: 10px;
+      font-size: 9.5px;
       color: #94a3b8;
     }
     .settings-toggle-btn {
       background: rgba(16, 185, 129, 0.15);
       border: 1px solid #10b981;
       color: #6ee7b7;
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 10.5px;
       font-weight: 900;
       cursor: pointer;
       transition: all 0.15s ease;
     }
     .settings-toggle-btn:active { transform: scale(0.95); }
     .settings-copyright {
-      font-size: 10px;
+      font-size: 9.5px;
       color: #64748b;
       text-align: center;
-      margin-top: 2px;
+      margin-top: 0;
       font-weight: 600;
     }
     .danger-zone {
@@ -1577,17 +1592,17 @@
       background: rgba(239, 68, 68, 0.04);
     }
     .danger-desc {
-      font-size: 11px;
+      font-size: 10px;
       color: #fca5a5;
-      line-height: 1.4;
+      line-height: 1.25;
     }
     .danger-reset-btn {
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid #ef4444;
       color: #fca5a5;
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 12px;
+      padding: 6px;
+      border-radius: 8px;
+      font-size: 11px;
       font-weight: 900;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -1596,30 +1611,30 @@
     .danger-confirm-box {
       background: rgba(0, 0, 0, 0.6);
       border: 1px solid #ef4444;
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 6px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
     }
     .danger-confirm-alert {
-      font-size: 11px;
+      font-size: 9.5px;
       color: #fee2e2;
-      line-height: 1.4;
+      line-height: 1.25;
       text-align: center;
     }
     .danger-confirm-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      gap: 4px;
     }
     .danger-confirm-execute-btn {
       background: #dc2626;
       border: 1px solid #f87171;
       color: white;
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 11px;
+      padding: 5px;
+      border-radius: 6px;
+      font-size: 10px;
       font-weight: 900;
       cursor: pointer;
     }
@@ -1627,9 +1642,9 @@
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #cbd5e1;
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 11px;
+      padding: 5px;
+      border-radius: 6px;
+      font-size: 10px;
       font-weight: 800;
       cursor: pointer;
     }
@@ -2289,98 +2304,116 @@
     <span id="toastMsg">الكاسة فارغة ! سربّي بيديك ولا دبّر تفتوفة 💰</span>
   </div>
 
-  <!-- MINI-GAME INTERACTIF "طرح شكبة سريع" (Défi Réflexe & Calcul Populaire) -->
+  <!-- MINI-GAME INTERACTIF "طرح شكبة سريع" (Défi Réflexe & Calcul Populaire — ZÉRO SCROLL) -->
   <div class="modal-overlay" id="minigameModal">
-    <div class="modal-card" style="border-color: #10b981; max-width: 380px;">
-      <div class="modal-icon-glow" style="font-size: 40px;">🃏</div>
-      <div class="modal-title" id="minigameTitle">طرح شكبة سريع في القهوة !</div>
-      <div class="modal-subtitle" id="minigameDesc" style="font-size: 13px; color: #a7f3d0;">
-        القا الكارطة الصحيحة باش تاكل طاولة الشكبة قبل ما يوفى الوقت !
+    <div class="modal-card" style="border-color: #10b981; max-width: 560px; width: 96%; padding: 10px 14px; gap: 6px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; direction: rtl;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="modal-icon-glow" style="font-size: 26px;">🃏</div>
+          <div style="text-align: right;">
+            <div class="modal-title" id="minigameTitle" style="font-size: 15px;">طرح شكبة سريع في القهوة !</div>
+            <div class="modal-subtitle" id="minigameDesc" style="font-size: 10.5px; color: #a7f3d0;">القا الكارطة الصحيحة باش تاكل طاولة الشكبة قبل ما يوفى الوقت !</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; font-weight: 900; font-size: 12px; background: rgba(0,0,0,0.4); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+          <span style="color: #fbbf24;" id="minigameCountdown">الوقت : <span class="num-ltr">15s</span></span>
+          <span style="color: #38bdf8;" id="minigameScore">النقاط : 0 شكبة</span>
+        </div>
       </div>
 
-      <div style="display: flex; justify-content: space-between; width: 100%; font-weight: 800; font-size: 13px; margin: 4px 0;">
-        <span style="color: #fbbf24;" id="minigameCountdown">الوقت : <span class="num-ltr">15s</span></span>
-        <span style="color: #38bdf8;" id="minigameScore">النقاط : 0 شكبة</span>
-      </div>
-
-      <!-- TABLE DE JEU CHKOBBA -->
-      <div class="chkobba-table">
+      <!-- TABLE DE JEU CHKOBBA PAYSAGE -->
+      <div class="chkobba-table" style="direction: rtl;">
         <div class="chkobba-target-box">
           <div style="font-size: 10px; color: #a7f3d0; font-weight: 800;">الورقة المرميّة في الطاولة :</div>
-          <div style="font-size: 22px; font-weight: 900; color: #fbbf24; margin-top: 2px;" id="tableCardDisplay">🂡 7 ديناري</div>
-          <div style="font-size: 11px; color: #fef08a;" id="tableTargetHint">لازم تكمّلها للعشرة (10) !</div>
+          <div style="font-size: 20px; font-weight: 950; color: #fbbf24; margin: 2px 0;" id="tableCardDisplay">♦️ 7 ديناري</div>
+          <div style="font-size: 10px; color: #fef08a; font-weight: 800;" id="tableTargetHint">لازم تكمّلها للـ 10 !</div>
         </div>
 
-        <div style="font-size: 11px; color: #ecfdf5; font-weight: 700;">اختار الكارطة الرابحة من يدك :</div>
-        <div class="chkobba-card-row" id="chkobbaHandRow">
-          <!-- 3 cartes interactives générées dynamiquement -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+          <div style="font-size: 10.5px; color: #ecfdf5; font-weight: 800;">اختار الكارطة الرابحة من يدك :</div>
+          <div class="chkobba-card-row" id="chkobbaHandRow">
+            <!-- 3 cartes interactives générées dynamiquement -->
+          </div>
         </div>
       </div>
 
-      <div style="font-size: 11px; color: #94a3b8;">كل شكبة تجيبلك بونيس كبير في الكاسة ! 💰</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; direction: rtl;">
+        <span style="font-size: 10.5px; color: #94a3b8;">كل شكبة تجيبلك بونيس كبير في الكاسة ! 💰</span>
+        <button id="closeMinigameBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #cbd5e1; font-size: 11px; font-weight: 800; cursor: pointer; padding: 4px 12px;">سكّر ✕</button>
+      </div>
     </div>
   </div>
 
-  <!-- MODAL DE PRESTIGE (بيع واخرج مستثمر كبير) -->
+  <!-- MODAL DE PRESTIGE (بيع واخرج مستثمر كبير — ZÉRO SCROLL) -->
   <div class="modal-overlay" id="prestigeModal">
-    <div class="modal-card" style="border-color: #f59e0b;">
-      <div class="modal-icon-glow">👑</div>
-      <div class="modal-title">رأس مال الحومة والخبرة</div>
-      <div class="modal-subtitle">بيع كل مشاريعك الحالية، وارجع مستثمر كبير برأس مال وخبرة مضاعفة !</div>
-      
-      <div style="background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; width: 100%; text-align: right; margin: 6px 0;">
-        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-          <span style="color: #94a3b8;">النقاط الحالية :</span>
-          <span style="font-weight: 900; color: #f8fafc;" id="currentPrestigePts">0</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
-          <span style="color: #94a3b8;">نقاط إضافية رابحها :</span>
-          <span style="font-weight: 900; color: #34d399;" id="gainedPrestigePts">+0</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
-          <span style="color: #fbbf24;">المضروب الجديد الدائم :</span>
-          <span style="color: #fbbf24;" id="newPrestigeMult">x1.00</span>
-        </div>
-      </div>
-
-      <button class="modal-btn" id="confirmPrestigeBtn" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); border-color: #f59e0b;">
-        🚀 صَحّح العقد وارجع معلّم
-      </button>
-      <button id="cancelPrestigeBtn" style="background: transparent; border: none; color: #94a3b8; font-size: 12px; font-weight: 800; cursor: pointer; padding: 6px;">
-        مازلت نحبّ نلمّ بزايد فلوس
-      </button>
-    </div>
-  </div>
-
-  <!-- MODAL ROUE DE LA FORTUNE ('عجلة الحظ التونسية') -->
-  <div class="modal-overlay" id="wheelModal">
-    <div class="modal-card" style="border-color: #e11d48; max-width: 440px; padding: 10px 14px; gap: 6px;">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <div class="modal-icon-glow" style="font-size: 28px;">🎡</div>
+    <div class="modal-card" style="border-color: #f59e0b; max-width: 500px; width: 96%; padding: 10px 14px; gap: 6px; direction: rtl;">
+      <div style="display: flex; align-items: center; gap: 8px; width: 100%; text-align: right;">
+        <div class="modal-icon-glow" style="font-size: 28px;">👑</div>
         <div>
-          <div class="modal-title" style="font-size: 16px;">عجلة الحظ التونسية !</div>
-          <div class="modal-subtitle" style="font-size: 10.5px;">دوّر العجلة ودبّر صابة فلوس، تيربو سريع، ولا كساكروت مجانية</div>
+          <div class="modal-title" style="font-size: 16px;">رأس مال الحومة والخبرة</div>
+          <div class="modal-subtitle" style="font-size: 10.5px;">بيع كل مشاريعك الحالية، وارجع مستثمر كبير لباب سويقة بخبرة مضاعفة !</div>
         </div>
       </div>
-
-      <div style="position: relative; width: 145px; height: 145px; margin: 4px auto;">
-        <div class="wheel-center-pointer"></div>
-        <div class="wheel-spinner-disc" id="wheelDisc">
-          <div class="wheel-center-cap">🇹🇳</div>
+      
+      <div style="background: rgba(0,0,0,0.45); border-radius: 10px; padding: 8px 12px; width: 100%; text-align: right; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.03); padding: 4px; border-radius: 8px;">
+          <span style="font-size: 10px; color: #94a3b8;">النقاط الحالية</span>
+          <span style="font-size: 12px; font-weight: 900; color: #f8fafc;" id="currentPrestigePts">0</span>
         </div>
-      </div>
-
-      <div style="font-size: 12px; font-weight: 800; color: #fbbf24;" id="wheelResultLabel">
-        جرّب حظّك واربح بالوقت !
+        <div style="display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.03); padding: 4px; border-radius: 8px;">
+          <span style="font-size: 10px; color: #94a3b8;">نقاط إضافية</span>
+          <span style="font-size: 12px; font-weight: 900; color: #34d399;" id="gainedPrestigePts">+0</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; background: rgba(245,158,11,0.1); padding: 4px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);">
+          <span style="font-size: 10px; color: #fbbf24;">المضروب الجديد</span>
+          <span style="font-size: 13px; font-weight: 950; color: #fbbf24;" id="newPrestigeMult">x1.00</span>
+        </div>
       </div>
 
       <div style="display: flex; gap: 8px; width: 100%; align-items: center;">
-        <button class="modal-btn" id="spinWheelBtn" style="flex: 1; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border-color: #fda4af; padding: 8px;">
-          🎰 دوّر العجلة توّا !
+        <button class="modal-btn" id="confirmPrestigeBtn" style="flex: 1; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); border-color: #f59e0b; padding: 8px; font-size: 12.5px;">
+          🚀 صَحّح العقد وارجع معلّم
         </button>
-        <button id="closeWheelBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #cbd5e1; font-size: 12px; font-weight: 800; cursor: pointer; padding: 8px 14px;">
+        <button id="cancelPrestigeBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #cbd5e1; font-size: 11.5px; font-weight: 800; cursor: pointer; padding: 8px 12px; white-space: nowrap;">
           سكّر
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ROUE DE LA FORTUNE ('عجلة الحظ التونسية' — PAYSAGE 2 COLONNES ZÉRO SCROLL) -->
+  <div class="modal-overlay" id="wheelModal">
+    <div class="modal-card" style="border-color: #e11d48; max-width: 520px; width: 96%; padding: 10px 14px; gap: 8px; direction: rtl;">
+      <div style="display: grid; grid-template-columns: auto 1fr; gap: 14px; width: 100%; align-items: center;">
+        <div style="position: relative; width: 120px; height: 120px; margin: 2px auto;">
+          <div class="wheel-center-pointer"></div>
+          <div class="wheel-spinner-disc" id="wheelDisc" style="width: 120px; height: 120px;">
+            <div class="wheel-center-cap">🇹🇳</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px; text-align: right;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 24px;">🎡</span>
+            <div>
+              <div class="modal-title" style="font-size: 15.5px;">عجلة الحظ التونسية !</div>
+              <div class="modal-subtitle" style="font-size: 10.5px;">تفرّج في إشهار قصير ودوّر العجلة لربح صابة فلوس أو تيربو !</div>
+            </div>
+          </div>
+
+          <div style="font-size: 11.5px; font-weight: 800; color: #fbbf24; background: rgba(0,0,0,0.35); padding: 5px 8px; border-radius: 8px; border: 1px solid rgba(251,191,36,0.25);" id="wheelResultLabel">
+            جرّب حظّك واربح بالوقت !
+          </div>
+
+          <div style="display: flex; gap: 6px; width: 100%; align-items: center;">
+            <button class="modal-btn" id="spinWheelBtn" style="flex: 1; background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); border-color: #fda4af; padding: 7px 10px; font-size: 12px;">
+              🎬 تفرّج في إشهار ودوّر العجلة 🎰
+            </button>
+            <button id="closeWheelBtn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #cbd5e1; font-size: 11.5px; font-weight: 800; cursor: pointer; padding: 7px 12px;">
+              سكّر
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2891,10 +2924,12 @@
       cards.forEach(c => {
         const cardBtn = document.createElement('div');
         cardBtn.className = 'chkobba-card';
+        const isRedSuit = c.suit.includes('♦️') || c.suit.includes('♥️');
+        const suitColor = isRedSuit ? '#dc2626' : '#0f172a';
         cardBtn.innerHTML = `
-          <div class="card-val">${c.val}</div>
-          <div class="card-suit">${SUIT_ICONS[c.suit] || '🃏'}</div>
-          <div style="font-size: 10px; font-weight: 800; color: #64748b;">${c.suit.split(' ')[1] || ''}</div>
+          <div class="card-val" style="color: ${suitColor};">${c.val}</div>
+          <div class="card-suit" style="color: ${suitColor};">${SUIT_ICONS[c.suit] || '♦️'}</div>
+          <div class="card-name">${c.suit.split(' ')[1] || ''}</div>
         `;
 
         cardBtn.onclick = (e) => {
@@ -2916,6 +2951,14 @@
 
         chkobbaHandRow.appendChild(cardBtn);
       });
+    }
+
+    const closeMinigameBtn = document.getElementById('closeMinigameBtn');
+    if (closeMinigameBtn) {
+      closeMinigameBtn.onclick = () => {
+        clearInterval(chkobbaTimer);
+        minigameModal.classList.remove('active');
+      };
     }
 
     eventMiniGameBtn.onclick = () => {
@@ -3688,16 +3731,16 @@
         const isCurrent = z.id === current.id;
         const canUnlock = engine.prestigeLevel >= z.minPrestige && (engine.lifetimeDinarsEarned >= z.reqDinars || engine.totalDinarsEarned >= z.reqDinars);
         const item = document.createElement('div');
-        item.style.cssText = `background: rgba(15,23,42,0.8); border: 1px solid ${isCurrent ? '#10b981' : 'rgba(255,255,255,0.1)'}; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: space-between; direction: rtl; text-align: right;`;
+        item.style.cssText = `background: rgba(15,23,42,0.85); border: 1px solid ${isCurrent ? '#10b981' : 'rgba(255,255,255,0.1)'}; border-radius: 9px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; direction: rtl; text-align: right;`;
         item.innerHTML = `
           <div>
-            <div style="font-weight: 900; color: #f8fafc; font-size: 13px;">${z.icon} ${z.name}</div>
-            <div style="font-size: 10px; color: #38bdf8;">${z.bonusDesc}</div>
+            <div style="font-weight: 900; color: #f8fafc; font-size: 11.5px; line-height: 1.15;">${z.icon} ${z.name}</div>
+            <div style="font-size: 9.5px; color: #38bdf8; line-height: 1.1;">${z.bonusDesc}</div>
           </div>
           <div>
-            ${isCurrent ? '<span style="font-size: 11px; font-weight: 900; color: #34d399;">الحيّ الحالي</span>' : canUnlock ? `
-              <button class="upg-buy-btn" style="padding: 4px 10px; font-size: 10px;" id="modal-zone-move-${z.id}">انقل 🚀</button>
-            ` : '<span style="font-size: 10px; color: #ef4444;">🔒 مقفول</span>'}
+            ${isCurrent ? '<span style="font-size: 10px; font-weight: 900; color: #34d399;">الحيّ الحالي</span>' : canUnlock ? `
+              <button class="upg-buy-btn" style="padding: 3px 8px; font-size: 9.5px;" id="modal-zone-move-${z.id}">انقل 🚀</button>
+            ` : '<span style="font-size: 9.5px; color: #ef4444;">🔒 مقفول</span>'}
           </div>
         `;
         modalZonesList.appendChild(item);
@@ -3738,18 +3781,19 @@
     };
 
     function updateWheelBtnState() {
-      const canFree = engine.canSpinWheel();
-      wheelBadgeReady.style.display = canFree ? 'block' : 'none';
-      wheelBadgeReady.innerText = 'بلاش !';
-      spinWheelBtn.innerText = canFree ? '🎰 دوّر العجلة بلاش توّا !' : '🎬 تفرّج في إشهار ودوّر العجلة';
+      if (wheelBadgeReady) {
+        wheelBadgeReady.style.display = 'block';
+        wheelBadgeReady.innerText = '🎬';
+      }
+      if (spinWheelBtn) {
+        spinWheelBtn.innerText = '🎬 تفرّج في إشهار ودوّر العجلة 🎰';
+      }
     }
 
     spinWheelBtn.onclick = async () => {
       if (isSpinningWheel) return;
-      const canFree = engine.canSpinWheel();
-      if (!canFree) {
-        await adsService.showRewardedBoost();
-      }
+      // Toujours lancer une publicité vidéo récompensée pour tourner la roue
+      await adsService.showRewardedBoost();
 
       isSpinningWheel = true;
       spinWheelBtn.disabled = true;
@@ -3769,7 +3813,7 @@
         isSpinningWheel = false;
         spinWheelBtn.disabled = false;
 
-        const result = engine.spinWheel(!canFree ? false : true);
+        const result = engine.spinWheel(false);
         soundEngine.playMilestoneFanfare();
 
         wheelResultLabel.innerHTML = `مبروك ! ربحت <span style="color:#fde68a;">${result.prize.name}</span> (${result.prize.icon})`;
@@ -4105,20 +4149,20 @@
         bizDetailStaffList.innerHTML = '';
         detail.staffSlots.forEach((slot, idx) => {
           const item = document.createElement('div');
-          item.style.cssText = `background: ${slot.hired ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.3)'}; border: 1px solid ${slot.hired ? '#10b981' : 'rgba(255,255,255,0.08)'}; border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;`;
+          item.style.cssText = `background: ${slot.hired ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.3)'}; border: 1px solid ${slot.hired ? '#10b981' : 'rgba(255,255,255,0.08)'}; border-radius: 7px; padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;`;
           item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 18px;">${slot.icon}</span>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 16px;">${slot.icon}</span>
               <div>
-                <div style="font-size: 12px; font-weight: 900; color: #f8fafc;">${slot.name} (${slot.role})</div>
-                <div style="font-size: 10px; color: #38bdf8;">${slot.bonusDesc}</div>
+                <div style="font-size: 11px; font-weight: 900; color: #f8fafc; line-height: 1.15;">${slot.name} (${slot.role})</div>
+                <div style="font-size: 9.5px; color: #38bdf8; line-height: 1.1;">${slot.bonusDesc}</div>
               </div>
             </div>
             <div>
               ${slot.hired ? `
-                <span style="font-size: 11px; font-weight: 900; color: #34d399;">يخدم ✓</span>
+                <span style="font-size: 10.5px; font-weight: 900; color: #34d399;">يخدم ✓</span>
               ` : `
-                <button class="upg-buy-btn" style="padding: 4px 8px; font-size: 10px;" id="hire-slot-${currentDetailBizId}-${idx}">خدّم : ${formatCurrency(slot.cost, 0)}</button>
+                <button class="upg-buy-btn" style="padding: 3px 7px; font-size: 9.5px;" id="hire-slot-${currentDetailBizId}-${idx}">خدّم : ${formatCurrency(slot.cost, 0)}</button>
               `}
             </div>
           `;
@@ -4146,13 +4190,13 @@
         bizDetailRecipeList.innerHTML = '';
         detail.recipeBreakdown.forEach(item => {
           const row = document.createElement('div');
-          row.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;';
+          row.style.cssText = 'background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;';
           row.innerHTML = `
             <div>
-              <div style="font-size: 12px; font-weight: 800; color: #fde68a;">${item.item}</div>
-              <div style="font-size: 10px; color: #94a3b8;">نسبة من الطلبيات : ${item.sharePct}%</div>
+              <div style="font-size: 11px; font-weight: 800; color: #fde68a; line-height: 1.15;">${item.item}</div>
+              <div style="font-size: 9.5px; color: #94a3b8; line-height: 1.1;">نسبة من الطلبيات : ${item.sharePct}%</div>
             </div>
-            <div style="font-size: 12px; font-weight: 900; color: #38bdf8;">
+            <div style="font-size: 11px; font-weight: 900; color: #38bdf8;">
               ${formatCurrency(item.price)}
             </div>
           `;

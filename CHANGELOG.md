@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(wheel,chkobba,modals): ad-triggered wheel spin, visible chkobba cards contrast & zero-scroll landscape popups
 - feat(anim,ux,fix): detailed pedestrians & vehicles, 3D crossroads, click-outside modal close, fix persistent toast and reset to first zone
 - feat(ui,graphics,guide): zero-scroll landscape modals, 3D orb icons, cinematic zone transitions, 60fps tick optimization and quick start guide
 - fix(ui,canvas): remove DOM alert banners breaking layout and replace with compact circular icons inside canvas
