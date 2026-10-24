@@ -2,6 +2,7 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
+Fix: toast d'erreur au-dessus des popups (z 500, en haut) → achats/recrutements impossibles = enfin visibles; boucles rAF (tick, Quartier, Store) protégées par try/catch; navigation quartiers bidirectionnelle (panneaux suivant+précédent par carrefour); tap sur la scène = servir (revenu); boutons « خدّم » lisibles (halo + prix); plus de mention « caisse »; chip الرصيد live dans la vue projet.
 Vue « ادخل للمحلّ » immersive : canvas `CanvasStoreEngine` plein popup (échelle uniforme, hauteur logique 200, clics remappés), HUD en superposition (barre haute: identité+chiffres+✕, barre basse: amélioration+onglets), tiroir glass `#bizDrawer` fermé par défaut (Staff/Recette/Activité), ambiance animée (lanternes, rayons, poussière, vignette).
 Acquis: roue = pub systématique, cartes Chkobba lisibles, popups zéro-scroll, passants/véhicules/carrefours détaillés, clic hors popup, toast `ناقصك فلوس`, reset → `bab_souika`.
 Tests: npm test = 12/12 PASS.

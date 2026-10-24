@@ -59,9 +59,10 @@ export class CanvasStoreEngine {
     this.canvas.addEventListener('click', this.handleCanvasClick);
   }
 
-  setCallbacks({ onHire, onUpgrade }) {
+  setCallbacks({ onHire, onUpgrade, onServe }) {
     this.onHireClick = onHire;
     this.onUpgradeClick = onUpgrade;
+    this.onServeClick = onServe;
   }
 
   resize() {
@@ -98,7 +99,14 @@ export class CanvasStoreEngine {
     this.resizeTimer = setTimeout(() => this.resize(), 300);
     window.addEventListener('resize', this.onWindowResize);
     this.lastTime = performance.now();
-    this.loop = this.loop.bind(this);
+    this.loop = (now) => {
+      try {
+        this.step(now);
+      } catch (err) {
+        console.error('CanvasStoreEngine frame error', err);
+      }
+      this.animId = requestAnimationFrame(this.loop);
+    };
     this.animId = requestAnimationFrame(this.loop);
   }
 
@@ -203,9 +211,13 @@ export class CanvasStoreEngine {
         if (zone.type === 'hire_cashier' || zone.type === 'hire_worker') {
           if (this.onHireClick) this.onHireClick(this.bizId, zone.slotIndex);
         }
-        break;
+        return;
       }
     }
+
+    // Tap dans la scène (hors zone de recrutement) = servir un client et encaisser
+    if (this.onServeClick) this.onServeClick(this.bizId);
+    this.moneyPuffs.push({ x: clickX, y: clickY - 10, vy: -40, text: '🪙', life: 0.7, maxLife: 0.7, alpha: 1 });
   }
 
   // --- RENDU D'ARRIÈRE-PLAN TUNISIEN DÉTAILLÉ & ARCHITECTURE DU COMMERCE ---
@@ -457,11 +469,13 @@ export class CanvasStoreEngine {
     const deskW = 76;
     const deskH = 46;
 
-    // 1. Caisse Enregistreuse / TPE
+    // 1. Écran de comptoir : icône du projet (remplace l'ancienne caisse enregistreuse)
     ctx.save();
     const bounce = isBusy ? Math.sin(timeSec * 8) * 2 : 0;
-    ctx.font = '28px sans-serif';
-    ctx.fillText('📠', counterX + 22, counterY + bounce);
+    const counterBiz = this.getBiz();
+    ctx.font = '22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(counterBiz ? counterBiz.icon : '🏪', counterX + deskW - 16, counterY + 52 + bounce);
 
     // 2. Meuble Comptoir en bois vernis tunisien
     const woodGrad = ctx.createLinearGradient(counterX, counterY + 12, counterX, counterY + 12 + deskH);
@@ -478,31 +492,37 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Plaque dorée 'الكاسة'
+    // Plaque dorée : nom du projet (aucune mention de « caisse »)
+    const bizRef = this.getBiz();
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 11px sans-serif';
+    ctx.font = 'bold 9.5px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('الكاسة', counterX + deskW / 2, counterY + 38);
+    ctx.fillText(bizRef ? bizRef.name.slice(0, 13) : '', counterX + deskW / 2, counterY + 38);
 
-    // 3. Caissier (Derrière le comptoir)
+    // 3. Responsable du poste (derrière le comptoir)
     const cashierSlot = detail.staffSlots && detail.staffSlots[0];
     const cashierX = counterX + 22;
     const cashierY = counterY - 2;
 
     if (cashierSlot && cashierSlot.hired) {
-      // Animation tête du caissier
+      // Responsable animé, avec ombre et halo de travail
       const bob = isBusy ? Math.sin(timeSec * 7) * 3 : Math.sin(timeSec * 2) * 1.5;
-      ctx.font = '30px sans-serif';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.beginPath();
+      ctx.ellipse(cashierX + 16, counterY + 14, 15, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = '32px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('👨‍💼', cashierX + 16, cashierY + bob);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(cashierSlot.icon || '👨‍💼', cashierX + 16, cashierY + 8 + bob);
 
       // Bulle de statut au-dessus
       const statusIcon = isBusy ? '✨' : '💤';
       ctx.font = '14px sans-serif';
       ctx.fillText(statusIcon, cashierX + 16, cashierY - 26 + (isBusy ? -Math.abs(Math.sin(timeSec * 6) * 4) : 0));
     } else {
-      // Emplacement de recrutement cliquable pour la caisse
-      this.drawHireButton(ctx, counterX + 10, counterY - 42, 56, 40, 'كاسيي', 0, 'hire_cashier');
+      // Emplacement de recrutement cliquable pour le poste de responsable
+      this.drawHireButton(ctx, counterX + 6, counterY - 44, 64, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
     }
     ctx.restore();
   }
@@ -556,7 +576,7 @@ export class CanvasStoreEngine {
         ctx.fillText(effIcon, stationX + 20, baseY - 40 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
       } else {
         // Bouton de recrutement interactif sur le poste
-        this.drawHireButton(ctx, stationX, baseY - 50, 44, 48, 'انتداب', idx + 1, 'hire_worker');
+        this.drawHireButton(ctx, stationX, baseY - 56, 48, 54, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
       }
 
       ctx.restore();
@@ -608,32 +628,47 @@ export class CanvasStoreEngine {
     ctx.restore();
   }
 
-  // Dessin d'un bouton de recrutement propre dans le canvas
-  drawHireButton(ctx, x, y, width, height, label, slotIndex, type) {
-    this.clickZones.push({ x, y, width, height, slotIndex, type });
+  // Dessin d'un bouton de recrutement très lisible : halo pulsant, icône, libellé et prix
+  drawHireButton(ctx, x, y, width, height, label, slotIndex, type, cost = null, now = 0) {
+    this.clickZones.push({ x: x - 4, y: y - 4, width: width + 8, height: height + 8, slotIndex, type });
 
+    const affordable = cost === null || this.engine.dinars >= cost;
+    const pulse = 0.5 + 0.5 * Math.sin(now / 260);
     ctx.save();
-    // Fond pointillé accueillant
-    ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([4, 3]);
+    // Halo pulsant
+    ctx.shadowColor = affordable ? 'rgba(52, 211, 153, 0.9)' : 'rgba(251, 191, 36, 0.7)';
+    ctx.shadowBlur = 8 + pulse * 10;
+    const g = ctx.createLinearGradient(x, y, x, y + height);
+    g.addColorStop(0, affordable ? 'rgba(16, 185, 129, 0.85)' : 'rgba(120, 53, 15, 0.85)');
+    g.addColorStop(1, affordable ? 'rgba(4, 120, 87, 0.9)' : 'rgba(69, 26, 3, 0.9)');
+    ctx.fillStyle = g;
+    ctx.strokeStyle = affordable ? '#a7f3d0' : '#fbbf24';
+    ctx.lineWidth = 1.8;
     ctx.beginPath();
-    ctx.roundRect(x, y, width, height, 8);
+    ctx.roundRect(x, y, width, height, 10);
     ctx.fill();
     ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
 
-    // Icône + et texte
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 16px sans-serif';
+    ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText('➕', x + width / 2, y + height / 2 - 2);
-
-    ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 9px sans-serif';
-    ctx.fillText(label, x + width / 2, y + height - 6);
+    ctx.font = 'bold 15px sans-serif';
+    ctx.fillText('➕', x + width / 2, y + 17);
+    ctx.font = 'bold 10px sans-serif';
+    ctx.fillText(label, x + width / 2, y + 30);
+    if (cost !== null) {
+      ctx.fillStyle = affordable ? '#d1fae5' : '#fde68a';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.fillText(`${this.fmtCost(cost)} د.ت`, x + width / 2, y + height - 5);
+    }
     ctx.restore();
+  }
+
+  fmtCost(n) {
+    if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B`;
+    if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+    if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K`;
+    return `${Math.round(n)}`;
   }
 
   // --- CLIENTS VIVANTS AVEC BULLES DE COMMANDE ET DÉPLACEMENT ---
@@ -726,6 +761,30 @@ export class CanvasStoreEngine {
     const h = this.height;
     const t = now / 1000;
 
+    // 0. Enseigne néon du projet au centre du mur (nom + icône)
+    const signBiz = this.getBiz();
+    if (signBiz) {
+      const signW = Math.min(170, w * 0.4);
+      const sx = (w - signW) / 2;
+      const flicker = 0.85 + 0.15 * Math.sin(t * 7) * Math.sin(t * 3.1);
+      ctx.save();
+      ctx.shadowColor = `rgba(251, 191, 36, ${0.8 * flicker})`;
+      ctx.shadowBlur = 14;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+      ctx.strokeStyle = `rgba(251, 191, 36, ${flicker})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(sx, 26, signW, 26, 13);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${signBiz.icon} ${signBiz.name.slice(0, 20)}`, w / 2, 43);
+      ctx.restore();
+    }
+
     // 1. Rayons de lumière chaude traversant la boutique
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
@@ -799,8 +858,8 @@ export class CanvasStoreEngine {
     ctx.fillRect(0, 0, w, h);
   }
 
-  // --- BOUCLE D'ANIMATION 60 FPS ---
-  loop(now) {
+  // --- BOUCLE D'ANIMATION 60 FPS (une exception de rendu ne doit jamais figer la scène) ---
+  step(now) {
     if (!this.lastTime) this.lastTime = now;
     const dt = Math.min((now - this.lastTime) / 1000, 0.1);
     this.lastTime = now;
@@ -895,8 +954,6 @@ export class CanvasStoreEngine {
     this.drawCustomers(this.ctx, now);
     this.drawParticles(this.ctx);
     this.drawVignette(this.ctx);
-
-    this.animId = requestAnimationFrame(this.loop);
   }
 }
 
@@ -1069,6 +1126,24 @@ export class QuartierAnimator {
     };
 
     const rawItems = zoneSpecs[zoneId] || zoneSpecs.bab_souika;
+
+    // Quartier précédent (cyclique) pour permettre la navigation dans les deux sens
+    const zoneOrder = ['bab_souika', 'la_goulette', 'lac_2', 'hammamet', 'djerba_holding'];
+    const zoneLabels = {
+      bab_souika: 'باب سويقة 🕌',
+      la_goulette: 'حلق الوادي ⚓',
+      lac_2: 'البحيرة 2 🏙️',
+      hammamet: 'الحمامات 🏖️',
+      djerba_holding: 'تونس الدولية 👑'
+    };
+    const zIdx = Math.max(0, zoneOrder.indexOf(zoneId));
+    const prevId = zoneOrder[(zIdx - 1 + zoneOrder.length) % zoneOrder.length];
+    rawItems.forEach(item => {
+      if (item.type === 'crossroad') {
+        item.prevZoneId = prevId;
+        item.prevZoneLabel = zoneLabels[prevId];
+      }
+    });
     this.streetLayout = [];
     this.buildingsConfig = [];
 
@@ -1224,10 +1299,14 @@ export class QuartierAnimator {
     if (this.animId) return;
     this.lastTime = performance.now();
     const loop = (timestamp) => {
-      const dt = Math.min((timestamp - this.lastTime) / 1000, 0.1);
-      this.lastTime = timestamp;
-      this.update(dt, timestamp);
-      this.render(timestamp);
+      try {
+        const dt = Math.min((timestamp - this.lastTime) / 1000, 0.1);
+        this.lastTime = timestamp;
+        this.update(dt, timestamp);
+        this.render(timestamp);
+      } catch (err) {
+        console.error('QuartierAnimator frame error', err);
+      }
       this.animId = requestAnimationFrame(loop);
     };
     this.animId = requestAnimationFrame(loop);
@@ -2271,18 +2350,21 @@ export class QuartierAnimator {
     ctx.textAlign = 'center';
     ctx.fillText(`🪧 ${cItem.streetName}`, signX + signW / 2, signY + 14);
 
-    // 5. Panneau directionnel cliquable vers le quartier suivant !
-    if (cItem.nextZoneId && cItem.nextZoneLabel) {
+    // 5. Panneaux directionnels cliquables : quartier suivant ET quartier précédent (navigation bidirectionnelle)
+    const signs = [];
+    if (cItem.nextZoneId && cItem.nextZoneLabel) signs.push({ id: cItem.nextZoneId, label: `⬅️ ${cItem.nextZoneLabel}`, c0: '#10b981', c1: '#047857', edge: '#a7f3d0' });
+    if (cItem.prevZoneId && cItem.prevZoneLabel) signs.push({ id: cItem.prevZoneId, label: `${cItem.prevZoneLabel} ➡️`, c0: '#6366f1', c1: '#4338ca', edge: '#c7d2fe' });
+    signs.forEach((s, i) => {
       const dirW = Math.min(w - 8, 116);
       const dirH = 24;
       const dirX = x + (w - dirW) / 2 + 4;
-      const dirY = groundY - 58;
+      const dirY = groundY - 58 - i * 28;
 
       const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
-      signGrad.addColorStop(0, '#10b981');
-      signGrad.addColorStop(1, '#047857');
+      signGrad.addColorStop(0, s.c0);
+      signGrad.addColorStop(1, s.c1);
       ctx.fillStyle = signGrad;
-      ctx.strokeStyle = '#a7f3d0';
+      ctx.strokeStyle = s.edge;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.roundRect(dirX, dirY, dirW, dirH, 12);
@@ -2292,7 +2374,7 @@ export class QuartierAnimator {
       ctx.fillStyle = '#ffffff';
       ctx.font = '900 10px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`⬅️ ${cItem.nextZoneLabel}`, dirX + dirW / 2, dirY + 16);
+      ctx.fillText(s.label, dirX + dirW / 2, dirY + 16);
 
       this.interactiveHitboxes.push({
         x: dirX,
@@ -2300,9 +2382,9 @@ export class QuartierAnimator {
         w: dirW,
         h: dirH,
         action: 'switch_zone',
-        bizId: cItem.nextZoneId
+        bizId: s.id
       });
-    }
+    });
 
     ctx.restore();
   }

@@ -742,9 +742,9 @@
     /* TOAST DE NOTIFICATION SOLDE INSUFFISANT */
     .toast-box {
       position: fixed;
-      bottom: 24px;
+      top: 10px;
       left: 50%;
-      transform: translateX(-50%) translateY(100px);
+      transform: translateX(-50%) translateY(-120px);
       background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
       border: 1px solid #ef4444;
       color: #fef2f2;
@@ -756,7 +756,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      z-index: 100;
+      z-index: 500;
       opacity: 0;
       pointer-events: none;
       direction: rtl;
@@ -2226,7 +2226,7 @@
         </div>
         <div class="header-actions">
           <div class="balance-hero">
-            <span class="balance-label">الكاسة:</span>
+            <span class="balance-label">الرصيد:</span>
             <span class="balance-val" id="dinarsDisplay">0.00 د.ت</span>
           </div>
           <button class="nav-tab-item active" id="tabBtnBusinesses" title="الشارع والمشاريع">
@@ -2635,6 +2635,7 @@
           </div>
         </div>
         <div class="biz-hud-stats">
+          <div class="biz-chip"><span class="biz-chip-k">💵 الرصيد</span><b id="bizBalance">0.00</b></div>
           <div class="biz-chip"><span class="biz-chip-k">💰 / كليان</span><b id="bizDetailIncome">+0.00 د.ت</b></div>
           <div class="biz-chip"><span class="biz-chip-k">⚡ الوتيرة</span><b id="bizDetailRate">+0.00 د.ت / ث</b></div>
         </div>
@@ -4113,6 +4114,7 @@
       renderBizDetailContent();
       if (bizDetailModal) bizDetailModal.classList.add('active');
       switchBizDetailTab(null);
+      lastDisplayedDinars = '';
 
       const canvasEl = document.getElementById('bizStoreCanvas');
       if (canvasEl) {
@@ -4126,6 +4128,12 @@
                 renderDOM();
               } else {
                 triggerBalanceAlert('ناقصك فلوس باش تخدّمو ! 👔');
+              }
+            },
+            onServe: (bizId) => {
+              const servedBiz = engine.businesses.find(b => b.id === bizId);
+              if (servedBiz && servedBiz.level > 0 && engine.startProduction(bizId)) {
+                soundEngine.playCoin();
               }
             }
           });
@@ -4437,15 +4445,17 @@
     let lastDisplayedTitle = '';
     let lastUiSyncAt = 0;
     const titleBadgeEl = document.getElementById('playerTitleBadge');
+    const bizBalanceEl = document.getElementById('bizBalance');
     const claimQuestBtn = document.getElementById('claimQuestBtn');
 
-    function tick() {
+    function tickStep() {
       const now = Date.now();
       engine.update(now);
 
       const formattedDinars = formatCurrency(engine.dinars);
       if (formattedDinars !== lastDisplayedDinars) {
         dinarsDisplay.innerHTML = formattedDinars;
+        if (bizBalanceEl) bizBalanceEl.innerHTML = formattedDinars;
         lastDisplayedDinars = formattedDinars;
       }
 
@@ -4511,7 +4521,15 @@
         localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
         lastSave = now;
       }
+    }
 
+    // Boucle principale : une exception ponctuelle ne doit jamais figer le solde
+    function tick() {
+      try {
+        tickStep();
+      } catch (err) {
+        console.error('tick error', err);
+      }
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
