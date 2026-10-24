@@ -839,6 +839,7 @@ export class QuartierAnimator {
     this.onUpgradeBiz = null;
     this.onCollectBiz = null;
     this.onHudAction = null;
+    this.onSwitchZone = null;
 
     // Alertes & Offres actives passées par le HUD principal pour rendu 100% dans le Canvas
     this.hudOffers = {
@@ -869,26 +870,29 @@ export class QuartierAnimator {
     this.seagulls = [];
     this.interactiveHitboxes = [];
 
-    this.buildingsConfig = [
-      { id: 'kaskrout', x: 80, width: 140, height: 110, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
-      { id: 'fricasse', x: 250, width: 130, height: 115, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
-      { id: 'kahwa', x: 410, width: 170, height: 130, style: 'cafe_terrasse', color: '#eab308', roofColor: '#1e3a8a' },
-      { id: 'attariya', x: 610, width: 150, height: 125, style: 'attariya_shop', color: '#10b981', roofColor: '#047857' },
-      { id: 'patisserie', x: 790, width: 160, height: 135, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
-      { id: 'taxi_collectif', x: 980, width: 180, height: 115, style: 'taxi_station', color: '#facc15', roofColor: '#1f2937' },
-      { id: 'superette', x: 1190, width: 165, height: 135, style: 'superette_modern', color: '#06b6d4', roofColor: '#0e7490' },
-      { id: 'supermarche', x: 1385, width: 190, height: 150, style: 'supermarket_mall', color: '#3b82f6', roofColor: '#1d4ed8' },
-      { id: 'salon_de_the', x: 1605, width: 175, height: 145, style: 'lounge_tea', color: '#ec4899', roofColor: '#831843' },
-      { id: 'restaurant', x: 1810, width: 180, height: 155, style: 'restaurant_chami', color: '#ef4444', roofColor: '#991b1b' },
-      { id: 'agence_voyages', x: 2020, width: 165, height: 140, style: 'travel_agency', color: '#38bdf8', roofColor: '#0284c7' },
-      { id: 'hotel', x: 2215, width: 200, height: 185, style: 'luxury_hotel', color: '#a855f7', roofColor: '#6b21a8' },
-      { id: 'centre_commercial', x: 2445, width: 220, height: 195, style: 'grand_mall', color: '#6366f1', roofColor: '#4338ca' },
-      { id: 'usine_conserves', x: 2695, width: 185, height: 150, style: 'harissa_factory', color: '#f43f5e', roofColor: '#be123c' },
-      { id: 'showroom_auto', x: 2910, width: 195, height: 160, style: 'auto_palace', color: '#e2e8f0', roofColor: '#334155' },
-      { id: 'promoteur_immobilier', x: 3135, width: 210, height: 210, style: 'real_estate_tower', color: '#38bdf8', roofColor: '#0369a1' },
-      { id: 'tayaran_el_ghzela', x: 3375, width: 230, height: 220, style: 'airline_headquarters', color: '#f1f5f9', roofColor: '#e11d48' }
-    ];
+    this.bizTemplates = {
+      kaskrout: { id: 'kaskrout', width: 145, height: 115, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
+      fricasse: { id: 'fricasse', width: 140, height: 118, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
+      kahwa: { id: 'kahwa', width: 170, height: 132, style: 'cafe_terrasse', color: '#eab308', roofColor: '#1e3a8a' },
+      attariya: { id: 'attariya', width: 155, height: 128, style: 'attariya_shop', color: '#10b981', roofColor: '#047857' },
+      patisserie: { id: 'patisserie', width: 165, height: 138, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
+      taxi_collectif: { id: 'taxi_collectif', width: 185, height: 120, style: 'taxi_station', color: '#facc15', roofColor: '#1f2937' },
+      superette: { id: 'superette', width: 170, height: 138, style: 'superette_modern', color: '#06b6d4', roofColor: '#0e7490' },
+      supermarche: { id: 'supermarche', width: 190, height: 152, style: 'supermarket_mall', color: '#3b82f6', roofColor: '#1d4ed8' },
+      salon_de_the: { id: 'salon_de_the', width: 175, height: 146, style: 'lounge_tea', color: '#ec4899', roofColor: '#831843' },
+      restaurant: { id: 'restaurant', width: 180, height: 155, style: 'restaurant_chami', color: '#ef4444', roofColor: '#991b1b' },
+      agence_voyages: { id: 'agence_voyages', width: 170, height: 142, style: 'travel_agency', color: '#38bdf8', roofColor: '#0284c7' },
+      hotel: { id: 'hotel', width: 205, height: 182, style: 'luxury_hotel', color: '#a855f7', roofColor: '#6b21a8' },
+      centre_commercial: { id: 'centre_commercial', width: 215, height: 188, style: 'grand_mall', color: '#6366f1', roofColor: '#4338ca' },
+      usine_conserves: { id: 'usine_conserves', width: 190, height: 155, style: 'harissa_factory', color: '#f43f5e', roofColor: '#be123c' },
+      showroom_auto: { id: 'showroom_auto', width: 200, height: 162, style: 'auto_palace', color: '#e2e8f0', roofColor: '#334155' },
+      promoteur_immobilier: { id: 'promoteur_immobilier', width: 210, height: 198, style: 'real_estate_tower', color: '#38bdf8', roofColor: '#0369a1' },
+      tayaran_el_ghzela: { id: 'tayaran_el_ghzela', width: 230, height: 205, style: 'airline_headquarters', color: '#f1f5f9', roofColor: '#e11d48' }
+    };
 
+    this.buildingsConfig = [];
+    this.streetLayout = [];
+    this.buildZoneLayout(this.currentZoneId);
     this.initWorld();
 
     this.isDragging = false;
@@ -905,11 +909,96 @@ export class QuartierAnimator {
     this.resize();
   }
 
-  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction }) {
+  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone }) {
     if (onInspect) this.onInspectBiz = onInspect;
     if (onUpgrade) this.onUpgradeBiz = onUpgrade;
     if (onCollect) this.onCollectBiz = onCollect;
     if (onHudAction) this.onHudAction = onHudAction;
+    if (onSwitchZone) this.onSwitchZone = onSwitchZone;
+  }
+
+  buildZoneLayout(zoneId) {
+    const zoneSpecs = {
+      bab_souika: [
+        { type: 'house', style: 'medina', name: 'دار بن عاشور', width: 115, height: 118, wallColor: '#fef3c7', doorColor: '#2563eb' },
+        { type: 'biz', id: 'kaskrout' },
+        { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'la_goulette', nextZoneLabel: 'حلق الوادي ⚓' },
+        { type: 'biz', id: 'fricasse' },
+        { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
+        { type: 'biz', id: 'kahwa' },
+        { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'la_goulette', nextZoneLabel: 'حلق الوادي ⚓' },
+        { type: 'biz', id: 'attariya' },
+        { type: 'house', style: 'medina', name: 'دار سيدي محرز', width: 115, height: 120, wallColor: '#f8fafc', doorColor: '#0284c7' }
+      ],
+      la_goulette: [
+        { type: 'house', style: 'goulette', name: 'فيلا سيدي بوسعيد', width: 125, height: 130, wallColor: '#f8fafc', doorColor: '#0284c7' },
+        { type: 'biz', id: 'patisserie' },
+        { type: 'crossroad', streetName: 'شارع فرحات حشاد', width: 125, nextZoneId: 'lac_2', nextZoneLabel: 'البحيرة 2 🏙️' },
+        { type: 'biz', id: 'taxi_collectif' },
+        { type: 'house', style: 'goulette', name: 'دار الكورنيش', width: 125, height: 126, wallColor: '#f0f9ff', doorColor: '#2563eb' },
+        { type: 'biz', id: 'superette' },
+        { type: 'crossroad', streetName: 'مفترق الكرم والبحيرة', width: 130, nextZoneId: 'lac_2', nextZoneLabel: 'البحيرة 2 🏙️' },
+        { type: 'house', style: 'goulette', name: 'دار البحر', width: 120, height: 122, wallColor: '#ffffff', doorColor: '#0369a1' }
+      ],
+      lac_2: [
+        { type: 'house', style: 'lac', name: 'إقامة البحيرة بلازا', width: 130, height: 162, wallColor: '#e2e8f0', doorColor: '#0ea5e9' },
+        { type: 'biz', id: 'supermarche' },
+        { type: 'crossroad', streetName: 'جادة البحيرة 2', width: 130, nextZoneId: 'hammamet', nextZoneLabel: 'الحمامات 🏖️' },
+        { type: 'biz', id: 'salon_de_the' },
+        { type: 'house', style: 'lac', name: 'عمارة السفارات', width: 130, height: 168, wallColor: '#cbd5e1', doorColor: '#38bdf8' },
+        { type: 'biz', id: 'restaurant' },
+        { type: 'crossroad', streetName: 'مفترق لاك سنتر', width: 130, nextZoneId: 'hammamet', nextZoneLabel: 'الحمامات 🏖️' },
+        { type: 'biz', id: 'agence_voyages' },
+        { type: 'house', style: 'lac', name: 'برج الياسمين', width: 125, height: 158, wallColor: '#f1f5f9', doorColor: '#0284c7' }
+      ],
+      hammamet: [
+        { type: 'house', style: 'hammamet', name: 'فيلا الياسمين', width: 135, height: 138, wallColor: '#fffbeb', doorColor: '#d97706' },
+        { type: 'biz', id: 'hotel' },
+        { type: 'crossroad', streetName: 'شارع المارينا', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'تونس الدولية 👑' },
+        { type: 'biz', id: 'centre_commercial' },
+        { type: 'house', style: 'hammamet', name: 'رياض قمرت', width: 135, height: 142, wallColor: '#fef3c7', doorColor: '#059669' },
+        { type: 'biz', id: 'usine_conserves' },
+        { type: 'crossroad', streetName: 'مفترق الحمامات الجنوبية', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'تونس الدولية 👑' },
+        { type: 'house', style: 'hammamet', name: 'دار الفلّ والياسمين', width: 130, height: 134, wallColor: '#ffffff', doorColor: '#0284c7' }
+      ],
+      djerba_holding: [
+        { type: 'house', style: 'djerba', name: 'حوش جربة الكبير', width: 140, height: 148, wallColor: '#f8fafc', doorColor: '#0284c7' },
+        { type: 'biz', id: 'showroom_auto' },
+        { type: 'crossroad', streetName: 'ساحة قرطاج الدولية', width: 135, nextZoneId: 'bab_souika', nextZoneLabel: 'باب سويقة 🕌' },
+        { type: 'biz', id: 'promoteur_immobilier' },
+        { type: 'house', style: 'djerba', name: 'قصر الأغالبة', width: 145, height: 155, wallColor: '#fef3c7', doorColor: '#b45309' },
+        { type: 'biz', id: 'tayaran_el_ghzela' },
+        { type: 'crossroad', streetName: 'مفترق المطار الدولي', width: 135, nextZoneId: 'bab_souika', nextZoneLabel: 'باب سويقة 🕌' },
+        { type: 'house', style: 'djerba', name: 'فيلا النخيل', width: 135, height: 142, wallColor: '#ffffff', doorColor: '#2563eb' }
+      ]
+    };
+
+    const rawItems = zoneSpecs[zoneId] || zoneSpecs.bab_souika;
+    this.streetLayout = [];
+    this.buildingsConfig = [];
+
+    let curX = 55;
+    rawItems.forEach(item => {
+      if (item.type === 'biz') {
+        const tpl = this.bizTemplates[item.id];
+        if (tpl) {
+          const entry = { ...tpl, type: 'biz', x: curX };
+          this.streetLayout.push(entry);
+          this.buildingsConfig.push(entry);
+          curX += tpl.width + 26;
+        }
+      } else if (item.type === 'house') {
+        const entry = { ...item, x: curX };
+        this.streetLayout.push(entry);
+        curX += item.width + 24;
+      } else if (item.type === 'crossroad') {
+        const entry = { ...item, x: curX };
+        this.streetLayout.push(entry);
+        curX += item.width + 24;
+      }
+    });
+
+    this.worldWidth = Math.max(1200, curX + 60);
   }
 
   updateHudOffers(data) {
@@ -947,17 +1036,14 @@ export class QuartierAnimator {
 
   initWorld() {
     this.clouds = [
-      { x: 100, y: 35, speed: 8, scale: 1.1 },
-      { x: 600, y: 55, speed: 6, scale: 0.8 },
-      { x: 1150, y: 25, speed: 10, scale: 1.3 },
-      { x: 1700, y: 45, speed: 7, scale: 0.9 },
-      { x: 2300, y: 30, speed: 11, scale: 1.2 },
-      { x: 2900, y: 50, speed: 8, scale: 1.0 },
-      { x: 3500, y: 20, speed: 9, scale: 1.15 }
+      { x: 80, y: 35, speed: 8, scale: 1.1 },
+      { x: 450, y: 50, speed: 6, scale: 0.85 },
+      { x: 850, y: 28, speed: 10, scale: 1.25 },
+      { x: 1250, y: 45, speed: 7, scale: 0.95 }
     ];
 
     this.palms = [];
-    for (let x = 40; x < this.worldWidth; x += 180 + Math.random() * 50) {
+    for (let x = 35; x < this.worldWidth; x += 210 + Math.random() * 40) {
       this.palms.push({
         x: x,
         height: 75 + Math.random() * 25,
@@ -967,18 +1053,17 @@ export class QuartierAnimator {
     }
 
     this.taxis = [
-      { x: 200, speed: 95, dir: 1, type: 'taxi_collectif' },
-      { x: 900, speed: 110, dir: 1, type: 'taxi_citadin' },
-      { x: 1700, speed: 90, dir: -1, type: 'taxi_collectif' },
-      { x: 2500, speed: 125, dir: 1, type: 'citadine_rouge' },
-      { x: 3200, speed: 100, dir: -1, type: 'taxi_collectif' }
+      { x: 150, speed: 95, dir: 1, type: 'taxi_collectif' },
+      { x: 650, speed: 110, dir: 1, type: 'taxi_citadin' },
+      { x: 1100, speed: 90, dir: -1, type: 'taxi_collectif' },
+      { x: 1450, speed: 120, dir: 1, type: 'citadine_rouge' }
     ];
 
     const avatars = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓', '🧑‍🎓', '🤹'];
     this.pedestrians = [];
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 16; i++) {
       this.pedestrians.push({
-        x: 60 + Math.random() * (this.worldWidth - 120),
+        x: 50 + Math.random() * Math.max(300, this.worldWidth - 100),
         yOffset: (Math.random() - 0.5) * 16,
         speed: (24 + Math.random() * 32) * (Math.random() > 0.5 ? 1 : -1),
         avatar: avatars[i % avatars.length],
@@ -989,28 +1074,24 @@ export class QuartierAnimator {
     }
 
     this.seagulls = [
-      { x: 300, y: 40, speed: 28, wingPhase: 0 },
-      { x: 1200, y: 60, speed: 22, wingPhase: 1 },
-      { x: 2200, y: 35, speed: 30, wingPhase: 2 }
+      { x: 250, y: 40, speed: 28, wingPhase: 0 },
+      { x: 900, y: 55, speed: 22, wingPhase: 1 }
     ];
   }
 
   transitionToZone(zoneId, zoneName) {
+    const changed = this.currentZoneId !== zoneId || this.streetLayout.length === 0;
     this.currentZoneId = zoneId;
     this.transitionBannerText = zoneName || 'حيّ جديد';
     this.transitionAlpha = 1.0;
-    this.transitionTimer = 1.8;
+    this.transitionTimer = 1.6;
 
-    const zoneTargets = {
-      bab_souika: 0,
-      la_goulette: 800,
-      lac_2: 1500,
-      hammamet: 2100,
-      sousse_kantaoui: 2600,
-      djerba_holding: 3100
-    };
-    const targetX = zoneTargets[zoneId] || 0;
-    this.targetCameraX = Math.max(0, Math.min(targetX, this.worldWidth - this.width));
+    if (changed) {
+      this.buildZoneLayout(zoneId);
+      this.initWorld();
+      this.cameraX = 0;
+      this.targetCameraX = 0;
+    }
   }
 
   start() {
@@ -1093,6 +1174,8 @@ export class QuartierAnimator {
       this.onUpgradeBiz(bizId);
     } else if (action === 'collect' && this.onCollectBiz) {
       this.onCollectBiz(bizId);
+    } else if (action === 'switch_zone' && this.onSwitchZone) {
+      this.onSwitchZone(bizId);
     } else if (action.startsWith('hud_') && this.onHudAction) {
       this.onHudAction(action);
     }
@@ -1270,10 +1353,18 @@ export class QuartierAnimator {
       }
     });
 
-    this.buildingsConfig.forEach(b => {
-      const screenX = b.x - camX;
-      if (screenX + b.width > -50 && screenX < w + 50) {
-        this.drawBuilding(ctx, b, screenX, groundY, timestamp);
+    this.drawBoulevardStreet(ctx, camX, w, h, groundY);
+
+    this.streetLayout.forEach(item => {
+      const screenX = item.x - camX;
+      if (screenX + item.width > -60 && screenX < w + 60) {
+        if (item.type === 'biz') {
+          this.drawBuilding(ctx, item, screenX, groundY, timestamp);
+        } else if (item.type === 'house') {
+          this.drawHouse(ctx, item, screenX, groundY, timestamp);
+        } else if (item.type === 'crossroad') {
+          this.drawCrossroad(ctx, item, screenX, groundY, h, timestamp);
+        }
       }
     });
 
@@ -1288,8 +1379,6 @@ export class QuartierAnimator {
       }
     });
     ctx.globalAlpha = 1.0;
-
-    this.drawBoulevardStreet(ctx, camX, w, h, groundY);
 
     this.taxis.forEach(t => {
       const screenX = t.x - camX;
@@ -1656,6 +1745,282 @@ export class QuartierAnimator {
       action: 'inspect',
       bizId: b.id
     });
+
+    ctx.restore();
+  }
+
+  drawHouse(ctx, hItem, x, groundY, timestamp) {
+    const maxAllowedH = Math.max(95, groundY - 46);
+    const bHeight = Math.min(hItem.height || 120, maxAllowedH);
+    const y = groundY - bHeight;
+    const w = hItem.width || 120;
+
+    ctx.save();
+
+    // Ombre au sol
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(x + w / 2, groundY, w * 0.52, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Façade de la maison tunisienne
+    ctx.fillStyle = hItem.wallColor || '#fef3c7';
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(x, y + 14, w, bHeight - 14, [6, 6, 0, 0]);
+    ctx.fill();
+    ctx.stroke();
+
+    // Toiture selon le style du quartier
+    if (hItem.style === 'medina' || hItem.style === 'djerba') {
+      // Coupole blanche traditionnelle + créneaux
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(x + w / 2, y + 16, 22, Math.PI, 0);
+      ctx.fill();
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.stroke();
+
+      ctx.fillStyle = hItem.doorColor || '#0284c7';
+      ctx.fillRect(x - 2, y + 12, w + 4, 5);
+    } else if (hItem.style === 'lac') {
+      // Immeuble résidentiel moderne en verre & balcons
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(x - 3, y + 10, w + 6, 7);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(x + 6, y + 12, w - 12, 2);
+    } else {
+      // Villa côtière Sidi Bou Saïd / Hammamet avec frise bleue ou tuiles
+      ctx.fillStyle = hItem.doorColor || '#0284c7';
+      ctx.beginPath();
+      ctx.moveTo(x - 4, y + 16);
+      ctx.lineTo(x + w + 4, y + 16);
+      ctx.lineTo(x + w, y + 6);
+      ctx.lineTo(x, y + 6);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Fenêtres / Moucharabieh à l'étage
+    const winY = y + 36;
+    const winW = 24;
+    const winH = 26;
+    const winPositions = [x + 16, x + w - 16 - winW];
+
+    winPositions.forEach(wx => {
+      ctx.fillStyle = hItem.style === 'lac' ? 'rgba(56, 189, 248, 0.35)' : (hItem.doorColor || '#2563eb');
+      ctx.beginPath();
+      ctx.roundRect(wx, winY, winW, winH, [10, 10, 2, 2]);
+      ctx.fill();
+
+      // Grille fer forgé / Moucharabieh
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(wx + 3, winY + 4, winW - 6, winH - 6);
+
+      // Balcon fleuri (Bougainvillier / Jasmin)
+      ctx.fillStyle = '#15803d';
+      ctx.beginPath();
+      ctx.arc(wx + 6, winY + winH, 5, 0, Math.PI * 2);
+      ctx.arc(wx + winW - 6, winY + winH, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ec4899';
+      ctx.beginPath();
+      ctx.arc(wx + 5, winY + winH - 2, 2.5, 0, Math.PI * 2);
+      ctx.arc(wx + winW - 5, winY + winH - 1, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Porte d'entrée tunisienne arquée ("Bab Arbi" clouté)
+    const doorW = 32;
+    const doorH = 44;
+    const doorX = x + (w - doorW) / 2;
+    const doorY = groundY - doorH;
+
+    // Encadrement en pierre / marbre
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.roundRect(doorX - 4, doorY - 4, doorW + 8, doorH + 4, [18, 18, 0, 0]);
+    ctx.fill();
+
+    // Porte colorée
+    ctx.fillStyle = hItem.doorColor || '#2563eb';
+    ctx.beginPath();
+    ctx.roundRect(doorX, doorY, doorW, doorH, [15, 15, 0, 0]);
+    ctx.fill();
+
+    // Clous noirs traditionnels & heurtoir (Khalkhal)
+    ctx.fillStyle = '#0f172a';
+    for (let dy = doorY + 10; dy < groundY - 6; dy += 8) {
+      ctx.fillRect(doorX + 4, dy, 2, 2);
+      ctx.fillRect(doorX + doorW - 6, dy, 2, 2);
+    }
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(doorX + doorW / 2 - 5, doorY + 22, 3, 0, Math.PI * 2);
+    ctx.arc(doorX + doorW / 2 + 5, doorY + 22, 3, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Nom de la maison & petit chat tunisien sur le toit / seuil
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+    ctx.beginPath();
+    ctx.roundRect(x + 12, y + 18, w - 24, 15, 4);
+    ctx.fill();
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '800 9.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`🏡 ${hItem.name}`, x + w / 2, y + 29);
+
+    // Petit chat ou jasmin animé
+    const catBob = Math.sin(timestamp * 0.004 + x) * 1.5;
+    ctx.font = '12px serif';
+    ctx.fillText('🐈', x + w - 16, groundY - 4 + catBob * 0.3);
+
+    ctx.restore();
+  }
+
+  drawCrossroad(ctx, cItem, x, groundY, h, timestamp) {
+    const w = cItem.width || 125;
+    const roadY = groundY + 20;
+
+    ctx.save();
+
+    // 1. Perspective de la rue perpendiculaire qui s'enfonce dans le quartier
+    const backTopY = Math.max(85, groundY - 95);
+    const topW = w * 0.48;
+    const topX = x + (w - topW) / 2;
+
+    // Ciel / fond de ruelle
+    const alleyGrad = ctx.createLinearGradient(0, backTopY, 0, roadY);
+    alleyGrad.addColorStop(0, '#0f172a');
+    alleyGrad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = alleyGrad;
+    ctx.beginPath();
+    ctx.moveTo(topX, backTopY);
+    ctx.lineTo(topX + topW, backTopY);
+    ctx.lineTo(x + w, roadY);
+    ctx.lineTo(x, roadY);
+    ctx.closePath();
+    ctx.fill();
+
+    // Bordures de trottoir de la rue perpendiculaire
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(topX, backTopY);
+    ctx.lineTo(x, roadY);
+    ctx.moveTo(topX + topW, backTopY);
+    ctx.lineTo(x + w, roadY);
+    ctx.stroke();
+
+    // Ligne médiane pointillée de la rue secondaire
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(x + w / 2, backTopY + 10);
+    ctx.lineTo(x + w / 2, roadY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. Passage piéton zébré (Passage clouté) sur le carrefour
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.78)';
+    for (let zx = x + 10; zx < x + w - 12; zx += 16) {
+      ctx.fillRect(zx, groundY + 3, 9, 14);
+    }
+
+    // Passage piéton vertical sur le boulevard principal
+    const boulevardH = Math.max(36, h - roadY);
+    for (let zy = roadY + 4; zy < roadY + boulevardH - 6; zy += 11) {
+      ctx.fillRect(x + 6, zy, 18, 6);
+    }
+
+    // 3. Feu tricolore animé (🚦) au coin du carrefour
+    const poleX = x + 14;
+    const poleBottomY = groundY + 4;
+    const poleTopY = groundY - 68;
+
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(poleX, poleBottomY);
+    ctx.lineTo(poleX, poleTopY);
+    ctx.stroke();
+
+    // Boîtier du feu tricolore
+    ctx.fillStyle = '#090d16';
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(poleX - 7, poleTopY - 6, 14, 34, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    const lightCycle = Math.floor(timestamp / 2000) % 3; // 0: vert, 1: orange, 2: rouge
+    const colors = [
+      lightCycle === 2 ? '#ef4444' : '#450a0a',
+      lightCycle === 1 ? '#facc15' : '#422006',
+      lightCycle === 0 ? '#10b981' : '#064e3b'
+    ];
+    colors.forEach((col, idx) => {
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(poleX, poleTopY + 1 + idx * 10, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // 4. Plaque de rue tunisienne (bleue & blanche)
+    const signW = Math.min(w - 16, 108);
+    const signH = 20;
+    const signX = x + (w - signW) / 2 + 6;
+    const signY = groundY - 82;
+
+    ctx.fillStyle = '#1e3a8a';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(signX, signY, signW, signH, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 9.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`🪧 ${cItem.streetName}`, signX + signW / 2, signY + 14);
+
+    // 5. Panneau directionnel cliquable vers le quartier suivant !
+    if (cItem.nextZoneId && cItem.nextZoneLabel) {
+      const dirW = Math.min(w - 10, 114);
+      const dirH = 24;
+      const dirX = x + (w - dirW) / 2 + 6;
+      const dirY = groundY - 56;
+
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.92)';
+      ctx.strokeStyle = '#a7f3d0';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(dirX, dirY, dirW, dirH, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 10px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`⬅️ ${cItem.nextZoneLabel}`, dirX + dirW / 2, dirY + 16);
+
+      this.interactiveHitboxes.push({
+        x: dirX,
+        y: dirY,
+        w: dirW,
+        h: dirH,
+        action: 'switch_zone',
+        bizId: cItem.nextZoneId
+      });
+    }
 
     ctx.restore();
   }

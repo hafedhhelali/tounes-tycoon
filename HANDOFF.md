@@ -2,9 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Suppression de la barre du bas (intégrée au HUD supérieur) et des bandeaux DOM qui masquaient la rue et débordaient à gauche.
-Intégration 100% DANS l'image Canvas des icônes d'offres (Turbo 🚀, Cash 🎁, Prestige 👑, Roue 🎡) et d'alertes (Quêtes 🎯, Chkobba 🃏, Dilemme ⚖️, Lucky Drop 🎁).
-Adaptation dynamique de la hauteur des bâtiments et de la chaussée (`groundY`) + tri CI `fetch_apk.ps1`. Tests: npm test = 12/12 PASS.
+Chaque quartier (`bab_souika`, `la_goulette`, `lac_2`, `hammamet`, `djerba_holding`) possède désormais sa propre rue unique et ses propres projets dédiés (3 à 4 commerces spécifiques par quartier au lieu des 17 partout).
+Ajout de maisons tunisiennes authentiques (`drawHouse` : Dar Arbi médina, villas Sidi Bou Saïd, immeubles Lac 2, villas Hammamet, Houch Djerba) intercalées entre les projets.
+Ajout de carrefours animés (`drawCrossroad` : rue perpendiculaire en perspective, passages piétons zébrés, feu tricolore 🚦 animé, plaques de rues et panneau cliquable vers le quartier suivant). Tests: npm test = 12/12 PASS.
 
 ## Dépôts — NE PAS CONFONDRE
 - **`C:\Projects\tounes-tycoon`** = ce jeu (remote `hafedhhelali/tounes-tycoon`).

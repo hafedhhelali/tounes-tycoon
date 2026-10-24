@@ -3574,14 +3574,10 @@
           <div>
             ${isCurrent ? `
               <div style="font-size: 11px; font-weight: 900; color: #34d399;">نشيط ✓</div>
-            ` : canUnlock ? `
-              <button class="upg-buy-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" id="zone-move-${z.id}">
-                🚀 انقل هوني
-              </button>
             ` : `
-              <div style="font-size: 10px; font-weight: 800; color: #ef4444; text-align: center; line-height: 1.2;">
-                🔒 يتطلب ${z.minPrestige > 0 ? `معلّم ${z.minPrestige}★` : ''} ${z.reqDinars > 0 ? formatCurrencyPlain(z.reqDinars, 0) : ''}
-              </div>
+              <button class="upg-buy-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" id="zone-move-${z.id}">
+                🚀 زُر الحيّ
+              </button>
             `}
           </div>
         `;
@@ -3590,13 +3586,15 @@
         const moveBtn = card.querySelector(`#zone-move-${z.id}`);
         if (moveBtn) {
           moveBtn.onclick = () => {
-            if (engine.unlockZone(z.id)) {
-              soundEngine.playMilestoneFanfare();
-              applyZoneTheme();
-              renderZonesUI();
-              renderDOM();
-              showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, `انتقلت بنجاح إلى الحيّ الجديد وتفعل البونيس :`, z.bonusDesc);
+            if (!engine.unlockZone(z.id)) {
+              engine.currentZoneId = z.id;
             }
+            soundEngine.playMilestoneFanfare();
+            applyZoneTheme();
+            renderZonesUI();
+            renderDOM();
+            switchTab('businesses');
+            showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, `انتقلت إلى الحيّ واستكشفت مشاريعه الخاصة :`, z.bonusDesc);
           };
         }
       });
@@ -3816,6 +3814,23 @@
           } else if (action === 'hud_luckydrop' && luckyDropEl) {
             luckyDropEl.click();
           }
+        },
+        onSwitchZone: (targetZoneId) => {
+          const z = engine.getZones().find(item => item.id === targetZoneId);
+          if (!z) return;
+          if (engine.unlockZone(targetZoneId)) {
+            soundEngine.playMilestoneFanfare();
+            applyZoneTheme();
+            renderZonesUI();
+            renderDOM();
+            showRewardModalUI(z.icon, `مرحبا بيك في ${z.name} !`, `انتقلت عبر المفترق إلى الحيّ الجديد وتفعل البونيس :`, z.bonusDesc);
+          } else {
+            soundEngine.playCoin();
+            engine.currentZoneId = targetZoneId;
+            applyZoneTheme();
+            renderZonesUI();
+            renderDOM();
+          }
         }
       });
       quartierEngine.start();
@@ -3823,13 +3838,13 @@
       if (panStartBtn) {
         panStartBtn.onclick = () => {
           soundEngine.playCoin();
-          quartierEngine.focusBusiness('kaskrout');
+          quartierEngine.targetCameraX = 0;
         };
       }
       if (panEndBtn) {
         panEndBtn.onclick = () => {
           soundEngine.playCoin();
-          quartierEngine.focusBusiness('tayaran_el_ghzela');
+          quartierEngine.targetCameraX = Math.max(0, quartierEngine.worldWidth - quartierEngine.width);
         };
       }
     }

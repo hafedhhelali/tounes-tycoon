@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(world): zone-specific projects, Tunisian houses and animated crossroads per neighborhood
 - chore(ci): sort artifacts by workflow run id descending in fetch_apk.ps1
 - fix(ui,canvas): remove bottom bar occlusion, render offer & alert icons inside 2D sky canvas, dynamic street groundY
 - feat(ui,canvas): fullscreen living 2D street, ultra-sleek HUD and direct shop entrance on tap
