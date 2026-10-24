@@ -1,4 +1,3 @@
-import AssetsLibrary, { PALETTE, Primitives, Characters, Vehicles, FXEngine } from './assets_library.js';
 /**
  * store_animator.js
  * Moteur d'Animation Graphique Canvas 2D 60 FPS Haute Définition pour Tounes Tycoon.
@@ -1404,7 +1403,6 @@ export class QuartierAnimator {
     this.palms = [];
     this.seagulls = [];
     this.interactiveHitboxes = [];
-    this.fxEngine = new FXEngine(80);
 
     this.bizTemplates = {
       kaskrout: { id: 'kaskrout', width: 145, height: 115, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
@@ -1872,32 +1870,18 @@ export class QuartierAnimator {
       if (c.alpha <= 0) this.floatingCoins.splice(i, 1);
     }
 
-    if (this.fxEngine) {
-      this.fxEngine.update(dt);
-    }
   }
 
   spawnGainBubble(bizId, text) {
     const bConf = this.buildingsConfig.find(b => b.id === bizId);
     if (!bConf) return;
-    const coinX = bConf.x + bConf.width / 2;
-    const coinY = 200 - bConf.height - 15;
     this.floatingCoins.push({
-      x: coinX,
-      y: coinY,
+      x: bConf.x + bConf.width / 2,
+      y: 200 - bConf.height - 15,
       vy: -45,
       text: text || '+د.ت',
       alpha: 1.0
     });
-    if (this.fxEngine) {
-      for (let i = 0; i < 4; i++) {
-        this.fxEngine.spawn('sparkle', coinX - this.cameraX, coinY, {
-          color: PALETTE.goldBase,
-          spreadX: 30,
-          vy: -20 - Math.random() * 25
-        });
-      }
-    }
   }
 
   render(timestamp) {
@@ -2022,10 +2006,6 @@ export class QuartierAnimator {
         ctx.restore();
       }
     });
-
-    if (this.fxEngine) {
-      this.fxEngine.render(ctx);
-    }
 
     this.drawMinimapTrack(ctx, w, h);
     this.drawInCanvasOffersHUD(ctx, w, h, timestamp);

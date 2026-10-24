@@ -1,6 +1,9 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- fix(runtime): restore clean startup stability and add futuristic app icon
+- fix(runtime): resolve startup blank screen and restore pure modular engine stability
+- feat(icon): futuristic cyberpunk mobile icon with neon cyan halo, gold hexagon and quantum star
 - feat(graphics,assets): modular procedural assets library, Tunisian palettes and FX engine
 - feat(graphics,assets): modular procedural assets library (assets_library.js), Tunisian color palettes, Chibi characters, vehicles and zero-allocation FX engine
 - feat(street,anim,hud): direct HUD map, monumental city gates, discrete door entry, 3s auto-close drawer
