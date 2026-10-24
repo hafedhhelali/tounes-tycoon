@@ -1,6 +1,7 @@
 ﻿# CHANGELOG
 
 ## 2026-10-24
+- feat(icon,ui,anim): new app icon, uncropped project texts, vector animated employees
 - fix(ui,nav,anim): visible toasts above popups, bidirectional zone nav, tap-to-serve, clear hire buttons, resilient loops, no cashier wording
 - feat(store-view): immersive full-popup canvas scene with overlay HUD, glass drawer and animated ambience
 - fix(wheel,chkobba,modals): ad-triggered wheel spin, visible chkobba cards contrast & zero-scroll landscape popups

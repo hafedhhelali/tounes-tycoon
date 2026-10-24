@@ -505,21 +505,15 @@ export class CanvasStoreEngine {
     const cashierY = counterY - 2;
 
     if (cashierSlot && cashierSlot.hired) {
-      // Responsable animé, avec ombre et halo de travail
-      const bob = isBusy ? Math.sin(timeSec * 7) * 3 : Math.sin(timeSec * 2) * 1.5;
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-      ctx.beginPath();
-      ctx.ellipse(cashierX + 16, counterY + 14, 15, 4, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.font = '32px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(cashierSlot.icon || '👨‍💼', cashierX + 16, cashierY + 8 + bob);
+      // Responsable dessiné en vectoriel, animé (respiration, bras qui s'activent, clignement)
+      this.drawWorker(ctx, cashierX + 16, counterY + 16, 0, isBusy, timeSec);
+      this.drawRoleTag(ctx, cashierX + 16, counterY - 54, cashierSlot.role);
 
       // Bulle de statut au-dessus
       const statusIcon = isBusy ? '✨' : '💤';
       ctx.font = '14px sans-serif';
-      ctx.fillText(statusIcon, cashierX + 16, cashierY - 26 + (isBusy ? -Math.abs(Math.sin(timeSec * 6) * 4) : 0));
+      ctx.textAlign = 'center';
+      ctx.fillText(statusIcon, cashierX + 44, cashierY - 18 + (isBusy ? -Math.abs(Math.sin(timeSec * 6) * 4) : 0));
     } else {
       // Emplacement de recrutement cliquable pour le poste de responsable
       this.drawHireButton(ctx, counterX + 6, counterY - 44, 64, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
@@ -545,35 +539,15 @@ export class CanvasStoreEngine {
       this.drawMachineProp(ctx, this.bizId, stationX, baseY, isBusy, timeSec);
 
       if (slot.hired) {
-        // 2. Ouvrier animé
-        const bob = isBusy ? Math.sin(timeSec * 7 + idx) * 3.5 : Math.sin(timeSec * 2 + idx) * 1.5;
-        const tilt = isBusy ? Math.sin(timeSec * 7 + idx) * 0.08 : 0;
-
-        ctx.translate(stationX + 20, baseY - 16 + bob);
-        ctx.rotate(tilt);
-        ctx.font = '28px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(slot.icon || '👨‍🍳', 0, 0);
-        ctx.rotate(-tilt);
-        ctx.translate(-(stationX + 20), -(baseY - 16 + bob));
-
-        // Titre rôle
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.beginPath();
-        ctx.roundRect(stationX + 2, baseY - 6, 36, 14, 4);
-        ctx.fill();
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 8.5px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText((slot.role || 'عامل').slice(0, 6), stationX + 20, baseY + 4);
+        // 2. Ouvrier vectoriel animé + étiquette de rôle complète
+        this.drawWorker(ctx, stationX + 20, baseY, idx + 1, isBusy, timeSec);
+        this.drawRoleTag(ctx, stationX + 20, baseY + 4, slot.role);
 
         // Effet actif : vapeur, friture, étincelles
         const effIcon = isBusy ? '♨️' : '💤';
         ctx.font = '14px sans-serif';
-        ctx.fillText(effIcon, stationX + 20, baseY - 40 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
+        ctx.textAlign = 'center';
+        ctx.fillText(effIcon, stationX + 20, baseY - 54 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
       } else {
         // Bouton de recrutement interactif sur le poste
         this.drawHireButton(ctx, stationX, baseY - 56, 48, 54, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
@@ -581,6 +555,183 @@ export class CanvasStoreEngine {
 
       ctx.restore();
     });
+  }
+
+  // --- PERSONNAGE VECTORIEL : employé animé (respiration, bras actifs, clignement, coiffe selon le métier) ---
+  drawWorker(ctx, x, footY, seed, isBusy, timeSec) {
+    const palettes = [
+      { coat: '#2563eb', skin: '#fcd34d', apron: '#f8fafc' },
+      { coat: '#059669', skin: '#f59e0b', apron: '#fef3c7' },
+      { coat: '#7c3aed', skin: '#fde68a', apron: '#f8fafc' },
+      { coat: '#dc2626', skin: '#fbbf24', apron: '#fff7ed' }
+    ];
+    const pal = palettes[seed % palettes.length];
+    const food = ['kaskrout', 'fricasse', 'kahwa', 'patisserie', 'restaurant', 'salon_de_the', 'hotel', 'usine_conserves'].includes(this.bizId);
+    const industrial = ['usine_conserves', 'promoteur_immobilier', 'showroom_auto'].includes(this.bizId);
+    const phase = timeSec * (isBusy ? 7 : 2) + seed * 1.3;
+    const bob = Math.sin(phase) * (isBusy ? 1.8 : 0.8);
+    const blink = (Math.sin(timeSec * 0.9 + seed * 2) > 0.985);
+
+    ctx.save();
+    ctx.translate(x, footY);
+
+    // Ombre au sol
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(0, 1, 12, 3.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Jambes et chaussures
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-6, -14, 5, 13);
+    ctx.fillRect(1, -14, 5, 13);
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.roundRect(-7, -3, 7, 4, 2);
+    ctx.roundRect(0, -3, 7, 4, 2);
+    ctx.fill();
+
+    ctx.translate(0, bob);
+
+    // Bras arrière (derrière le corps)
+    const armSwing = isBusy ? Math.sin(phase * 1.6) : Math.sin(phase) * 0.15;
+    ctx.strokeStyle = pal.coat;
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 4.5;
+    ctx.beginPath();
+    ctx.moveTo(-8, -30);
+    ctx.lineTo(-11, -20 + armSwing * 3);
+    ctx.stroke();
+    ctx.fillStyle = pal.skin;
+    ctx.beginPath();
+    ctx.arc(-11, -19 + armSwing * 3, 2.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Corps (veste) + tablier
+    ctx.fillStyle = pal.coat;
+    ctx.beginPath();
+    ctx.roundRect(-9, -33, 18, 21, 5);
+    ctx.fill();
+    ctx.fillStyle = pal.apron;
+    ctx.beginPath();
+    ctx.roundRect(-6, -27, 12, 15, 3);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.fillRect(-0.5, -27, 1, 15);
+
+    // Bras avant avec outil (spatule / tasse) qui s'active
+    const handX = 11 + (isBusy ? Math.sin(phase * 1.6 + 1.5) * 4 : 0);
+    const handY = -22 - (isBusy ? Math.abs(Math.sin(phase * 1.6)) * 7 : Math.sin(phase) * 0.8);
+    ctx.strokeStyle = pal.coat;
+    ctx.lineWidth = 4.5;
+    ctx.beginPath();
+    ctx.moveTo(8, -30);
+    ctx.lineTo(handX, handY);
+    ctx.stroke();
+    ctx.fillStyle = pal.skin;
+    ctx.beginPath();
+    ctx.arc(handX, handY, 2.6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = food ? '#e2e8f0' : '#94a3b8';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(handX, handY);
+    ctx.lineTo(handX + 5, handY - 6);
+    ctx.stroke();
+    if (food) {
+      ctx.fillStyle = '#e2e8f0';
+      ctx.beginPath();
+      ctx.ellipse(handX + 6, handY - 7.5, 3, 1.8, -0.7, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Tête
+    ctx.fillStyle = pal.skin;
+    ctx.beginPath();
+    ctx.arc(0, -41, 8, 0, Math.PI * 2);
+    ctx.fill();
+    // Joues
+    ctx.fillStyle = 'rgba(244, 63, 94, 0.28)';
+    ctx.beginPath();
+    ctx.arc(-4.8, -39, 1.8, 0, Math.PI * 2);
+    ctx.arc(4.8, -39, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+    // Yeux (clignement) + sourire
+    ctx.fillStyle = '#0f172a';
+    if (blink) {
+      ctx.fillRect(-4, -42, 3, 1);
+      ctx.fillRect(1, -42, 3, 1);
+    } else {
+      ctx.beginPath();
+      ctx.arc(-2.6, -42, 1.1, 0, Math.PI * 2);
+      ctx.arc(2.6, -42, 1.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = '#7c2d12';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(0, -39.5, isBusy ? 3 : 2.2, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
+
+    // Coiffe selon le métier : toque de chef, casque de chantier ou chéchia rouge
+    if (industrial) {
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath();
+      ctx.arc(0, -43, 8.6, Math.PI, 0);
+      ctx.fill();
+      ctx.fillRect(-9.5, -44, 19, 2.5);
+    } else if (food) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-4, -50, 4.5, 0, Math.PI * 2);
+      ctx.arc(4, -50, 4.5, 0, Math.PI * 2);
+      ctx.arc(0, -53, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(-7, -50, 14, 7);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(-7, -44.5, 14, 1.6);
+    } else {
+      ctx.fillStyle = '#b91c1c';
+      ctx.beginPath();
+      ctx.roundRect(-6.5, -53, 13, 11, [6, 6, 1, 1]);
+      ctx.fill();
+      ctx.strokeStyle = '#111827';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(6, -51);
+      ctx.quadraticCurveTo(10, -47 + Math.sin(phase) * 1.5, 8, -42);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  // Étiquette de rôle : texte COMPLET, la police s'ajuste à la largeur (jamais tronqué)
+  drawRoleTag(ctx, cx, y, role) {
+    const text = role || 'عامل';
+    ctx.save();
+    let size = 9.5;
+    ctx.font = `bold ${size}px sans-serif`;
+    let tw = ctx.measureText(text).width;
+    const maxW = 62;
+    if (tw > maxW) {
+      size = Math.max(7, size * (maxW / tw));
+      ctx.font = `bold ${size}px sans-serif`;
+      tw = ctx.measureText(text).width;
+    }
+    const pw = tw + 10;
+    ctx.fillStyle = 'rgba(2, 6, 23, 0.82)';
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(cx - pw / 2, y, pw, 15, 6);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#e0f2fe';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, cx, y + 8);
+    ctx.restore();
   }
 
   // Machines et accessoires dynamiques par métier
