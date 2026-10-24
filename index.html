@@ -1354,6 +1354,69 @@
     body.zone-hammamet { background-image: radial-gradient(circle at 50% -10%, #2e260c 0%, #070a12 75%); }
     body.zone-djerba { background-image: radial-gradient(circle at 50% -10%, #31104b 0%, #070a12 75%); }
 
+    /* --- MODAL IMMERSIVE PROJET : SCÈNE PLEIN POPUP + HUD EN SUPERPOSITION --- */
+    #bizDetailModal { padding: 4px 6px; }
+    .modal-card.biz-immersive {
+      position: relative;
+      display: block;
+      width: 100%;
+      max-width: 940px;
+      height: 96vh;
+      height: 96dvh;
+      max-height: none;
+      padding: 0;
+      border-radius: 16px;
+      overflow: hidden;
+      direction: rtl;
+      text-align: right;
+      border: 2px solid var(--gold);
+      background: #090d16;
+    }
+    .biz-scene { position: absolute; inset: 0; z-index: 0; }
+    .biz-scene canvas { display: block; width: 100%; height: 100%; cursor: pointer; touch-action: manipulation; }
+    .biz-hud-top, .biz-hud-bottom {
+      position: absolute; left: 0; right: 0; z-index: 3;
+      display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+      pointer-events: none;
+    }
+    .biz-hud-top > *, .biz-hud-bottom > * { pointer-events: auto; }
+    .biz-hud-top { top: 0; background: linear-gradient(180deg, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.55) 70%, rgba(2,6,23,0) 100%); padding-bottom: 14px; }
+    .biz-hud-bottom { bottom: 0; background: linear-gradient(0deg, rgba(2,6,23,0.92) 0%, rgba(2,6,23,0.7) 75%, rgba(2,6,23,0) 100%); padding-top: 14px; }
+    .biz-hud-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+    .biz-hud-icon { font-size: 26px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)); }
+    .biz-hud-names { min-width: 0; }
+    .biz-hud-title { font-size: 14px; font-weight: 900; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 6px #000; }
+    .biz-hud-tagline { font-size: 10px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .biz-hud-stats { display: flex; gap: 6px; flex-shrink: 0; }
+    .biz-chip { display: flex; flex-direction: column; background: rgba(15,23,42,0.72); border: 1px solid rgba(251,191,36,0.4); border-radius: 10px; padding: 3px 9px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .biz-chip-k { font-size: 9px; color: #94a3b8; font-weight: 800; }
+    .biz-chip b { font-size: 12px; color: #fbbf24; font-weight: 950; white-space: nowrap; }
+    .biz-close-btn { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: rgba(15,23,42,0.8); border: 1.5px solid rgba(255,255,255,0.3); color: #f1f5f9; font-size: 14px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; touch-action: manipulation; }
+    .biz-close-btn:active { transform: scale(0.9); background: rgba(239,68,68,0.45); }
+    .biz-upgrade-btn { flex-shrink: 0; min-width: 118px; min-height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; border: 1.5px solid #fde68a; background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); color: #1a0f02; cursor: pointer; padding: 4px 10px; box-shadow: 0 4px 14px rgba(245,158,11,0.45), inset 0 1px 0 rgba(255,255,255,0.45); touch-action: manipulation; }
+    .biz-upgrade-btn:active { transform: translateY(2px) scale(0.97); }
+    .biz-upgrade-action { font-size: 12px; font-weight: 950; }
+    .biz-upgrade-cost { font-size: 10.5px; font-weight: 900; opacity: 0.9; }
+    .biz-evo-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .biz-evo-line { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #f8fafc; white-space: nowrap; }
+    .biz-evo-gain { font-size: 10.5px; color: #34d399; font-weight: 900; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); border-radius: 8px; padding: 0 6px; }
+    .biz-evo-hint { font-size: 9.5px; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .biz-tabs { display: flex; gap: 5px; flex-shrink: 0; }
+    .biz-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 52px; min-height: 42px; background: rgba(15,23,42,0.78); border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; color: #cbd5e1; font-size: 9.5px; font-weight: 800; cursor: pointer; touch-action: manipulation; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .biz-tab span:first-child { font-size: 16px; line-height: 1; }
+    .biz-tab.active { border-color: #fbbf24; color: #fef08a; background: rgba(120,53,15,0.75); box-shadow: 0 0 12px rgba(245,158,11,0.45); }
+    .biz-drawer { position: absolute; left: 10px; right: 10px; bottom: 62px; z-index: 4; max-height: 52%; overflow: hidden; background: rgba(8,13,26,0.86); border: 1.5px solid rgba(251,191,36,0.45); border-radius: 14px; padding: 8px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.7); transform: translateY(16px) scale(0.97); opacity: 0; pointer-events: none; transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), opacity 0.18s ease; }
+    .biz-drawer.open { transform: none; opacity: 1; pointer-events: auto; }
+    .biz-drawer-panel { display: flex; flex-direction: column; gap: 5px; }
+    .biz-staff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .biz-drawer-hint { font-size: 10px; color: #94a3b8; font-weight: 800; }
+    .biz-activity-box { display: flex; flex-direction: column; gap: 5px; text-align: center; }
+    .biz-crowd { font-size: 14px; font-weight: 900; color: #f59e0b; }
+    .biz-activity-row { display: flex; justify-content: space-around; font-size: 10.5px; color: #e2e8f0; }
+    .biz-ticker { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.35); border-radius: 8px; padding: 4px 8px; font-size: 10px; color: #a7f3d0; }
+    @media (max-height: 380px) { .biz-hud-tagline, .biz-evo-hint { display: none; } .biz-tab { min-height: 38px; } .biz-upgrade-btn { min-height: 38px; } .biz-drawer { bottom: 54px; } }
+    @media (max-width: 560px) { .biz-evo-info { display: none; } .biz-hud-bottom { justify-content: space-between; } .biz-chip { padding: 2px 6px; } }
+
     /* SETTINGS & PROFILE MODAL STYLES (PAYSAGE 2 COLONNES ULTRA-COMPACT ZÉRO SCROLL) */
     .settings-modal-card {
       max-width: 640px;
@@ -2555,91 +2618,65 @@
     </div>
   </div>
 
-  <!-- MODAL DÉTAIL & PLAN INTÉRIEUR DU PROJET (ادخل للمحلّ) — FORMAT PAYSAGE 2 COLONNES ZÉRO SCROLL -->
+  <!-- MODAL IMMERSIVE DU PROJET (ادخل للمحلّ) — SCÈNE CANVAS PLEIN POPUP + HUD EN SUPERPOSITION -->
   <div class="modal-overlay" id="bizDetailModal">
-    <div class="modal-card biz-detail-card" style="max-width: 660px; width: 96%; max-height: 94vh; padding: 10px 14px; gap: 8px; direction: rtl; text-align: right; border-color: var(--gold); overflow: hidden;">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <div id="bizDetailIcon" style="font-size: 26px;">🏪</div>
-          <div>
-            <div id="bizDetailTitle" style="font-size: 15px; font-weight: 900; color: #f8fafc;">اسم المحلّ</div>
-            <div id="bizDetailTagline" style="font-size: 10px; color: #94a3b8;">شعار المحلّ</div>
-          </div>
-        </div>
-        <button class="settings-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
+    <div class="modal-card biz-immersive" id="bizImmersiveCard">
+      <div class="biz-scene" id="bizDetailVisualStage">
+        <canvas id="bizStoreCanvas"></canvas>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1.05fr 1fr; gap: 10px; width: 100%; align-items: stretch;">
-        <!-- Colonne Droite (RTL) : Scène 2D animée + Évolution financière -->
-        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0;">
-          <div class="biz-store-stage" id="bizDetailVisualStage" style="display: flex; align-items: center; justify-content: center; position: relative; height: 118px;">
-            <canvas id="bizStoreCanvas" style="display: block; width: 100%; height: 118px; border-radius: 12px; cursor: pointer;"></canvas>
-          </div>
-
-          <div class="biz-income-evolution-card" style="padding: 7px 10px; gap: 6px;">
-            <div class="biz-income-header" style="padding: 5px 8px;">
-              <div class="biz-income-stat">
-                <span class="stat-label" style="font-size: 9px;">💰 المربوح / كليان</span>
-                <div class="stat-main-value" id="bizDetailIncome" style="font-size: 13px;">+0.00 د.ت</div>
-              </div>
-              <div class="biz-income-stat stat-cadence">
-                <span class="stat-label" style="font-size: 9px;">⚡ الوتيرة الحينية</span>
-                <div class="stat-sub-value" id="bizDetailRate" style="font-size: 11px;">+0.00 د.ت / ث</div>
-              </div>
-            </div>
-
-            <div class="biz-evolution-banner" style="padding: 6px 8px;">
-              <div class="evo-info-pane" style="gap: 2px;">
-                <div class="evo-level-badge-wrap" style="gap: 4px;">
-                  <span class="evo-badge" style="font-size: 9px;">⬆️ الترقية</span>
-                  <span class="evo-target" id="bizDetailNextLvlText" style="font-size: 11px;">المستوى 2</span>
-                  <div class="evo-gain-pill" style="font-size: 9.5px; padding: 1px 5px;">
-                    <span>📈</span>
-                    <span id="bizDetailNextGain">+0.80 د.ت</span>
-                  </div>
-                </div>
-                <div class="evo-milestone-hint" id="bizDetailMilestoneHint" style="font-size: 9px;">
-                  🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !
-                </div>
-              </div>
-              <button class="evo-upgrade-btn" id="bizDetailQuickUpgradeBtn" style="padding: 6px 10px; min-width: 96px; min-height: 38px;">
-                <span class="evo-btn-action" style="font-size: 11px;">طوّر المحلّ 🚀</span>
-                <span class="evo-btn-cost" id="bizDetailUpgradeCost" style="font-size: 10px;">5.35 د.ت</span>
-              </button>
-            </div>
+      <!-- BARRE HAUTE : identité + chiffres clés + fermeture -->
+      <div class="biz-hud-top">
+        <div class="biz-hud-id">
+          <div class="biz-hud-icon" id="bizDetailIcon">🏪</div>
+          <div class="biz-hud-names">
+            <div class="biz-hud-title" id="bizDetailTitle">اسم المحلّ</div>
+            <div class="biz-hud-tagline" id="bizDetailTagline">شعار المحلّ</div>
           </div>
         </div>
+        <div class="biz-hud-stats">
+          <div class="biz-chip"><span class="biz-chip-k">💰 / كليان</span><b id="bizDetailIncome">+0.00 د.ت</b></div>
+          <div class="biz-chip"><span class="biz-chip-k">⚡ الوتيرة</span><b id="bizDetailRate">+0.00 د.ت / ث</b></div>
+        </div>
+        <button class="biz-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
+      </div>
 
-        <!-- Colonne Gauche (RTL) : Employés / Recette / Activité sans scroll -->
-        <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0; justify-content: space-between;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
-            <button class="quick-pill-btn active" id="bizTabBtnStaff" style="justify-content: center; font-size: 10px; padding: 5px;">👥 الخدّامة</button>
-            <button class="quick-pill-btn" id="bizTabBtnRecipe" style="justify-content: center; font-size: 10px; padding: 5px;">📜 الوصفة</button>
-            <button class="quick-pill-btn" id="bizTabBtnActivity" style="justify-content: center; font-size: 10px; padding: 5px;">⚡ النشاط</button>
-          </div>
-
-          <div id="bizDetailPanelStaff" style="display: flex; flex-direction: column; gap: 5px; flex: 1; justify-content: center;">
-            <div id="bizDetailStaffList" style="display: flex; flex-direction: column; gap: 5px;"></div>
-          </div>
-
-          <div id="bizDetailPanelRecipe" style="display: none; flex-direction: column; gap: 5px; flex: 1; justify-content: center;">
-            <div style="font-size: 10px; color: #94a3b8;">🥖 المنتوجات التونسية الأكثر طلباً :</div>
-            <div id="bizDetailRecipeList" style="display: flex; flex-direction: column; gap: 5px;"></div>
-          </div>
-
-          <div id="bizDetailPanelActivity" style="display: none; flex-direction: column; gap: 6px; flex: 1; justify-content: center;">
-            <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); text-align: center;">
-              <div style="font-size: 11px; color: #94a3b8;">جوّ المحلّ والإقبال الحيني :</div>
-              <div id="bizDetailCrowdLevel" style="font-size: 15px; font-weight: 900; color: #f59e0b; margin: 3px 0;">الحانوت معبي للكرومة 🔥</div>
-              <div style="display: flex; justify-content: space-around; margin-top: 6px; font-size: 10.5px;">
-                <div>👥 كليونات/دقيقة : <b id="bizDetailCustomersRate" style="color:#38bdf8;">14</b></div>
-                <div>⭐ نسبة الرضا : <b id="bizDetailSatisfaction" style="color:#34d399;">96%</b></div>
-              </div>
+      <!-- TIROIR GLASS (s'ouvre au tap sur un onglet, fermé par défaut pour dégager l'animation) -->
+      <div class="biz-drawer" id="bizDrawer">
+        <div id="bizDetailPanelStaff" class="biz-drawer-panel">
+          <div id="bizDetailStaffList" class="biz-staff-grid"></div>
+        </div>
+        <div id="bizDetailPanelRecipe" class="biz-drawer-panel" style="display: none;">
+          <div class="biz-drawer-hint">🥖 المنتوجات التونسية الأكثر طلباً :</div>
+          <div id="bizDetailRecipeList" class="biz-staff-grid"></div>
+        </div>
+        <div id="bizDetailPanelActivity" class="biz-drawer-panel" style="display: none;">
+          <div class="biz-activity-box">
+            <div class="biz-drawer-hint">جوّ المحلّ والإقبال الحيني :</div>
+            <div id="bizDetailCrowdLevel" class="biz-crowd">الحانوت معبي للكرومة 🔥</div>
+            <div class="biz-activity-row">
+              <div>👥 كليونات/دقيقة : <b id="bizDetailCustomersRate" style="color:#38bdf8;">14</b></div>
+              <div>⭐ نسبة الرضا : <b id="bizDetailSatisfaction" style="color:#34d399;">96%</b></div>
             </div>
-            <div style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 6px 8px; font-size: 10px; color: #a7f3d0;" id="bizDetailLiveTicker">
-              💬 كليان دخل يطلب في كعيبات سخان... الكاسة تسجّل في المرابيح !
-            </div>
+            <div class="biz-ticker" id="bizDetailLiveTicker">💬 كليان دخل يطلب... الكاسة تسجّل في المرابيح !</div>
           </div>
+        </div>
+      </div>
+
+      <!-- BARRE BASSE : amélioration + onglets -->
+      <div class="biz-hud-bottom">
+        <button class="biz-upgrade-btn" id="bizDetailQuickUpgradeBtn">
+          <span class="biz-upgrade-action">طوّر المحلّ 🚀</span>
+          <span class="biz-upgrade-cost" id="bizDetailUpgradeCost">5.35 د.ت</span>
+        </button>
+        <div class="biz-evo-info">
+          <div class="biz-evo-line"><span class="biz-evo-badge">⬆️</span><b id="bizDetailNextLvlText">المستوى 2</b><span class="biz-evo-gain">📈 <span id="bizDetailNextGain">+0.80 د.ت</span></span></div>
+          <div class="biz-evo-hint" id="bizDetailMilestoneHint">🎯 المحطّة القادمة : مستوى 25 يعطيك مضاعف x2 سرعة !</div>
+        </div>
+        <div class="biz-tabs">
+          <button class="biz-tab" id="bizTabBtnStaff"><span>👥</span><span>الخدّامة</span></button>
+          <button class="biz-tab" id="bizTabBtnRecipe"><span>📜</span><span>الوصفة</span></button>
+          <button class="biz-tab" id="bizTabBtnActivity"><span>⚡</span><span>النشاط</span></button>
         </div>
       </div>
     </div>
@@ -4075,6 +4112,7 @@
       currentDetailBizId = bizId;
       renderBizDetailContent();
       if (bizDetailModal) bizDetailModal.classList.add('active');
+      switchBizDetailTab(null);
 
       const canvasEl = document.getElementById('bizStoreCanvas');
       if (canvasEl) {
@@ -4373,14 +4411,20 @@
     }
     registerBackButtonListener();
 
+    let activeBizTab = null;
+    const bizDrawer = document.getElementById('bizDrawer');
     function switchBizDetailTab(tab) {
-      bizTabBtnStaff.classList.toggle('active', tab === 'staff');
-      bizTabBtnRecipe.classList.toggle('active', tab === 'recipe');
-      bizTabBtnActivity.classList.toggle('active', tab === 'activity');
+      // Tap sur l'onglet actif = referme le tiroir (animation dégagée)
+      const open = tab !== null && tab !== activeBizTab;
+      activeBizTab = open ? tab : null;
+      bizTabBtnStaff.classList.toggle('active', activeBizTab === 'staff');
+      bizTabBtnRecipe.classList.toggle('active', activeBizTab === 'recipe');
+      bizTabBtnActivity.classList.toggle('active', activeBizTab === 'activity');
 
-      bizDetailPanelStaff.style.display = tab === 'staff' ? 'flex' : 'none';
-      bizDetailPanelRecipe.style.display = tab === 'recipe' ? 'flex' : 'none';
-      bizDetailPanelActivity.style.display = tab === 'activity' ? 'flex' : 'none';
+      bizDetailPanelStaff.style.display = activeBizTab === 'staff' ? 'flex' : 'none';
+      bizDetailPanelRecipe.style.display = activeBizTab === 'recipe' ? 'flex' : 'none';
+      bizDetailPanelActivity.style.display = activeBizTab === 'activity' ? 'flex' : 'none';
+      if (bizDrawer) bizDrawer.classList.toggle('open', open);
     }
 
     if (bizTabBtnStaff) bizTabBtnStaff.onclick = () => switchBizDetailTab('staff');

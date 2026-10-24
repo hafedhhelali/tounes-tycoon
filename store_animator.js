@@ -55,6 +55,7 @@ export class CanvasStoreEngine {
     this.avatarsPool = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓', '🧑‍🎓'];
 
     this.handleCanvasClick = this.handleCanvasClick.bind(this);
+    this.onWindowResize = () => this.resize();
     this.canvas.addEventListener('click', this.handleCanvasClick);
   }
 
@@ -65,18 +66,24 @@ export class CanvasStoreEngine {
 
   resize() {
     if (!this.canvas) return;
-    const rect = this.canvas.parentElement ? this.canvas.parentElement.getBoundingClientRect() : { width: 360, height: 200 };
-    this.width = Math.max(300, Math.floor(rect.width));
-    this.height = 200;
+    // Scène remplissant tout le popup : hauteur logique fixe (200), mise à l'échelle uniforme.
+    // clientWidth/Height ignorent le transform scale() de l'animation d'ouverture.
+    const parent = this.canvas.parentElement;
+    const cssW = Math.max(300, parent ? parent.clientWidth : 360);
+    const cssH = Math.max(180, parent ? parent.clientHeight : 200);
+    this.logicalH = 200;
+    this.scale = cssH / this.logicalH;
+    this.width = Math.max(300, Math.floor(cssW / this.scale));
+    this.height = this.logicalH;
     this.dpr = Math.min(window.devicePixelRatio || 1, 2.5);
 
-    this.canvas.width = Math.floor(this.width * this.dpr);
-    this.canvas.height = Math.floor(this.height * this.dpr);
-    this.canvas.style.width = `${this.width}px`;
-    this.canvas.style.height = `${this.height}px`;
+    this.canvas.width = Math.floor(cssW * this.dpr);
+    this.canvas.height = Math.floor(cssH * this.dpr);
+    this.canvas.style.width = `${cssW}px`;
+    this.canvas.style.height = `${cssH}px`;
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-    this.ctx.scale(this.dpr, this.dpr);
+    this.ctx.scale(this.dpr * this.scale, this.dpr * this.scale);
   }
 
   start(bizId) {
@@ -87,6 +94,9 @@ export class CanvasStoreEngine {
     this.moneyPuffs = [];
     this.spawnTimer = 0.5;
     this.resize();
+    // Le popup finit de se dimensionner pendant son animation d'ouverture : on recalcule ensuite
+    this.resizeTimer = setTimeout(() => this.resize(), 300);
+    window.addEventListener('resize', this.onWindowResize);
     this.lastTime = performance.now();
     this.loop = this.loop.bind(this);
     this.animId = requestAnimationFrame(this.loop);
@@ -97,6 +107,8 @@ export class CanvasStoreEngine {
       cancelAnimationFrame(this.animId);
       this.animId = null;
     }
+    clearTimeout(this.resizeTimer);
+    window.removeEventListener('resize', this.onWindowResize);
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
@@ -176,8 +188,10 @@ export class CanvasStoreEngine {
 
   handleCanvasClick(event) {
     const rect = this.canvas.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const clickY = event.clientY - rect.top;
+    // Conversion pixels écran → coordonnées logiques de la scène (échelle uniforme)
+    const ratio = rect.width > 0 ? this.width / rect.width : 1;
+    const clickX = (event.clientX - rect.left) * ratio;
+    const clickY = (event.clientY - rect.top) * ratio;
 
     for (const zone of this.clickZones) {
       if (
@@ -706,6 +720,85 @@ export class CanvasStoreEngine {
     }
   }
 
+  // --- AMBIANCE CRÉATIVE : lanternes tunisiennes balancées, rayons de lumière, poussière dorée, vignette ---
+  drawAmbience(ctx, now, isProducing) {
+    const w = this.width;
+    const h = this.height;
+    const t = now / 1000;
+
+    // 1. Rayons de lumière chaude traversant la boutique
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 3; i++) {
+      const baseX = w * (0.2 + i * 0.3) + Math.sin(t * 0.4 + i) * 14;
+      const g = ctx.createLinearGradient(baseX, 0, baseX + 60, h - 54);
+      g.addColorStop(0, 'rgba(253, 224, 71, 0.10)');
+      g.addColorStop(1, 'rgba(253, 224, 71, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(baseX - 8, 16);
+      ctx.lineTo(baseX + 14, 16);
+      ctx.lineTo(baseX + 74, h - 54);
+      ctx.lineTo(baseX + 24, h - 54);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 2. Lanternes suspendues qui se balancent (lueur plus vive quand ça travaille)
+    const count = Math.max(3, Math.floor(w / 130));
+    for (let i = 0; i < count; i++) {
+      const lx = (w / count) * (i + 0.5);
+      const swing = Math.sin(t * 1.3 + i * 1.7) * 0.12;
+      const len = 22 + (i % 2) * 10;
+      ctx.save();
+      ctx.translate(lx, 16);
+      ctx.rotate(swing);
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, len);
+      ctx.stroke();
+      const glow = ctx.createRadialGradient(0, len + 6, 1, 0, len + 6, isProducing ? 26 : 19);
+      glow.addColorStop(0, 'rgba(253, 186, 116, 0.55)');
+      glow.addColorStop(1, 'rgba(253, 186, 116, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(-30, len - 24, 60, 60);
+      ctx.fillStyle = i % 2 ? '#dc2626' : '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect(-5, len, 10, 13, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 3. Poussière dorée flottante
+    ctx.save();
+    ctx.fillStyle = 'rgba(254, 240, 138, 0.5)';
+    for (let i = 0; i < 14; i++) {
+      const px = (i * 97 + t * (6 + (i % 4) * 2)) % w;
+      const py = 24 + ((i * 53 + Math.sin(t + i) * 8) % (h - 90));
+      ctx.globalAlpha = 0.25 + 0.25 * Math.sin(t * 2 + i);
+      ctx.beginPath();
+      ctx.arc(px, Math.abs(py), 1.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  drawVignette(ctx) {
+    const w = this.width;
+    const h = this.height;
+    const g = ctx.createRadialGradient(w / 2, h / 2, h * 0.55, w / 2, h / 2, Math.max(w, h) * 0.75);
+    g.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    g.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+
   // --- BOUCLE D'ANIMATION 60 FPS ---
   loop(now) {
     if (!this.lastTime) this.lastTime = now;
@@ -792,6 +885,7 @@ export class CanvasStoreEngine {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     this.drawBackdrop(this.ctx, this.bizId, now);
+    this.drawAmbience(this.ctx, now, !!isProducing);
 
     if (detail) {
       this.drawCashierCounter(this.ctx, detail, isProducing, now);
@@ -800,6 +894,7 @@ export class CanvasStoreEngine {
 
     this.drawCustomers(this.ctx, now);
     this.drawParticles(this.ctx);
+    this.drawVignette(this.ctx);
 
     this.animId = requestAnimationFrame(this.loop);
   }

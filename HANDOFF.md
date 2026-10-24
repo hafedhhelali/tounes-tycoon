@@ -2,7 +2,9 @@
 MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes
-Animations 2D haute précision : passants vectoriels articulés (marche sinusoïdale, chéchia, hijab, couffin tunisien), véhicules détaillés (Taxi Collectif, Louage blanc/rouge, faisceaux de phares, jantes rotatives) et carrefours 3D enrichis (ruelles illuminées, lampadaires à halo chaud, passages piétons 3D, feux tricolores).
+Vue « ادخل للمحلّ » immersive : canvas `CanvasStoreEngine` plein popup (échelle uniforme, hauteur logique 200, clics remappés), HUD en superposition (barre haute: identité+chiffres+✕, barre basse: amélioration+onglets), tiroir glass `#bizDrawer` fermé par défaut (Staff/Recette/Activité), ambiance animée (lanternes, rayons, poussière, vignette).
+Acquis: roue = pub systématique, cartes Chkobba lisibles, popups zéro-scroll, passants/véhicules/carrefours détaillés, clic hors popup, toast `ناقصك فلوس`, reset → `bab_souika`.
+Tests: npm test = 12/12 PASS.
 Correctifs UX & Bugs : roue de la fortune déclenchant systématiquement la publicité vidéo (`showRewardedBoost`), correction de l'affichage des cartes du mini-jeu Chkobba (contraste `.card-val`/`.card-suit` + layout paysage 2 colonnes), fermeture au clic hors popup, toast `ناقصك فلوس` et retour au 1er quartier (`bab_souika`) sur reset/prestige.
 Modales 100% Zéro-Scroll en mode paysage sur toutes les popups (`minigameModal`, `wheelModal`, `prestigeModal`, `bizDetailModal`, `settingsModal`, `legalModal`, `zonesModal`, `startGuideModal`). Tests: npm test = 12/12 PASS.
 
