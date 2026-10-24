@@ -462,11 +462,17 @@ export class CanvasStoreEngine {
       ctx.fillText('☁️', 120, 50);
       ctx.fillText('☁️', glassW + 50, 48);
 
+      // Écran d'affichage des vols calé avec précision sans débordement
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(8, 38, 76, 38);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(8, 38, 76, 38);
       ctx.fillStyle = '#38bdf8';
       ctx.font = 'bold 8px monospace';
-      ctx.fillText('TUNIS 18:30', 44, 44);
-      ctx.fillText('PARIS 19:30', 44, 58);
-      ctx.fillText('DUBAI 21:30', 44, 72);
+      ctx.fillText('✈ TUNIS', 12, 49);
+      ctx.fillText('✈ PARIS', 12, 60);
+      ctx.fillText('✈ DUBAI', 12, 71);
     } else {
       ctx.fillStyle = '#334155';
       ctx.fillRect(100, 56, w - 120, 6);
@@ -1008,25 +1014,106 @@ export class CanvasStoreEngine {
   drawCustomers(ctx, now) {
     for (const c of this.customers) {
       ctx.save();
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      // Ombre portée au sol
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
       ctx.beginPath();
-      ctx.ellipse(c.x + 12, c.y + 4, 12, 4, 0, 0, Math.PI * 2);
+      ctx.ellipse(c.x + 12, c.y + 4, 11, 3.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
       const isWalking = c.state === 'walking_in' || c.state === 'walking_out';
-      const bounce = isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 4 : 0;
-      const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.05 : 0;
+      const bounce = isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 3 : 0;
+      const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.06 : 0;
 
-      ctx.translate(c.x + 12, c.y - 12 - bounce);
+      ctx.save();
+      ctx.translate(c.x + 12, c.y - 6 - bounce);
       ctx.rotate(tilt);
-      ctx.font = '26px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(c.avatar, 0, 0);
-      ctx.rotate(-tilt);
-      ctx.translate(-(c.x + 12), -(c.y - 12 - bounce));
 
+      // Personnage vectoriel élégant (Corps, Vêtements tunisiens, Chéchia ou Coiffure)
+      const seed = Math.floor(Math.abs(c.id * 1000));
+      const styles = [
+        { robe: '#1e3a8a', coat: '#2563eb', skin: '#fcd34d', hat: 'chechia' },
+        { robe: '#065f46', coat: '#059669', skin: '#f59e0b', hat: 'tarbouch' },
+        { robe: '#7c2d12', coat: '#d97706', skin: '#fde68a', hat: 'hijab' },
+        { robe: '#0f172a', coat: '#334155', skin: '#fcd34d', hat: 'hair' }
+      ];
+      const st = styles[seed % styles.length];
+
+      // Jambes animées
+      const stride = isWalking ? Math.sin(c.walkCycle * 6) * 4 : 0;
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2.8;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-3, 0);
+      ctx.lineTo(-3 - stride * 0.6, 9);
+      ctx.moveTo(3, 0);
+      ctx.lineTo(3 + stride * 0.6, 9);
+      ctx.stroke();
+
+      // Djellaba / Veste élégante
+      ctx.fillStyle = st.coat;
+      ctx.beginPath();
+      ctx.roundRect(-7, -18, 14, 18, [4, 4, 2, 2]);
+      ctx.fill();
+      ctx.fillStyle = st.robe;
+      ctx.fillRect(-2, -18, 4, 18);
+
+      // Bras avec accessoire (porte-monnaie ou couffin)
+      ctx.strokeStyle = st.coat;
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(-5, -14);
+      ctx.lineTo(-8, -4);
+      ctx.moveTo(5, -14);
+      ctx.lineTo(8, -4);
+      ctx.stroke();
+
+      // Tête & Visage
+      ctx.fillStyle = st.skin;
+      ctx.beginPath();
+      ctx.arc(0, -24, 6.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Chéchia rouge tunisienne ou couvre-chef soigné
+      if (st.hat === 'chechia') {
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.arc(0, -26.5, 6.5, Math.PI, 0);
+        ctx.fill();
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-2, -28.5);
+        ctx.lineTo(-4.5, -25);
+        ctx.stroke();
+      } else if (st.hat === 'hijab') {
+        ctx.fillStyle = st.coat;
+        ctx.beginPath();
+        ctx.arc(0, -24.5, 7.5, Math.PI * 0.7, Math.PI * 2.15);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(0, -26.5, 6.5, Math.PI * 0.8, Math.PI * 2.1);
+        ctx.fill();
+      }
+
+      // Yeux expressifs
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(-2.5, -25, 1.5, 1.5);
+      ctx.fillRect(1.5, -25, 1.5, 1.5);
+      // Sourire
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(0, -22, 2.5, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+
+      ctx.restore();
+
+      // Bulle de commande / réaction
       const bubbleX = c.x + 12;
-      const bubbleY = c.y - 42 - bounce;
+      const bubbleY = c.y - 44 - bounce;
       const bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
 
       ctx.fillStyle = '#ffffff';
@@ -2383,49 +2470,61 @@ export class QuartierAnimator {
       ctx.fillRect(barX, barY, barW * pct, barH);
     }
 
-    // Boutons d'interaction : Inspecter la boutique & Améliorer
-    const btnW = (b.width - 28) / 2;
-    const btnH = 22;
-    const btnInspectX = x + 10;
-    const btnUpgradeX = x + 14 + btnW;
-    const btnY = groundY - 26;
-
-    ctx.fillStyle = '#3b82f6';
-    ctx.beginPath();
-    ctx.roundRect(btnInspectX, btnY, btnW, btnH, 6);
-    ctx.fill();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 10px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('🏪 ادخل', btnInspectX + btnW / 2, btnY + 15);
-
+    // Interaction épurée et authentique :
+    // 1. Clic sur la porte tunisienne cloutée -> Entrer dans le projet
     const canAfford = this.engine.dinars >= this.engine.getCost(biz);
-    ctx.fillStyle = canAfford ? '#10b981' : '#475569';
-    ctx.beginPath();
-    ctx.roundRect(btnUpgradeX, btnY, btnW, btnH, 6);
-    ctx.fill();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 10px "Cairo", sans-serif';
-    ctx.fillText('⬆️ L' + (biz.level + 1), btnUpgradeX + btnW / 2, btnY + 15);
+    const doorInteractW = doorW + 16;
+    const doorInteractH = doorH + 20;
+    const doorInteractX = doorX - 8;
+    const doorInteractY = doorY - 10;
 
+    // Petit indicateur discret et élégant au sol devant la porte
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.beginPath();
+    ctx.roundRect(doorX - 2, groundY - 20, doorW + 4, 16, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '900 8.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🚪 ادخل', doorX + doorW / 2, groundY - 8);
+
+    // Plaque de niveau cliquable au-dessus de la porte
+    const upgBadgeW = 44;
+    const upgBadgeH = 16;
+    const upgBadgeX = doorX + (doorW - upgBadgeW) / 2;
+    const upgBadgeY = doorY - 18;
+    ctx.fillStyle = canAfford ? '#10b981' : 'rgba(30, 41, 59, 0.9)';
+    ctx.beginPath();
+    ctx.roundRect(upgBadgeX, upgBadgeY, upgBadgeW, upgBadgeH, 4);
+    ctx.fill();
+    ctx.strokeStyle = canAfford ? '#34d399' : '#64748b';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 8.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('⬆️ L' + (biz.level + 1), upgBadgeX + upgBadgeW / 2, upgBadgeY + 11.5);
+
+    // Enregistrement des hitboxes précises
     this.interactiveHitboxes.push({
-      x: btnInspectX,
-      y: btnY,
-      w: btnW,
-      h: btnH,
+      x: doorInteractX,
+      y: doorInteractY,
+      w: doorInteractW,
+      h: doorInteractH,
       action: 'inspect',
       bizId: b.id
     });
-
     this.interactiveHitboxes.push({
-      x: btnUpgradeX,
-      y: btnY,
-      w: btnW,
-      h: btnH,
+      x: upgBadgeX - 4,
+      y: upgBadgeY - 4,
+      w: upgBadgeW + 8,
+      h: upgBadgeH + 8,
       action: 'upgrade',
       bizId: b.id
     });
-
     this.interactiveHitboxes.push({
       x: x,
       y: y,
@@ -3338,174 +3437,174 @@ export class TunisiaMapEngine {
     // Caravan transport animation for seamless travel
     this.caravan = null;
 
-    // Les 14 Villes Géographiques de Tunisie avec coordonnées réelles (viewBox 440 x 580)
+    // Les 14 Villes Géographiques de Tunisie avec coordonnées réelles et alignées sur TUNISIAN_CITIES (engine.js)
     this.cities = [
+      {
+        id: 'tunis',
+        name: 'تونس العاصمة',
+        fullName: 'تونس العاصمة - نقطة البداية',
+        icon: '🕌',
+        x: 240,
+        y: 115,
+        tagline: 'نقطة البداية، أصل التجارة، نصبة كسكروت وفريكاسي في قلب المدينة العربي',
+        reqDinars: 0,
+        bonusDesc: 'مشاريع العاصمة : كسكروت، فريكاسي، قهوة (+25%)',
+        themeClass: 'zone-bab-souika'
+      },
       {
         id: 'bizerte',
         name: 'بنزرت',
-        fullName: 'بنزرت - عروس الشمال',
-        icon: '⚓',
+        fullName: 'بنزرت - قنال بنزرت',
+        icon: '⛵',
         x: 210,
         y: 60,
-        tagline: 'ميناء الصيد العتيق، القنال والجسر المتحرّك وشواطئ الرفراف',
-        reqDinars: 0,
-        bonusDesc: 'مشاريع الصيد البحري، الموانئ والتجارة الساحلية (+25%)',
+        tagline: 'قنال بنزرت، الحوت المشوي، الكورنيش العتيق وحركة الميناء',
+        reqDinars: 2500,
+        bonusDesc: 'مشاريع بنزرت والميناء (+25%)',
         themeClass: 'zone-bizerte'
+      },
+      {
+        id: 'nabeul_hammamet',
+        name: 'نابل / الحمامات',
+        fullName: 'نابل / الحمامات - الفخار والياسمين',
+        icon: '🏖️',
+        x: 308,
+        y: 135,
+        tagline: 'الفخار، ياسمين الحمامات، زهر نابل والنزل السياحية الفاخرة',
+        reqDinars: 8000,
+        bonusDesc: 'سياحة الحمامات وحلويات نابل (+30%)',
+        themeClass: 'zone-hammamet'
       },
       {
         id: 'beja',
         name: 'باجة',
         fullName: 'باجة - مطمورة روما',
-        icon: '🌾',
+        icon: '🧀',
         x: 140,
         y: 110,
-        tagline: 'مملكة القمح والحبوب، الأجبان التقليدية وطبيعة الشمال الغربي الخلابة',
-        reqDinars: 150,
-        bonusDesc: 'مشاريع الفلاحة، القمح والأجبان والمخابز (+25%)',
+        tagline: 'مطماطة الشمال، قمح وسمن، مخارق وزلابية وجبن باجة المعتّق',
+        reqDinars: 22000,
+        bonusDesc: 'الخيرات والمخبوزات الباجية (+30%)',
         themeClass: 'zone-beja'
       },
       {
-        id: 'tunis',
-        name: 'تونس العاصمة',
-        fullName: 'تونس العاصمة والمدينة العربي',
-        icon: '🕌',
-        x: 240,
-        y: 115,
-        tagline: 'باب سويقة، جامع الزيتونة المعمور، جامع الحلفاوين وقلب الاقتصاد التونسي',
-        reqDinars: 500,
-        bonusDesc: 'مشاريع الحومة : كسكروت، فريكاسي، قهوة شعبية وعطار ولد الحومة (+30%)',
-        themeClass: 'zone-bab-souika'
-      },
-      {
-        id: 'nabeul',
-        name: 'نابل',
-        fullName: 'نابل والوطن القبلي',
-        icon: '🏺',
-        x: 308,
-        y: 135,
-        tagline: 'عاصمة الفخار وقليبية، زهر النارنج، الهريسة العربي وبساتين القوارص',
-        reqDinars: 2500,
-        bonusDesc: 'مشاريع الفخار، معمل الهريسة والمصبّرات الغذائية الكبرى (+35%)',
-        themeClass: 'zone-nabeul'
-      },
-      {
-        id: 'kef',
+        id: 'le_kef',
         name: 'الكاف',
-        fullName: 'الكاف العالية',
+        fullName: 'الكاف - القصبة العالية',
         icon: '🏰',
         x: 115,
         y: 180,
-        tagline: 'قصبة الكاف التاريخية، سيدي بومخلوف، طاولة يوغرطة وعراقة الشمال الغربي',
-        reqDinars: 12000,
-        bonusDesc: 'مشاريع التراث الجبلي، المطاعم العريقة والحرف اليدوية (+35%)',
-        themeClass: 'zone-kef'
+        tagline: 'القصبة العالية، سيدي بومخلوف، برنوس الجبل والتجارة العريقة',
+        reqDinars: 60000,
+        bonusDesc: 'مشاريع الجبل والقصبة (+35%)',
+        themeClass: 'zone-le-kef'
       },
       {
         id: 'sousse',
-        name: 'سوسة',
-        fullName: 'سوسة - جوهرة الساحل',
-        icon: '🏖️',
+        name: 'سوسة جوهرة الساحل',
+        fullName: 'سوسة جوهرة الساحل - بوجعفر',
+        icon: '💎',
         x: 288,
         y: 215,
-        tagline: 'ميناء القنطاوي السياحي، الكورنيش، النزل الفاخرة والأسواق النابضة',
-        reqDinars: 50000,
-        bonusDesc: 'مشاريع النزل، المراكز التجارية والمطاعم السياحية (+40%)',
+        tagline: 'بوجعفر، القنطاوي، التجارة البحرية وصالونات الشاي العصرية',
+        reqDinars: 150000,
+        bonusDesc: 'صالونات سوسة والمطاعم الفاخرة (+35%)',
         themeClass: 'zone-sousse'
       },
       {
-        id: 'monastir',
-        name: 'المنستير',
-        fullName: 'المنستير والرباط',
-        icon: '⛵',
+        id: 'monastir_mahdia',
+        name: 'المنستير / المهدية',
+        fullName: 'المنستير / المهدية - رباط المنستير',
+        icon: '⚓',
         x: 312,
         y: 238,
-        tagline: 'رباط المنستير العظيم، مارينا اليخوت، مصانع النسيج ومحطة التاكسي الجماعي',
-        reqDinars: 180000,
-        bonusDesc: 'مشاريع محطة التاكسي الجماعي، حلويات عربي وباتيسري (+40%)',
-        themeClass: 'zone-la-goulette'
+        tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الشامي الأزرق',
+        reqDinars: 350000,
+        bonusDesc: 'مشاريع الساحل والنزل الكبرى (+40%)',
+        themeClass: 'zone-monastir'
       },
       {
         id: 'kairouan',
-        name: 'القيروان',
-        fullName: 'القيروان - رابعة الثلاث',
+        name: 'القيروان عاصمة الأغالبة',
+        fullName: 'القيروان عاصمة الأغالبة - فسقية الأغالبة',
         icon: '🕌',
         x: 215,
         y: 230,
-        tagline: 'جامع عقبة بن نافع، فسقية الأغالبة، زربية القيروان وسرّ المقروض الأصيل',
-        reqDinars: 600000,
-        bonusDesc: 'مشاريع الحلويات التونسية، المقروض، النحاس والزربية (+50%)',
+        tagline: 'فسقية الأغالبة، مقروض القيروان والزرابي الصوفية الفاخرة',
+        reqDinars: 800000,
+        bonusDesc: 'حلويات القيروان والحرف التقليدية (+40%)',
         themeClass: 'zone-kairouan'
       },
       {
         id: 'sfax',
-        name: 'صفاقس',
-        fullName: 'صفاقس - عاصمة الجنوب',
-        icon: '🫒',
+        name: 'صفاقس عاصمة الجنوب والهمّة',
+        fullName: 'صفاقس عاصمة الجنوب والهمّة - باب الديوان',
+        icon: '🏭',
         x: 282,
         y: 320,
-        tagline: 'معاصر زيت الزيتونة البكر، برج النار، التجارة النشيطة والصناعات الوطنية',
-        reqDinars: 2500000,
-        bonusDesc: 'معاصر زيت الزيتونة، المغازة العامة والمصانع الكبرى (+50%)',
+        tagline: 'باب الديوان، الزيتونة المباركة، الصناعات الكبرى والخدمة الحارة',
+        reqDinars: 2000000,
+        bonusDesc: 'الصناعات الصفاقسية والتجارة الكبرى (+50%)',
         themeClass: 'zone-sfax'
       },
       {
         id: 'gafsa',
         name: 'قفصة',
-        fullName: 'قفصة وبوابة الواحات',
+        fullName: 'قفصة - الحوض المنجمي',
         icon: '⛏️',
         x: 145,
         y: 345,
-        tagline: 'المسبح الروماني، واحة قفصة الغنّاء ومناجم الفسفاط والحوض المنجمي',
-        reqDinars: 10000000,
-        bonusDesc: 'المشاريع الاستخراجية، النقل والمعدات الثقيلة والمغازات (+50%)',
+        tagline: 'الحوض المنجمي، البركة الرومانية ونخيل قفصة الجبلي التاريخي',
+        reqDinars: 4500000,
+        bonusDesc: 'نقل قفصة وتجارتها المركزية (+50%)',
         themeClass: 'zone-gafsa'
       },
       {
         id: 'tozeur',
-        name: 'توزر',
-        fullName: 'توزر - لؤلؤة الجريد',
+        name: 'توزر والجريد',
+        fullName: 'توزر والجريد - دقلة النور',
         icon: '🌴',
         x: 95,
         y: 400,
-        tagline: 'واحات النخيل، دقلة النور الذهبية، شط الجريد الساحر وهندسة الآجر الأصفر',
-        reqDinars: 40000000,
-        bonusDesc: 'سياحة الواحات، دقلة النور والمنتجعات الصحراوية الفاخرة (x2)',
+        tagline: 'دقلة النور، الشبيكة وتامغزة، والواحات الصحراوية العالمية',
+        reqDinars: 10000000,
+        bonusDesc: 'سياحة الصحراء ووكالات الأسفار (+60%)',
         themeClass: 'zone-tozeur'
       },
       {
         id: 'gabes',
-        name: 'قابس',
-        fullName: 'قابس - واحة البحر',
+        name: 'قابس بوابة الصحراء والبحر',
+        fullName: 'قابس بوابة الصحراء والبحر - الحناء الجبسية',
         icon: '🌊',
         x: 235,
         y: 400,
-        tagline: 'الواحة الساحلية الوحيدة في المتوسط، سوق الحناء، الرمان والميناء التجاري',
-        reqDinars: 150000000,
-        bonusDesc: 'الموانئ البحرية، مصانع التحويل والصناعات الكبرى (x2)',
+        tagline: 'الحناء الجبسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
+        reqDinars: 25000000,
+        bonusDesc: 'سوق قابس والمجمعات الصناعية (+75%)',
         themeClass: 'zone-gabes'
       },
       {
-        id: 'medenine',
-        name: 'مدنين',
-        fullName: 'مدنين وتطاوين',
-        icon: '🛖',
+        id: 'medenine_zarzis',
+        name: 'مدنين / جرجيس',
+        fullName: 'مدنين / جرجيس - قصور مدنين',
+        icon: '🏺',
         x: 260,
         y: 465,
-        tagline: 'قصور مدنين وتطاوين الصحراوية الشامخة، ملتقى القوافل وبوابة الجنوب الكبير',
-        reqDinars: 500000000,
-        bonusDesc: 'الشركات العقارية، المشاريع الحجرية والتجارة الحدودية (x2)',
-        themeClass: 'zone-hammamet'
+        tagline: 'قصور مدنين، بحر جرجيس والزيتون الروماني العريق',
+        reqDinars: 60000000,
+        bonusDesc: 'الموانئ والتجارة المغاربية الجنوبية (x2)',
+        themeClass: 'zone-medenine'
       },
       {
-        id: 'djerba',
-        name: 'جربة',
-        fullName: 'جربة - جزيرة الأحلام',
+        id: 'djerba_holding',
+        name: 'جربة / الهولدينغ الوطني',
+        fullName: 'جربة / الهولدينغ الوطني - جزيرة الأحلام',
         icon: '👑',
         x: 330,
         y: 440,
-        tagline: 'حومة السوق، القنطرة الرومانية، فنادق المليارديرات وأسطول طيران الغزالة',
-        reqDinars: 1500000000,
-        bonusDesc: 'شركة طيران الغزالة العالمية، قصر السيارات والعقارات الكبرى (x2.5)',
+        tagline: 'جزيرة الأحلام ومقر الهولدينغ التونسي الوطني الدولي الشامل',
+        reqDinars: 150000000,
+        bonusDesc: 'مضاعف الهولدينغ الوطني الشامل لجميع المداخيل (x5) !',
         themeClass: 'zone-djerba'
       }
     ];
@@ -3514,31 +3613,31 @@ export class TunisiaMapEngine {
     this.highways = [
       { from: 'bizerte', to: 'tunis', name: 'A4' },
       { from: 'beja', to: 'tunis', name: 'A3' },
-      { from: 'kef', to: 'beja', name: 'GP5' },
-      { from: 'tunis', to: 'nabeul', name: 'A1 Cap Bon' },
+      { from: 'le_kef', to: 'beja', name: 'GP5' },
+      { from: 'tunis', to: 'nabeul_hammamet', name: 'A1 Cap Bon' },
       { from: 'tunis', to: 'sousse', name: 'A1 Nord' },
-      { from: 'sousse', to: 'monastir', name: 'C57 Sahel' },
+      { from: 'sousse', to: 'monastir_mahdia', name: 'C57 Sahel' },
       { from: 'sousse', to: 'kairouan', name: 'GP2' },
-      { from: 'kef', to: 'kairouan', name: 'GP12' },
+      { from: 'le_kef', to: 'kairouan', name: 'GP12' },
       { from: 'kairouan', to: 'sfax', name: 'A1 Centre' },
       { from: 'sousse', to: 'sfax', name: 'A1 Côtière' },
       { from: 'kairouan', to: 'gafsa', name: 'GP3' },
       { from: 'gafsa', to: 'tozeur', name: 'GP16 Oasis' },
       { from: 'gafsa', to: 'gabes', name: 'GP15' },
       { from: 'sfax', to: 'gabes', name: 'A1 Sud' },
-      { from: 'gabes', to: 'medenine', name: 'A1 Sud' },
-      { from: 'medenine', to: 'djerba', name: 'Voie Romaine El Kantara' }
+      { from: 'gabes', to: 'medenine_zarzis', name: 'A1 Sud' },
+      { from: 'medenine_zarzis', to: 'djerba_holding', name: 'Voie Romaine El Kantara' }
     ];
 
     // Particules de caravanes commerciales en mouvement le long des autoroutes
     this.tradeParticles = [];
-    for (let i = 0; i < 22; i++) {
+    for (let i = 0; i < 28; i++) {
       const h = this.highways[i % this.highways.length];
       this.tradeParticles.push({
         highway: h,
         progress: Math.random(),
-        speed: 0.12 + Math.random() * 0.15,
-        color: i % 2 === 0 ? '#fbbf24' : '#f59e0b'
+        speed: 0.12 + Math.random() * 0.16,
+        color: i % 3 === 0 ? '#fbbf24' : (i % 3 === 1 ? '#f59e0b' : '#38bdf8')
       });
     }
 
@@ -3566,8 +3665,8 @@ export class TunisiaMapEngine {
 
     this.canvas.width = Math.floor(cssW * this.dpr);
     this.canvas.height = Math.floor(cssH * this.dpr);
-    this.canvas.style.width = `{cssW}px`;
-    this.canvas.style.height = `{cssH}px`;
+    this.canvas.style.width = cssW + 'px';
+    this.canvas.style.height = cssH + 'px';
 
     // Uniform fit scale
     const scaleX = cssW / this.width;
@@ -3611,43 +3710,66 @@ export class TunisiaMapEngine {
   // Obtenir la ville active actuelle du joueur
   getActiveCity() {
     const currentZone = this.engine.getCurrentZone ? this.engine.getCurrentZone() : null;
-    const currentId = (currentZone && currentZone.id) || this.engine.currentZoneId || 'tunis';
-    // Mapping direct ou par zone
-    let found = this.cities.find(c => c.id === currentId || c.themeClass === currentZone?.themeClass);
+    const currentId = (currentZone && currentZone.id) || this.engine.currentCityId || this.engine.currentZoneId || 'tunis';
+    let found = this.cities.find(c => c.id === currentId);
     if (!found) {
+      // Mappings de compatibilité historique
       if (currentId === 'bab_souika') found = this.cities.find(c => c.id === 'tunis');
-      else if (currentId === 'la_goulette') found = this.cities.find(c => c.id === 'monastir');
-      else if (currentId === 'lac_2') found = this.cities.find(c => c.id === 'sfax');
+      else if (currentId === 'la_goulette') found = this.cities.find(c => c.id === 'bizerte');
+      else if (currentId === 'lac_2') found = this.cities.find(c => c.id === 'nabeul_hammamet');
       else if (currentId === 'hammamet') found = this.cities.find(c => c.id === 'sousse');
-      else if (currentId === 'djerba_holding') found = this.cities.find(c => c.id === 'djerba');
+      else if (currentId === 'djerba_holding') found = this.cities.find(c => c.id === 'djerba_holding');
     }
     return found || this.cities[0];
   }
 
   isCityUnlocked(city) {
+    if (this.engine.unlockedCityIds && this.engine.unlockedCityIds.includes(city.id)) {
+      return true;
+    }
+    return false;
+  }
+
+  canUnlockCity(city) {
+    if (this.isCityUnlocked(city)) return true;
+    if (this.engine.checkCityUnlockCriteria) {
+      return this.engine.checkCityUnlockCriteria(city.id);
+    }
     const totalDinars = Math.max(this.engine.lifetimeDinarsEarned || 0, this.engine.dinars || 0, this.engine.totalDinarsEarned || 0);
     return totalDinars >= city.reqDinars;
   }
 
   getNextCityToUnlock() {
-    const totalDinars = Math.max(this.engine.lifetimeDinarsEarned || 0, this.engine.dinars || 0, this.engine.totalDinarsEarned || 0);
-    return this.cities.find(c => totalDinars < c.reqDinars) || null;
+    return this.cities.find(c => !this.isCityUnlocked(c)) || null;
   }
 
   getCityUnlockProgress(city) {
+    if (this.isCityUnlocked(city)) return 1.0;
     const totalDinars = Math.max(this.engine.lifetimeDinarsEarned || 0, this.engine.dinars || 0, this.engine.totalDinarsEarned || 0);
-    if (totalDinars >= city.reqDinars) return 1.0;
+    if (city.reqDinars <= 0) return 1.0;
     return Math.min(0.99, Math.max(0, totalDinars / city.reqDinars));
   }
 
-  // Déplacement instantané vers une ville débloquée
+  // Déplacement ou déblocage direct d'une ville
   travelTo(cityId) {
     const city = this.cities.find(c => c.id === cityId);
-    if (!city || !this.isCityUnlocked(city)) return false;
+    if (!city) return false;
+
+    const isUnlocked = this.isCityUnlocked(city);
+    const canUnlock = this.canUnlockCity(city);
+
+    if (!isUnlocked && !canUnlock) return false;
+
+    // Déclencher déblocage si nécessaire
+    if (!isUnlocked && canUnlock) {
+      if (this.engine.unlockCity) {
+        this.engine.unlockCity(city.id);
+      } else if (this.engine.unlockZone) {
+        this.engine.unlockZone(city.id);
+      }
+    }
 
     const fromCity = this.getActiveCity();
-
-    // Déclencher l'animation de caravane dorée de voyage
     this.caravan = {
       from: fromCity,
       to: city,
@@ -3655,10 +3777,7 @@ export class TunisiaMapEngine {
       duration: 1200 // ms
     };
 
-    // Mettre à jour la zone dans le moteur
-    if (this.engine.unlockZone) {
-      this.engine.unlockZone(city.id);
-    }
+    this.engine.currentCityId = city.id;
     this.engine.currentZoneId = city.id;
 
     if (this.onTravel) this.onTravel(city);
@@ -3674,14 +3793,34 @@ export class TunisiaMapEngine {
     const x = (clientX - this.offsetX) / this.scale;
     const y = (clientY - this.offsetY) / this.scale;
 
-    // Détection de clic sur les nœuds de villes
+    // 1. Détection de clic sur le bouton de la carte popover en bas (si affichée)
+    if (this.selectedCityId) {
+      const cardW = this.width - 32;
+      const cardH = 92;
+      const cardX = 16;
+      const cardY = this.height - cardH - 12;
+      const btnW = 105;
+      const btnH = 30;
+      const btnX = cardX + 12;
+      const btnY = cardY + 48;
+
+      if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
+        const c = this.cities.find(item => item.id === this.selectedCityId);
+        if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
+          this.travelTo(c.id);
+        }
+        return;
+      }
+    }
+
+    // 2. Détection de clic sur les nœuds de villes (hitbox élargie à r=24 pour mobile tactile)
     for (const c of this.cities) {
       const dist = Math.hypot(x - c.x, y - c.y);
-      if (dist <= 18) {
+      if (dist <= 24) {
         this.selectedCityId = c.id;
         if (this.onSelect) this.onSelect(c);
 
-        // Si la ville est déjà débloquée, proposer le voyage
+        // Si la ville est déjà débloquée, voyager directement
         if (this.isCityUnlocked(c) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
         }
@@ -3700,7 +3839,7 @@ export class TunisiaMapEngine {
 
     let hovered = null;
     for (const c of this.cities) {
-      if (Math.hypot(x - c.x, y - c.y) <= 18) {
+      if (Math.hypot(x - c.x, y - c.y) <= 24) {
         hovered = c.id;
         break;
       }
@@ -3869,9 +4008,15 @@ export class TunisiaMapEngine {
   drawHighwaysNetwork(ctx, dt, t) {
     ctx.save();
 
-    // 1. Tracé des autoroutes dorées (Base brillante)
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
-    ctx.lineWidth = 3;
+    // 1. Tracé des autoroutes dorées élégantes
+    // Base avec lueur dorée
+    ctx.shadowColor = '#f59e0b';
+    ctx.shadowBlur = 4;
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
     for (const h of this.highways) {
       const c1 = this.cities.find(c => c.id === h.from);
       const c2 = this.cities.find(c => c.id === h.to);
@@ -3883,9 +4028,10 @@ export class TunisiaMapEngine {
       ctx.stroke();
     }
 
-    // 2. Ligne centrale néon dorée
+    // 2. Ligne centrale ruban néon ambre
+    ctx.shadowBlur = 0;
     ctx.strokeStyle = '#fef08a';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.6;
     for (const h of this.highways) {
       const c1 = this.cities.find(c => c.id === h.from);
       const c2 = this.cities.find(c => c.id === h.to);
@@ -3897,7 +4043,7 @@ export class TunisiaMapEngine {
       ctx.stroke();
     }
 
-    // 3. Particules de caravanes commerciales en mouvement
+    // 3. Particules de caravanes commerciales animées
     for (const p of this.tradeParticles) {
       p.progress = (p.progress + dt * p.speed) % 1.0;
       const c1 = this.cities.find(c => c.id === p.highway.from);
@@ -3911,7 +4057,7 @@ export class TunisiaMapEngine {
       ctx.shadowColor = '#fbbf24';
       ctx.shadowBlur = 6;
       ctx.beginPath();
-      ctx.arc(px, py, 2.4, 0, Math.PI * 2);
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -3934,7 +4080,7 @@ export class TunisiaMapEngine {
       if (isActive) {
         const pulse1 = (t * 22) % 32;
         const pulseAlpha1 = Math.max(0, 1 - pulse1 / 32);
-        ctx.strokeStyle = `rgba(16, 185, 129, {pulseAlpha1})`;
+        ctx.strokeStyle = 'rgba(16, 185, 129, ' + pulseAlpha1 + ')';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.arc(c.x, c.y, 14 + pulse1, 0, Math.PI * 2);
@@ -3942,7 +4088,7 @@ export class TunisiaMapEngine {
 
         const pulse2 = ((t * 22) + 16) % 32;
         const pulseAlpha2 = Math.max(0, 1 - pulse2 / 32);
-        ctx.strokeStyle = `rgba(245, 158, 11, {pulseAlpha2})`;
+        ctx.strokeStyle = 'rgba(245, 158, 11, ' + pulseAlpha2 + ')';
         ctx.lineWidth = 1.8;
         ctx.beginPath();
         ctx.arc(c.x, c.y, 14 + pulse2, 0, Math.PI * 2);
@@ -3993,7 +4139,7 @@ export class TunisiaMapEngine {
       }
 
       // Émote / Symbole au centre du Pin
-      ctx.font = `{isActive ? 14 : 12}px sans-serif`;
+      ctx.font = (isActive ? '14px' : '12px') + ' sans-serif';
       ctx.textAlign = 'center';
       let pinEmoji = c.icon;
       if (!isUnlocked && !isNext) pinEmoji = '🔒';
@@ -4014,7 +4160,7 @@ export class TunisiaMapEngine {
       ctx.fillStyle = isActive ? '#34d399' : (isUnlocked ? '#f8fafc' : '#94a3b8');
       ctx.fillText(c.name, c.x, c.y - pinRadius - 4.5);
 
-      // Badge "مستقر فيه" pour la ville active
+      // Badge pour la ville active
       if (isActive) {
         ctx.fillStyle = '#f59e0b';
         ctx.font = 'bold 8.5px "Cairo", sans-serif';
@@ -4023,7 +4169,7 @@ export class TunisiaMapEngine {
         const pctText = Math.round(this.getCityUnlockProgress(c) * 100) + '%';
         ctx.fillStyle = '#fde047';
         ctx.font = 'bold 8.5px "Cairo", sans-serif';
-        ctx.fillText(`🔓 {pctText}`, c.x, c.y + pinRadius + 12);
+        ctx.fillText('🔓 ' + pctText, c.x, c.y + pinRadius + 12);
       }
 
       ctx.restore();
@@ -4110,7 +4256,7 @@ export class TunisiaMapEngine {
     // Boni de production
     ctx.fillStyle = '#38bdf8';
     ctx.font = '800 10px "Cairo", sans-serif';
-    ctx.fillText(`🎁 {c.bonusDesc}`, cardX + cardW - 12, cardY + 60);
+    ctx.fillText('🎁 ' + c.bonusDesc, cardX + cardW - 12, cardY + 60);
 
     // Bouton d'action à gauche
     const btnW = 105;
@@ -4118,6 +4264,7 @@ export class TunisiaMapEngine {
     const btnX = cardX + 12;
     const btnY = cardY + 48;
 
+    const canUnlock = this.canUnlockCity(c);
     if (isActive) {
       ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
       ctx.beginPath();
@@ -4142,6 +4289,18 @@ export class TunisiaMapEngine {
       ctx.textAlign = 'center';
       ctx.font = '900 10.5px "Cairo", sans-serif';
       ctx.fillText('🚀 سافر الآن', btnX + btnW / 2, btnY + 19);
+    } else if (canUnlock) {
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.roundRect(btnX, btnY, btnW, btnH, 8);
+      ctx.fill();
+      ctx.strokeStyle = '#34d399';
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.font = '900 10px "Cairo", sans-serif';
+      ctx.fillText('✨ افتح الولاية', btnX + btnW / 2, btnY + 19);
     } else {
       ctx.fillStyle = '#334155';
       ctx.beginPath();
@@ -4151,10 +4310,9 @@ export class TunisiaMapEngine {
       ctx.fillStyle = '#cbd5e1';
       ctx.textAlign = 'center';
       ctx.font = '900 9.5px "Cairo", sans-serif';
-      ctx.fillText(`🔒 {Math.round(pct * 100)}% جاهز`, btnX + btnW / 2, btnY + 19);
+      ctx.fillText('🔒 ' + Math.round(pct * 100) + '% جاهز', btnX + btnW / 2, btnY + 19);
     }
 
     ctx.restore();
   }
 }
-

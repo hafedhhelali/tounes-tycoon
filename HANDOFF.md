@@ -1,5 +1,5 @@
 ﻿# HANDOFF — Tounes Tycoon
-MAJ: 2026-10-24 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-10-24 - fix highway buttons, elegant door entrance, vector characters and legal mentions
 
 ## État en 3 lignes
 Conquête Nationale : 14 villes tunisiennes (Tunis à Djerba Holding x5) reliées par une vraie carte vectorielle SVG avec autoroutes dorées animées et critères de passage déterministes.
