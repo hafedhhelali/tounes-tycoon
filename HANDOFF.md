@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T14:12:00.000Z - etat = HEAD de main (v94)
+
+## État en 3 lignes
+Solde & Barres de Progression Réparés : synchronisation continue du solde de la ville active (fini le gel à 16.10 DT) et barres de progression réanimées sur Canvas et DOM.
+Vocabulaire Authentique Marbou7 : remplacement de 'صابة' par 'مربوح' dans toute l'application.
+Transition Map -> Rue Immédiate : dès la fin du trajet sur autoroute, la carte se ferme et ouvre la vue rue avec rideau cinématique fluide.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T13:30:00.000Z - etat = HEAD de main (v93)
 
 ## État en 3 lignes

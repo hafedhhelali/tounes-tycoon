@@ -3275,26 +3275,32 @@ export class QuartierAnimator {
       }
     }
 
-    // Barre de progression du cycle de production : petite barre flottante au-dessus du bâtiment
-    const barW = Math.min(b.width - 24, 72);
-    const barH = 4;
+    // Barre de progression du cycle de production : flottante au-dessus du toit, toujours visible et animée
+    const barW = Math.min(b.width - 20, 85);
+    const barH = 6;
     const barX = x + (b.width - barW) / 2;
-    const barY = y - 6;
-    const pct = Math.min(1, (biz.progressMs || 0) / (biz.cycleDurationMs || 1000));
+    const barY = y - 10;
+    const pct = Math.min(1, Math.max(0, (biz.progressMs || 0) / (biz.cycleDurationMs || 1000)));
 
     ctx.save();
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    // Fond sombre de la barre
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
     ctx.beginPath();
-    ctx.roundRect(barX - 1.5, barY - 1.5, barW + 3, barH + 3, 3);
+    ctx.roundRect(barX - 2, barY - 2, barW + 4, barH + 4, 4);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
-    ctx.lineWidth = 0.8;
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.2;
     ctx.stroke();
 
+    // Remplissage animé vert émeraude brillant
     if (pct > 0) {
-      ctx.fillStyle = '#10b981';
+      const fillW = Math.max(4, barW * pct);
+      const fillGrad = ctx.createLinearGradient(barX, barY, barX + fillW, barY);
+      fillGrad.addColorStop(0, '#10b981');
+      fillGrad.addColorStop(1, '#34d399');
+      ctx.fillStyle = fillGrad;
       ctx.beginPath();
-      ctx.roundRect(barX, barY, barW * pct, barH, 2);
+      ctx.roundRect(barX, barY, fillW, barH, 3);
       ctx.fill();
     }
     ctx.restore();
@@ -5575,19 +5581,9 @@ export class TunisiaMapEngine {
       const isNewCity = this.caravan.isNewCity || false;
       this.caravan = null;
 
-      // Déclencher l'effet cinématique d'arrivée dans la ville
-      this.arrivalEffect = {
-        city: arrivedCity,
-        isNewCity: isNewCity,
-        startTime: performance.now(),
-        duration: 900
-      };
-
+      // Déclencher immédiatement la bascule vers la vue de rue avec rideau de transition cinématique
       if (this.onTravel) {
-        setTimeout(() => {
-          this.onTravel(arrivedCity, isNewCity);
-          this.arrivalEffect = null;
-        }, 850);
+        this.onTravel(arrivedCity, isNewCity);
       }
     }
   }

@@ -200,7 +200,7 @@ export const BUSINESS_CONFIGS = [
   {
     id: 'usine_conserves',
     name: 'معمل مصبّرات الهريسة والتن',
-    tagline: 'حكك هريسة عربي وتصدير لفرنسا وإيطاليا، صابة تونس الحرة',
+    tagline: 'حكك هريسة عربي وتصدير لفرنسا وإيطاليا، خيرات تونس الحرة',
     icon: '🥫',
     baseCost: 15000000.0,
     baseRevenue: 120000.0,
@@ -778,7 +778,7 @@ export class TycoonEngine {
     this.nextDilemmaCheck = Date.now() + 25000; // Premier dilemme après 25s
     this.activeDilemma = null;
 
-    // Rétention & Social : صابة الأسبوع (Daily Login Streak)
+    // Rétention & Social : مربوح الأسبوع (Daily Login Streak)
     this.dailyLogin = {
       lastClaimDate: null,
       currentStreak: 0
@@ -1137,7 +1137,7 @@ export class TycoonEngine {
     // Récompenses de la roue tunisienne
     const prizes = [
       { id: 'cash_mini', name: 'تفتوفة 50 د.ت', type: 'cash', amount: 50.0, weight: 30, icon: '💵' },
-      { id: 'cash_big', name: 'صابة باهية !', type: 'cash_rate', multiplier: 120, weight: 25, icon: '💰' }, // 2 min de prod
+      { id: 'cash_big', name: 'مربوح باهي !', type: 'cash_rate', multiplier: 120, weight: 25, icon: '💰' }, // 2 min de prod
       { id: 'turbo_60s', name: 'تيربو دقيقة x3', type: 'speed_boost', durationSec: 60, multiplier: 3.0, weight: 20, icon: '⚡' },
       { id: 'gift_kaskrout', name: 'كسكروت الحظ بلاش', type: 'free_levels', businessId: 'kaskrout', levels: 5, weight: 15, icon: '🥖' },
       { id: 'jackpot_dinar', name: 'الجائزة الكبرى !', type: 'cash_rate', multiplier: 360, weight: 10, icon: '👑' } // 6 min de prod
@@ -1409,7 +1409,7 @@ export class TycoonEngine {
     return total;
   }
 
-  // --- صابة الأسبوع (RÉCOMPENSES DE CONNEXION 7 JOURS) ---
+  // --- مربوح الأسبوع (RÉCOMPENSES DE CONNEXION 7 JOURS) ---
   checkDailyLoginStatus() {
     const todayStr = new Date().toISOString().slice(0, 10);
     if (!this.dailyLogin.lastClaimDate) {
@@ -1941,6 +1941,10 @@ export class TycoonEngine {
     const cost = this.getCost(biz);
     if (this.dinars >= cost) {
       this.dinars -= cost;
+      if (this.currentCityId) {
+        if (!this.cityBalances) this.cityBalances = {};
+        this.cityBalances[this.currentCityId] = this.dinars;
+      }
       biz.level += 1;
       return true;
     }
@@ -1962,6 +1966,10 @@ export class TycoonEngine {
 
     if (this.dinars >= nextMgr.cost) {
       this.dinars -= nextMgr.cost;
+      if (this.currentCityId) {
+        if (!this.cityBalances) this.cityBalances = {};
+        this.cityBalances[this.currentCityId] = this.dinars;
+      }
       biz.hiredManagersCount = (biz.hiredManagersCount || 0) + 1;
       // Automatisation dès le 1er recrutement, et chaque cadre supplémentaire booste la productivité
       biz.hasManager = true;

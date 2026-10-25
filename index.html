@@ -2317,7 +2317,7 @@
           <button class="nav-tab-item" id="tabBtnZones" title="خريطة تونس والأحياء" style="background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(3, 105, 161, 0.45) 100%); border-color: rgba(56, 189, 248, 0.7); color: #7dd3fc; font-weight: 900; padding: 4px 10px; font-size: 11.5px;">
             <span style="font-size: 15px;">🗺️</span><span>الخريطة:</span><span id="currentZoneName" style="color: #fef08a;">تونس</span>
           </button>
-          <button class="nav-tab-item" id="tabBtnLeague" title="البطولة وصابة النهار">
+          <button class="nav-tab-item" id="tabBtnLeague" title="البطولة ومربوح النهار">
             <span>🏆</span><span>البطولة</span>
           </button>
           <button class="icon-pill-btn" id="openZoneMapBtn" style="display: none;"></button>
@@ -2406,21 +2406,21 @@
       <div id="zonesListContainer" style="display: none !important;"></div>
     </div>
 
-    <!-- PANNEAU 4 : بطولة تجار تونس وصابة الأسبوع والتحديات -->
+    <!-- PANNEAU 4 : بطولة تجار تونس ومربوح الأسبوع والتحديات -->
     <div class="tab-content-panel" id="panelLeague">
       <!-- بانر توضيحي لمفهوم البطولة -->
       <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(30, 27, 75, 0.6) 100%); border: 1.5px solid #818cf8; border-radius: 14px; padding: 10px 14px; text-align: right;">
         <div style="font-weight: 900; color: #fde047; font-size: 13.5px; margin-bottom: 3px;">🏆 دوري تجار الجمهورية التونسية</div>
         <div style="font-size: 11px; color: #e0e7ff; line-height: 1.4;">
-          تنافس أسبوعياً مع تجّار تونس، احصد صابة كل نهار، حقّق تحديات اليوم واطلع في الترتيب من تاجر حومة إلى سلطان التجارة الوطنية !
+          تنافس أسبوعياً مع تجّار تونس، احصد مربوح كل نهار، حقّق تحديات اليوم واطلع في الترتيب من تاجر حومة إلى سلطان التجارة الوطنية !
         </div>
       </div>
-      <!-- صابة النهار (Daily Login) -->
+      <!-- مربوح النهار (Daily Login) -->
       <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.25) 100%); border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 16px; padding: 12px; text-align: right;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <span style="font-weight: 900; color: #fde68a; font-size: 14px;">🌾 صابة النهار : الرزق المكتوب والبركة</span>
+          <span style="font-weight: 900; color: #fde68a; font-size: 14px;">🌾 مربوح النهار : الرزق المكتوب والبركة</span>
           <button class="upg-buy-btn" id="claimDailyRewardBtn" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border-color: #34d399; padding: 5px 12px;">
-            🤲 اقبض الصابة !
+            🤲 اقبض المربوح !
           </button>
         </div>
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 8px;" id="dailyLoginStatusLabel">كل نهار تطلّ فيه على حانوتك، الكاسة تفرح بيك وبهدية من قاع الخابية !</div>
@@ -2560,7 +2560,7 @@
             <span style="font-size: 24px;">🎡</span>
             <div>
               <div class="modal-title" style="font-size: 15.5px;">عجلة الحظ التونسية !</div>
-              <div class="modal-subtitle" style="font-size: 10.5px;">تفرّج في إشهار قصير ودوّر العجلة لربح صابة فلوس أو تيربو !</div>
+              <div class="modal-subtitle" style="font-size: 10.5px;">تفرّج في إشهار قصير ودوّر العجلة لربح مربوح فلوس أو تيربو !</div>
             </div>
           </div>
 
@@ -3678,7 +3678,7 @@
     tabBtnZones.onclick = () => switchTab('zones');
     if (tabBtnLeague) tabBtnLeague.onclick = () => switchTab('league');
 
-    // --- RENDU DU PANNEAU LIGUE, صابة النهار & التحديات ---
+    // --- RENDU DU PANNEAU LIGUE, مربوح النهار & التحديات ---
     function renderLeagueTabUI() {
       renderDailyLoginUI();
       renderDailyChallengesUI();
@@ -3716,7 +3716,7 @@
           const res = engine.claimDailyReward();
           if (res) {
             soundEngine.playMilestoneFanfare();
-            showRewardModalUI(res.reward.icon, 'صحة وفرحة بصابة النهار !', res.reward.desc, res.reward.dinars > 0 ? `+${formatCurrency(res.reward.dinars, 0)}` : 'بونيس شاعل');
+            showRewardModalUI(res.reward.icon, 'صحة وفرحة بمربوح النهار !', res.reward.desc, res.reward.dinars > 0 ? `+${formatCurrency(res.reward.dinars, 0)}` : 'بونيس شاعل');
             renderDailyLoginUI();
             renderDOM();
           }
@@ -4091,7 +4091,7 @@
         soundEngine.playMilestoneFanfare();
 
         wheelResultLabel.innerHTML = `مبروك ! ربحت <span style="color:#fde68a;">${result.prize.name}</span> (${result.prize.icon})`;
-        showRewardModalUI(result.prize.icon, 'صابة من عجلة الحظ !', `ربحت الجائزة التونسية : ${result.prize.name}`, result.value > 0 ? `+${formatCurrency(result.value)}` : 'بونيس شاعل');
+        showRewardModalUI(result.prize.icon, 'مربوح من عجلة الحظ !', `ربحت الجائزة التونسية : ${result.prize.name}`, result.value > 0 ? `+${formatCurrency(result.value)}` : 'بونيس شاعل');
         
         renderDOM();
         updateWheelBtnState();
@@ -4757,6 +4757,18 @@
     function tickStep() {
       const now = Date.now();
       engine.update(now);
+
+      
+      // Mise à jour fluide 60 FPS des barres de progression de tous les commerces actifs
+      engine.businesses.forEach(biz => {
+        if (biz.level > 0) {
+          const progEl = document.getElementById('prog-' + biz.id);
+          if (progEl) {
+            const pct = Math.min(100, Math.max(0, ((biz.progressMs || 0) / (biz.cycleDurationMs || 1000)) * 100));
+            progEl.style.width = pct + '%';
+          }
+        }
+      });
 
       const formattedDinars = formatCurrency(engine.dinars);
       if (formattedDinars !== lastDisplayedDinars) {

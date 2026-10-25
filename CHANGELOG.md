@@ -15,6 +15,14 @@
 
 # CHANGELOG
 
+## [v94] - 2026-10-25
+
+### Fixed / Changed
+- Solde ville en temps réel : synchronisation continue de cityBalances[currentCityId] à chaque tick de gain, éliminant tout blocage/gel du solde.
+- Barres de progression de production : rétablissement complet de l'animation de jauge 60 FPS sur les bâtiments en rue (Canvas store_animator.js) et au-dessus des cartes projets (DOM).
+- Remplacement du terme « صابة » par « مربوح » dans toute l'interface et le moteur (مربوح الأسبوع، مربوح النهار، اقبض المربوح).
+- Bascule automatique Map -> Rue : sortie immédiate de la carte dès l'arrivée en ville avec transition cinématique fluide sur la rue du quartier.
+
 ## [v93] - 2026-10-25
 
 ### Added / Changed
