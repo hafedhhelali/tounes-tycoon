@@ -15,6 +15,16 @@
 
 # CHANGELOG
 
+## [v100] - 2026-10-25
+
+### Fixed
+- **Modale Paramètres & Profil (Header entièrement visible)** :
+  - Définition explicite de `align-items: flex-start !important; overflow-y: auto !important; padding: 12px 10px 24px 10px !important;` sur `#settingsModal`.
+  - Encadrement de `.settings-modal-card` avec `max-height: calc(100vh - 24px)` et `margin: 0 auto;`, éliminant tout débordement ou coupure du haut de la modale sur les écrans mobiles et paysages.
+- **Dégel & Réactivité Instantanée du Solde au Tap** :
+  - Dans `triggerServe` (`index.html`), crédit immédiat des revenus au tap manuel sur le bouton « سربّي » ou sur l'avatar du commerce, avec mise à jour immédiate du DOM (`dinarsDisplay` et `bizBalanceEl`) et synchronisation de `cityBalances[currentCityId]`.
+  - Déverrouillage visuel de la barre de progression : affichage fluide 60 FPS lors de la production manuelle (`biz.isProducing`) même sans manager recruté, offrant un retour visuel instantané au joueur.
+
 ## [v99] - 2026-10-25
 
 ### Fixed
