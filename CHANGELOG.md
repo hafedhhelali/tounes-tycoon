@@ -15,6 +15,18 @@
 
 # CHANGELOG
 
+## [v103] - 2026-10-25
+
+### Added & Changed
+- **Animation de déplacement cinématique et effet d'arrivée sur la Carte de Tunisie** :
+  - Trajet de voyage fluide le long des autoroutes avec voiture stylisée, faisceau de phares et jauge de progression.
+  - Déclenchement d'un effet d'onde de choc dorée/cyan, étincelles et bannière d'arrivée triomphale (`drawArrivalEffect`) à destination avant fermeture.
+  - Basculement automatique après l'animation vers l'onglet rue (`businesses`) avec transition visuelle et sonore de la nouvelle ville.
+- **Refonte des onglets et Prime de présence** :
+  - Retrait complet du bouton et panneau « الصنعة » de la barre d'onglets pour alléger l'interface.
+  - Renommage de l'onglet « البطولة » en « 🎁 Prime de présence ».
+  - Remplacement des libellés de jours abrégés « ن1, ن2... » par des intitulés explicites et soignés : « النهار الأوّل », « النهار الثاني », « النهار الثالث », « النهار الرابع », « النهار الخامس », « النهار السادس », « النهار السابع ».
+
 ## [v102] - 2026-10-25
 
 ### Fixed & Enhanced

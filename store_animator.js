@@ -5130,7 +5130,7 @@ export class TunisiaMapEngine {
       waypoints: waypoints,
       isNewCity: isFirstTimeUnlock,
       startTime: performance.now(),
-      duration: Math.max(1800, (waypoints.length - 1) * 1100) // Durée ajustée selon le nombre d'autoroutes traversées
+      duration: Math.max(1400, (waypoints.length - 1) * 850) // Durée nerveuse et dynamique
     };
 
     if (this.engine.switchCity) {
@@ -5140,14 +5140,17 @@ export class TunisiaMapEngine {
       this.engine.currentZoneId = city.id;
     }
 
-    // Déclencher le son de démarrage de moteur / route si dispo
-    if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
+    // Déclencher klaxon ou son de départ
+    if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playHorn) {
+      window.soundEngine.playHorn();
+    } else if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
       window.soundFX.playCoin();
     }
     return true;
   }
 
   handleClick(e) {
+    if (this.caravan || this.arrivalEffect) return; // Bloquer les clics pendant le trajet et la célébration d'arrivée
     const rect = this.canvas.getBoundingClientRect();
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
@@ -5771,14 +5774,25 @@ export class TunisiaMapEngine {
       const isNewCity = this.caravan.isNewCity || false;
       this.caravan = null;
 
-      // Déclencher immédiatement la bascule vers la vue de rue avec rideau de transition cinématique
-      if (this.onTravel) {
-        this.onTravel(arrivedCity, isNewCity);
+      // Déclencher l'effet cinématique d'arrivée dans la ville cible (choc doré + bannière)
+      this.arrivalEffect = {
+        city: arrivedCity,
+        isNewCity: isNewCity,
+        startTime: now,
+        duration: 1200
+      };
+
+      // Son de triomphe/arrivée
+      if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playEventFanfare) {
+        window.soundEngine.playEventFanfare();
+      } else if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
+        window.soundFX.playCoin();
       }
     }
   }
 
   drawArrivalEffect(ctx, now) {
+    if (!this.arrivalEffect) return;
     const elapsed = now - this.arrivalEffect.startTime;
     const progress = Math.min(1.0, elapsed / this.arrivalEffect.duration);
     const city = this.arrivalEffect.city;
@@ -5856,6 +5870,15 @@ export class TunisiaMapEngine {
     ctx.fillText(isNewCity ? 'شوارع ومشاريع جديدة جاهزة للاستثمار' : 'استأنف أعمالك ومشاريعك في المدينة', city.x, bannerY + 47);
 
     ctx.restore();
+
+    if (progress >= 1.0) {
+      const arrivedCity = this.arrivalEffect.city;
+      const isNew = this.arrivalEffect.isNewCity;
+      this.arrivalEffect = null;
+      if (this.onTravel) {
+        this.onTravel(arrivedCity, isNew);
+      }
+    }
   }
 
   drawSelectedCityOverlay(ctx) {

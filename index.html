@@ -2333,14 +2333,14 @@
           <button class="nav-tab-item active" id="tabBtnBusinesses" title="الشارع والمشاريع">
             <span>🏪</span><span>الشارع</span>
           </button>
-          <button class="nav-tab-item" id="tabBtnTactics" title="تكتيكات وصنعة">
+          <button class="nav-tab-item" id="tabBtnTactics" title="تكتيكات وصنعة" style="display: none !important;">
             <span>⚡</span><span>الصنعة</span>
           </button>
           <button class="nav-tab-item" id="tabBtnZones" title="خريطة تونس والأحياء" style="background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(3, 105, 161, 0.45) 100%); border-color: rgba(56, 189, 248, 0.7); color: #7dd3fc; font-weight: 900; padding: 4px 10px; font-size: 11.5px;">
             <span style="font-size: 15px;">🗺️</span><span>الخريطة:</span><span id="currentZoneName" style="color: #fef08a;">تونس</span>
           </button>
-          <button class="nav-tab-item" id="tabBtnLeague" title="البطولة ومربوح النهار">
-            <span>🏆</span><span>البطولة</span>
+          <button class="nav-tab-item" id="tabBtnLeague" title="Prime de présence و مربوح النهار">
+            <span>🎁</span><span>Prime de présence</span>
           </button>
           <button class="icon-pill-btn" id="openZoneMapBtn" style="display: none;"></button>
           <button class="quick-pill-btn ad-pill" id="adBoostBtn" style="display: none;"><span id="adBoostStatus"></span></button>
@@ -2428,24 +2428,24 @@
       <div id="zonesListContainer" style="display: none !important;"></div>
     </div>
 
-    <!-- PANNEAU 4 : بطولة تجار تونس ومربوح الأسبوع والتحديات -->
+    <!-- PANNEAU 4 : Prime de présence ومربوح النهار -->
     <div class="tab-content-panel" id="panelLeague">
-      <!-- بانر توضيحي لمفهوم البطولة -->
+      <!-- بانر توضيحي لمفهوم Prime de présence -->
       <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(30, 27, 75, 0.6) 100%); border: 1.5px solid #818cf8; border-radius: 14px; padding: 10px 14px; text-align: right;">
-        <div style="font-weight: 900; color: #fde047; font-size: 13.5px; margin-bottom: 3px;">🏆 دوري تجار الجمهورية التونسية</div>
+        <div style="font-weight: 900; color: #fde047; font-size: 13.5px; margin-bottom: 3px;">🎁 Prime de présence : منحة الحضور اليومي والبركة</div>
         <div style="font-size: 11px; color: #e0e7ff; line-height: 1.4;">
-          تنافس أسبوعياً مع تجّار تونس، احصد مربوح كل نهار، حقّق تحديات اليوم واطلع في الترتيب من تاجر حومة إلى سلطان التجارة الوطنية !
+          سجّل حضورك كل نهار، احصد مربوحك وPrime de présence اليومية، واكبس السنتورة للتوسع والربح المستمر !
         </div>
       </div>
       <!-- مربوح النهار (Daily Login) -->
       <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.25) 100%); border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 16px; padding: 12px; text-align: right;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <span style="font-weight: 900; color: #fde68a; font-size: 14px;">🌾 مربوح النهار : الرزق المكتوب والبركة</span>
+          <span style="font-weight: 900; color: #fde68a; font-size: 14px;">🌾 Prime de présence : الرزق المكتوب والبركة</span>
           <button class="upg-buy-btn" id="claimDailyRewardBtn" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border-color: #34d399; padding: 5px 12px;">
-            🤲 اقبض المربوح !
+            🤲 اقبض الـ Prime !
           </button>
         </div>
-        <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 8px;" id="dailyLoginStatusLabel">كل نهار تطلّ فيه على حانوتك، الكاسة تفرح بيك وبهدية من قاع الخابية !</div>
+        <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 8px;" id="dailyLoginStatusLabel">كل نهار تطلّ فيه على حانوتك، الكاسة تفرح بيك بـ Prime de présence وبهدية من قاع الخابية !</div>
         <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;" id="dailyStreakRow"></div>
       </div>
 
@@ -3750,17 +3750,19 @@
       if (!streakRow) return;
 
       streakRow.innerHTML = '';
+      const dayNames = ['النهار الأوّل', 'النهار الثاني', 'النهار الثالث', 'النهار الرابع', 'النهار الخامس', 'النهار السادس', 'النهار السابع'];
       import('./engine.js').then(m => {
         const rewards = m.DAILY_LOGIN_REWARDS;
         rewards.forEach((r, idx) => {
           const isDone = idx < (engine.dailyLogin.currentStreak % 7) && !status.available;
           const isCurrent = idx === status.dayIndex;
           const cell = document.createElement('div');
-          cell.style.cssText = `background: ${isCurrent ? 'rgba(245,158,11,0.3)' : 'rgba(0,0,0,0.4)'}; border: 1px solid ${isCurrent ? '#f59e0b' : 'rgba(255,255,255,0.1)'}; border-radius: 8px; padding: 4px 2px; text-align: center; font-size: 10px;`;
+          cell.style.cssText = `background: ${isCurrent ? 'rgba(245,158,11,0.3)' : 'rgba(0,0,0,0.4)'}; border: 1px solid ${isCurrent ? '#f59e0b' : 'rgba(255,255,255,0.1)'}; border-radius: 8px; padding: 4px 2px; text-align: center; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 58px;`;
+          const dayTitle = dayNames[idx] || `النهار ${r.day}`;
           cell.innerHTML = `
-            <div style="font-weight: 800; color: #94a3b8;">ن${r.day}</div>
-            <div style="font-size: 16px;">${r.icon}</div>
-            <div style="color: ${isDone ? '#34d399' : '#f8fafc'}; font-size: 9px; font-weight: 900;">${isDone ? '✓' : isCurrent ? 'توّا' : ''}</div>
+            <div style="font-weight: 800; color: #cbd5e1; font-size: 8.5px; line-height: 1.1; margin-bottom: 2px;">${dayTitle}</div>
+            <div style="font-size: 16px; margin: 1px 0;">${r.icon}</div>
+            <div style="color: ${isDone ? '#34d399' : isCurrent ? '#fde047' : '#94a3b8'}; font-size: 9px; font-weight: 900;">${isDone ? '✓' : isCurrent ? 'توّا' : ''}</div>
           `;
           streakRow.appendChild(cell);
         });
