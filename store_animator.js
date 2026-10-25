@@ -1692,7 +1692,10 @@ export class QuartierAnimator {
     this.startCamX = 0;
     this.hasDraggedSignificantly = false;
 
-
+    this.handlePointerDown = this.handlePointerDown.bind(this);
+    this.handlePointerMove = this.handlePointerMove.bind(this);
+    this.handlePointerUp = this.handlePointerUp.bind(this);
+    this.handleWheel = this.handleWheel.bind(this);
 
     this.bindEvents();
     this.resize();
@@ -2859,27 +2862,24 @@ export class QuartierAnimator {
         ctx.fill();
       }
 
-      // Badge d'entrée "ادخل" placé au-dessus du comptoir de la brouette
-      const enterW = 58;
-      const enterH = 19;
+      // Indicateur discret et élégant de visite au-dessus du comptoir
+      const enterW = 46;
+      const enterH = 16;
       const enterX = cartX + (cartW - enterW) / 2;
-      const enterY = boxY - 24;
+      const enterY = boxY - 20;
 
-      ctx.shadowColor = '#10b981';
-      ctx.shadowBlur = 8;
-      ctx.fillStyle = 'rgba(6, 78, 59, 0.95)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
       ctx.beginPath();
-      ctx.roundRect(enterX, enterY, enterW, enterH, 6);
+      ctx.roundRect(enterX, enterY, enterW, enterH, 4);
       ctx.fill();
-      ctx.strokeStyle = '#34d399';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+      ctx.lineWidth = 1;
       ctx.stroke();
-      ctx.shadowBlur = 0;
 
-      ctx.fillStyle = '#fef08a';
-      ctx.font = '900 10.5px "Cairo", sans-serif';
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '800 8.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('ادخل 🚪', cartX + cartW / 2, enterY + 13);
+      ctx.fillText('زيارة 🏪', cartX + cartW / 2, enterY + 11.5);
 
       this.interactiveHitboxes.push({
         x: cartX,
@@ -3152,28 +3152,25 @@ export class QuartierAnimator {
     const doorInteractX = doorX - 8;
     const doorInteractY = doorY - 10;
 
-    // Badge d'entrée hautement visible et contrasté au centre de la porte
+    // Heurtoir et poignée dorée subtils (interaction directe sur la façade et la porte)
     ctx.save();
-    const enterBadgeW = Math.min(doorW + 12, 48);
-    const enterBadgeH = 18;
+    const enterBadgeW = Math.min(doorW, 36);
+    const enterBadgeH = 15;
     const enterBadgeX = doorX + (doorW - enterBadgeW) / 2;
     const enterBadgeY = doorY + (doorH - enterBadgeH) / 2;
 
-    ctx.shadowColor = '#10b981';
-    ctx.shadowBlur = 8;
-    ctx.fillStyle = 'rgba(6, 78, 59, 0.95)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
     ctx.beginPath();
-    ctx.roundRect(enterBadgeX, enterBadgeY, enterBadgeW, enterBadgeH, 6);
+    ctx.roundRect(enterBadgeX, enterBadgeY, enterBadgeW, enterBadgeH, 4);
     ctx.fill();
-    ctx.strokeStyle = '#34d399';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.6)';
+    ctx.lineWidth = 1;
     ctx.stroke();
 
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#fef08a';
-    ctx.font = '900 10.5px "Cairo", sans-serif';
+    ctx.fillStyle = '#fde68a';
+    ctx.font = '800 8px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('ادخل 🚪', doorX + doorW / 2, enterBadgeY + 13);
+    ctx.fillText('زيارة 🚪', doorX + doorW / 2, enterBadgeY + 11);
     ctx.restore();
 
     // Seuil et heurtoir discrets (pas de superposition de bouton)
@@ -4115,8 +4112,8 @@ export class QuartierAnimator {
 
   drawInCanvasOffersHUD(ctx, w, h, timestamp) {
     const o = this.hudOffers;
-    const r = 16; // Rayon des petites icônes rondes 3D (32x32px)
-    const topY = 23;
+    const r = 21; // Rayon généreux et hautement tactile (42x42px)
+    const topY = 27;
 
     ctx.save();
 
@@ -4134,7 +4131,7 @@ export class QuartierAnimator {
       orbGrad.addColorStop(1, '#090d16');
       ctx.fillStyle = orbGrad;
       ctx.strokeStyle = borderColor;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.fill();
@@ -4143,11 +4140,11 @@ export class QuartierAnimator {
       // Reflet spéculaire supérieur (effet bijou / verre bombé)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
       ctx.beginPath();
-      ctx.ellipse(cx, cy - 7, r * 0.62, r * 0.28, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, cy - 8, r * 0.65, r * 0.3, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Icône centrale
-      ctx.font = '15px serif';
+      ctx.font = '19px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#ffffff';
@@ -4159,12 +4156,12 @@ export class QuartierAnimator {
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.arc(cx + 11, cy - 11, 6.5, 0, Math.PI * 2);
+        ctx.arc(cx + 13, cy - 13, 7.5, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = '#ffffff';
-        ctx.font = '900 8px "Cairo", sans-serif';
-        ctx.fillText(badgeText, cx + 11, cy - 10.5);
+        ctx.font = '900 8.5px "Cairo", sans-serif';
+        ctx.fillText(badgeText, cx + 13, cy - 12.5);
       }
     };
 
@@ -4173,10 +4170,10 @@ export class QuartierAnimator {
       {
         action: 'hud_map',
         icon: '🗺️',
-        sub: 'تونس',
-        bg: '#047857',
-        border: '#34d399',
-        badgeBg: '#10b981'
+        sub: 'خريطة',
+        bg: '#0369a1',
+        border: '#38bdf8',
+        badgeBg: '#0284c7'
       },
       {
         action: 'hud_boost',
@@ -4188,20 +4185,20 @@ export class QuartierAnimator {
       }
     ];
 
-    let rightX = w - 24;
+    let rightX = w - 28;
     rightIcons.forEach(item => {
       draw3DOrbIcon(rightX, topY, item.icon, item.bg, item.border, item.sub, item.badgeBg);
 
       this.interactiveHitboxes.push({
-        x: rightX - r - 4,
-        y: topY - r - 4,
-        w: (r + 4) * 2,
-        h: (r + 4) * 2,
+        x: rightX - r - 6,
+        y: topY - r - 6,
+        w: (r + 6) * 2,
+        h: (r + 6) * 2,
         action: item.action,
         bizId: null
       });
 
-      rightX -= (r * 2 + 8);
+      rightX -= (r * 2 + 12);
     });
 
     // 2. Petites icônes d'alertes 3D animées en haut à gauche DANS le ciel de l'image

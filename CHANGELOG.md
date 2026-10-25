@@ -15,6 +15,15 @@
 
 ﻿# CHANGELOG
 
+## [v90] - 2026-10-25
+
+### Fixed / Changed
+- Rétablissement du glissement manuel dans la rue : correction des bindings d'événements pointer dans `QuartierAnimator` permettant un drag & fling horizontal fluide et sans accroc.
+- Clics et entrée dans les projets opérationnels : inspection instantanée au tap sur la façade ou la porte du magasin.
+- Remplacement du badge lourd « ادخل » par un panonceau subtil et raffiné « زيارة 🚪 » respectant le style architectural tunisien.
+- Bouton carte du ciel agrandi (r=21px, diamètre 42px avec zone tactile élargie) pour un confort tactile immédiat.
+- Fiabilisation du bouton autoroutier « افتح خريطة تونس 🚗 » avec ouverture directe de la carte des 14 villes.
+
 ## [v89] - 2026-10-25
 
 ### Fixed

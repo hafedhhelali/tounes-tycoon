@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T11:37:00.000Z - etat = HEAD de main (v90)
+
+## État en 3 lignes
+Interaction & Glissement Rue : liaison explicite `.bind(this)` des handlers pointerdown/move/up/wheel dans `QuartierAnimator` rétablissant le scroll tactile fluide et l'ouverture immédiate des projets (inspect / upgrade).
+Épuration Visuelle "ادخل" : remplacement du gros badge lourd par un heurtoir/panonceau subtil et élégant « زيارة 🚪 » intégré harmonieusement aux portes et comptoirs.
+Audit & Ergonomie Boutons Carte : agrandissement du bouton map tactile du ciel (r=21, 42px), suppression des modales doublons au profit de la vraie carte interactive 14 villes, fiabilisation du bouton autoroutier « افتح خريطة تونس 🚗 ».
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T11:12:00.000Z - etat = HEAD de main (v89)
 
 ## État en 3 lignes
