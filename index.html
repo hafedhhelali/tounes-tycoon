@@ -2986,6 +2986,7 @@
   <script type="module">
     import { TycoonEngine } from './engine.js';
     import { soundEngine } from './audio.js';
+    if (typeof window !== 'undefined') window.soundEngine = soundEngine;
     import { AdsService } from './ads_service.js';
     import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js';
 
@@ -3301,7 +3302,7 @@
           showRewardModalUI('⚡', 'تفتوفة تيربو سريعة !', 'سرعة الإنتاج تضاعفت x2 لمدّة 30 ثانية :', 'سرعة x2');
         } else {
           soundEngine.playCoin();
-          spawnFloatText(clickX, clickY, `+${formatCurrency(res.amount)}`);
+          spawnFloatText(clickX, clickY, `+${formatCurrencyPlain(res.amount)}`);
           if (typeof launchCoinShower === 'function') {
             launchCoinShower(clickX, clickY, 12);
           }
@@ -3643,7 +3644,7 @@
             else soundEngine.playCoin();
 
             // Particule flottante de gain au point de contact + Fontaine de pièces réaliste
-            spawnFloatText(clientX, clientY, `+${formatCurrency(rev)}`);
+            spawnFloatText(clientX, clientY, `+${formatCurrencyPlain(rev)}`);
             if (typeof launchCoinShower === 'function') {
               launchCoinShower(clientX, clientY, 6);
             }
@@ -4210,7 +4211,7 @@
             if (biz.id === 'kahwa') soundEngine.playTeaCup();
             else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
             else soundEngine.playCoin();
-            quartierEngine.spawnGainBubble(biz.id, `+${formatCurrency(rev)} 🪙`);
+            quartierEngine.spawnGainBubble(biz.id, `+${formatCurrencyPlain(rev)} 🪙`);
             renderDOM();
           }
         },

@@ -6,6 +6,22 @@
  * © EOLabs 2026. Pur JavaScript, zéro dépendance, gestion DPR fluide, 60 FPS garanti.
  */
 
+// Polyfill Canvas roundRect pour garantir 100% de compatibilité mobile & WebView
+if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
+    if (!radii) radii = 0;
+    let r = typeof radii === 'number' ? radii : (Array.isArray(radii) ? radii[0] || 0 : 0);
+    r = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
+    this.moveTo(x + r, y);
+    this.arcTo(x + w, y, x + w, y + h, r);
+    this.arcTo(x + w, y + h, x, y + h, r);
+    this.arcTo(x, y + h, x, y, r);
+    this.arcTo(x, y, x + w, y, r);
+    this.closePath();
+    return this;
+  };
+}
+
 export class CanvasStoreEngine {
   constructor(canvasEl, engineRef) {
     this.canvas = canvasEl;
@@ -5752,7 +5768,7 @@ export class TunisiaMapEngine {
 
     // 4. Bulle d'ambiance de voyage animée au-dessus du convoi
     const bubbleY = curY - 26;
-    const kmPct = Math.round(progress * 100);
+    const kmPct = Math.min(100, Math.round(progress * 100));
     ctx.shadowBlur = 6;
     ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
     ctx.strokeStyle = '#fbbf24';
@@ -5769,7 +5785,7 @@ export class TunisiaMapEngine {
 
     ctx.restore();
 
-    if (progress >= 1.0) {
+    if (progress >= 0.999 || elapsed >= this.caravan.duration) {
       const arrivedCity = this.caravan.targetCity || waypoints[waypoints.length - 1];
       const isNewCity = this.caravan.isNewCity || false;
       this.caravan = null;
@@ -5783,11 +5799,13 @@ export class TunisiaMapEngine {
       };
 
       // Son de triomphe/arrivée
-      if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playEventFanfare) {
-        window.soundEngine.playEventFanfare();
-      } else if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
-        window.soundFX.playCoin();
-      }
+      try {
+        if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playEventFanfare) {
+          window.soundEngine.playEventFanfare();
+        } else if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
+          window.soundFX.playCoin();
+        }
+      } catch (_) {}
     }
   }
 
@@ -5871,12 +5889,16 @@ export class TunisiaMapEngine {
 
     ctx.restore();
 
-    if (progress >= 1.0) {
+    if (progress >= 0.999 || elapsed >= this.arrivalEffect.duration) {
       const arrivedCity = this.arrivalEffect.city;
       const isNew = this.arrivalEffect.isNewCity;
       this.arrivalEffect = null;
       if (this.onTravel) {
-        this.onTravel(arrivedCity, isNew);
+        try {
+          this.onTravel(arrivedCity, isNew);
+        } catch (err) {
+          console.error('onTravel error', err);
+        }
       }
     }
   }

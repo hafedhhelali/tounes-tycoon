@@ -15,6 +15,16 @@
 
 # CHANGELOG
 
+## [v104] - 2026-10-25
+
+### Fixed
+- **Carte & Déplacement Villes (Bizerte 99% freeze)** :
+  - Remplacement du test strict `progress >= 1.0` par une condition tolérante `progress >= 0.999 || elapsed >= duration` et clampage de la jauge à 100%.
+  - Ajout du polyfill Canvas `roundRect` sur mobile WebView et sécurisation des appels audio pour éviter l'interruption de boucle d'animation.
+  - Finalisation systématique de la transition d'arrivée avec ouverture garantie de la rue de destination.
+- **Affichage des gains de projets (Suppression du HTML brut)** :
+  - Remplacement de `formatCurrency` par `formatCurrencyPlain` dans les bulles flottantes et messages de tap des projets pour afficher un texte pur sans balises `<span>`.
+
 ## [v103] - 2026-10-25
 
 ### Added & Changed
