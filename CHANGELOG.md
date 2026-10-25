@@ -15,6 +15,15 @@
 
 ﻿# CHANGELOG
 
+## [v86] - 2026-10-25
+
+### Added / Changed
+- Résolution du crash d'initialisation de `TunisiaMapEngine` (bindings indéfinis retirés, accès window sécurisé) : carte affichée immédiatement sans blocage.
+- Hitbox tactile des nœuds de villes agrandie (r=30) pour déblocage et voyage direct d'un simple clic ou toucher.
+- Comportement des bulles clients révisé : aucune icône au-dessus de la tête lors de la marche ; apparition de la commande uniquement quand le client arrive au comptoir de la caisse.
+- Rééquilibrage macroéconomique réaliste : recalibrage des 5 plus grands projets (centre commercial, usine, showroom, promoteur, compagnie aérienne) pour éliminer les montants astronomiques irréalistes.
+- Fluidité du scrolling de rue optimisée : intégration d'inertie physique (fling scroll), vélocité dynamique et suppression des méthodes doublons.
+
 ## [v85] - 2026-10-25
 
 ### Added / Changed

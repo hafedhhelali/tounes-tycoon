@@ -98,7 +98,7 @@ export class CanvasStoreEngine {
     this.spawnTimer = 0.5;
     this.resize();
     this.resizeTimer = setTimeout(() => this.resize(), 300);
-    window.addEventListener('resize', this.onWindowResize);
+    if (typeof window !== 'undefined') if (typeof window !== 'undefined') window.addEventListener('resize', this.onWindowResize);
     this.lastTime = performance.now();
     this.loop = (now) => {
       try {
@@ -117,7 +117,7 @@ export class CanvasStoreEngine {
       this.animId = null;
     }
     clearTimeout(this.resizeTimer);
-    window.removeEventListener('resize', this.onWindowResize);
+    if (typeof window !== 'undefined') if (typeof window !== 'undefined') window.removeEventListener('resize', this.onWindowResize);
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
@@ -1692,10 +1692,7 @@ export class QuartierAnimator {
     this.startCamX = 0;
     this.hasDraggedSignificantly = false;
 
-    this.handlePointerDown = this.handlePointerDown.bind(this);
-    this.handlePointerMove = this.handlePointerMove.bind(this);
-    this.handlePointerUp = this.handlePointerUp.bind(this);
-    this.handleWheel = this.handleWheel.bind(this);
+
 
     this.bindEvents();
     this.resize();
@@ -1949,35 +1946,7 @@ export class QuartierAnimator {
     }
   }
 
-  handleWheel(e) {
-    e.preventDefault();
-    const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
-    this.zoom = Math.max(0.85, Math.min(2.4, this.zoom * zoomFactor));
-  }
 
-  handlePointerDown(e) {
-    this.isPanning = true;
-    this.startPanX = e.clientX - this.panX;
-    this.startPanY = e.clientY - this.panY;
-    this.hasMovedPan = false;
-  }
-
-  handlePointerMove(e) {
-    if (!this.isPanning) return;
-    const newPanX = e.clientX - this.startPanX;
-    const newPanY = e.clientY - this.startPanY;
-    if (Math.hypot(newPanX - this.panX, newPanY - this.panY) > 5) {
-      this.hasMovedPan = true;
-    }
-    const maxPanX = (this.width * this.zoom * this.scale) * 0.45;
-    const maxPanY = (this.height * this.zoom * this.scale) * 0.45;
-    this.panX = Math.max(-maxPanX, Math.min(maxPanX, newPanX));
-    this.panY = Math.max(-maxPanY, Math.min(maxPanY, newPanY));
-  }
-
-  handlePointerUp(e) {
-    this.isPanning = false;
-  }
 
   start() {
     if (this.animId) return;
@@ -2013,23 +1982,38 @@ export class QuartierAnimator {
   handlePointerDown(e) {
     this.isDragging = true;
     this.startX = e.clientX;
+    this.lastPointerX = e.clientX;
+    this.lastPointerTime = performance.now();
+    this.pointerVelocity = 0;
     this.startCamX = this.cameraX;
     this.hasDraggedSignificantly = false;
   }
 
   handlePointerMove(e) {
     if (!this.isDragging) return;
-    const delta = e.clientX - this.startX;
-    if (Math.abs(delta) > 6) {
+    const now = performance.now();
+    const dt = Math.max(1, now - (this.lastPointerTime || now)) / 1000;
+    const deltaX = e.clientX - this.startX;
+    const instantDelta = e.clientX - (this.lastPointerX || e.clientX);
+    this.pointerVelocity = -instantDelta / dt;
+    this.lastPointerX = e.clientX;
+    this.lastPointerTime = now;
+
+    if (Math.abs(deltaX) > 5) {
       this.hasDraggedSignificantly = true;
     }
-    this.targetCameraX = this.startCamX - delta;
-    this.targetCameraX = Math.max(0, Math.min(this.targetCameraX, this.worldWidth - this.width));
+    this.cameraX = Math.max(0, Math.min(this.startCamX - deltaX, this.worldWidth - this.width));
+    this.targetCameraX = this.cameraX;
   }
 
   handlePointerUp(e) {
     if (!this.isDragging) return;
     this.isDragging = false;
+    // Fling / Inertie dynamique douce
+    if (Math.abs(this.pointerVelocity || 0) > 40) {
+      const flingDist = (this.pointerVelocity || 0) * 0.35;
+      this.targetCameraX = Math.max(0, Math.min(this.cameraX + flingDist, this.worldWidth - this.width));
+    }
 
     if (!this.hasDraggedSignificantly) {
       const rect = this.canvas.getBoundingClientRect();
@@ -4500,16 +4484,12 @@ export class TunisiaMapEngine {
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.onWindowResize = () => this.resize();
 
-    this.handlePointerDown = this.handlePointerDown.bind(this);
-    this.handlePointerMove = this.handlePointerMove.bind(this);
-    this.handlePointerUp = this.handlePointerUp.bind(this);
-    this.handleWheel = this.handleWheel.bind(this);
 
     this.handleTouchClick = (e) => this.handleClick(e);
     this.canvas.addEventListener('click', this.handleClick);
     this.canvas.addEventListener('touchend', this.handleTouchClick, { passive: true });
     this.canvas.addEventListener('mousemove', this.handleMouseMove);
-    window.addEventListener('resize', this.onWindowResize);
+    if (typeof window !== 'undefined') window.addEventListener('resize', this.onWindowResize);
 
     this.resize();
     this.start();
@@ -4573,7 +4553,7 @@ export class TunisiaMapEngine {
 
   destroy() {
     this.stop();
-    window.removeEventListener('resize', this.onWindowResize);
+    if (typeof window !== 'undefined') window.removeEventListener('resize', this.onWindowResize);
     if (this.canvas) {
       this.canvas.removeEventListener('click', this.handleClick);
       this.canvas.removeEventListener('mousemove', this.handleMouseMove);
@@ -4676,12 +4656,12 @@ export class TunisiaMapEngine {
       const cardH = 92;
       const cardX = 16;
       const cardY = this.height - cardH - 12;
-      const btnW = 105;
-      const btnH = 30;
+      const btnW = 115;
+      const btnH = 34;
       const btnX = cardX + 12;
-      const btnY = cardY + 48;
+      const btnY = cardY + 46;
 
-      if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
+      if (x >= btnX - 4 && x <= btnX + btnW + 4 && y >= btnY - 4 && y <= btnY + btnH + 4) {
         const c = this.cities.find(item => item.id === this.selectedCityId);
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
@@ -4690,16 +4670,18 @@ export class TunisiaMapEngine {
       }
     }
 
-    // 2. Détection de clic sur les nœuds de villes (hitbox élargie à r=24 pour mobile tactile)
+    // 2. Détection de clic sur les nœuds de villes (hitbox tactile généreuse r=30)
     for (const c of this.cities) {
       const dist = Math.hypot(x - c.x, y - c.y);
-      if (dist <= 24) {
+      if (dist <= 30) {
         this.selectedCityId = c.id;
         if (this.onSelect) this.onSelect(c);
 
-        // Si la ville est déjà débloquée, voyager directement
-        if (this.isCityUnlocked(c) && c.id !== this.getActiveCity().id) {
-          this.travelTo(c.id);
+        // Si la ville est débloquée ou déblocable et qu'on n'y est pas déjà, voyager
+        if (c.id !== this.getActiveCity().id) {
+          if (this.isCityUnlocked(c) || this.canUnlockCity(c)) {
+            this.travelTo(c.id);
+          }
         }
         return;
       }
@@ -4765,11 +4747,23 @@ export class TunisiaMapEngine {
 
   drawSeaBackground(ctx, t) {
     const seaGrad = ctx.createLinearGradient(0, 0, this.width, this.height);
-    seaGrad.addColorStop(0, '#0a192f');
-    seaGrad.addColorStop(0.5, '#0f2942');
-    seaGrad.addColorStop(1, '#071526');
+    seaGrad.addColorStop(0, '#041527');
+    seaGrad.addColorStop(0.35, '#0a2540');
+    seaGrad.addColorStop(0.7, '#071f36');
+    seaGrad.addColorStop(1, '#030c18');
     ctx.fillStyle = seaGrad;
     ctx.fillRect(0, 0, this.width, this.height);
+
+    // Ondulations nautiques avec reflets bioluminescents
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
+    ctx.lineWidth = 1.4;
+    for (let wave = 0; wave < 8; wave++) {
+      const wy = 45 + wave * 72 + Math.sin(t * 0.8 + wave * 1.2) * 5;
+      ctx.beginPath();
+      ctx.moveTo(10, wy);
+      ctx.bezierCurveTo(this.width * 0.35, wy - 8, this.width * 0.65, wy + 8, this.width - 10, wy);
+      ctx.stroke();
+    }
 
     // Vagues et brise marine animées sans aucun quadrillage ni carreaux
     ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';

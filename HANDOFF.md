@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T06:50:00.000Z - etat = HEAD de main (v86)
+
+## État en 3 lignes
+Map & Navigation Inter-villes : résolution définitive du crash d'initialisation de `TunisiaMapEngine` (retrait des bindings fantômes et protection window), hitboxes tactiles élargies à r=30 pour voyage direct au clic/toucher.
+Clients & Bulles de commande : disparition des bulles au-dessus de la tête pendant la marche ; affichage de la commande et réaction uniquement à l'arrivée devant la caisse enregistreuse.
+Économie & Scroll Rue : rééquilibrage réaliste des projets finaux (suppression des montants en milliards), scroll de la rue fluide à haute vélocité avec inertie naturelle et suppression du code doublon de pan.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T05:12:00.000Z - etat = HEAD de main (v85)
 
 ## État en 3 lignes

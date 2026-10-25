@@ -173,14 +173,14 @@ export const BUSINESS_CONFIGS = [
     name: 'المول والمركّب التجاري الكبير',
     tagline: 'إسكالاتور وماركات ودور سينما، الدنيا تغلي والفلوس تصبّ',
     icon: '🛍️',
-    baseCost: 4500000000.0,
-    baseRevenue: 12000000.0,
-    costMultiplier: 1.15,
-    cycleDurationMs: 200000, // 200.0s
+    baseCost: 4500000.0,
+    baseRevenue: 45000.0,
+    costMultiplier: 1.13,
+    cycleDurationMs: 150000, // 150.0s
     managers: [
-      { name: 'المهندس مراد', role: 'كابو الصيانة', avatar: '👷', cost: 15000000000.0 },
-      { name: 'مدام نادية', role: 'مديرة الماركات', avatar: '👠', cost: 35000000000.0 },
-      { name: 'سي خليل بن عمار', role: 'الباترون وصاحب المول', avatar: '👑', cost: 90000000000.0 }
+      { name: 'المهندس مراد', role: 'كابو الصيانة', avatar: '👷', cost: 15000000.0 },
+      { name: 'مدام نادية', role: 'مديرة الماركات', avatar: '👠', cost: 35000000.0 },
+      { name: 'سي خليل بن عمار', role: 'الباترون وصاحب المول', avatar: '👑', cost: 80000000.0 }
     ],
   },
   {
@@ -188,14 +188,14 @@ export const BUSINESS_CONFIGS = [
     name: 'معمل مصبّرات الهريسة والتن',
     tagline: 'حكك هريسة عربي وتصدير لفرنسا وإيطاليا، صابة تونس الحرة',
     icon: '🥫',
-    baseCost: 22000000000.0,
-    baseRevenue: 45000000.0,
-    costMultiplier: 1.15,
-    cycleDurationMs: 260000, // 260.0s
+    baseCost: 15000000.0,
+    baseRevenue: 120000.0,
+    costMultiplier: 1.13,
+    cycleDurationMs: 180000, // 180.0s
     managers: [
-      { name: 'المهندس حمادي', role: 'شاف الإنتاج', avatar: '🏭', cost: 70000000000.0 },
-      { name: 'سي عبد السلام', role: 'شاف التصدير', avatar: '🚢', cost: 180000000000.0 },
-      { name: 'الحاج بلقاسم', role: 'مالك المصانع', avatar: '💼', cost: 450000000000.0 }
+      { name: 'المهندس حمادي', role: 'شاف الإنتاج', avatar: '🏭', cost: 50000000.0 },
+      { name: 'سي عبد السلام', role: 'شاف التصدير', avatar: '🚢', cost: 120000000.0 },
+      { name: 'الحاج بلقاسم', role: 'مالك المصانع', avatar: '💼', cost: 250000000.0 }
     ],
   },
   {
@@ -203,14 +203,14 @@ export const BUSINESS_CONFIGS = [
     name: 'قصر السيارات الفاخرة (Showroom Auto)',
     tagline: 'كراهب زيرو كم آخر عيطة ومحركات تفور، شياكة أصحاب الملاين',
     icon: '🏎️',
-    baseCost: 110000000000.0,
-    baseRevenue: 180000000.0,
-    costMultiplier: 1.15,
-    cycleDurationMs: 320000, // 320.0s
+    baseCost: 45000000.0,
+    baseRevenue: 320000.0,
+    costMultiplier: 1.14,
+    cycleDurationMs: 210000, // 210.0s
     managers: [
-      { name: 'ياسين كوميرسيال', role: 'مستشار السيارات', avatar: '🏎️', cost: 350000000000.0 },
-      { name: 'مدام مريم الوكيل', role: 'مديرة المبيعات', avatar: '💎', cost: 850000000000.0 },
-      { name: 'سي طارق قطوس', role: 'الباترون', avatar: '👑', cost: 2000000000000.0 }
+      { name: 'ياسين كوميرسيال', role: 'مستشار السيارات', avatar: '🏎️', cost: 150000000.0 },
+      { name: 'مدام مريم الوكيل', role: 'مديرة المبيعات', avatar: '💎', cost: 350000000.0 },
+      { name: 'سي طارق قطوس', role: 'الباترون', avatar: '👑', cost: 800000000.0 }
     ],
   },
   {
@@ -218,14 +218,14 @@ export const BUSINESS_CONFIGS = [
     name: 'الشركة العقارية اللجّ الازرق',
     tagline: 'عمارات وفيلات فاخرة في قمرت والحمامات، والتراب يجيب الذهب',
     icon: '🏗️',
-    baseCost: 550000000000.0,
-    baseRevenue: 700000000.0,
-    costMultiplier: 1.15,
-    cycleDurationMs: 380000, // 380.0s
+    baseCost: 120000000.0,
+    baseRevenue: 750000.0,
+    costMultiplier: 1.14,
+    cycleDurationMs: 240000, // 240.0s
     managers: [
-      { name: 'سي لطفي المهندس', role: 'مهندس البناء', avatar: '👷', cost: 1800000000000.0 },
-      { name: 'مدام وفاء السمسارة', role: 'مستشارة العقار', avatar: '🏘️', cost: 4500000000000.0 },
-      { name: 'الحاج بوبكر', role: 'الباترون وصاحب الرزيدونسات', avatar: '🏢', cost: 10000000000000.0 }
+      { name: 'سي لطفي المهندس', role: 'مهندس البناء', avatar: '👷', cost: 400000000.0 },
+      { name: 'مدام وفاء السمسارة', role: 'مستشارة العقار', avatar: '🏘️', cost: 900000000.0 },
+      { name: 'الحاج بوبكر', role: 'الباترون وصاحب الرزيدونسات', avatar: '🏢', cost: 2000000000.0 }
     ],
   },
   {
@@ -233,14 +233,14 @@ export const BUSINESS_CONFIGS = [
     name: 'شركة طيران الغزالة',
     tagline: 'طيارات تجوب السماء وعلم تونس يرفرف فوق السحاب، قمّة المجد !',
     icon: '🛫',
-    baseCost: 2800000000000.0,
-    baseRevenue: 2800000000.0,
-    costMultiplier: 1.15,
-    cycleDurationMs: 450000, // 450.0s
+    baseCost: 350000000.0,
+    baseRevenue: 1800000.0,
+    costMultiplier: 1.14,
+    cycleDurationMs: 300000, // 300.0s
     managers: [
-      { name: 'الكابتن رمزي', role: 'قائد الأسطول', avatar: '👨‍✈️', cost: 8000000000000.0 },
-      { name: 'مدام سهام', role: 'مديرة الملاحة', avatar: '👩‍✈️', cost: 20000000000000.0 },
-      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام', avatar: '🦅', cost: 50000000000000.0 }
+      { name: 'الكابتن رمزي', role: 'قائد الأسطول', avatar: '👨‍✈️', cost: 1200000000.0 },
+      { name: 'مدام سهام', role: 'مديرة الملاحة', avatar: '👩‍✈️', cost: 2800000000.0 },
+      { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام', avatar: '🦅', cost: 6000000000.0 }
     ],
   }
 ];
