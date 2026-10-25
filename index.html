@@ -3441,7 +3441,6 @@
         if (errorToast) errorToast.classList.remove('show');
       }, 3500);
     }
-    }
 
     // UI Helper: Fenêtre de célébration Tycoon (sans alert() navigateur)
     function showRewardModalUI(emoji, title, subtitle, amount) {
@@ -4155,9 +4154,6 @@
             } else {
               const manque = Math.max(0, engine.getCost(biz) - engine.dinars);
               triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تفتح المشروع ! 💰`);
-              if (biz.level === 0) {
-                openBizDetailModalUI(biz.id);
-              }
             }
           }
         },
@@ -4173,6 +4169,8 @@
                 if (!engine.cityBalances) engine.cityBalances = {};
                 engine.cityBalances[engine.currentCityId] = engine.dinars;
               }
+              if (dinarsDisplay) dinarsDisplay.innerHTML = formatCurrency(engine.dinars);
+              if (bizBalanceEl) bizBalanceEl.innerHTML = formatCompactDinars(engine.dinars);
             }
             engine.startProduction(biz.id);
             if (biz.id === 'kahwa') soundEngine.playTeaCup();
@@ -4798,6 +4796,8 @@
     let lastDisplayedDinars = '';
     let lastDisplayedTitle = '';
     let lastUiSyncAt = 0;
+    let isAppPaused = false;
+    let mainTickRafId = null;
     const titleBadgeEl = document.getElementById('playerTitleBadge');
     const bizBalanceEl = document.getElementById('bizBalance');
     const claimQuestBtn = document.getElementById('claimQuestBtn');

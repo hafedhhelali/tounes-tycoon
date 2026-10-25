@@ -574,6 +574,38 @@ export class CanvasStoreEngine {
       ctx.fillText('✈ TUNIS', 12, 49);
       ctx.fillText('✈ PARIS', 12, 60);
       ctx.fillText('✈ DUBAI', 12, 71);
+    } else if (bizId === 'taxi_collectif') {
+      // Panneau indicateur des lignes de louage et taxi collectif (محطة النقل)
+      const boardW = Math.min(180, w - 120);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(100, 30, boardW, 64);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(100, 30, boardW, 64);
+
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 8.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🚖 محطة التاكسي الجماعي واللواج', 100 + boardW / 2, 44);
+
+      ctx.font = 'bold 7.5px monospace';
+      ctx.fillStyle = '#34d399';
+      ctx.fillText('▶ تونس - أريانة [مكتمل]', 100 + boardW / 2, 58);
+      ctx.fillText('▶ حلق الوادي - المرسى [طيران]', 100 + boardW / 2, 70);
+      ctx.fillStyle = '#fde047';
+      ctx.fillText('▶ خط بنزرت السريع [يعبّي]', 100 + boardW / 2, 82);
+      ctx.textAlign = 'left';
+
+      // Horloge ronde de station
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.arc(58, 50, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.font = '11px sans-serif';
+      ctx.fillText('🕒', 52, 54);
     } else {
       ctx.fillStyle = '#334155';
       ctx.fillRect(100, 56, w - 120, 6);
@@ -599,19 +631,50 @@ export class CanvasStoreEngine {
 
 
 
-    // 1. Responsable du poste (physiquement DERRIÈRE le comptoir, dessiné en PREMIER)
+    // 1. Étagères murales d'arrière-boutique (DESSINÉES EN PREMIER au fond du mur)
+    const currentBiz = this.getBiz();
+    const currentBizId = currentBiz ? currentBiz.id : '';
+    ctx.save();
+    if (currentBizId === 'taxi_collectif') {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(counterX, 44, deskW, 34);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(counterX, 44, deskW, 34);
+      ctx.font = '13px serif';
+      const taxiRack = ['🔑', '🎫', '🚖', '🛣️'];
+      taxiRack.forEach((item, i) => ctx.fillText(item, counterX + 8 + i * 22, 66));
+    } else {
+      for (let sIdx = 0; sIdx < 2; sIdx++) {
+        const shelfY = 44 + sIdx * 22;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.fillRect(counterX - 4, shelfY + 4, deskW + 8, 3);
+        const shelfGrad = ctx.createLinearGradient(counterX - 4, shelfY, counterX - 4, shelfY + 5);
+        shelfGrad.addColorStop(0, '#92400e');
+        shelfGrad.addColorStop(1, '#451a03');
+        ctx.fillStyle = shelfGrad;
+        ctx.fillRect(counterX - 4, shelfY, deskW + 8, 5);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(counterX - 4, shelfY, deskW + 8, 5);
+        ctx.font = '12px serif';
+        const shelfGoods = ['🥫', '🫒', '🍯', '🧂', '📦'];
+        shelfGoods.forEach((g, gIdx) => ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 3));
+      }
+    }
+    ctx.restore();
+
+    // 2. Caissier debout au sol derrière le comptoir (Z-index intermédiaire, calé au sol)
     const cashierSlot = detail.staffSlots && detail.staffSlots[0];
     const cashierX = counterX + 22;
-    const cashierY = counterY - 2;
+    const cashierFootY = 148; // Calé au sol réel pour éviter qu'il flotte
 
     if (cashierSlot && cashierSlot.hired) {
-      // Dessin de l'employé calé à l'arrière du comptoir
-      this.drawWorker(ctx, cashierX + 16, counterY + 10, 0, isBusy, timeSec);
+      this.drawWorker(ctx, cashierX + 16, cashierFootY, 0, isBusy, timeSec);
 
-      // Hitbox pour afficher le rôle au tap
       this.clickZones.push({
         x: cashierX,
-        y: counterY - 40,
+        y: cashierFootY - 50,
         width: 36,
         height: 50,
         type: 'employee_info',
@@ -619,49 +682,15 @@ export class CanvasStoreEngine {
         role: cashierSlot.role
       });
 
-      const statusIcon = isBusy ? '✨' : '💤';
-      ctx.font = '14px sans-serif';
+      // Icône de métier centrée au-dessus de la tête, sans emoji endormi '💤'
+      const iconToDraw = isBusy ? (cashierSlot.icon || '⚡') : (cashierSlot.icon || '👔');
+      ctx.font = '13px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(statusIcon, cashierX + 44, cashierY - 18 + (isBusy ? -Math.abs(Math.sin(timeSec * 6) * 4) : 0));
+      const iconBounce = isBusy ? -Math.abs(Math.sin(timeSec * 6) * 4) : 0;
+      ctx.fillText(iconToDraw, cashierX + 16, cashierFootY - 52 + iconBounce);
     } else {
       this.drawHireButton(ctx, counterX + 6, counterY - 44, 66, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
     }
-
-    // Étagères murales d'arrière-boutique garnies de produits tunisiens (Effet bois noble et reflets 3D)
-    ctx.save();
-    for (let sIdx = 0; sIdx < 2; sIdx++) {
-      const shelfY = 48 + sIdx * 24;
-      // Ombre portée sous l'étagère
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-      ctx.fillRect(counterX - 4, shelfY + 4, deskW + 8, 3);
-
-      // Plateau bois massif olivier
-      const shelfGrad = ctx.createLinearGradient(counterX - 4, shelfY, counterX - 4, shelfY + 5);
-      shelfGrad.addColorStop(0, '#92400e');
-      shelfGrad.addColorStop(0.5, '#78350f');
-      shelfGrad.addColorStop(1, '#451a03');
-      ctx.fillStyle = shelfGrad;
-      ctx.fillRect(counterX - 4, shelfY, deskW + 8, 5);
-
-      // Équerres métalliques de support forgées
-      ctx.fillStyle = '#f59e0b';
-      ctx.fillRect(counterX + 2, shelfY + 5, 3, 5);
-      ctx.fillRect(counterX + deskW - 4, shelfY + 5, 3, 5);
-
-      // Filet doré de finition
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(counterX - 4, shelfY, deskW + 8, 5);
-
-      // Produits disposés sur l'étagère avec micro-balancement
-      ctx.font = '13px serif';
-      const shelfGoods = ['🥫', '🫒', '🍯', '🧂', '📦'];
-      shelfGoods.forEach((g, gIdx) => {
-        const itemSway = Math.sin(timeSec * 2.5 + gIdx * 1.2) * 1.2;
-        ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 3 + itemSway);
-      });
-    }
-    ctx.restore();
 
     // 2. Meuble Comptoir au PREMIER PLAN (cache le bas du corps de l'employé)
     const woodGrad = ctx.createLinearGradient(counterX, counterY + 12, counterX, counterY + 12 + deskH);
@@ -754,10 +783,11 @@ export class CanvasStoreEngine {
           role: slot.role
         });
 
-        const effIcon = isBusy ? (slot.icon || '⚡') : '💤';
-        ctx.font = '14px sans-serif';
+        const effIcon = isBusy ? (slot.icon || '⚡') : (slot.icon || '👔');
+        ctx.font = '13px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(effIcon, stationX + 22, baseY - 54 + (isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0));
+        const effBounce = isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0;
+        ctx.fillText(effIcon, stationX + 22, baseY - 54 + effBounce);
       } else {
         this.drawHireButton(ctx, stationX + 2, baseY - 56, 48, 54, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
       }
@@ -1046,6 +1076,18 @@ export class CanvasStoreEngine {
       ctx.fillStyle = '#22c55e';
       ctx.font = 'bold 7px monospace';
       ctx.fillText('بورصة تونس 📈', x + 2, y - 29);
+    }
+
+    else if (bizId === 'taxi_collectif') {
+      // Poste de dispatching / tableau de bord avec pneu de secours et radio
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x + 4, y - 16, 36, 16);
+      ctx.strokeStyle = '#64748b';
+      ctx.strokeRect(x + 4, y - 16, 36, 16);
+      ctx.font = '14px serif';
+      ctx.fillText('🛞', x + 6, y - 3);
+      ctx.font = '12px serif';
+      ctx.fillText('📋', x + 24, y - 4);
     }
 
     // Décor par défaut
@@ -3162,6 +3204,15 @@ export class QuartierAnimator {
         action: 'collect',
         bizId: b.id
       });
+      // Seul le bouton ciblé "زيارة" déclenche l'entrée dans le projet
+      this.interactiveHitboxes.push({
+        x: enterX,
+        y: enterY,
+        w: enterW,
+        h: enterH,
+        action: 'inspect',
+        bizId: b.id
+      });
 
       ctx.restore();
       return;
@@ -3476,21 +3527,23 @@ export class QuartierAnimator {
     ctx.restore();
 
     // Seuil et heurtoir discrets : porte pour visiter/inspecter l'intérieur, façade pour servir et encaisser
-    // Enregistrement des hitboxes précises (porte = inspect, façade entière = collect direct)
-    this.interactiveHitboxes.push({
-      x: doorInteractX,
-      y: doorInteractY,
-      w: doorInteractW,
-      h: doorInteractH,
-      action: 'inspect',
-      bizId: b.id
-    });
+    // 1. Hitbox façade complète = servir et encaisser dans le quartier (SANS ouvrir de modale)
     this.interactiveHitboxes.push({
       x: x,
       y: y,
       w: b.width,
-      h: bHeight - 28,
+      h: bHeight,
       action: 'collect',
+      bizId: b.id
+    });
+
+    // 2. Hitbox porte sculptée (enregistrée EN DERNIER pour être prioritaire au clic ciblé sur la porte)
+    this.interactiveHitboxes.push({
+      x: doorX - 2,
+      y: doorY - 4,
+      w: doorW + 4,
+      h: doorH + 6,
+      action: 'inspect',
       bizId: b.id
     });
 

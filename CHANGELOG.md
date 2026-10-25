@@ -15,6 +15,24 @@
 
 # CHANGELOG
 
+## [v99] - 2026-10-25
+
+### Fixed
+- **Dégel définitif du solde (Rassid 16.1 DT)** :
+  - Suppression de l'accolade orpheline `}` dans `index.html` (L.3444) et déclaration stricte de `isAppPaused` et `mainTickRafId` garantissant l'exécution 60 FPS ininterrompue de `tick()`.
+  - Synchronisation automatique de `cityBalances[currentCityId]` à chaque frame dans `engine.update()` et au tap `onCollect`.
+  - Mise à jour instantanée du DOM (`dinarsDisplay` et `bizBalanceEl`) lors des collectes de revenus.
+- **Affichage Taxi Collectif & Décor Métier** :
+  - Remplacement des étagères d'épicerie/conserves par un panneau des lignes de louage tunisien (`محطة التاكسي الجماعي واللواج`), horloge murale, râtelier de clés et tickets `🔑 🎫 🚖 🛣️`.
+  - Poste de travail adapté avec pneu de secours `🛞` et radio de dispatching `📋`.
+- **Supérette & Ergonomie Caissier** :
+  - Z-index corrigé : étagères au mur du fond -> caissier au sol Y=148 -> comptoir Kadhel au 1er plan (les étagères ne masquent plus le caissier et il ne flotte plus).
+  - Suppression des emojis `💤`, icônes métiers alignées et centrées (`💳`, `👔`, `⚡`).
+- **Interaction Façade vs Porte** :
+  - Clic façade = servir et encaisser dans le quartier (100% Canvas, aucune modale intempestive).
+  - Seul le clic direct et ciblé sur la porte ou le bouton « زيارة » déclenche la visite de l'intérieur du projet.
+  - Suppression de l'ouverture forcée de modale au clic d'upgrade lorsque les fonds sont insuffisants.
+
 ## [v98] - 2026-10-25
 
 ### Fixed

@@ -2059,6 +2059,10 @@ export class TycoonEngine {
     this.dinars += revenueEarned;
     this.totalDinarsEarned += revenueEarned;
     this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + revenueEarned;
+    if (this.currentCityId) {
+      if (!this.cityBalances) this.cityBalances = {};
+      this.cityBalances[this.currentCityId] = this.dinars;
+    }
     return revenueEarned;
   }
 
