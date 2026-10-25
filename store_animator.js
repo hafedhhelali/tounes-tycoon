@@ -4273,16 +4273,12 @@ export class TunisiaMapEngine {
     this.caravan = null;
 
     // Pan & Zoom interactifs pour exploration fluide
-    this.panX = 0;
-    this.panY = 0;
-    this.zoom = 1.0;
-    this.isPanning = false;
-    this.startPanX = 0;
-    this.startPanY = 0;
     this.panY = 0;
     this.targetPanY = 0;
-    this.maxPanY = 160; // Permet de descendre pour voir tout le sud tunisien (Gabès, Médenine, Tataouine, Djerba)
-    this.lastTouchDist = 0;
+    this.maxPanY = 240; // Défilement généreux pour couvrir tout le territoire du Nord aux frontières Sud
+    this.pointerVelocityY = 0;
+    this.lastPointerTime = 0;
+    this.lastPointerY = 0;
 
     // Effet d'arrivée dans la ville (onde de choc dorée & flash cinématique)
     this.arrivalEffect = null;
@@ -4515,28 +4511,54 @@ export class TunisiaMapEngine {
 
   handlePointerDown(e) {
     this.isPanning = true;
+    if (this.canvas.setPointerCapture && e.pointerId !== undefined) {
+      try { this.canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    }
     this.startPanY = e.clientY;
+    this.lastPointerY = e.clientY;
+    this.lastPointerTime = performance.now();
+    this.pointerVelocityY = 0;
     this.startOriginPanY = this.panY || 0;
+    this.targetPanY = this.panY || 0;
     this.hasDraggedMap = false;
   }
 
   handlePointerMove(e) {
     if (!this.isPanning) return;
+    const now = performance.now();
+    const dt = Math.max(0.005, (now - (this.lastPointerTime || now)) / 1000);
     const dy = (e.clientY - this.startPanY) / (this.scale || 1);
+    const instantDy = (e.clientY - (this.lastPointerY || e.clientY)) / (this.scale || 1);
+
+    const currentVelY = instantDy / dt;
+    this.pointerVelocityY = (this.pointerVelocityY || 0) * 0.4 + currentVelY * 0.6;
+    this.lastPointerY = e.clientY;
+    this.lastPointerTime = now;
+
     if (Math.abs(dy) > 4) {
       this.hasDraggedMap = true;
     }
-    this.panY = Math.max(-this.maxPanY, Math.min(60, this.startOriginPanY + dy));
+    this.panY = Math.max(-this.maxPanY, Math.min(80, this.startOriginPanY + dy));
     this.targetPanY = this.panY;
   }
 
   handlePointerUp(e) {
+    if (!this.isPanning) return;
     this.isPanning = false;
+    if (this.canvas.releasePointerCapture && e.pointerId !== undefined) {
+      try { this.canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+
+    // Fling / Inertie dynamique verticale soyeuse
+    if (Math.abs(this.pointerVelocityY || 0) > 30) {
+      const flingDist = (this.pointerVelocityY || 0) * 0.35;
+      this.targetPanY = Math.max(-this.maxPanY, Math.min(80, (this.panY || 0) + flingDist));
+    }
   }
 
   handleWheel(e) {
-    const delta = (e.deltaY || e.deltaX) * 0.5;
-    this.targetPanY = Math.max(-this.maxPanY, Math.min(60, (this.targetPanY || 0) - delta));
+    const delta = (e.deltaY || e.deltaX) * 0.45;
+    this.targetPanY = Math.max(-this.maxPanY, Math.min(80, (this.targetPanY || 0) - delta));
   }
 
   resize() {
@@ -4555,8 +4577,8 @@ export class TunisiaMapEngine {
     cssW = Math.max(300, cssW);
     cssH = Math.max(380, cssH);
 
-    this.width = 440;
-    this.height = 680;
+    this.width = 460;
+    this.height = 760;
     this.dpr = Math.min((typeof window !== 'undefined' && window.devicePixelRatio) || 1, 2.5);
 
     this.canvas.width = Math.floor(cssW * this.dpr);
@@ -4814,6 +4836,9 @@ export class TunisiaMapEngine {
     // 1. Fond Méditerranée avec reflets d'eau et grille nautique
     this.drawSeaBackground(ctx, t);
 
+    // 1B. Pays voisins limitrophes (Algérie à l'Ouest, Libye au Sud-Est)
+    this.drawNeighboringCountries(ctx, t);
+
     // 2. Silhouette Vectorielle Réelle de la Tunisie (Côtes, Reliefs & Chott el Djerid)
     this.drawTunisiaLandmass(ctx, t);
 
@@ -4875,6 +4900,87 @@ export class TunisiaMapEngine {
     }
   }
 
+  drawNeighboringCountries(ctx, t) {
+    ctx.save();
+
+    // 1. ALGÉRIE (الجزائر - Frontière Ouest)
+    ctx.fillStyle = '#172522';
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.28)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(95, 70);
+    ctx.lineTo(82, 110);
+    ctx.lineTo(80, 170);
+    ctx.lineTo(75, 215);
+    ctx.lineTo(90, 270);
+    ctx.lineTo(95, 325);
+    ctx.lineTo(80, 360);
+    ctx.lineTo(60, 390);
+    ctx.lineTo(65, 405);
+    ctx.lineTo(150, 490);
+    ctx.lineTo(180, 535);
+    ctx.lineTo(170, 720);
+    ctx.lineTo(0, 720);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Mention Algérie subtile
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
+    ctx.font = '900 13px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('الجزائر 🇩🇿', 38, 260);
+
+    // 2. LIBYE (ليبيا - Frontière Sud-Est)
+    ctx.fillStyle = '#221e18';
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.28)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(325, 485);
+    ctx.lineTo(460, 510);
+    ctx.lineTo(460, 720);
+    ctx.lineTo(230, 720);
+    ctx.lineTo(230, 545);
+    ctx.lineTo(290, 515);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Mention Libye subtile
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
+    ctx.font = '900 13px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ليبيا 🇱🇾', 390, 580);
+
+    // Frontières en pointillés
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(95, 70);
+    ctx.lineTo(82, 110);
+    ctx.lineTo(80, 170);
+    ctx.lineTo(75, 215);
+    ctx.lineTo(90, 270);
+    ctx.lineTo(95, 325);
+    ctx.lineTo(80, 360);
+    ctx.lineTo(60, 390);
+    ctx.lineTo(65, 405);
+    ctx.lineTo(150, 490);
+    ctx.lineTo(180, 535);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(325, 485);
+    ctx.lineTo(290, 515);
+    ctx.lineTo(230, 545);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.restore();
+  }
+
   drawTunisiaLandmass(ctx, t) {
     ctx.save();
 
@@ -4931,6 +5037,25 @@ export class TunisiaMapEngine {
     ctx.fill();
     ctx.stroke();
 
+    // Île de La Galite (أرخبيل جالطة - Nord de Bizerte / Tabarka)
+    ctx.fillStyle = '#285a3c';
+    ctx.beginPath();
+    ctx.ellipse(140, 26, 7, 3.5, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Îles Zembra et Zembretta (جزيرة زمبرة وزمبرتا - Golfe de Tunis)
+    ctx.fillStyle = '#285a3c';
+    ctx.beginPath();
+    ctx.ellipse(282, 80, 5, 3, 0.5, 0, Math.PI * 2);
+    ctx.ellipse(289, 75, 2.5, 1.8, 0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
     // Archipel des Kerkennah (جزر قرقنة)
     ctx.fillStyle = '#655734';
     ctx.beginPath();
@@ -4939,6 +5064,15 @@ export class TunisiaMapEngine {
     ctx.fill();
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Îles Kuriat (جزر قوريا - Monastir)
+    ctx.fillStyle = '#525a34';
+    ctx.beginPath();
+    ctx.ellipse(336, 230, 4, 2.5, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 0.8;
     ctx.stroke();
 
     // CHOTT EL DJERID (شط الجريد - Étendue saline scintillante)

@@ -15,6 +15,14 @@
 
 ﻿# CHANGELOG
 
+## [v91] - 2026-10-25
+
+### Added / Changed
+- Agrandissement substantiel de la carte géographique (canvas 460x760px, hauteur d'affichage responsive 640px).
+- Ajout des pays voisins géographiques limitrophes : Algérie à l'Ouest (`الجزائر 🇩🇿`) et Libye au Sud-Est (`ليبيا 🇱🇾`) avec frontières pointillées.
+- Cartographie détaillée des îles tunisiennes : archipel de La Galite (`جالطة`), Zembra & Zembretta (`زمبرة`), archipel des Kerkennah (`قرقنة`), îles Kuriat (`قوريا`) et île de Djerba (`جربة`).
+- Défilement tactile vertical ultra-smooth avec capture de pointeur, suivi de vélocité instantanée et inertie physique sans à-coups.
+
 ## [v90] - 2026-10-25
 
 ### Fixed / Changed

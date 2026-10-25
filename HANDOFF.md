@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T11:42:00.000Z - etat = HEAD de main (v91)
+
+## État en 3 lignes
+Carte Agrandie & Géographie Complète : dimensions de carte élargies (460x760px, wrap à 640px), ajout des pays voisins limitrophes (Algérie à l'Ouest avec mention et frontières, Libye au Sud-Est).
+Îles & Archipels Tunisiens : intégration cartographique des îles de La Galite (جالطة), Zembra et Zembretta (زمبرة), Kerkennah (قرقنة), Kuriat (قوريا) et Djerba (جربة).
+Scroll Tactile & Fling Parfait : capture pointer (`setPointerCapture`) et inertie dynamique fluide (`pointerVelocityY`, delta pondéré) sur mobile et desktop sans saccade.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T11:37:00.000Z - etat = HEAD de main (v90)
 
 ## État en 3 lignes
