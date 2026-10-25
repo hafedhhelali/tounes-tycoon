@@ -18,12 +18,13 @@
 ## [v96] - 2026-10-25
 
 ### Fixed / Changed
-- Dégel du portefeuille (Rasid figé) : encaissement direct des gains clients et des services manuels dans `engine.dinars` sans blocage de cycle.
-- Dépenses réalistes et équilibrées : calcul des charges périodiques strictement calé sur le revenu effectif (zéro déduction arbitraire à solde bas).
-- Amélioration visuelle designers : étagères en olivier massif avec reflets 3D et équerres forgées, caisse moderne à écran LED dynamique affichant le revenu réel.
-- Animation des employés : chéchia tunisienne avec kabbous oscillant, étincelles d'expertise et posture dynamique en service.
-- Transition et sortie fluide de la carte : retour automatique et immédiat vers la rue dès l'arrivée du trajet.
-- Paramètres mobiles : ajustement du conteneur modal (`max-height: 85vh`, `padding-bottom: 28px`) garantissant une visibilité intégrale des dépenses sans coupure.
+- Architecture carte de Tunisie : correction du dimensionnement `TunisiaMapEngine.resize()` avec fallback garanti évitant l'écran noir.
+- Séparation des repères graphiques : la carte popover inférieure est désormais isolée du pan vertical, rétablissant la réactivité tactile 100 % fiable sur les boutons de voyage.
+- Élimination des réinitialisations de contexte en boucle : passage à `requestAnimationFrame` unifié sans timers concurrents (`setTimeout`).
+- Dégel du portefeuille (Rasid figé) : encaissement direct des gains clients et des services manuels dans `engine.dinars`.
+- Dépenses réalistes et équilibrées : calcul des charges périodiques proportionné au revenu réel.
+- Amélioration visuelle designers : étagères en olivier massif, caisse tactile avec affichage dynamique, chéchia animée et effets d'aura aux paliers.
+- Paramètres mobiles : conteneur scrollable sans coupure des dépenses.
 
 ## [v95] - 2026-10-25
 

@@ -4900,18 +4900,12 @@ export class TunisiaMapEngine {
   resize() {
     if (!this.canvas) return;
     const parent = this.canvas.parentElement;
-    let cssW = parent ? parent.clientWidth : 0;
-    let cssH = parent ? parent.clientHeight : 0;
-    if (!cssW || cssW < 50) {
-      const rect = this.canvas.getBoundingClientRect();
-      cssW = rect.width || (typeof window !== 'undefined' ? window.innerWidth : 440);
-    }
-    if (!cssH || cssH < 50) {
-      const rect = this.canvas.getBoundingClientRect();
-      cssH = rect.height || (typeof window !== 'undefined' ? 520 : 560);
-    }
-    cssW = Math.max(300, cssW);
-    cssH = Math.max(380, cssH);
+    const rect = this.canvas.getBoundingClientRect();
+    let cssW = (parent && parent.clientWidth) || rect.width || (typeof window !== 'undefined' ? window.innerWidth : 440);
+    let cssH = (parent && parent.clientHeight) || rect.height || (typeof window !== 'undefined' ? 560 : 560);
+    
+    cssW = Math.max(320, cssW);
+    cssH = Math.max(480, cssH);
 
     this.width = 460;
     this.height = 760;
@@ -5093,10 +5087,11 @@ export class TunisiaMapEngine {
     const clientY = e.clientY - rect.top;
 
     const scale = Math.max(0.001, this.scale || 1);
-    const x = (clientX - (this.offsetX || 0)) / scale;
-    const y = ((clientY - (this.offsetY || 0)) / scale) - (this.panY || 0);
+    const screenX = (clientX - (this.offsetX || 0)) / scale;
+    const screenY = (clientY - (this.offsetY || 0)) / scale;
+    const mapY = screenY - (this.panY || 0);
 
-    // 1. Détection de clic sur le bouton de la carte popover en bas (si affichée)
+    // 1. Détection de clic sur la carte Popover en bas (coordonnées écran fixes)
     if (this.selectedCityId) {
       const cardW = this.width - 32;
       const cardH = 92;
@@ -5107,7 +5102,7 @@ export class TunisiaMapEngine {
       const btnX = cardX + 12;
       const btnY = cardY + 46;
 
-      if (x >= btnX - 4 && x <= btnX + btnW + 4 && y >= btnY - 4 && y <= btnY + btnH + 4) {
+      if (screenX >= btnX - 6 && screenX <= btnX + btnW + 6 && screenY >= btnY - 6 && screenY <= btnY + btnH + 6) {
         const c = this.cities.find(item => item.id === this.selectedCityId);
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
@@ -5116,19 +5111,12 @@ export class TunisiaMapEngine {
       }
     }
 
-    // 2. Détection de clic sur les nœuds de villes (hitbox tactile généreuse r=30)
+    // 2. Détection de clic sur les nœuds de villes (coordonnées carte défilée mapY)
     for (const c of this.cities) {
-      const dist = Math.hypot(x - c.x, y - c.y);
-      if (dist <= 30) {
+      const dist = Math.hypot(screenX - c.x, mapY - c.y);
+      if (dist <= 32) {
         this.selectedCityId = c.id;
         if (this.onSelect) this.onSelect(c);
-
-        // Si la ville est débloquée ou déblocable et qu'on n'y est pas déjà, voyager
-        if (c.id !== this.getActiveCity().id) {
-          if (this.isCityUnlocked(c) || this.canUnlockCity(c)) {
-            this.travelTo(c.id);
-          }
-        }
         return;
       }
     }
@@ -5171,6 +5159,8 @@ export class TunisiaMapEngine {
     ctx.scale(this.dpr, this.dpr);
     ctx.translate(this.offsetX, this.offsetY);
     ctx.scale(this.scale, this.scale);
+
+    ctx.save();
     ctx.translate(0, this.panY || 0);
 
     // 1. Fond Méditerranée avec reflets d'eau et grille nautique
@@ -5195,8 +5185,9 @@ export class TunisiaMapEngine {
     if (this.arrivalEffect) {
       this.drawArrivalEffect(ctx, now);
     }
+    ctx.restore();
 
-    // 6. Carte flottante de la ville sélectionnée
+    // 6. Carte flottante de la ville sélectionnée (fixée en bas, hors scroll panY)
     this.drawSelectedCityOverlay(ctx);
   }
 
