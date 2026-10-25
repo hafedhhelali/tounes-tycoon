@@ -4913,7 +4913,6 @@ export class TunisiaMapEngine {
     this.handleWheel = this.handleWheel.bind(this);
     this.onWindowResize = () => this.resize();
 
-    this.handleTouchClick = (e) => this.handleClick(e);
     this.canvas.addEventListener('pointerdown', this.handlePointerDown);
     window.addEventListener('pointermove', this.handlePointerMove);
     window.addEventListener('pointerup', this.handlePointerUp);
@@ -4933,6 +4932,7 @@ export class TunisiaMapEngine {
       try { this.canvas.setPointerCapture(e.pointerId); } catch (_) {}
     }
     this.startPanY = e.clientY;
+    this.startPanX = e.clientX;
     this.lastPointerY = e.clientY;
     this.lastPointerTime = performance.now();
     this.pointerVelocityY = 0;
@@ -4953,7 +4953,8 @@ export class TunisiaMapEngine {
     this.lastPointerY = e.clientY;
     this.lastPointerTime = now;
 
-    if (Math.abs(dy) > 4) {
+    const dragDist = Math.hypot(e.clientX - (this.startPanX || e.clientX), e.clientY - this.startPanY);
+    if (dragDist > 7) {
       this.hasDraggedMap = true;
     }
     this.panY = Math.max(-this.maxPanY, Math.min(80, this.startOriginPanY + dy));
@@ -4965,6 +4966,12 @@ export class TunisiaMapEngine {
     this.isPanning = false;
     if (this.canvas.releasePointerCapture && e.pointerId !== undefined) {
       try { this.canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+
+    // Si aucun glissement significatif, déclencher handleClick pour interaction tactile réactive
+    if (!this.hasDraggedMap) {
+      this.handleClick(e);
+      return;
     }
 
     // Fling / Inertie dynamique verticale soyeuse
@@ -5182,12 +5189,12 @@ export class TunisiaMapEngine {
       const cardH = 92;
       const cardX = 16;
       const cardY = this.height - cardH - 12;
-      const btnW = 115;
-      const btnH = 34;
+      const btnW = 120;
+      const btnH = 40;
       const btnX = cardX + 12;
-      const btnY = cardY + 46;
+      const btnY = cardY + 44;
 
-      if (screenX >= btnX - 6 && screenX <= btnX + btnW + 6 && screenY >= btnY - 6 && screenY <= btnY + btnH + 6) {
+      if (screenX >= btnX - 8 && screenX <= btnX + btnW + 8 && screenY >= btnY - 8 && screenY <= btnY + btnH + 8) {
         const c = this.cities.find(item => item.id === this.selectedCityId);
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
@@ -5199,9 +5206,17 @@ export class TunisiaMapEngine {
     // 2. Détection de clic sur les nœuds de villes (coordonnées carte défilée mapY)
     for (const c of this.cities) {
       const dist = Math.hypot(screenX - c.x, mapY - c.y);
-      if (dist <= 32) {
-        this.selectedCityId = c.id;
-        if (this.onSelect) this.onSelect(c);
+      if (dist <= 42) {
+        // Si la ville n'était pas sélectionnée, la sélectionner
+        if (this.selectedCityId !== c.id) {
+          this.selectedCityId = c.id;
+          if (this.onSelect) this.onSelect(c);
+        } else {
+          // Si déjà sélectionnée et accessible, déclencher le voyage directement
+          if ((this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
+            this.travelTo(c.id);
+          }
+        }
         return;
       }
     }
@@ -5657,19 +5672,22 @@ export class TunisiaMapEngine {
       ctx.fillText(pinEmoji, c.x, c.y + 4.5);
 
       // Étiquette du nom de la ville
-      ctx.font = '900 11px "Cairo", sans-serif';
+      const isCurCity = isActive;
+      ctx.font = isCurCity ? '900 13.5px "Cairo", sans-serif' : '900 11.5px "Cairo", sans-serif';
       const nameW = ctx.measureText(c.name).width;
 
-      ctx.fillStyle = isActive ? 'rgba(6, 78, 59, 0.95)' : 'rgba(15, 23, 42, 0.88)';
+      ctx.fillStyle = isCurCity ? 'rgba(6, 78, 59, 0.98)' : 'rgba(15, 23, 42, 0.88)';
       ctx.beginPath();
-      ctx.roundRect(c.x - nameW / 2 - 5, c.y - pinRadius - 16, nameW + 10, 15, 4);
+      const badgeH = isCurCity ? 19 : 15;
+      const badgeOffset = isCurCity ? 20 : 16;
+      ctx.roundRect(c.x - nameW / 2 - 7, c.y - pinRadius - badgeOffset, nameW + 14, badgeH, 5);
       ctx.fill();
-      ctx.strokeStyle = isActive ? '#34d399' : (isUnlocked ? '#38bdf8' : '#64748b');
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = isCurCity ? '#10b981' : (isUnlocked ? '#38bdf8' : '#64748b');
+      ctx.lineWidth = isCurCity ? 1.8 : 1;
       ctx.stroke();
 
-      ctx.fillStyle = isActive ? '#34d399' : (isUnlocked ? '#f8fafc' : '#94a3b8');
-      ctx.fillText(c.name, c.x, c.y - pinRadius - 4.5);
+      ctx.fillStyle = isCurCity ? '#fef08a' : (isUnlocked ? '#f8fafc' : '#94a3b8');
+      ctx.fillText(c.name, c.x, c.y - pinRadius - (isCurCity ? 5.5 : 4.5));
 
       // Badge pour la ville active avec niveau joueur
       if (isActive) {

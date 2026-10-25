@@ -15,6 +15,19 @@
 
 # CHANGELOG
 
+## [v105] - 2026-10-25
+
+### Fixed & Changed
+- **Navigation Carte de Tunisie 100% tactile et réactive** :
+  - Détection des taps tactiles fiabilisée dans `handlePointerUp` : si aucun glissement n'est détecté, déclenchement immédiat du clic sans blocage ni perte d'événement tactile.
+  - Clic direct sur ville : rayon d'action augmenté à 42px. Si la ville est déjà sélectionnée ou tapée deux fois, lancement immédiat du voyage.
+  - Surface de frappe du bouton popover élargie pour écrans mobiles.
+- **Typographie & Lisibilité de la Ville Active** :
+  - Nom de la ville active agrandi (13.5px bold) avec badge contrasté sur la carte.
+  - Nom de la ville courante agrandi dans la barre supérieure (`#currentZoneName`, `#currentQuartierBadge`, `#mapActiveCityBadge`).
+- **Harmonisation UI "بريم"** :
+  - Remplacement de "Prime de présence" par le terme court et authentique "بريم" sur l'onglet et les bannières.
+
 ## [v104] - 2026-10-25
 
 ### Fixed
