@@ -472,6 +472,24 @@ export const PRESTIGE_RANKS = [
   { minLevel: 10, title: 'إمبراطور تونس الكبير', badge: 'أسطورة 5★', isLegend: true }
 ];
 
+// Niveaux du Joueur basés sur le nombre de villes tunisiennes ouvertes (1 à 14)
+export const PLAYER_CITY_LEVELS = [
+  { level: 1, title: 'تاجر مبتدئ في تونس العاصمة 🇹🇳', badge: 'المستوى 1', minCities: 1 },
+  { level: 2, title: 'مستثمر قنال بنزرت ⛵', badge: 'المستوى 2', minCities: 2 },
+  { level: 3, title: 'أمير ياسمين نابل والحمامات 🏖️', badge: 'المستوى 3', minCities: 3 },
+  { level: 4, title: 'سيّد قمح وخيرات باجة 🧀', badge: 'المستوى 4', minCities: 4 },
+  { level: 5, title: 'فارس قصبة الكاف العالية 🏰', badge: 'المستوى 5', minCities: 5 },
+  { level: 6, title: 'لورد بوجعفر وجوهرة سوسة 💎', badge: 'المستوى 6', minCities: 6 },
+  { level: 7, title: 'قبطان رباط المنستير والمهدية ⚓', badge: 'المستوى 7', minCities: 7 },
+  { level: 8, title: 'عمدة الأغالبة وعطور القيروان 🕌', badge: 'المستوى 8', minCities: 8 },
+  { level: 9, title: 'زعيم صناعات وتجارة صفاقس 🏭', badge: 'المستوى 9', minCities: 9 },
+  { level: 10, title: 'معلّم قفصة والمناجم الكبرى ⛏️', badge: 'المستوى 10', minCities: 10 },
+  { level: 11, title: 'سلطان دقلة وواحات توزر 🌴', badge: 'المستوى 11', minCities: 11 },
+  { level: 12, title: 'حاكم خليج وموانئ قابس 🌊', badge: 'المستوى 12', minCities: 12 },
+  { level: 13, title: 'بارون قصور مدنين وجرجيس 🏺', badge: 'المستوى 13', minCities: 13 },
+  { level: 14, title: 'إمبراطور الهولدينغ الوطني بجربة 👑', badge: 'المستوى 14 (القمة)', minCities: 14 }
+];
+
 export const TUNISIAN_CITIES = [
   {
     id: 'tunis',
@@ -675,6 +693,7 @@ export class TycoonEngine {
     // Statistiques pour les quêtes
     this.manualServesCount = 0;
     this.completedQuestIds = [];
+    this.playerLevel = 1; // Niveau 1 au départ
     this.playerTitle = 'مواطن يلوّج على مشروع';
 
     // Événement actif
@@ -854,6 +873,7 @@ export class TycoonEngine {
 
     this.unlockedCityIds.push(city.id);
     this.switchCity(city.id);
+    this.updatePlayerPrestigeTitle();
     return true;
   }
 
@@ -1285,8 +1305,19 @@ export class TycoonEngine {
     };
   }
 
+  getPlayerLevel() {
+    const cityCount = (this.unlockedCityIds && this.unlockedCityIds.length) || 1;
+    this.playerLevel = Math.min(14, Math.max(1, cityCount));
+    return this.playerLevel;
+  }
+
+  getPlayerCityRank() {
+    const lvl = this.getPlayerLevel();
+    return PLAYER_CITY_LEVELS.find(r => r.level === lvl) || PLAYER_CITY_LEVELS[0];
+  }
+
   updatePlayerPrestigeTitle() {
-    // Trouve le titre le plus élevé atteint
+    this.getPlayerLevel();
     let currentRank = PRESTIGE_RANKS[0];
     for (const rank of PRESTIGE_RANKS) {
       if (this.prestigeLevel >= rank.minLevel) {

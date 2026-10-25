@@ -15,6 +15,15 @@
 
 ﻿# CHANGELOG
 
+## [v87] - 2026-10-25
+
+### Added / Changed
+- Début du jeu au Niveau 1 (`مستوى 1`) : chaque ville débloquée propulse le niveau du joueur jusqu'au Niveau 14 (`مستوى 14`).
+- Système de titres impériaux évolutifs selon le niveau (`تاجر مبتدئ`, `معلّم الحومة`, `صاحب محلات`, `سيّد الأعمال الجهوي` ... jusqu'à `إمبراطور التجارة التونسية`).
+- Synchronisation continue du badge d'en-tête et félicitations visuelles à l'arrivée dans une nouvelle ville.
+- Pins de carte enrichis indiquant le niveau actif et popovers de villes avec indication d'étape impériale.
+- Économie recalibrée, scroll de rue fluide à inertie, bulles clients uniquement à la caisse.
+
 ## [v86] - 2026-10-25
 
 ### Added / Changed

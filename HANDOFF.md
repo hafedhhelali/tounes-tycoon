@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T09:30:00.000Z - etat = HEAD de main (v87)
+
+## État en 3 lignes
+Progression & Niveaux Joueur : début de partie au Niveau 1 (`مستوى 1`), progression dynamique jusqu'au Niveau 14 (`مستوى 14`) au rythme des villes débloquées avec titres impériaux évolutifs.
+Animations & Graphismes HD : célébration d'arrivée cinématographique avec annonce de niveau, pins de carte enrichis (`⭐ مستوى X`), popover ville avec badge d'étape impériale (`محطّة X`).
+Stabilisation & Économie : tests unitaires 100% verts (66/66 pass), synchronisation temps réel du header `index.html` et `www/`, build APK v87 prêt.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T06:50:00.000Z - etat = HEAD de main (v86)
 
 ## État en 3 lignes

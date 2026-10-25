@@ -2295,7 +2295,7 @@
             <div class="brand-title-wrap">
               <span class="brand-main-text">تونس تايكون</span>
             </div>
-            <span class="badge-tn" id="playerTitleBadge">مواطن يلوّج على مشروع</span>
+            <span class="badge-tn" id="playerTitleBadge" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: #38bdf8; font-weight: 900;">⭐ المستوى 1 : تاجر مبتدئ 🇹🇳</span>
           </div>
         </div>
         <div class="header-actions">
@@ -3879,7 +3879,9 @@
             }
             if (window.soundFX && window.soundFX.playCoin) window.soundFX.playCoin();
             soundEngine.playEventFanfare();
-            showFeedbackToast(`🎉 وصلت بالسلامة إلى ${city.name} ! الشوارع والمشاريع مفتوحة للاستثمار 🇹🇳`);
+            const newLvl = engine.getPlayerLevel ? engine.getPlayerLevel() : (engine.playerLevel || 1);
+            showRewardModalUI('⭐', `ارتقيت للمستوى ${newLvl} !`, `مبروك ! بفتح ${city.name} كبرت إمبراطوريتك ودخلت مرحلة جديدة من الأرباح 🇹🇳`, '🚀 واصل التوسّع');
+            showFeedbackToast(`🎉 وصلت بالسلامة إلى ${city.name} (المستوى ${newLvl}) ! الشوارع والمشاريع مفتوحة للاستثمار 🇹🇳`);
             // Basculer vers l'onglet rue
             switchTab('businesses');
           },
@@ -4722,9 +4724,13 @@
         lastDisplayedDinars = formattedDinars;
       }
 
-      if (titleBadgeEl && engine.playerTitle !== lastDisplayedTitle) {
-        titleBadgeEl.innerText = engine.playerTitle;
-        lastDisplayedTitle = engine.playerTitle;
+      if (titleBadgeEl) {
+        const lvl = engine.getPlayerLevel ? engine.getPlayerLevel() : (engine.playerLevel || 1);
+        const displayTxt = `⭐ المستوى ${lvl} : ${engine.playerTitle}`;
+        if (displayTxt !== lastDisplayedTitle) {
+          titleBadgeEl.innerText = displayTxt;
+          lastDisplayedTitle = displayTxt;
+        }
       }
 
       // Synchronisation périodique (5 fois/sec) des états secondaires pour fluidité 60 FPS maximale

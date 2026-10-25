@@ -5031,11 +5031,12 @@ export class TunisiaMapEngine {
       ctx.fillStyle = isActive ? '#34d399' : (isUnlocked ? '#f8fafc' : '#94a3b8');
       ctx.fillText(c.name, c.x, c.y - pinRadius - 4.5);
 
-      // Badge pour la ville active
+      // Badge pour la ville active avec niveau joueur
       if (isActive) {
-        ctx.fillStyle = '#f59e0b';
-        ctx.font = 'bold 8.5px "Cairo", sans-serif';
-        ctx.fillText('📍 النشيط', c.x, c.y + pinRadius + 12);
+        const pLvl = this.engine.getPlayerLevel ? this.engine.getPlayerLevel() : (this.engine.playerLevel || 1);
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 9px "Cairo", sans-serif';
+        ctx.fillText('⭐ مستوى ' + pLvl, c.x, c.y + pinRadius + 12);
       } else if (!isUnlocked) {
         if (isNext) {
           const pctText = Math.round(this.getCityUnlockProgress(c) * 100) + '%';
@@ -5190,31 +5191,41 @@ export class TunisiaMapEngine {
       ctx.fill();
     }
 
-    // 3. Bannière triomphale d'entrée dans la ville
-    const bannerW = 200;
-    const bannerH = 44;
+    // 3. Bannière triomphale d'entrée dans la ville & montée de niveau
+    const bannerW = 230;
+    const bannerH = 52;
     const bannerX = city.x - bannerW / 2;
-    const bannerY = city.y - 65 - Math.sin(progress * Math.PI) * 10;
+    const bannerY = city.y - 72 - Math.sin(progress * Math.PI) * 12;
 
-    ctx.shadowColor = '#f59e0b';
-    ctx.shadowBlur = 16;
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
+    const bannerGrad = ctx.createLinearGradient(bannerX, bannerY, bannerX, bannerY + bannerH);
+    bannerGrad.addColorStop(0, 'rgba(15, 23, 42, 0.98)');
+    bannerGrad.addColorStop(1, 'rgba(30, 41, 59, 0.98)');
+
+    ctx.shadowColor = '#fbbf24';
+    ctx.shadowBlur = 20;
+    ctx.fillStyle = bannerGrad;
     ctx.beginPath();
-    ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 10);
+    ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 12);
     ctx.fill();
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.2;
     ctx.stroke();
     ctx.shadowBlur = 0;
 
+    const curLvl = this.engine.getPlayerLevel ? this.engine.getPlayerLevel() : (this.engine.playerLevel || 1);
+
     ctx.fillStyle = '#fef08a';
-    ctx.font = '900 13px "Cairo", sans-serif';
+    ctx.font = '900 13.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`🎉 مرحباً بك في ${city.name} ! 🇹🇳`, city.x, bannerY + 20);
 
+    ctx.fillStyle = '#34d399';
+    ctx.font = '900 11px "Cairo", sans-serif';
+    ctx.fillText(`⭐ ارتقيت إلى المستوى ${curLvl} في الإمبراطورية !`, city.x, bannerY + 35);
+
     ctx.fillStyle = '#38bdf8';
-    ctx.font = '800 10px "Cairo", sans-serif';
-    ctx.fillText('جاري فتح شوارع ومشاريع المدينة...', city.x, bannerY + 36);
+    ctx.font = '700 9.5px "Cairo", sans-serif';
+    ctx.fillText('شوارع ومشاريع جديدة جاهزة للاستثمار', city.x, bannerY + 47);
 
     ctx.restore();
   }
@@ -5250,14 +5261,16 @@ export class TunisiaMapEngine {
 
     ctx.shadowBlur = 0;
 
-    // Titre et icône
+    // Titre et icône avec numéro de niveau de ville
     ctx.font = '22px sans-serif';
     ctx.fillText(c.icon, cardX + cardW - 28, cardY + 30);
+
+    const cityIndex = this.cities.findIndex(item => item.id === c.id) + 1;
 
     ctx.textAlign = 'right';
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 13px "Cairo", sans-serif';
-    ctx.fillText(c.fullName, cardX + cardW - 40, cardY + 24);
+    ctx.fillText(`${c.fullName} (محطّة ${cityIndex})`, cardX + cardW - 40, cardY + 24);
 
     ctx.fillStyle = '#94a3b8';
     ctx.font = '700 9.5px "Cairo", sans-serif';
