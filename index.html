@@ -214,12 +214,15 @@
       flex-wrap: nowrap;
     }
     .icon-pill-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 14px;
-      padding: 3px 6px;
+      padding: 5px 9px;
+      min-width: 34px;
+      min-height: 32px;
+      justify-content: center;
       color: #f8fafc;
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -306,15 +309,15 @@
     .nav-tab-item {
       display: flex;
       align-items: center;
-      gap: 3px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       color: #cbd5e1;
-      font-size: 10.5px;
+      font-size: 11.5px;
       font-weight: 800;
       cursor: pointer;
-      padding: 3px 7px;
-      border-radius: 10px;
+      padding: 5px 10px;
+      border-radius: 12px;
       transition: all 0.15s ease;
       white-space: nowrap;
     }
@@ -2322,8 +2325,8 @@
           <button class="quick-pill-btn ad-pill" id="adCashBtn" style="display: none;"><span id="cashRewardHint"></span></button>
           <button class="quick-pill-btn gold" id="prestigeOpenBtn" style="display: none;"><span id="prestigeInfoLabel"></span></button>
           <button class="icon-pill-btn" id="soundToggleBtn" title="صوت">🔊</button>
-          <button class="icon-pill-btn" id="openGuideBtn" title="دليل البداية وكيفاش تلعب" style="border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc;">❓</button>
-          <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية">📜</button>
+          <button class="icon-pill-btn" id="openGuideBtn" title="دليل البداية وكيفاش تلعب" style="border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc; display: none;">❓</button>
+          <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية" style="display: none;">📜</button>
           <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات وبروفيل">⚙️</button>
           <button class="icon-pill-btn exit-pill-btn" id="headerExitBtn" title="خروج من اللعبة" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">🚪</button>
         </div>
@@ -2405,6 +2408,13 @@
 
     <!-- PANNEAU 4 : بطولة تجار تونس وصابة الأسبوع والتحديات -->
     <div class="tab-content-panel" id="panelLeague">
+      <!-- بانر توضيحي لمفهوم البطولة -->
+      <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(30, 27, 75, 0.6) 100%); border: 1.5px solid #818cf8; border-radius: 14px; padding: 10px 14px; text-align: right;">
+        <div style="font-weight: 900; color: #fde047; font-size: 13.5px; margin-bottom: 3px;">🏆 دوري تجار الجمهورية التونسية</div>
+        <div style="font-size: 11px; color: #e0e7ff; line-height: 1.4;">
+          تنافس أسبوعياً مع تجّار تونس، احصد صابة كل نهار، حقّق تحديات اليوم واطلع في الترتيب من تاجر حومة إلى سلطان التجارة الوطنية !
+        </div>
+      </div>
       <!-- صابة النهار (Daily Login) -->
       <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.25) 100%); border: 1.5px solid rgba(245, 158, 11, 0.5); border-radius: 16px; padding: 12px; text-align: right;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -2727,7 +2737,10 @@
           </div>
           <div class="settings-copyright">
             © EOLabs 2026 beta • صُنع بكل فخر في تونس 🇹🇳<br>
-            <button id="openLegalModalBtn" style="background: none; border: none; color: #38bdf8; font-size: 10px; cursor: pointer; text-decoration: underline; margin-top: 4px;">📜 الشروط القانونية وحماية المعطيات</button>
+            <div style="display: flex; gap: 8px; justify-content: center; margin-top: 6px;">
+              <button id="settingsOpenGuideBtn" style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #7dd3fc; border-radius: 6px; padding: 4px 8px; font-size: 10px; cursor: pointer;">❓ دليل البداية وكيفاش تلعب</button>
+              <button id="openLegalModalBtn" style="background: none; border: none; color: #38bdf8; font-size: 10px; cursor: pointer; text-decoration: underline;">📜 الشروط القانونية والخصوصية</button>
+            </div>
           </div>
         </section>
 
@@ -2965,6 +2978,9 @@
     const offlineGain = engine.processOfflineProgress();
 
     const dinarsDisplay = document.getElementById('dinarsDisplay');
+    if (dinarsDisplay) {
+      dinarsDisplay.innerHTML = formatCurrency(engine.dinars || 0);
+    }
     const businessList = document.getElementById('businessList');
     const soundToggleBtn = document.getElementById('soundToggleBtn');
     const adCashBtn = document.getElementById('adCashBtn');
@@ -3854,6 +3870,9 @@
 
     function applyZoneTheme() {
       const current = engine.getCurrentZone();
+      if (engine.switchCity && current && current.id) {
+        engine.switchCity(current.id);
+      }
       if (currentZoneName) currentZoneName.innerText = current.name;
       const currentQuartierBadge = document.getElementById('currentQuartierBadge');
       if (currentQuartierBadge) currentQuartierBadge.innerText = `${current.name} 🇹🇳`;
@@ -4514,6 +4533,7 @@
     // --- GESTION DU GUIDE DE DÉMARRAGE RAPIDE (دليل البداية السريع) ---
     const startGuideModal = document.getElementById('startGuideModal');
     const openGuideBtn = document.getElementById('openGuideBtn');
+    const settingsOpenGuideBtn = document.getElementById('settingsOpenGuideBtn');
     const closeGuideModalBtn = document.getElementById('closeGuideModalBtn');
     const startPlayingGuideBtn = document.getElementById('startPlayingGuideBtn');
 
@@ -4524,6 +4544,12 @@
 
     if (openGuideBtn && startGuideModal) {
       openGuideBtn.onclick = () => {
+        soundEngine.playCoin();
+        startGuideModal.classList.add('active');
+      };
+    }
+    if (settingsOpenGuideBtn && startGuideModal) {
+      settingsOpenGuideBtn.onclick = () => {
         soundEngine.playCoin();
         startGuideModal.classList.add('active');
       };

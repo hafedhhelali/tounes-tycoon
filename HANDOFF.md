@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T12:25:00.000Z - etat = HEAD de main (v92)
+
+## État en 3 lignes
+Isolation Projets & Villes : projets et niveaux isolés de manière autonome pour chaque ville (14 villes indépendantes dans `engine.switchCity` et `zoneSpecs`).
+Routage Routier Réaliste RN3 : ajout de la liaison routière RN3 reliant Tunis et Kairouan directement (trajet Kairouan -> Tunis -> Bizerte via RN3 et A4 validé).
+Hitboxes & Ergonomie UI : boutons et hitboxes "اشري المحل" élargis, header allégé (déplacement guide/mentions vers Paramètres), solde initialisé immédiatement, explication claire de la البطولة.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T11:42:00.000Z - etat = HEAD de main (v91)
 
 ## État en 3 lignes

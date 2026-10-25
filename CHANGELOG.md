@@ -13,7 +13,17 @@
 - Solde boutique (bizBalance) : formatage compact adapté sans débordement.
 - Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
 
-﻿# CHANGELOG
+# CHANGELOG
+
+## [v92] - 2026-10-25
+
+### Added / Changed
+- Isolation intégrale des projets et niveaux par ville : chaque gouvernorat possède son propre parc d'entreprises, ses niveaux d'avancement et sa rentabilité autonome.
+- Routage autoroutier et national réaliste : ajout de la RN3 reliant Tunis et Kairouan directement (trajet Kairouan -> Tunis -> Bizerte via RN3 et A4 validé).
+- Hitboxes tactiles "اشري المحل" élargies et réactives sur mobile.
+- Nettoyage ergonomique du header : déplacement des boutons secondaires (? guide, 📜 mentions) dans les Paramètres, agrandissement des boutons tactiles restants.
+- Initialisation immédiate du solde en DT au démarrage de l'application sans gel à 0.
+- Clarification du mode البطولة avec bannière explicative des récompenses journalières et de la ligue hebdomadaire.
 
 ## [v91] - 2026-10-25
 
