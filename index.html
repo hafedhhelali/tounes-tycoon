@@ -2387,8 +2387,7 @@
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 22px;">🗺️</span>
             <div style="text-align: right;">
-              <div style="font-weight: 900; font-size: 14.5px; color: #f8fafc; line-height: 1.4;">خريطة الجمهورية التونسية والاستثمار الوطني</div>
-              <div style="font-size: 11px; color: #94a3b8; line-height: 1.4;">14 مدينة كبرى، مسالك تجارية ذهبية وبونيس جهوي لكل ولاية</div>
+              <div style="font-weight: 900; font-size: 15px; color: #f8fafc; line-height: 1.4;">خريطة تونس 🇹🇳</div>
             </div>
           </div>
           <div id="mapActiveCityBadge" class="badge-tn">تونس العاصمة 🇹🇳</div>
@@ -2774,9 +2773,6 @@
           <div class="biz-chip" style="border-color: rgba(52, 211, 153, 0.4);"><span class="biz-chip-k">🌿 صافي المربوح</span><b id="bizDetailNetRate" style="color:#34d399;">100% بعد المصاريف</b></div>
           <div class="biz-chip"><span class="biz-chip-k">⚡ الوتيرة</span><b id="bizDetailRate">+0.00 د.ت / ث</b></div>
         </div>
-        <button id="sellBizBtn" style="background: rgba(220, 38, 38, 0.85); border: 1px solid #ef4444; border-radius: 8px; color: #ffffff; font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 11px; padding: 4px 10px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: transform 0.15s ease;" title="بيع الأصل التجاري واسترجاع 70% من الفلوس">
-          <span>🏷️</span><span>بيع المحلّ</span>
-        </button>
         <button class="biz-close-btn" id="closeBizDetailBtn" aria-label="Fermer">✕</button>
       </div>
 
@@ -3640,7 +3636,12 @@
       if (tabName === 'zones') {
         renderZonesUI();
         initTunisiaMap();
-        setTimeout(() => { if (tunisiaMap) tunisiaMap.resize(); }, 60);
+        requestAnimationFrame(() => {
+          if (tunisiaMap) {
+            tunisiaMap.resize();
+            tunisiaMap.start();
+          }
+        });
       }
       if (tabName === 'league') renderLeagueTabUI();
     }
@@ -4088,7 +4089,10 @@
               updateSynergiesUI();
             } else {
               const manque = Math.max(0, engine.getCost(biz) - engine.dinars);
-              triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تطوّر المشروع ! 💰`);
+              triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تفتح المشروع ! 💰`);
+              if (biz.level === 0) {
+                openBizDetailModalUI(biz.id);
+              }
             }
           }
         },
@@ -4393,33 +4397,6 @@
             triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تطوّر المشروع ! 💰`);
           }
         };
-      }
-
-      const sellBizBtn = document.getElementById('sellBizBtn');
-      if (sellBizBtn) {
-        // Cacher le bouton si le projet est niveau 0 ou déjà vendu
-        if (!biz || biz.level === 0 || biz.isSold) {
-          sellBizBtn.style.display = 'none';
-        } else {
-          sellBizBtn.style.display = 'flex';
-          sellBizBtn.onclick = () => {
-            const confirmMsg = biz.id === 'kaskrout'
-              ? 'هل أنت متأكد من بيع نصبة الكسكروت ؟ ستختفي للأبد وتتحول إلى منتزه عمومي جميل ! 🌳'
-              : `هل أنت متأكد من بيع أصل ${biz.name} ؟ ستسترجع 70% من قيمة استثمارك وتغلق المحل.`;
-
-            if (confirm(confirmMsg)) {
-              const res = engine.sellBusiness(biz.id);
-              if (res) {
-                soundEngine.playEventFanfare();
-                if (bizDetailModal) bizDetailModal.classList.remove('active');
-                if (storeSimulation) storeSimulation.stop();
-                renderDOM();
-                updateSynergiesUI();
-                showFeedbackToast(`🏷️ تم بيع المشروع بنجاح واسترجاع +${formatCurrencyPlain(res.resaleValue)} إلى رصيدك !`);
-              }
-            }
-          };
-        }
       }
 
       // 1. Staff Slots

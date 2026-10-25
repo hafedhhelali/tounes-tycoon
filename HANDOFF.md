@@ -1,3 +1,11 @@
+# HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T00:10:27.738Z - etat = HEAD de main (v84)
+
+## État en 3 lignes
+Map display & Header épuré : carte fiabilisée au basculement onglet, titre strictement « خريطة تونس 🇹🇳 », mention élégante pour villes verrouillées.
+Immersive Store & Caissier : caissier positionné derrière le comptoir au premier plan, caisse enregistreuse tactile dorée avec touches et écran LED, plaque redondante retirée.
+Épicerie & Ergonomie : étagères diversifiées réalistes (harissa, thon, couscous, lait, huile d olive), rôle employé affiché au tap, bouton vente supprimé.
+
 ﻿# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25 - etat = HEAD de main (voir git log -n1)
 

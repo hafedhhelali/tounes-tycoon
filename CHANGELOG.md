@@ -15,6 +15,21 @@
 
 ﻿# CHANGELOG
 
+## [v84] - 2026-10-25
+
+### Added / Changed
+- Fix affichage carte de Tunisie dans l onglet zones avec redimensionnement et relance de la boucle d animation.
+- Titre de la carte épuré strictement à « خريطة تونس 🇹🇳 ».
+- Villes verrouillées signalées avec mention élégante « 🔒 مقفلة ».
+- Caissier positionné physiquement derrière le meuble de comptoir au premier plan.
+- Caisse enregistreuse moderne et soignée avec touches dorées et écran LED.
+- Suppression des étiquettes redondantes (plaque projet sur le comptoir et rôle permanent au-dessus de la tête).
+- Affichage du rôle et nom de l employé uniquement au tap/clic.
+- Étagères de l épicerie (attariya) diversifiées avec vrais produits tunisiens (harissa, thon, couscous, lait, huile d olive, savon vert).
+- Suppression du bouton de revente du commerce.
+
+
+
 ## 2026-10-25
 - feat(v82): independent city business progression, street vendor cart for kaskrout, interactive pan-zoom map with arrival transition
 - feat(v82): independent city business progression, street vendor cart for kaskrout, interactive pan-zoom map with arrival transition
