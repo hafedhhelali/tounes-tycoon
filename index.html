@@ -1450,17 +1450,19 @@
     #settingsModal {
       align-items: flex-start !important;
       overflow-y: auto !important;
-      padding: 12px 10px 24px 10px !important;
+      padding: 24px 12px 36px 12px !important;
     }
+    #settingsModal .modal-card,
     .settings-modal-card {
       max-width: 640px;
       width: 96%;
-      max-height: calc(100vh - 24px);
-      margin: 0 auto;
+      max-height: calc(100vh - 48px) !important;
+      margin: 10px auto !important;
+      transform: none !important;
       display: flex;
       flex-direction: column;
-      padding: 10px 14px 28px 14px;
-      gap: 8px;
+      padding: 16px 16px 28px 16px;
+      gap: 10px;
       direction: rtl;
       text-align: right;
       border: 1.5px solid rgba(245, 158, 11, 0.45);
@@ -1471,12 +1473,17 @@
       scrollbar-width: thin;
       scrollbar-color: #f59e0b rgba(15, 23, 42, 0.6);
     }
+    #settingsModal.active .modal-card,
+    #settingsModal.active .settings-modal-card {
+      transform: none !important;
+    }
     .settings-modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 4px;
+      border-bottom: 1.5px solid rgba(245, 158, 11, 0.25);
+      padding-bottom: 8px;
+      margin-bottom: 2px;
       width: 100%;
     }
     .settings-modal-title-wrap {
@@ -2335,7 +2342,7 @@
           <button class="quick-pill-btn ad-pill" id="adCashBtn" style="display: none;"><span id="cashRewardHint"></span></button>
           <button class="quick-pill-btn gold" id="prestigeOpenBtn" style="display: none;"><span id="prestigeInfoLabel"></span></button>
           <button class="icon-pill-btn" id="soundToggleBtn" title="صوت">🔊</button>
-          <button class="icon-pill-btn" id="openGuideBtn" title="دليل البداية وكيفاش تلعب" style="border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc; display: none;">❓</button>
+          <button class="icon-pill-btn" id="openGuideBtn" title="دليل البداية وكيفاش تلعب" style="border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc;">❓</button>
           <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية" style="display: none;">📜</button>
           <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات وبروفيل">⚙️</button>
           <button class="icon-pill-btn exit-pill-btn" id="headerExitBtn" title="خروج من اللعبة" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">🚪</button>
@@ -4206,7 +4213,8 @@
             switchTab('zones');
             return;
           }
-          if (action === 'hud_boost' && adBoostBtn) adBoostBtn.click();
+          if (action === 'hud_guide' && openGuideBtn) openGuideBtn.click();
+          else if (action === 'hud_boost' && adBoostBtn) adBoostBtn.click();
           else if (action === 'hud_cash' && adCashBtn) adCashBtn.click();
           else if (action === 'hud_prestige' && prestigeOpenBtn) prestigeOpenBtn.click();
           else if (action === 'hud_wheel' && wheelFloatingBtn) wheelFloatingBtn.click();

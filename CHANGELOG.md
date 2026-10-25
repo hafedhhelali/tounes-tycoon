@@ -15,6 +15,17 @@
 
 # CHANGELOG
 
+## [v101] - 2026-10-25
+
+### Fixed & Enhanced
+- **Refonte UI Designer de la Popup Paramètres & Profil** :
+  - Suppression de tout rognage haut : `#settingsModal` ajusté à `padding: 24px 12px 36px 12px !important;` et `.settings-modal-card` à `margin: 10px auto !important; max-height: calc(100vh - 48px) !important;`.
+  - Neutralisation des `transform: scale(0.88)` globaux qui déplaçaient l'axe d'origine vertical hors du viewport sur mobile (`transform: none !important;`).
+  - Finition visuelle enrichie : bordure dorée de séparation de l'en-tête, espacements aérés garantissant une visibilité intégrale immédiate du titre et du bouton fermer `✕`.
+- **Intégration du Guide de Démarrage Rapide (Accès direct permanent)** :
+  - Déverrouillage du bouton `❓` dans le Header en haut de l'écran (accessible à tout instant sans passer par les réglages).
+  - Ajout d'une orbe 3D interactive animée `❓` dans le ciel de la scène de rue 2D (`hud_guide`), permettant d'ouvrir le guide complet d'un simple tap sur le ciel.
+
 ## [v100] - 2026-10-25
 
 ### Fixed

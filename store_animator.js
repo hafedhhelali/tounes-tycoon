@@ -4549,6 +4549,18 @@ export class QuartierAnimator {
       bizId: null
     });
 
+    // Bouton Guide de démarrage rapide ❓ à côté du boost
+    const guideX = boostX - 52;
+    draw3DOrbIcon(guideX, topY, '❓', '#0369a1', '#38bdf8', '', '#38bdf8');
+    this.interactiveHitboxes.push({
+      x: guideX - r - 8,
+      y: topY - r - 8,
+      w: (r + 8) * 2,
+      h: (r + 8) * 2,
+      action: 'hud_guide',
+      bizId: null
+    });
+
     // 2. Petites icônes d'alertes 3D animées en haut à gauche DANS le ciel de l'image
     const leftAlerts = [];
     if (o.hasQuest) {
