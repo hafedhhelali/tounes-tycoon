@@ -1450,17 +1450,19 @@
     .settings-modal-card {
       max-width: 640px;
       width: 96%;
-      max-height: 96vh;
+      max-height: 92vh;
       display: flex;
       flex-direction: column;
-      padding: 8px 12px;
-      gap: 6px;
+      padding: 10px 14px;
+      gap: 8px;
       direction: rtl;
       text-align: right;
       border: 1.5px solid rgba(245, 158, 11, 0.45);
       background: linear-gradient(180deg, #131a29 0%, #0a0f1d 100%);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.15);
-      overflow: hidden;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #f59e0b rgba(15, 23, 42, 0.6);
     }
     .settings-modal-header {
       display: flex;
@@ -1499,11 +1501,12 @@
       color: #f87171;
     }
     .settings-modal-body {
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      overflow-y: visible;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       width: 100%;
+      padding-bottom: 12px;
     }
     .settings-section {
       background: rgba(255, 255, 255, 0.03);
@@ -4759,13 +4762,18 @@
       engine.update(now);
 
       
-      // Mise à jour fluide 60 FPS des barres de progression de tous les commerces actifs
+      // Mise à jour fluide 60 FPS des barres de progression : visible UNIQUEMENT si personnel recruté ou production active
       engine.businesses.forEach(biz => {
-        if (biz.level > 0) {
-          const progEl = document.getElementById('prog-' + biz.id);
-          if (progEl) {
+        const progEl = document.getElementById('prog-' + biz.id);
+        if (progEl) {
+          const isAutomatedOrProducing = biz.hasManager || biz.isProducing;
+          if (biz.level > 0 && isAutomatedOrProducing) {
+            progEl.parentElement.style.opacity = '1';
             const pct = Math.min(100, Math.max(0, ((biz.progressMs || 0) / (biz.cycleDurationMs || 1000)) * 100));
             progEl.style.width = pct + '%';
+          } else {
+            progEl.parentElement.style.opacity = '0';
+            progEl.style.width = '0%';
           }
         }
       });

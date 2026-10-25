@@ -15,6 +15,16 @@
 
 # CHANGELOG
 
+## [v95] - 2026-10-25
+
+### Added / Changed
+- Évolution visuelle des paliers : façades, auras et enseignes dynamiques pour chaque palier (L25 vert, L50 violet, L100 cyan, L200 or pur).
+- Refonte des étagères et de la caisse : étagères garnies de produits artisanaux tunisiens (harissa, huile d'olive, miel) et comptoir vernis avec caisse tactile enrichie.
+- Gestion réaliste des clients sans personnel : si aucun gérant n'est recruté et qu'aucun service manuel n'est déclenché, les clients attendent puis sortent fâchés (😡) avec animation d'incitation au recrutement.
+- Affichage conditionnel de la barre d'activité : la jauge ne s'affiche désormais que si du personnel est recruté ou si une production manuelle est active.
+- Nettoyage ergonomique de la rue : suppression du panneau central 'افتح خريطة تونس' et agrandissement royal du bouton Map en haut à droite avec ruban et pulsation dorée.
+- Fix de la fenêtre Paramètres : conteneur scrollable évitant la coupure de la section des dépenses en bas d'écran.
+
 ## [v94] - 2026-10-25
 
 ### Fixed / Changed

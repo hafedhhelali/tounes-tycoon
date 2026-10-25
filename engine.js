@@ -2095,7 +2095,7 @@ export class TycoonEngine {
   calculateExpensesBreakdown(grossRevenue = 0) {
     const activeBusinesses = this.businesses.filter(b => b.level > 0);
     const activeCount = activeBusinesses.length;
-    if (activeCount === 0 || grossRevenue <= 0) {
+    if (activeCount === 0) {
       return {
         salaries: 0,
         maintenance: 0,
@@ -2106,16 +2106,13 @@ export class TycoonEngine {
       };
     }
 
-    // Répartition réaliste et équilibrée (total 12% des gains bruts) :
-    // 1. شهريات الخدّامة (Salaires des employés) : 4%
-    // 2. صيانة وتصليح الماتريال (Maintenance et amortissement) : 3%
-    // 3. فواتير الستاغ والصوناد (Factures STEG / SONEDE) : 2.5%
-    // 4. القباضة والأداءات الجبائية (Impôts et taxes d'entreprise) : 2.5%
-    const salaries = Math.round(grossRevenue * 0.04 * 100) / 100;
-    const maintenance = Math.round(grossRevenue * 0.03 * 100) / 100;
-    const utilities = Math.round(grossRevenue * 0.025 * 100) / 100;
-    const taxes = Math.round(grossRevenue * 0.025 * 100) / 100;
-    const total = salaries + maintenance + utilities + taxes;
+    // Calcul réaliste proportionnel au chiffre d'affaires et au nombre de commerces
+    const baseRev = Math.max(grossRevenue, activeCount * 2.5);
+    const salaries = Math.round(baseRev * 0.04 * 100) / 100;
+    const maintenance = Math.round(baseRev * 0.03 * 100) / 100;
+    const utilities = Math.round(baseRev * 0.025 * 100) / 100;
+    const taxes = Math.round(baseRev * 0.025 * 100) / 100;
+    const total = Math.round((salaries + maintenance + utilities + taxes) * 100) / 100;
 
     return {
       salaries,

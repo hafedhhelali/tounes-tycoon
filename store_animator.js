@@ -602,10 +602,29 @@ export class CanvasStoreEngine {
       this.drawHireButton(ctx, counterX + 6, counterY - 44, 66, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
     }
 
+    // Étagères murales d'arrière-boutique garnies de produits tunisiens
+    ctx.save();
+    for (let sIdx = 0; sIdx < 2; sIdx++) {
+      const shelfY = 48 + sIdx * 24;
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(counterX - 4, shelfY, deskW + 8, 4);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(counterX - 4, shelfY, deskW + 8, 4);
+
+      // Produits disposés sur l'étagère
+      ctx.font = '12px serif';
+      const shelfGoods = ['🥫', '🫒', '🍯', '🧂', '📦'];
+      shelfGoods.forEach((g, gIdx) => {
+        ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 2);
+      });
+    }
+    ctx.restore();
+
     // 2. Meuble Comptoir au PREMIER PLAN (cache le bas du corps de l'employé)
     const woodGrad = ctx.createLinearGradient(counterX, counterY + 12, counterX, counterY + 12 + deskH);
-    woodGrad.addColorStop(0, '#b45309');
-    woodGrad.addColorStop(0.4, '#92400e');
+    woodGrad.addColorStop(0, '#d97706');
+    woodGrad.addColorStop(0.3, '#b45309');
     woodGrad.addColorStop(1, '#78350f');
     ctx.fillStyle = woodGrad;
     ctx.beginPath();
@@ -1535,10 +1554,34 @@ export class CanvasStoreEngine {
           this.triggerPayment(c, isProducing);
         }
       } else if (c.state === 'paying') {
+        const hasStaff = biz && (biz.hasManager || (biz.hiredManagersCount && biz.hiredManagersCount > 0));
         c.payTimer += dt;
-        if (c.payTimer >= c.payDuration) {
-          c.state = 'walking_out';
-          c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
+
+        if (hasStaff || biz.isProducing) {
+          // Personnel présent ou clic manuel : servi avec succès !
+          if (c.payTimer >= c.payDuration) {
+            c.state = 'walking_out';
+            c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
+          }
+        } else {
+          // Pas de personnel recruté : le client attend 2.2s puis sort fâché
+          if (c.payTimer > 2.2) {
+            c.state = 'walking_out';
+            c.reaction = '😡';
+            c.isAngry = true;
+            // Particule fumée de colère
+            this.particles.push({
+              x: c.x,
+              y: c.y - 30,
+              vx: 0,
+              vy: -15,
+              color: '#ef4444',
+              radius: 4,
+              life: 0.6,
+              maxLife: 0.6,
+              alpha: 1.0
+            });
+          }
         }
       } else if (c.state === 'walking_out') {
         c.x -= 52 * dt;
@@ -3055,21 +3098,26 @@ export class QuartierAnimator {
     let hasGoldAura = false;
     let hasNeonSign = false;
 
+    let tierThemeColor = '#3b82f6';
     if (level >= 200) {
       tierBorder = '#f59e0b';
-      tierBorderWidth = 3.5;
+      tierBorderWidth = 4;
       hasGoldAura = true;
       hasNeonSign = true;
+      tierThemeColor = '#fbbf24';
     } else if (level >= 100) {
       tierBorder = '#38bdf8';
-      tierBorderWidth = 3;
+      tierBorderWidth = 3.2;
       hasNeonSign = true;
+      tierThemeColor = '#38bdf8';
     } else if (level >= 50) {
       tierBorder = '#a855f7';
-      tierBorderWidth = 2.5;
+      tierBorderWidth = 2.8;
+      tierThemeColor = '#c084fc';
     } else if (level >= 25) {
       tierBorder = '#10b981';
-      tierBorderWidth = 2.2;
+      tierBorderWidth = 2.4;
+      tierThemeColor = '#34d399';
     }
 
     if (hasGoldAura) {
@@ -3275,35 +3323,54 @@ export class QuartierAnimator {
       }
     }
 
-    // Barre de progression du cycle de production : flottante au-dessus du toit, toujours visible et animée
-    const barW = Math.min(b.width - 20, 85);
-    const barH = 6;
-    const barX = x + (b.width - barW) / 2;
-    const barY = y - 10;
-    const pct = Math.min(1, Math.max(0, (biz.progressMs || 0) / (biz.cycleDurationMs || 1000)));
+    // Barre de progression du cycle de production : affichée UNIQUEMENT si personnel recruté ou production active
+    const hasPersonnel = biz.hasManager || (biz.hiredManagersCount && biz.hiredManagersCount > 0);
+    const isWorking = hasPersonnel || biz.isProducing;
 
-    ctx.save();
-    // Fond sombre de la barre
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-    ctx.beginPath();
-    ctx.roundRect(barX - 2, barY - 2, barW + 4, barH + 4, 4);
-    ctx.fill();
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
+    if (isWorking) {
+      const barW = Math.min(b.width - 20, 85);
+      const barH = 6;
+      const barX = x + (b.width - barW) / 2;
+      const barY = y - 10;
+      const pct = Math.min(1, Math.max(0, (biz.progressMs || 0) / (biz.cycleDurationMs || 1000)));
 
-    // Remplissage animé vert émeraude brillant
-    if (pct > 0) {
-      const fillW = Math.max(4, barW * pct);
-      const fillGrad = ctx.createLinearGradient(barX, barY, barX + fillW, barY);
-      fillGrad.addColorStop(0, '#10b981');
-      fillGrad.addColorStop(1, '#34d399');
-      ctx.fillStyle = fillGrad;
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
       ctx.beginPath();
-      ctx.roundRect(barX, barY, fillW, barH, 3);
+      ctx.roundRect(barX - 2, barY - 2, barW + 4, barH + 4, 4);
       ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      if (pct > 0) {
+        const fillW = Math.max(4, barW * pct);
+        const fillGrad = ctx.createLinearGradient(barX, barY, barX + fillW, barY);
+        fillGrad.addColorStop(0, '#10b981');
+        fillGrad.addColorStop(1, '#34d399');
+        ctx.fillStyle = fillGrad;
+        ctx.beginPath();
+        ctx.roundRect(barX, barY, fillW, barH, 3);
+        ctx.fill();
+      }
+      ctx.restore();
+    } else {
+      // Pas de recrutement -> Bulle invitant au recrutement
+      const tipY = y - 8 + Math.sin(timestamp * 0.006) * 3;
+      ctx.save();
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+      ctx.beginPath();
+      ctx.roundRect(x + (b.width - 78) / 2, tipY, 78, 16, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#fca5a5';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 8.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('انتدب خدّامة 👔', x + b.width / 2, tipY + 11.5);
+      ctx.restore();
     }
-    ctx.restore();
 
     // Interaction épurée et authentique :
     // 1. Clic sur la porte tunisienne cloutée -> Entrer dans le projet
@@ -3786,56 +3853,7 @@ export class QuartierAnimator {
       }
     }
 
-    // 4 & 5. Panneau autoroutier surélevé : Bouton unique clair "افتح خريطة تونس"
-    const dirW = Math.min(w - 6, 134);
-    const dirH = 34;
-    const dirX = x + (w - dirW) / 2;
-    const dirY = groundY - 62; // Remonté bien au-dessus de la route
-
-    ctx.save();
-    const travelPulse = Math.sin(timestamp * 0.005) * 4 + 5;
-    ctx.shadowColor = '#38bdf8';
-    ctx.shadowBlur = travelPulse;
-
-    // Ombre 3D
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
-    ctx.beginPath();
-    ctx.roundRect(dirX + 2, dirY + 3, dirW, dirH, 10);
-    ctx.fill();
-
-    // Fond cyan / azur vibrant
-    const signGrad = ctx.createLinearGradient(dirX, dirY, dirX, dirY + dirH);
-    signGrad.addColorStop(0, '#0284c7');
-    signGrad.addColorStop(0.5, '#0369a1');
-    signGrad.addColorStop(1, '#075985');
-    ctx.fillStyle = signGrad;
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.roundRect(dirX, dirY, dirW, dirH, 10);
-    ctx.fill();
-    ctx.stroke();
-
-    // Reflet vitré supérieur
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.32)';
-    ctx.fillRect(dirX + 4, dirY + 2, dirW - 8, 4);
-
-    // Texte unique centré et lisible
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#fef08a';
-    ctx.font = '900 12px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('افتح خريطة تونس 🚗', dirX + dirW / 2, dirY + 22);
-    ctx.restore();
-
-    this.interactiveHitboxes.push({
-      x: dirX - 12,
-      y: dirY - 14,
-      w: dirW + 24,
-      h: dirH + 36,
-      action: 'open_map',
-      bizId: null
-    });
+    // Route nationale continue vers l'horizon (bouton central supprimé selon la directive)
     this.interactiveHitboxes.push({
       x: x,
       y: backTopY,
@@ -4326,40 +4344,77 @@ export class QuartierAnimator {
       }
     };
 
-    // 1. HUD du ciel épuré : 2 boutons essentiels (Carte Tunisie agrandie + Boost x2)
-    const rightIcons = [
-      {
-        action: 'hud_map',
-        icon: '🗺️',
-        sub: 'خريطة',
-        bg: '#0369a1',
-        border: '#38bdf8',
-        badgeBg: '#0284c7'
-      },
-      {
-        action: 'hud_boost',
-        icon: '🚀',
-        sub: o.adBoostActive ? 'x2' : '',
-        bg: o.adBoostActive ? '#059669' : '#0284c7',
-        border: o.adBoostActive ? '#6ee7b7' : '#7dd3fc',
-        badgeBg: '#10b981'
-      }
-    ];
+    // 1. Bouton Carte de Tunisie en haut à droite (Agrandie, royale et pulsante)
+    const mapBtnR = 28; // Bouton large 56x56px bien visible
+    const mapBtnX = w - 38;
+    const mapBtnY = topY + 4;
+    const mapPulse = Math.sin(timestamp * 0.006) * 3 + 6;
 
-    let rightX = w - 32;
-    rightIcons.forEach(item => {
-      draw3DOrbIcon(rightX, topY, item.icon, item.bg, item.border, item.sub, item.badgeBg);
+    ctx.save();
+    ctx.shadowColor = '#38bdf8';
+    ctx.shadowBlur = mapPulse;
 
-      this.interactiveHitboxes.push({
-        x: rightX - r - 8,
-        y: topY - r - 8,
-        w: (r + 8) * 2,
-        h: (r + 8) * 2,
-        action: item.action,
-        bizId: null
-      });
+    // Halo circulaire externe doré
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(mapBtnX, mapBtnY, mapBtnR + 3, 0, Math.PI * 2);
+    ctx.stroke();
 
-      rightX -= (r * 2 + 16);
+    // Dégradé royal bleu nuit / azur
+    const mapGrad = ctx.createRadialGradient(mapBtnX - 6, mapBtnY - 6, 3, mapBtnX, mapBtnY, mapBtnR);
+    mapGrad.addColorStop(0, '#38bdf8');
+    mapGrad.addColorStop(0.4, '#0284c7');
+    mapGrad.addColorStop(1, '#082f49');
+    ctx.fillStyle = mapGrad;
+    ctx.beginPath();
+    ctx.arc(mapBtnX, mapBtnY, mapBtnR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Reflet de verre
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.beginPath();
+    ctx.ellipse(mapBtnX, mapBtnY - 11, mapBtnR * 0.65, mapBtnR * 0.28, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Icône Map & texte
+    ctx.font = '24px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🗺️', mapBtnX, mapBtnY - 2);
+
+    // Ruban textuel 'خريطة تونس' sous le bouton
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.roundRect(mapBtnX - 32, mapBtnY + 16, 64, 16, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '900 9.5px "Cairo", sans-serif';
+    ctx.fillText('خريطة تونس', mapBtnX, mapBtnY + 24.5);
+    ctx.restore();
+
+    this.interactiveHitboxes.push({
+      x: mapBtnX - mapBtnR - 10,
+      y: mapBtnY - mapBtnR - 8,
+      w: (mapBtnR + 10) * 2,
+      h: (mapBtnR + 18) * 2,
+      action: 'hud_map',
+      bizId: null
+    });
+
+    // Bouton Boost Turbo x2 à côté
+    const boostX = mapBtnX - 74;
+    draw3DOrbIcon(boostX, topY, '🚀', o.adBoostActive ? '#059669' : '#0284c7', o.adBoostActive ? '#6ee7b7' : '#7dd3fc', o.adBoostActive ? 'x2' : '', '#10b981');
+    this.interactiveHitboxes.push({
+      x: boostX - r - 8,
+      y: topY - r - 8,
+      w: (r + 8) * 2,
+      h: (r + 8) * 2,
+      action: 'hud_boost',
+      bizId: null
     });
 
     // 2. Petites icônes d'alertes 3D animées en haut à gauche DANS le ciel de l'image

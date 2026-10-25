@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T15:52:00.000Z - etat = HEAD de main (v95)
+
+## État en 3 lignes
+Évolution Paliers & Décor Intérieur : effets et auras par palier (L25 à L200), étagères murales garnies de produits tunisiens et caisse marbrée.
+Clients Fâchés & Jauge Conditionnelle : clients sortent fâchés si pas de recrutement ni tap manuel, jauge masquée tant qu'aucun employé n'est engagé.
+Ergonomie Carte & Paramètres : bouton Map ciel agrandi (56px) et stylisé, bouton carrefour supprimé, modal paramètres scrollable sans coupure des dépenses.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T14:12:00.000Z - etat = HEAD de main (v94)
 
 ## État en 3 lignes
