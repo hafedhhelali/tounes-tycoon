@@ -1446,44 +1446,49 @@
       .biz-hud-id { flex: 0 1 30%; }
     }
 
-    /* SETTINGS & PROFILE MODAL STYLES (PAYSAGE 2 COLONNES ULTRA-COMPACT ZÉRO SCROLL) */
+    /* SETTINGS & PROFILE MODAL STYLES (DÉFILEMENT NATUREL SANS COUPURE EN HAUT) */
     #settingsModal {
       align-items: flex-start !important;
+      justify-content: flex-start !important;
       overflow-y: auto !important;
-      padding: 24px 12px 36px 12px !important;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 8px 48px 8px !important;
     }
     #settingsModal .modal-card,
     .settings-modal-card {
       max-width: 640px;
       width: 96%;
-      max-height: calc(100vh - 48px) !important;
-      margin: 10px auto !important;
+      max-height: none !important;
+      margin: 0 auto !important;
       transform: none !important;
       display: flex;
       flex-direction: column;
-      padding: 16px 16px 28px 16px;
-      gap: 10px;
+      justify-content: flex-start !important;
+      align-items: stretch !important;
+      padding: 14px 14px 24px 14px;
+      gap: 12px;
       direction: rtl;
       text-align: right;
       border: 1.5px solid rgba(245, 158, 11, 0.45);
       background: linear-gradient(180deg, #131a29 0%, #0a0f1d 100%);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.15);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      scrollbar-color: #f59e0b rgba(15, 23, 42, 0.6);
+      overflow: visible !important;
     }
     #settingsModal.active .modal-card,
     #settingsModal.active .settings-modal-card {
       transform: none !important;
     }
     .settings-modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      background: #131a29;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1.5px solid rgba(245, 158, 11, 0.25);
-      padding-bottom: 8px;
-      margin-bottom: 2px;
+      border-bottom: 1.5px solid rgba(245, 158, 11, 0.35);
+      padding: 6px 2px 10px 2px;
+      margin-bottom: 4px;
       width: 100%;
     }
     .settings-modal-title-wrap {
@@ -4326,7 +4331,14 @@
     if (openSettingsBtn) {
       openSettingsBtn.onclick = () => {
         renderSettingsAndProfileUI();
+        settingsModal.scrollTop = 0;
+        const sCard = settingsModal.querySelector('.settings-modal-card');
+        if (sCard) sCard.scrollTop = 0;
         settingsModal.classList.add('active');
+        requestAnimationFrame(() => {
+          settingsModal.scrollTop = 0;
+          if (sCard) sCard.scrollTop = 0;
+        });
       };
     }
 

@@ -15,6 +15,15 @@
 
 # CHANGELOG
 
+## [v102] - 2026-10-25
+
+### Fixed & Enhanced
+- **Déverrouillage définitif du défilement haut de la Popup Paramètres** :
+  - Remplacement du double conteneur de défilement imbriqué par un défilement unique fluide géré par `#settingsModal` (`align-items: flex-start !important; justify-content: flex-start !important; overflow-y: auto !important;`).
+  - Suppression du blocage de hauteur `max-height: calc(100vh - 48px)` sur `.settings-modal-card` (`max-height: none !important; overflow: visible !important;`) éliminant le bug de centrage vertical flexbox qui coupait le haut de la modale.
+  - En-tête épinglé (`position: sticky; top: 0; z-index: 25; background: #131a29;`) garantissant la présence permanente du titre « إعدادات الإمبراطورية والبروفيل » et du bouton fermer `✕`.
+  - Réinitialisation systématique du défilement (`scrollTop = 0`) à chaque ouverture de la modale via `requestAnimationFrame`.
+
 ## [v101] - 2026-10-25
 
 ### Fixed & Enhanced
