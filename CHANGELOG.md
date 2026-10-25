@@ -1,4 +1,4 @@
-﻿## [0.80.0] - 2026-10-24
+## [0.80.0] - 2026-10-24
 ### Added
 - Spécialités régionales adaptées selon la ville (Béja: fromages/laiterie, Tozeur: dattes, Nabeul: poterie, Djerba: artisanat/poterie, Sfax: poissons/fruits de mer).
 - Décors urbains tunisiens : station-service (⛽), agence bancaire (🏦), paraboles sur les toits, jardins et oliviers.
@@ -14,6 +14,15 @@
 - Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
 
 ﻿# CHANGELOG
+
+## [v85] - 2026-10-25
+
+### Added / Changed
+- Fix bouton achat projet (« اشري ») et clics d'inspection de façade sur mobile et canvas tactile.
+- Suppression du panneau « كرني الثقة » dans l'épicerie, remplacé par des rayons authentiques avec conserves, olives et condiments.
+- Correction économique du libellé « دورة إنتاج » pour refléter le panier global par cycle et non par client individuel.
+- Graphismes et personnages ultra-réalistes : modélisation vectorielle soignée des employés et clients (tenue, démarche, reflets, col, chéchia).
+- Fiabilisation interactive de la carte de Tunisie et adaptation multi-résolution.
 
 ## [v84] - 2026-10-25
 

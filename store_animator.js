@@ -486,25 +486,19 @@ export class CanvasStoreEngine {
       ctx.fillText('🥖', 76, 48);
       ctx.fillText('🥚', 76, 76);
 
-      // Tableau des prix & Carnet de crédit sur le mur droit (jamais masqué par moula el hanout)
+      // Étagère latérale de produits d'épicerie authentiques
       const slateX = w - 82;
       const slateY = 24;
-      ctx.fillStyle = '#091512';
-      ctx.fillRect(slateX, slateY, 68, 52);
-      ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 1.8;
-      ctx.strokeRect(slateX, slateY, 68, 52);
-      ctx.fillStyle = '#34d399';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('عطريّة الحومة', slateX + 34, slateY + 14);
-      ctx.fillStyle = '#fde047';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
-      ctx.fillText('كرني الثقة 📖', slateX + 34, slateY + 28);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '8px "Cairo", sans-serif';
-      ctx.fillText('سلعة دياري 🌿', slateX + 34, slateY + 42);
-      ctx.textAlign = 'left';
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(slateX, slateY + 24, 70, 5);
+      ctx.fillRect(slateX, slateY + 50, 70, 5);
+      ctx.font = '15px serif';
+      ctx.fillText('🫒', slateX + 6, slateY + 20);
+      ctx.fillText('🥫', slateX + 28, slateY + 20);
+      ctx.fillText('🧀', slateX + 50, slateY + 20);
+      ctx.fillText('🧂', slateX + 6, slateY + 46);
+      ctx.fillText('🍯', slateX + 28, slateY + 46);
+      ctx.fillText('☕', slateX + 50, slateY + 46);
 
       // Bocaux et produits variés
       ctx.font = '15px serif';
@@ -1005,111 +999,170 @@ export class CanvasStoreEngine {
     ctx.restore();
   }
 
-  // --- PERSONNAGE VECTORIEL : employé animé ---
+  // --- PERSONNAGE VECTORIEL ULTRA-RÉALISTE : employé animé ---
   drawWorker(ctx, x, footY, seed, isBusy, timeSec) {
     const palettes = [
-      { coat: '#2563eb', skin: '#fcd34d', apron: '#f8fafc' },
-      { coat: '#059669', skin: '#f59e0b', apron: '#fef3c7' },
-      { coat: '#7c3aed', skin: '#fde68a', apron: '#f8fafc' },
-      { coat: '#dc2626', skin: '#fbbf24', apron: '#fff7ed' }
+      { coat: '#1e3a8a', pants: '#1e293b', skin: '#fcd34d', skinShadow: '#f59e0b', apron: '#f8fafc', shoes: '#0f172a' },
+      { coat: '#065f46', pants: '#0f172a', skin: '#f59e0b', skinShadow: '#d97706', apron: '#fef3c7', shoes: '#1e293b' },
+      { coat: '#581c87', pants: '#312e81', skin: '#fde68a', skinShadow: '#f59e0b', apron: '#f8fafc', shoes: '#090d16' },
+      { coat: '#991b1b', pants: '#1e293b', skin: '#fcd34d', skinShadow: '#ea580c', apron: '#fff7ed', shoes: '#0f172a' }
     ];
     const pal = palettes[seed % palettes.length];
-    const phase = timeSec * (isBusy ? 7 : 2) + seed * 1.3;
-    const bob = Math.sin(phase) * (isBusy ? 1.8 : 0.8);
+    const phase = timeSec * (isBusy ? 7 : 2.2) + seed * 1.3;
+    const bob = Math.sin(phase) * (isBusy ? 1.6 : 0.7);
 
     ctx.save();
     ctx.translate(x, footY);
 
-    // Ombre au sol
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    // 1. Ombre douce diffuse réaliste au sol
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
     ctx.beginPath();
-    ctx.ellipse(0, 1, 12, 3.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 1, 13, 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Jambes et chaussures
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(-6, -14, 5, 13);
-    ctx.fillRect(1, -14, 5, 13);
-    ctx.fillStyle = '#0f172a';
+    // 2. Chaussures tunisiennes détaillées
+    ctx.fillStyle = pal.shoes;
     ctx.beginPath();
-    ctx.roundRect(-7, -3, 7, 4, 2);
-    ctx.roundRect(0, -3, 7, 4, 2);
+    ctx.roundRect(-8, -4, 7, 4.5, [2, 3, 2, 2]);
+    ctx.roundRect(1, -4, 7, 4.5, [2, 3, 2, 2]);
+    ctx.fill();
+
+    // Semelles contrastées
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(-8, -0.5, 7, 1);
+    ctx.fillRect(1, -0.5, 7, 1);
+
+    // 3. Pantalon avec pliure anatomique
+    ctx.fillStyle = pal.pants;
+    ctx.beginPath();
+    ctx.roundRect(-7, -15, 6, 12, 1);
+    ctx.roundRect(1, -15, 6, 12, 1);
     ctx.fill();
 
     ctx.translate(0, bob);
 
-    // Bras arrière
-    const armSwing = isBusy ? Math.sin(phase * 1.6) : Math.sin(phase) * 0.15;
+    // 4. Bras arrière articulé (Épaule -> Coude -> Poignet)
+    const armSwing = isBusy ? Math.sin(phase * 1.5) : Math.sin(phase) * 0.15;
     ctx.strokeStyle = pal.coat;
     ctx.lineCap = 'round';
-    ctx.lineWidth = 4.5;
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 4.2;
     ctx.beginPath();
-    ctx.moveTo(-8, -30);
-    ctx.lineTo(-11, -20 + armSwing * 3);
+    ctx.moveTo(-7, -29);
+    ctx.lineTo(-11, -21 + armSwing * 3);
+    ctx.lineTo(-13, -15 + armSwing * 4);
     ctx.stroke();
+
+    // Main arrière
     ctx.fillStyle = pal.skin;
     ctx.beginPath();
-    ctx.arc(-11, -19 + armSwing * 3, 2.4, 0, Math.PI * 2);
+    ctx.arc(-13, -14 + armSwing * 4, 2.5, 0, Math.PI * 2);
     ctx.fill();
 
-    // Corps (veste) + tablier
+    // 5. Buste cintré (Veste professionnelle + Col de chemise + Tablier)
     ctx.fillStyle = pal.coat;
     ctx.beginPath();
-    ctx.roundRect(-9, -33, 18, 21, 5);
+    ctx.roundRect(-9, -32, 18, 19, [4, 4, 2, 2]);
     ctx.fill();
+
+    // Col de chemise blanc visible
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.moveTo(-3, -32);
+    ctx.lineTo(0, -28);
+    ctx.lineTo(3, -32);
+    ctx.closePath();
+    ctx.fill();
+
+    // Tablier de commerçant avec attaches
     ctx.fillStyle = pal.apron;
     ctx.beginPath();
-    ctx.roundRect(-6, -27, 12, 15, 3);
+    ctx.roundRect(-6.5, -28, 13, 15, [2, 2, 3, 3]);
     ctx.fill();
-    ctx.fillStyle = 'rgba(0,0,0,0.12)';
-    ctx.fillRect(-0.5, -27, 1, 15);
+    ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
-    // Bras avant avec outil qui s'active
-    const handX = 11 + (isBusy ? Math.sin(phase * 1.6 + 1.5) * 4 : 0);
-    const handY = -22 - (isBusy ? Math.abs(Math.sin(phase * 1.6)) * 7 : Math.sin(phase) * 0.8);
-    ctx.strokeStyle = pal.coat;
-    ctx.lineWidth = 4.5;
+    // Poche avant du tablier avec stylo
+    ctx.fillStyle = 'rgba(0,0,0,0.06)';
     ctx.beginPath();
-    ctx.moveTo(8, -30);
+    ctx.roundRect(-4, -20, 8, 6, 1.5);
+    ctx.fill();
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(0, -22, 1.5, 4);
+
+    // 6. Bras avant actif avec animation dynamique
+    const handX = 11 + (isBusy ? Math.sin(phase * 1.5 + 1.2) * 4 : 0);
+    const handY = -21 - (isBusy ? Math.abs(Math.sin(phase * 1.5)) * 6 : Math.sin(phase) * 0.8);
+    ctx.strokeStyle = pal.coat;
+    ctx.lineWidth = 4.2;
+    ctx.beginPath();
+    ctx.moveTo(7, -29);
+    ctx.lineTo(9, -23);
     ctx.lineTo(handX, handY);
     ctx.stroke();
+
+    // Main avant
     ctx.fillStyle = pal.skin;
     ctx.beginPath();
-    ctx.arc(handX, handY, 2.6, 0, Math.PI * 2);
+    ctx.arc(handX, handY, 2.7, 0, Math.PI * 2);
     ctx.fill();
 
-    // Cou et tête soignée bien proportionnée
+    // 7. Cou et tête réaliste
+    ctx.fillStyle = pal.skinShadow;
+    ctx.fillRect(-2.5, -34, 5, 3);
     ctx.fillStyle = pal.skin;
-    ctx.fillRect(-2, -34, 4, 4);
     ctx.beginPath();
-    ctx.arc(0, -39.5, 7, 0, Math.PI * 2);
+    ctx.ellipse(0, -39.5, 6.8, 7.5, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Chéchia rouge tunisienne authentique avec pompon noir soigné
+    // Oreilles avec relief
+    ctx.fillStyle = pal.skinShadow;
+    ctx.beginPath();
+    ctx.arc(-6.5, -39.5, 1.8, 0, Math.PI * 2);
+    ctx.arc(6.5, -39.5, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 8. Chéchia rouge tunisienne authentique brodée
     ctx.fillStyle = '#dc2626';
     ctx.beginPath();
-    ctx.arc(0, -43.5, 6.2, Math.PI, 0, false);
+    ctx.arc(0, -42.8, 6.4, Math.PI, 0, false);
     ctx.fill();
-    // Gland/Kabbous noir de la chéchia retombant sur le côté
+    // Bordure feutrine de la chéchia
+    ctx.fillStyle = '#b91c1c';
+    ctx.fillRect(-6.2, -43.2, 12.4, 2);
+
+    // Gland/Kabbous noir tunisien retombant avec dynamisme
     ctx.strokeStyle = '#090d16';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.3;
     ctx.beginPath();
     ctx.moveTo(0, -44.5);
-    ctx.lineTo(-3.5, -41);
+    ctx.quadraticCurveTo(-2, -43, -4, -40);
     ctx.stroke();
 
-    // Yeux et sourire bien dessinés
+    // 9. Yeux expressifs avec pupilles et sourcils
     ctx.fillStyle = '#0f172a';
-    ctx.fillRect(1.5, -41, 1.5, 1.5);
-    ctx.strokeStyle = '#78350f';
+    ctx.fillRect(1.5, -41, 1.6, 1.8);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(2.2, -41, 0.7, 0.7); // Reflet oculaire
+
+    // Sourcils fins
+    ctx.strokeStyle = '#451a03';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(1.5, -38, 2, 0.2, Math.PI - 0.2);
+    ctx.moveTo(0.8, -42.5);
+    ctx.lineTo(3.8, -42.2);
+    ctx.stroke();
+
+    // Sourire chaleureux tunisien
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(1.5, -37.5, 2.2, 0.2, Math.PI - 0.2);
     ctx.stroke();
 
     ctx.restore();
   }
-
   // Étiquette de rôle complète
   drawRoleTag(ctx, cx, y, role) {
     if (!role) return;
@@ -1980,8 +2033,10 @@ export class QuartierAnimator {
 
     if (!this.hasDraggedSignificantly) {
       const rect = this.canvas.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const clickY = e.clientY - rect.top;
+      const scaleX = rect.width > 0 ? (this.width / rect.width) : 1;
+      const scaleY = rect.height > 0 ? (this.height / rect.height) : 1;
+      const clickX = (e.clientX - rect.left) * scaleX;
+      const clickY = (e.clientY - rect.top) * scaleY;
 
       for (let i = this.interactiveHitboxes.length - 1; i >= 0; i--) {
         const box = this.interactiveHitboxes[i];
@@ -4450,12 +4505,9 @@ export class TunisiaMapEngine {
     this.handlePointerUp = this.handlePointerUp.bind(this);
     this.handleWheel = this.handleWheel.bind(this);
 
-    this.canvas.addEventListener('pointerdown', this.handlePointerDown);
-    this.canvas.addEventListener('pointermove', this.handlePointerMove);
-    this.canvas.addEventListener('pointerup', this.handlePointerUp);
-    this.canvas.addEventListener('pointercancel', this.handlePointerUp);
-    this.canvas.addEventListener('wheel', this.handleWheel, { passive: false });
+    this.handleTouchClick = (e) => this.handleClick(e);
     this.canvas.addEventListener('click', this.handleClick);
+    this.canvas.addEventListener('touchend', this.handleTouchClick, { passive: true });
     this.canvas.addEventListener('mousemove', this.handleMouseMove);
     window.addEventListener('resize', this.onWindowResize);
 
@@ -4466,12 +4518,22 @@ export class TunisiaMapEngine {
   resize() {
     if (!this.canvas) return;
     const parent = this.canvas.parentElement;
-    const cssW = Math.max(300, parent ? parent.clientWidth : 440);
-    const cssH = Math.max(380, parent ? parent.clientHeight : 560);
+    let cssW = parent ? parent.clientWidth : 0;
+    let cssH = parent ? parent.clientHeight : 0;
+    if (!cssW || cssW < 50) {
+      const rect = this.canvas.getBoundingClientRect();
+      cssW = rect.width || (typeof window !== 'undefined' ? window.innerWidth : 440);
+    }
+    if (!cssH || cssH < 50) {
+      const rect = this.canvas.getBoundingClientRect();
+      cssH = rect.height || (typeof window !== 'undefined' ? 520 : 560);
+    }
+    cssW = Math.max(300, cssW);
+    cssH = Math.max(380, cssH);
 
     this.width = 440;
     this.height = 580;
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    this.dpr = Math.min((typeof window !== 'undefined' && window.devicePixelRatio) || 1, 2.5);
 
     this.canvas.width = Math.floor(cssW * this.dpr);
     this.canvas.height = Math.floor(cssH * this.dpr);
@@ -4482,9 +4544,10 @@ export class TunisiaMapEngine {
     const scaleX = cssW / this.width;
     const scaleY = cssH / this.height;
     this.scale = Math.min(scaleX, scaleY);
+    if (!this.scale || isNaN(this.scale) || this.scale <= 0) this.scale = 1;
 
-    this.offsetX = (cssW - this.width * this.scale) / 2;
-    this.offsetY = (cssH - this.height * this.scale) / 2;
+    this.offsetX = Math.max(0, (cssW - this.width * this.scale) / 2);
+    this.offsetY = Math.max(0, (cssH - this.height * this.scale) / 2);
   }
 
   start() {
@@ -4603,10 +4666,9 @@ export class TunisiaMapEngine {
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
 
-    if (this.hasMovedPan) return; // Évite de cliquer si c'était un pan/scroll
-    // Transformation coordonnées écran -> virtuelles (viewBox 440 x 580) avec pan & zoom
-    const x = (clientX - this.offsetX - this.panX) / (this.scale * this.zoom);
-    const y = (clientY - this.offsetY - this.panY) / (this.scale * this.zoom);
+    const scale = Math.max(0.001, this.scale || 1);
+    const x = (clientX - (this.offsetX || 0)) / scale;
+    const y = (clientY - (this.offsetY || 0)) / scale;
 
     // 1. Détection de clic sur le bouton de la carte popover en bas (si affichée)
     if (this.selectedCityId) {

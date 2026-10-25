@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T05:12:00.000Z - etat = HEAD de main (v85)
+
+## État en 3 lignes
+Boutique & Achat : bouton « اشري » et clic magasin rendus 100% interactifs avec échelle canvas dpr unifiée.
+Épicerie & Affichage : suppression du message inutile « كرني الثقة » remplacé par vrais produits en rayon ; correction de la mention économique « دورة إنتاج » pour refléter les prix réels par article.
+Graphismes & Personnages : employés et clients vectoriels ultra-réalistes (veste cintrée, col chemise, poches, semelles, reflets pupilles, chéchia brodée et démarche fluide).
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T00:10:27.738Z - etat = HEAD de main (v84)
 
 ## État en 3 lignes

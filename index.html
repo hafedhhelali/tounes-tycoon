@@ -2769,7 +2769,7 @@
         </div>
         <div class="biz-hud-stats">
           <div class="biz-chip"><span class="biz-chip-k">💵 الرصيد</span><b id="bizBalance">0.00</b></div>
-          <div class="biz-chip"><span class="biz-chip-k">💰 / حريف</span><b id="bizDetailIncome">+0.00 د.ت</b></div>
+          <div class="biz-chip"><span class="biz-chip-k">💰 / دورة إنتاج</span><b id="bizDetailIncome">+0.00 د.ت</b></div>
           <div class="biz-chip" style="border-color: rgba(52, 211, 153, 0.4);"><span class="biz-chip-k">🌿 صافي المربوح</span><b id="bizDetailNetRate" style="color:#34d399;">100% بعد المصاريف</b></div>
           <div class="biz-chip"><span class="biz-chip-k">⚡ الوتيرة</span><b id="bizDetailRate">+0.00 د.ت / ث</b></div>
         </div>
@@ -3636,11 +3636,13 @@
       if (tabName === 'zones') {
         renderZonesUI();
         initTunisiaMap();
-        requestAnimationFrame(() => {
-          if (tunisiaMap) {
-            tunisiaMap.resize();
-            tunisiaMap.start();
-          }
+        [20, 80, 200].forEach(delay => {
+          setTimeout(() => {
+            if (tunisiaMap) {
+              tunisiaMap.resize();
+              tunisiaMap.start();
+            }
+          }, delay);
         });
       }
       if (tabName === 'league') renderLeagueTabUI();
@@ -4370,10 +4372,10 @@
       const deltaRev = Math.max(0, nextRev - currentRev);
       const milestone = engine.getBusinessMilestones ? engine.getBusinessMilestones(biz) : { nextLevel: null, nextMultiplier: 1 };
 
-      if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / حريف`;
+      if (bizDetailIncome) bizDetailIncome.innerHTML = `+${formatCurrency(currentRev)} / دورة`;
       if (bizDetailRate) bizDetailRate.innerHTML = `+${formatCurrency(detail.dinarsPerSecond)}/ث`;
       if (bizDetailNextLvlText) bizDetailNextLvlText.innerText = `المستوى ${biz.level + 1}`;
-      if (bizDetailNextGain) bizDetailNextGain.innerHTML = `+${formatCurrency(deltaRev)} / حريف`;
+      if (bizDetailNextGain) bizDetailNextGain.innerHTML = `+${formatCurrency(deltaRev)} / دورة`;
 
       if (bizDetailMilestoneHint) {
         if (milestone.nextLevel) {
