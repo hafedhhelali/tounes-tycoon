@@ -2107,7 +2107,19 @@ export class TycoonEngine {
     }
 
     // Calcul réaliste proportionnel au chiffre d'affaires et au nombre de commerces
-    const baseRev = Math.max(grossRevenue, activeCount * 2.5);
+    // Si pas de production ou de chiffre d'affaires actif, pas de charges injustifiées
+    if (grossRevenue <= 0) {
+      return {
+        salaries: 0,
+        maintenance: 0,
+        utilities: 0,
+        taxes: 0,
+        total: 0,
+        effectiveRatePct: 0
+      };
+    }
+
+    const baseRev = grossRevenue;
     const salaries = Math.round(baseRev * 0.04 * 100) / 100;
     const maintenance = Math.round(baseRev * 0.03 * 100) / 100;
     const utilities = Math.round(baseRev * 0.025 * 100) / 100;

@@ -15,6 +15,16 @@
 
 # CHANGELOG
 
+## [v96] - 2026-10-25
+
+### Fixed / Changed
+- Dégel du portefeuille (Rasid figé) : encaissement direct des gains clients et des services manuels dans `engine.dinars` sans blocage de cycle.
+- Dépenses réalistes et équilibrées : calcul des charges périodiques strictement calé sur le revenu effectif (zéro déduction arbitraire à solde bas).
+- Amélioration visuelle designers : étagères en olivier massif avec reflets 3D et équerres forgées, caisse moderne à écran LED dynamique affichant le revenu réel.
+- Animation des employés : chéchia tunisienne avec kabbous oscillant, étincelles d'expertise et posture dynamique en service.
+- Transition et sortie fluide de la carte : retour automatique et immédiat vers la rue dès l'arrivée du trajet.
+- Paramètres mobiles : ajustement du conteneur modal (`max-height: 85vh`, `padding-bottom: 28px`) garantissant une visibilité intégrale des dépenses sans coupure.
+
 ## [v95] - 2026-10-25
 
 ### Added / Changed

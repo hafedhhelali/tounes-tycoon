@@ -164,6 +164,15 @@ export class CanvasStoreEngine {
   triggerPayment(customer, isProducing) {
     const biz = this.getBiz();
     const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
+    if (cycleRevenue > 0) {
+      this.engine.dinars += cycleRevenue;
+      this.engine.totalDinarsEarned += cycleRevenue;
+      this.engine.lifetimeDinarsEarned = (this.engine.lifetimeDinarsEarned || 0) + cycleRevenue;
+      if (this.engine.currentCityId) {
+        if (!this.engine.cityBalances) this.engine.cityBalances = {};
+        this.engine.cityBalances[this.engine.currentCityId] = this.engine.dinars;
+      }
+    }
     const gainText = cycleRevenue > 0 ? ('+' + cycleRevenue.toFixed(1) + ' DT') : '+د.ت';
 
     // Money float puff
@@ -227,9 +236,25 @@ export class CanvasStoreEngine {
       }
     }
 
-    // Tap dans la scène = servir et encaisser
+    // Tap dans la scène = servir et encaisser directement
+    const biz = this.getBiz();
+    if (biz && biz.level > 0) {
+      const rev = this.engine.getRevenue(biz, Date.now());
+      if (rev > 0) {
+        this.engine.dinars += rev;
+        this.engine.totalDinarsEarned += rev;
+        this.engine.lifetimeDinarsEarned = (this.engine.lifetimeDinarsEarned || 0) + rev;
+        if (this.engine.currentCityId) {
+          if (!this.engine.cityBalances) this.engine.cityBalances = {};
+          this.engine.cityBalances[this.engine.currentCityId] = this.engine.dinars;
+        }
+      }
+      const puffText = rev > 0 ? `+${rev.toFixed(1)} د.ت 🪙` : '🪙';
+      this.moneyPuffs.push({ x: clickX, y: clickY - 10, vy: -40, text: puffText, life: 0.8, maxLife: 0.8, alpha: 1 });
+    } else {
+      this.moneyPuffs.push({ x: clickX, y: clickY - 10, vy: -40, text: '🪙', life: 0.7, maxLife: 0.7, alpha: 1 });
+    }
     if (this.onServeClick) this.onServeClick(this.bizId);
-    this.moneyPuffs.push({ x: clickX, y: clickY - 10, vy: -40, text: '🪙', life: 0.7, maxLife: 0.7, alpha: 1 });
   }
 
   // --- RENDU D'ARRIÈRE-PLAN TUNISIEN DÉTAILLÉ & ARCHITECTURE EN PERSPECTIVE ---
@@ -602,21 +627,38 @@ export class CanvasStoreEngine {
       this.drawHireButton(ctx, counterX + 6, counterY - 44, 66, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
     }
 
-    // Étagères murales d'arrière-boutique garnies de produits tunisiens
+    // Étagères murales d'arrière-boutique garnies de produits tunisiens (Effet bois noble et reflets 3D)
     ctx.save();
     for (let sIdx = 0; sIdx < 2; sIdx++) {
       const shelfY = 48 + sIdx * 24;
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(counterX - 4, shelfY, deskW + 8, 4);
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 0.8;
-      ctx.strokeRect(counterX - 4, shelfY, deskW + 8, 4);
+      // Ombre portée sous l'étagère
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fillRect(counterX - 4, shelfY + 4, deskW + 8, 3);
 
-      // Produits disposés sur l'étagère
-      ctx.font = '12px serif';
+      // Plateau bois massif olivier
+      const shelfGrad = ctx.createLinearGradient(counterX - 4, shelfY, counterX - 4, shelfY + 5);
+      shelfGrad.addColorStop(0, '#92400e');
+      shelfGrad.addColorStop(0.5, '#78350f');
+      shelfGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = shelfGrad;
+      ctx.fillRect(counterX - 4, shelfY, deskW + 8, 5);
+
+      // Équerres métalliques de support forgées
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(counterX + 2, shelfY + 5, 3, 5);
+      ctx.fillRect(counterX + deskW - 4, shelfY + 5, 3, 5);
+
+      // Filet doré de finition
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(counterX - 4, shelfY, deskW + 8, 5);
+
+      // Produits disposés sur l'étagère avec micro-balancement
+      ctx.font = '13px serif';
       const shelfGoods = ['🥫', '🫒', '🍯', '🧂', '📦'];
       shelfGoods.forEach((g, gIdx) => {
-        ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 2);
+        const itemSway = Math.sin(timeSec * 2.5 + gIdx * 1.2) * 1.2;
+        ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 3 + itemSway);
       });
     }
     ctx.restore();
@@ -640,41 +682,43 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1.8;
     ctx.strokeRect(counterX, counterY + 12, deskW, deskH);
 
-    // Caisse enregistreuse moderne tunisienne (Pos / caisse tactile dorée)
-    const regX = counterX + deskW - 38;
-    const regY = counterY - 4;
-    ctx.fillStyle = '#1e293b';
+    // Caisse enregistreuse moderne tunisienne (Pos tactile dorée et écran dynamique)
+    const regX = counterX + deskW - 40;
+    const regY = counterY - 6;
+    ctx.fillStyle = '#0f172a';
     ctx.beginPath();
-    ctx.roundRect(regX, regY, 32, 20, 3);
+    ctx.roundRect(regX, regY, 34, 22, 4);
     ctx.fill();
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Écran LED vert
-    ctx.fillStyle = '#064e3b';
-    ctx.fillRect(regX + 3, regY + 3, 26, 7);
+    // Écran LED lumineux avec reflet et clignotement
+    ctx.fillStyle = '#022c22';
+    ctx.fillRect(regX + 3, regY + 3, 28, 8);
     ctx.fillStyle = '#34d399';
-    ctx.font = '900 6px monospace';
+    ctx.font = '900 6.5px monospace';
     ctx.textAlign = 'right';
-    ctx.fillText('0.00 DT', regX + 27, regY + 8.5);
+    const dynCash = counterBiz ? (this.engine.getRevenue(counterBiz, now) || 0).toFixed(1) : '0.0';
+    ctx.fillText(dynCash + ' DT', regX + 29, regY + 9);
 
-    // Touches du clavier doré
-    ctx.fillStyle = '#f59e0b';
+    // Clavier tactile rétroéclairé
+    ctx.fillStyle = '#fbbf24';
     for (let row = 0; row < 2; row++) {
       for (let col = 0; col < 4; col++) {
-        ctx.fillRect(regX + 4 + col * 6, regY + 12 + row * 3.5, 4.5, 2.5);
+        ctx.fillRect(regX + 4 + col * 6.5, regY + 13 + row * 3.8, 5, 2.8);
       }
     }
 
-    // Tiroir-caisse avec serrure
-    ctx.fillStyle = '#d97706';
+    // Tiroir-caisse avec fente et serrure dorée ouvragée
+    ctx.fillStyle = '#b45309';
     ctx.fillRect(counterX + 16, counterY + 28, deskW - 32, 14);
     ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.2;
     ctx.strokeRect(counterX + 16, counterY + 28, deskW - 32, 14);
     ctx.fillStyle = '#fef08a';
     ctx.beginPath();
-    ctx.arc(counterX + deskW / 2, counterY + 35, 2.5, 0, Math.PI * 2);
+    ctx.arc(counterX + deskW / 2, counterY + 35, 3, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -1142,7 +1186,7 @@ export class CanvasStoreEngine {
     ctx.arc(6.5, -39.5, 1.8, 0, Math.PI * 2);
     ctx.fill();
 
-    // 8. Chéchia rouge tunisienne authentique brodée
+    // 8. Chéchia rouge tunisienne authentique brodée avec gland soyeux
     ctx.fillStyle = '#dc2626';
     ctx.beginPath();
     ctx.arc(0, -42.8, 6.4, Math.PI, 0, false);
@@ -1151,12 +1195,13 @@ export class CanvasStoreEngine {
     ctx.fillStyle = '#b91c1c';
     ctx.fillRect(-6.2, -43.2, 12.4, 2);
 
-    // Gland/Kabbous noir tunisien retombant avec dynamisme
+    // Gland/Kabbous noir tunisien oscillant avec l'action
+    const kabbousSway = isBusy ? Math.sin(phase * 1.8) * 3 : Math.sin(phase) * 1.2;
     ctx.strokeStyle = '#090d16';
-    ctx.lineWidth = 1.3;
+    ctx.lineWidth = 1.4;
     ctx.beginPath();
     ctx.moveTo(0, -44.5);
-    ctx.quadraticCurveTo(-2, -43, -4, -40);
+    ctx.quadraticCurveTo(-2 + kabbousSway * 0.5, -43, -4 + kabbousSway, -39.5);
     ctx.stroke();
 
     // 9. Yeux expressifs avec pupilles et sourcils
@@ -1179,6 +1224,13 @@ export class CanvasStoreEngine {
     ctx.beginPath();
     ctx.arc(1.5, -37.5, 2.2, 0.2, Math.PI - 0.2);
     ctx.stroke();
+
+    // 10. Effet de concentration / brillance de savoir-faire lors de la production
+    if (isBusy) {
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.9)';
+      ctx.font = '8px sans-serif';
+      ctx.fillText('✨', 8, -46 + Math.sin(phase * 2) * 2);
+    }
 
     ctx.restore();
   }
@@ -2416,6 +2468,25 @@ export class QuartierAnimator {
       text: text || '+د.ت',
       alpha: 1.0
     });
+
+    // Particules festives dorées si c'est une montée de palier
+    if (text && (text.includes('L25') || text.includes('L50') || text.includes('L100') || text.includes('L200'))) {
+      const centerX = bConf.x + bConf.width / 2;
+      const centerY = 200 - bConf.height / 2;
+      for (let p = 0; p < 18; p++) {
+        const angle = (Math.PI * 2 * p) / 18;
+        const spd = 30 + Math.random() * 45;
+        this.smokePuffs.push({
+          x: centerX,
+          y: centerY,
+          vx: Math.cos(angle) * spd,
+          vy: Math.sin(angle) * spd - 20,
+          color: Math.random() > 0.4 ? '#fbbf24' : '#38bdf8',
+          radius: 2.5 + Math.random() * 2.5,
+          alpha: 1.0
+        });
+      }
+    }
   }
 
   render(timestamp) {
@@ -3084,7 +3155,7 @@ export class QuartierAnimator {
         y: y,
         w: cartW,
         h: bHeight,
-        action: 'inspect',
+        action: 'collect',
         bizId: b.id
       });
 
@@ -3181,23 +3252,24 @@ export class QuartierAnimator {
     ctx.stroke();
     ctx.restore();
 
-    // Badge Niveau DÉDIÉ au coin supérieur gauche du toit (TOTALEMENT SORTI de l'enseigne)
-    const lvlW = 32;
-    const lvlH = 16;
+    // Badge Niveau DÉDIÉ au coin supérieur gauche du toit avec styling évolutif par palier
+    const lvlW = 34;
+    const lvlH = 17;
     const lvlX = x + 8;
-    const lvlY = y - 4;
+    const lvlY = y - 5;
     ctx.save();
-    ctx.fillStyle = '#0284c7';
+    ctx.fillStyle = level >= 200 ? '#78350f' : level >= 100 ? '#0369a1' : level >= 50 ? '#581c87' : level >= 25 ? '#065f46' : '#0284c7';
     ctx.beginPath();
-    ctx.roundRect(lvlX, lvlY, lvlW, lvlH, 4);
+    ctx.roundRect(lvlX, lvlY, lvlW, lvlH, 5);
     ctx.fill();
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = tierBorder;
+    ctx.lineWidth = 1.4;
     ctx.stroke();
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 9.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('L' + level, lvlX + lvlW / 2, lvlY + 11.5);
+    const tierIcon = level >= 200 ? '👑' : level >= 100 ? '💎' : level >= 50 ? '⭐' : level >= 25 ? '⚡' : '';
+    ctx.fillText(`${tierIcon} L${level}`, lvlX + lvlW / 2, lvlY + 12);
     ctx.restore();
 
     // L'enseigne utilise TOUTE la largeur disponible sans coupure de texte
@@ -3323,11 +3395,10 @@ export class QuartierAnimator {
       }
     }
 
-    // Barre de progression du cycle de production : affichée UNIQUEMENT si personnel recruté ou production active
-    const hasPersonnel = biz.hasManager || (biz.hiredManagersCount && biz.hiredManagersCount > 0);
-    const isWorking = hasPersonnel || biz.isProducing;
+    // Barre de progression du cycle de production : affichée UNIQUEMENT si personnel recruté (hasPersonnel)
+    const hasPersonnel = Boolean(biz.hasManager || (biz.hiredManagersCount && biz.hiredManagersCount > 0));
 
-    if (isWorking) {
+    if (hasPersonnel) {
       const barW = Math.min(b.width - 20, 85);
       const barH = 6;
       const barX = x + (b.width - barW) / 2;
@@ -3355,19 +3426,28 @@ export class QuartierAnimator {
       }
       ctx.restore();
     } else {
-      // Pas de recrutement -> Bulle invitant au recrutement
-      const tipY = y - 8 + Math.sin(timestamp * 0.006) * 3;
+      // Pas de recrutement -> Bulle d'alerte animée invitant impérativement au recrutement
+      const tipY = y - 12 + Math.sin(timestamp * 0.007) * 4;
+      const tipW = 86;
+      const tipX = x + (b.width - tipW) / 2;
       ctx.save();
-      ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 6;
+      ctx.fillStyle = 'rgba(185, 28, 28, 0.92)';
       ctx.beginPath();
-      ctx.roundRect(x + (b.width - 78) / 2, tipY, 78, 16, 4);
+      ctx.roundRect(tipX, tipY, tipW, 18, 5);
       ctx.fill();
       ctx.strokeStyle = '#fca5a5';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.2;
       ctx.stroke();
+      ctx.shadowBlur = 0;
+
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 8.5px "Cairo", sans-serif';
+      ctx.font = '900 9px "Cairo", sans-serif';
       ctx.textAlign = 'center';
+      ctx.fillText('👔 يلزمك خدّامة !', tipX + tipW / 2, tipY + 12.5);
+      ctx.restore();
+    }
       ctx.fillText('انتدب خدّامة 👔', x + b.width / 2, tipY + 11.5);
       ctx.restore();
     }
@@ -3394,8 +3474,8 @@ export class QuartierAnimator {
     ctx.stroke();
     ctx.restore();
 
-    // Seuil et heurtoir discrets (pas de bouton artificiel)
-    // Enregistrement des hitboxes précises (porte et façade entière)
+    // Seuil et heurtoir discrets : porte pour visiter/inspecter l'intérieur, façade pour servir et encaisser
+    // Enregistrement des hitboxes précises (porte = inspect, façade entière = collect direct)
     this.interactiveHitboxes.push({
       x: doorInteractX,
       y: doorInteractY,
@@ -3409,7 +3489,7 @@ export class QuartierAnimator {
       y: y,
       w: b.width,
       h: bHeight - 28,
-      action: 'inspect',
+      action: 'collect',
       bizId: b.id
     });
 
@@ -3853,16 +3933,7 @@ export class QuartierAnimator {
       }
     }
 
-    // Route nationale continue vers l'horizon (bouton central supprimé selon la directive)
-    this.interactiveHitboxes.push({
-      x: x,
-      y: backTopY,
-      w: w,
-      h: groundY - backTopY + 20,
-      action: 'open_map',
-      bizId: null
-    });
-
+    // Route nationale continue vers l'horizon (navigation street fluide sans bouton obstructif)
     ctx.restore();
   }
 
@@ -4344,41 +4415,48 @@ export class QuartierAnimator {
       }
     };
 
-    // 1. Bouton Carte de Tunisie en haut à droite (Agrandie, royale et pulsante)
-    const mapBtnR = 28; // Bouton large 56x56px bien visible
-    const mapBtnX = w - 38;
-    const mapBtnY = topY + 4;
-    const mapPulse = Math.sin(timestamp * 0.006) * 3 + 6;
+    // 1. Bouton Carte de Tunisie en haut à droite (Agrandie, royale, pulsante et enrichie)
+    const mapBtnR = 30; // Bouton large bien visible
+    const mapBtnX = w - 42;
+    const mapBtnY = topY + 6;
+    const mapPulse = Math.sin(timestamp * 0.006) * 4 + 8;
 
     ctx.save();
     ctx.shadowColor = '#38bdf8';
     ctx.shadowBlur = mapPulse;
 
-    // Halo circulaire externe doré
+    // Halo circulaire externe pulsant doré avec double anneau
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(mapBtnX, mapBtnY, mapBtnR + 3, 0, Math.PI * 2);
+    ctx.arc(mapBtnX, mapBtnY, mapBtnR + 4, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Dégradé royal bleu nuit / azur
-    const mapGrad = ctx.createRadialGradient(mapBtnX - 6, mapBtnY - 6, 3, mapBtnX, mapBtnY, mapBtnR);
-    mapGrad.addColorStop(0, '#38bdf8');
-    mapGrad.addColorStop(0.4, '#0284c7');
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(mapBtnX, mapBtnY, mapBtnR + 1.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Dégradé royal bleu nuit / azur lumineux
+    const mapGrad = ctx.createRadialGradient(mapBtnX - 8, mapBtnY - 8, 4, mapBtnX, mapBtnY, mapBtnR);
+    mapGrad.addColorStop(0, '#7dd3fc');
+    mapGrad.addColorStop(0.3, '#0284c7');
+    mapGrad.addColorStop(0.8, '#0369a1');
     mapGrad.addColorStop(1, '#082f49');
     ctx.fillStyle = mapGrad;
     ctx.beginPath();
     ctx.arc(mapBtnX, mapBtnY, mapBtnR, 0, Math.PI * 2);
     ctx.fill();
 
-    // Reflet de verre
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+    // Reflet de verre supérieur
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
     ctx.beginPath();
-    ctx.ellipse(mapBtnX, mapBtnY - 11, mapBtnR * 0.65, mapBtnR * 0.28, 0, 0, Math.PI * 2);
+    ctx.ellipse(mapBtnX, mapBtnY - 12, mapBtnR * 0.7, mapBtnR * 0.32, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Icône Map & texte
-    ctx.font = '24px serif';
+    // Icône Map 3D
+    ctx.font = '26px serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('🗺️', mapBtnX, mapBtnY - 2);
@@ -4386,21 +4464,21 @@ export class QuartierAnimator {
     // Ruban textuel 'خريطة تونس' sous le bouton
     ctx.fillStyle = '#0f172a';
     ctx.beginPath();
-    ctx.roundRect(mapBtnX - 32, mapBtnY + 16, 64, 16, 4);
+    ctx.roundRect(mapBtnX - 34, mapBtnY + 18, 68, 17, 5);
     ctx.fill();
     ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.fillStyle = '#fef08a';
-    ctx.font = '900 9.5px "Cairo", sans-serif';
-    ctx.fillText('خريطة تونس', mapBtnX, mapBtnY + 24.5);
+    ctx.font = '900 10px "Cairo", sans-serif';
+    ctx.fillText('خريطة تونس 🇹🇳', mapBtnX, mapBtnY + 27);
     ctx.restore();
 
     this.interactiveHitboxes.push({
-      x: mapBtnX - mapBtnR - 10,
-      y: mapBtnY - mapBtnR - 8,
-      w: (mapBtnR + 10) * 2,
-      h: (mapBtnR + 18) * 2,
+      x: mapBtnX - mapBtnR - 12,
+      y: mapBtnY - mapBtnR - 10,
+      w: (mapBtnR + 12) * 2,
+      h: (mapBtnR + 22) * 2,
       action: 'hud_map',
       bizId: null
     });

@@ -1450,10 +1450,10 @@
     .settings-modal-card {
       max-width: 640px;
       width: 96%;
-      max-height: 92vh;
+      max-height: 85vh;
       display: flex;
       flex-direction: column;
-      padding: 10px 14px;
+      padding: 10px 14px 28px 14px;
       gap: 8px;
       direction: rtl;
       text-align: right;
@@ -1461,6 +1461,7 @@
       background: linear-gradient(180deg, #131a29 0%, #0a0f1d 100%);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(245, 158, 11, 0.15);
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       scrollbar-color: #f59e0b rgba(15, 23, 42, 0.6);
     }
@@ -4141,12 +4142,22 @@
         onCollect: (bizId) => {
           const biz = engine.businesses.find(b => b.id === bizId);
           if (biz && biz.level > 0) {
-            if (engine.startProduction(biz.id)) {
-              if (biz.id === 'kahwa') soundEngine.playTeaCup();
-              else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
-              else soundEngine.playCoin();
-              quartierEngine.spawnGainBubble(biz.id, `+${formatCurrency(engine.getRevenue(biz))}`);
+            const rev = engine.getRevenue(biz, Date.now());
+            if (rev > 0) {
+              engine.dinars += rev;
+              engine.totalDinarsEarned += rev;
+              engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + rev;
+              if (engine.currentCityId) {
+                if (!engine.cityBalances) engine.cityBalances = {};
+                engine.cityBalances[engine.currentCityId] = engine.dinars;
+              }
             }
+            engine.startProduction(biz.id);
+            if (biz.id === 'kahwa') soundEngine.playTeaCup();
+            else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
+            else soundEngine.playCoin();
+            quartierEngine.spawnGainBubble(biz.id, `+${formatCurrency(rev)} 🪙`);
+            renderDOM();
           }
         },
         onHudAction: (action) => {
@@ -4385,8 +4396,20 @@
             },
             onServe: (bizId) => {
               const servedBiz = engine.businesses.find(b => b.id === bizId);
-              if (servedBiz && servedBiz.level > 0 && engine.startProduction(bizId)) {
-                soundEngine.playCoin();
+              if (servedBiz && servedBiz.level > 0) {
+                const rev = engine.getRevenue(servedBiz, Date.now());
+                if (rev > 0) {
+                  engine.dinars += rev;
+                  engine.totalDinarsEarned += rev;
+                  engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + rev;
+                  if (engine.currentCityId) {
+                    if (!engine.cityBalances) engine.cityBalances = {};
+                    engine.cityBalances[engine.currentCityId] = engine.dinars;
+                  }
+                  engine.startProduction(bizId);
+                  soundEngine.playCoin();
+                  renderDOM();
+                }
               }
             }
           });
@@ -4762,12 +4785,12 @@
       engine.update(now);
 
       
-      // Mise à jour fluide 60 FPS des barres de progression : visible UNIQUEMENT si personnel recruté ou production active
+      // Mise à jour fluide 60 FPS des barres de progression : visible UNIQUEMENT si personnel recruté (biz.hasManager)
       engine.businesses.forEach(biz => {
         const progEl = document.getElementById('prog-' + biz.id);
         if (progEl) {
-          const isAutomatedOrProducing = biz.hasManager || biz.isProducing;
-          if (biz.level > 0 && isAutomatedOrProducing) {
+          const hasStaff = Boolean(biz.hasManager || (biz.hiredManagersCount && biz.hiredManagersCount > 0));
+          if (biz.level > 0 && hasStaff) {
             progEl.parentElement.style.opacity = '1';
             const pct = Math.min(100, Math.max(0, ((biz.progressMs || 0) / (biz.cycleDurationMs || 1000)) * 100));
             progEl.style.width = pct + '%';
