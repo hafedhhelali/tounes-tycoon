@@ -3448,9 +3448,6 @@ export class QuartierAnimator {
       ctx.fillText('👔 يلزمك خدّامة !', tipX + tipW / 2, tipY + 12.5);
       ctx.restore();
     }
-      ctx.fillText('انتدب خدّامة 👔', x + b.width / 2, tipY + 11.5);
-      ctx.restore();
-    }
 
     // Interaction épurée et authentique :
     // 1. Clic sur la porte tunisienne cloutée -> Entrer dans le projet

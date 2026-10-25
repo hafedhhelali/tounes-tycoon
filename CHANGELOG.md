@@ -15,6 +15,12 @@
 
 # CHANGELOG
 
+## [v97] - 2026-10-25
+
+### Fixed
+- **Écran vide et boutons inactifs résolus** : suppression de l'accolade orpheline et code dupliqué dans `store_animator.js` qui causait `SyntaxError: Unexpected identifier 'canAfford'`, empêchant le chargement de l'ES module et l'initialisation de `QuartierAnimator` et des écouteurs tactiles.
+- Validation ESM et 66 tests unitaires passés avec succès.
+
 ## [v96] - 2026-10-25
 
 ### Fixed / Changed
