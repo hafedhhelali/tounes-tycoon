@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T11:12:00.000Z - etat = HEAD de main (v89)
+
+## État en 3 lignes
+Résolution Crash SyntaxError : suppression d'une accolade fermante superflue (`store_animator.js:4616`) qui empêchait l'import de module et causait l'écran noir.
+Vérification Statique & Runtime : `node --check store_animator.js` et tests unitaires 100% OK (66/66 passing).
+Synchronisation & Déploiement : mise à jour immédiate de `www/`, incrément v89 et préparation de l'APK clean.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T10:45:00.000Z - etat = HEAD de main (v88)
 
 ## État en 3 lignes

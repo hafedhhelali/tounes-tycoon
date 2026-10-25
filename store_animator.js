@@ -4613,7 +4613,6 @@ export class TunisiaMapEngine {
       window.removeEventListener('pointercancel', this.handlePointerUp);
     }
   }
-  }
 
   // Obtenir la ville active actuelle du joueur
   getActiveCity() {

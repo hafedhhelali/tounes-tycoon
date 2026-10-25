@@ -15,6 +15,12 @@
 
 ﻿# CHANGELOG
 
+## [v89] - 2026-10-25
+
+### Fixed
+- Correction critique de la `SyntaxError` dans `store_animator.js` (accolade orpheline post-refactor de la map) qui bloquait l'import ES module et provoquait un écran noir complet.
+- Rétablissement total de l'exécution, de tous les boutons de l'interface et du canvas interactif.
+
 ## [v88] - 2026-10-25
 
 ### Added / Changed
