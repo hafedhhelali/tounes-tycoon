@@ -1655,9 +1655,9 @@ export class TycoonEngine {
         { item: 'دبوزة ماء صافية معدنية', price: 1.0, sharePct: 10 }
       ],
       kahwa: [
-        { item: 'قهوة كابوسين قارحة كاس قزاز', price: 2.2, sharePct: 45 },
-        { item: 'طرح شكبة مع كاس تاي منعنع', price: 1.8, sharePct: 35 },
-        { item: 'شيشة تفاح فاخرة وسريعة', price: 6.0, sharePct: 20 }
+        { item: 'قهوة فيلتري / إكسبريس قارحة', price: 1.8, sharePct: 45 },
+        { item: 'كاس تاي منعنع بالبندق', price: 1.5, sharePct: 35 },
+        { item: 'شيشة تفاح عادية وسريعة', price: 4.5, sharePct: 20 }
       ],
       attariya: [
         { item: 'قضية اليوم (حليب، خبز، طماطم، سميد)', price: 12.0, sharePct: 50 },
@@ -1685,9 +1685,9 @@ export class TycoonEngine {
         { item: 'مواد تجميل وبارفانات', price: 45.0, sharePct: 20 }
       ],
       salon_de_the: [
-        { item: 'موخيتو فريش وتشكيلة كوكتيل', price: 12.0, sharePct: 45 },
-        { item: 'شيشة فاخرة وقعدة بحر', price: 18.0, sharePct: 35 },
-        { item: 'تشيز كيك وميلك شيك شوكولا', price: 14.0, sharePct: 20 }
+        { item: 'كأس قهوة كابوسين بريستيج / إكسبريس', price: 3.0, sharePct: 40 },
+        { item: 'موخيتو فريش وتشكيلة عصائر', price: 6.5, sharePct: 35 },
+        { item: 'تشيز كيك وميلك شيك شوكولا', price: 8.0, sharePct: 25 }
       ],
       restaurant: [
         { item: 'صحن مشاوي مشكل على الفحم', price: 38.0, sharePct: 50 },

@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T10:45:00.000Z - etat = HEAD de main (v88)
+
+## État en 3 lignes
+Navigation Routière & Défilement Carte : système de routage réaliste le long des autoroutes (ex. Kairouan -> Sousse -> Tunis -> Bizerte), défilement tactile vertical fluide de la carte (Nord au grand Sud) et zoom/hauteur optimisés.
+Arrivée Ville & Niveaux Conditionnels : célébration de niveau (`⭐ ارتقيت للمستوى X`) réservée STRICTEMENT au premier déblocage d'une ville ; simple notification de bienvenue fluide pour les villes déjà acquises.
+Scroll Rue & Prix Réalistes : scroll de rue ultra-réactif avec capture de pointeur et fling inertiel démultiplié ; tarification révisée (Café populaire 1.8 DT, Salon de thé 3.0 DT, menus et articles harmonisés).
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T09:30:00.000Z - etat = HEAD de main (v87)
 
 ## État en 3 lignes

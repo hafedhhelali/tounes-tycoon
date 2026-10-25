@@ -1981,25 +1981,32 @@ export class QuartierAnimator {
 
   handlePointerDown(e) {
     this.isDragging = true;
+    if (this.canvas.setPointerCapture && e.pointerId !== undefined) {
+      try { this.canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    }
     this.startX = e.clientX;
     this.lastPointerX = e.clientX;
     this.lastPointerTime = performance.now();
     this.pointerVelocity = 0;
     this.startCamX = this.cameraX;
+    this.targetCameraX = this.cameraX;
     this.hasDraggedSignificantly = false;
   }
 
   handlePointerMove(e) {
     if (!this.isDragging) return;
     const now = performance.now();
-    const dt = Math.max(1, now - (this.lastPointerTime || now)) / 1000;
+    const dt = Math.max(0.005, (now - (this.lastPointerTime || now)) / 1000);
     const deltaX = e.clientX - this.startX;
     const instantDelta = e.clientX - (this.lastPointerX || e.clientX);
-    this.pointerVelocity = -instantDelta / dt;
+    
+    // Vélocité pondérée réactive
+    const currentVel = -instantDelta / dt;
+    this.pointerVelocity = (this.pointerVelocity || 0) * 0.4 + currentVel * 0.6;
     this.lastPointerX = e.clientX;
     this.lastPointerTime = now;
 
-    if (Math.abs(deltaX) > 5) {
+    if (Math.abs(deltaX) > 4) {
       this.hasDraggedSignificantly = true;
     }
     this.cameraX = Math.max(0, Math.min(this.startCamX - deltaX, this.worldWidth - this.width));
@@ -2009,9 +2016,13 @@ export class QuartierAnimator {
   handlePointerUp(e) {
     if (!this.isDragging) return;
     this.isDragging = false;
-    // Fling / Inertie dynamique douce
-    if (Math.abs(this.pointerVelocity || 0) > 40) {
-      const flingDist = (this.pointerVelocity || 0) * 0.35;
+    if (this.canvas.releasePointerCapture && e.pointerId !== undefined) {
+      try { this.canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+
+    // Fling / Inertie dynamique ultra-fluide et naturelle
+    if (Math.abs(this.pointerVelocity || 0) > 30) {
+      const flingDist = (this.pointerVelocity || 0) * 0.45;
       this.targetCameraX = Math.max(0, Math.min(this.cameraX + flingDist, this.worldWidth - this.width));
     }
 
@@ -4271,6 +4282,9 @@ export class TunisiaMapEngine {
     this.isPanning = false;
     this.startPanX = 0;
     this.startPanY = 0;
+    this.panY = 0;
+    this.targetPanY = 0;
+    this.maxPanY = 160; // Permet de descendre pour voir tout le sud tunisien (Gabès, Médenine, Tataouine, Djerba)
     this.lastTouchDist = 0;
 
     // Effet d'arrivée dans la ville (onde de choc dorée & flash cinématique)
@@ -4482,17 +4496,50 @@ export class TunisiaMapEngine {
 
     this.handleClick = this.handleClick.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handlePointerDown = this.handlePointerDown.bind(this);
+    this.handlePointerMove = this.handlePointerMove.bind(this);
+    this.handlePointerUp = this.handlePointerUp.bind(this);
+    this.handleWheel = this.handleWheel.bind(this);
     this.onWindowResize = () => this.resize();
 
-
     this.handleTouchClick = (e) => this.handleClick(e);
+    this.canvas.addEventListener('pointerdown', this.handlePointerDown);
+    window.addEventListener('pointermove', this.handlePointerMove);
+    window.addEventListener('pointerup', this.handlePointerUp);
+    window.addEventListener('pointercancel', this.handlePointerUp);
+    this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
     this.canvas.addEventListener('click', this.handleClick);
-    this.canvas.addEventListener('touchend', this.handleTouchClick, { passive: true });
     this.canvas.addEventListener('mousemove', this.handleMouseMove);
     if (typeof window !== 'undefined') window.addEventListener('resize', this.onWindowResize);
 
     this.resize();
     this.start();
+  }
+
+  handlePointerDown(e) {
+    this.isPanning = true;
+    this.startPanY = e.clientY;
+    this.startOriginPanY = this.panY || 0;
+    this.hasDraggedMap = false;
+  }
+
+  handlePointerMove(e) {
+    if (!this.isPanning) return;
+    const dy = (e.clientY - this.startPanY) / (this.scale || 1);
+    if (Math.abs(dy) > 4) {
+      this.hasDraggedMap = true;
+    }
+    this.panY = Math.max(-this.maxPanY, Math.min(60, this.startOriginPanY + dy));
+    this.targetPanY = this.panY;
+  }
+
+  handlePointerUp(e) {
+    this.isPanning = false;
+  }
+
+  handleWheel(e) {
+    const delta = (e.deltaY || e.deltaX) * 0.5;
+    this.targetPanY = Math.max(-this.maxPanY, Math.min(60, (this.targetPanY || 0) - delta));
   }
 
   resize() {
@@ -4512,7 +4559,7 @@ export class TunisiaMapEngine {
     cssH = Math.max(380, cssH);
 
     this.width = 440;
-    this.height = 580;
+    this.height = 680;
     this.dpr = Math.min((typeof window !== 'undefined' && window.devicePixelRatio) || 1, 2.5);
 
     this.canvas.width = Math.floor(cssW * this.dpr);
@@ -4555,9 +4602,17 @@ export class TunisiaMapEngine {
     this.stop();
     if (typeof window !== 'undefined') window.removeEventListener('resize', this.onWindowResize);
     if (this.canvas) {
+      this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
       this.canvas.removeEventListener('click', this.handleClick);
       this.canvas.removeEventListener('mousemove', this.handleMouseMove);
+      this.canvas.removeEventListener('wheel', this.handleWheel);
     }
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('pointermove', this.handlePointerMove);
+      window.removeEventListener('pointerup', this.handlePointerUp);
+      window.removeEventListener('pointercancel', this.handlePointerUp);
+    }
+  }
   }
 
   // Obtenir la ville active actuelle du joueur
@@ -4603,6 +4658,32 @@ export class TunisiaMapEngine {
     return Math.min(0.99, Math.max(0, totalDinars / city.reqDinars));
   }
 
+  // Algorithme de navigation par autoroutes (BFS shortest path)
+  findRoute(startId, endId) {
+    if (startId === endId) return [startId];
+    const adj = {};
+    for (const h of this.highways) {
+      if (!adj[h.from]) adj[h.from] = [];
+      if (!adj[h.to]) adj[h.to] = [];
+      adj[h.from].push(h.to);
+      adj[h.to].push(h.from);
+    }
+    const queue = [[startId]];
+    const visited = new Set([startId]);
+    while (queue.length > 0) {
+      const path = queue.shift();
+      const curr = path[path.length - 1];
+      if (curr === endId) return path;
+      for (const neighbor of (adj[curr] || [])) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          queue.push([...path, neighbor]);
+        }
+      }
+    }
+    return [startId, endId];
+  }
+
   // Déplacement ou déblocage direct d'une ville
   travelTo(cityId) {
     const city = this.cities.find(c => c.id === cityId);
@@ -4613,8 +4694,10 @@ export class TunisiaMapEngine {
 
     if (!isUnlocked && !canUnlock) return false;
 
+    const isFirstTimeUnlock = !isUnlocked && canUnlock;
+
     // Déclencher déblocage si nécessaire
-    if (!isUnlocked && canUnlock) {
+    if (isFirstTimeUnlock) {
       if (this.engine.unlockCity) {
         this.engine.unlockCity(city.id);
       } else if (this.engine.unlockZone) {
@@ -4623,12 +4706,17 @@ export class TunisiaMapEngine {
     }
 
     const fromCity = this.getActiveCity();
+    const cityPathIds = this.findRoute(fromCity.id, city.id);
+    const waypoints = cityPathIds.map(id => this.cities.find(c => c.id === id)).filter(Boolean);
+
     this.caravan = {
       from: fromCity,
       to: city,
       targetCity: city,
+      waypoints: waypoints,
+      isNewCity: isFirstTimeUnlock,
       startTime: performance.now(),
-      duration: 2200 // 2.2s pour savourer l'animation de traversée de la Tunisie
+      duration: Math.max(1800, (waypoints.length - 1) * 1100) // Durée ajustée selon le nombre d'autoroutes traversées
     };
 
     this.engine.currentCityId = city.id;
@@ -4648,7 +4736,7 @@ export class TunisiaMapEngine {
 
     const scale = Math.max(0.001, this.scale || 1);
     const x = (clientX - (this.offsetX || 0)) / scale;
-    const y = (clientY - (this.offsetY || 0)) / scale;
+    const y = ((clientY - (this.offsetY || 0)) / scale) - (this.panY || 0);
 
     // 1. Détection de clic sur le bouton de la carte popover en bas (si affichée)
     if (this.selectedCityId) {
@@ -4694,7 +4782,7 @@ export class TunisiaMapEngine {
     const clientY = e.clientY - rect.top;
 
     const x = (clientX - this.offsetX) / this.scale;
-    const y = (clientY - this.offsetY) / this.scale;
+    const y = ((clientY - this.offsetY) / this.scale) - (this.panY || 0);
 
     let hovered = null;
     for (const c of this.cities) {
@@ -4712,14 +4800,20 @@ export class TunisiaMapEngine {
     this.lastTime = now;
     const t = now / 1000;
 
+    // Lissage du défilement vertical panY
+    if (this.targetPanY !== undefined) {
+      this.panY = (this.panY || 0) + ((this.targetPanY || 0) - (this.panY || 0)) * Math.min(1, dt * 10);
+    }
+
     const ctx = this.ctx;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Appliquer le facteur DPR et l'échelle uniforme avec centrage
+    // Appliquer le facteur DPR et l'échelle uniforme avec centrage et défilement vertical
     ctx.scale(this.dpr, this.dpr);
     ctx.translate(this.offsetX, this.offsetY);
     ctx.scale(this.scale, this.scale);
+    ctx.translate(0, this.panY || 0);
 
     // 1. Fond Méditerranée avec reflets d'eau et grille nautique
     this.drawSeaBackground(ctx, t);
@@ -5060,24 +5154,34 @@ export class TunisiaMapEngine {
     const elapsed = now - this.caravan.startTime;
     const progress = Math.min(1.0, elapsed / this.caravan.duration);
 
-    const from = this.caravan.from;
-    const to = this.caravan.to;
+    const waypoints = this.caravan.waypoints && this.caravan.waypoints.length >= 2 
+      ? this.caravan.waypoints 
+      : [this.caravan.from, this.caravan.to];
 
-    // Trajectoire fluide interpolée
-    const curX = from.x + (to.x - from.x) * progress;
-    const curY = from.y + (to.y - from.y) * progress;
+    // Calcul du segment actif le long des autoroutes
+    const totalSegments = waypoints.length - 1;
+    const scaledProgress = progress * totalSegments;
+    const segIdx = Math.min(totalSegments - 1, Math.floor(scaledProgress));
+    const segProgress = Math.min(1.0, scaledProgress - segIdx);
+
+    const segFrom = waypoints[segIdx];
+    const segTo = waypoints[segIdx + 1];
+
+    // Trajectoire fluide interpolée sur l'autoroute courante
+    const curX = segFrom.x + (segTo.x - segFrom.x) * segProgress;
+    const curY = segFrom.y + (segTo.y - segFrom.y) * segProgress;
 
     // Angle de la route pour orienter la voiture
-    const angle = Math.atan2(to.y - from.y, to.x - from.x);
+    const angle = Math.atan2(segTo.y - segFrom.y, segTo.x - segFrom.x);
 
     ctx.save();
 
     // 1. Traînée lumineuse d'accélération dorée (Golden Speed Trail)
     const trailLen = 8;
     for (let k = 1; k <= trailLen; k++) {
-      const trailProgress = Math.max(0, progress - (k * 0.015));
-      const tx = from.x + (to.x - from.x) * trailProgress;
-      const ty = from.y + (to.y - from.y) * trailProgress;
+      const trailProgress = Math.max(0, segProgress - (k * 0.02));
+      const tx = segFrom.x + (segTo.x - segFrom.x) * trailProgress;
+      const ty = segFrom.y + (segTo.y - segFrom.y) * trailProgress;
       ctx.fillStyle = `rgba(251, 191, 36, ${(trailLen - k) / trailLen * 0.45})`;
       ctx.beginPath();
       ctx.arc(tx, ty, 6 - k * 0.4, 0, Math.PI * 2);
@@ -5131,24 +5235,26 @@ export class TunisiaMapEngine {
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 9.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`في الطريق إلى ${to.name.slice(0, 8)} (${kmPct}%)`, curX, bubbleY + 3);
+    ctx.fillText(`في الطريق إلى ${this.caravan.targetCity.name.slice(0, 8)} (${kmPct}%)`, curX, bubbleY + 3);
 
     ctx.restore();
 
     if (progress >= 1.0) {
-      const arrivedCity = this.caravan.targetCity || to;
+      const arrivedCity = this.caravan.targetCity || waypoints[waypoints.length - 1];
+      const isNewCity = this.caravan.isNewCity || false;
       this.caravan = null;
 
       // Déclencher l'effet cinématique d'arrivée dans la ville
       this.arrivalEffect = {
         city: arrivedCity,
+        isNewCity: isNewCity,
         startTime: performance.now(),
         duration: 1200 // 1.2s de célébration visuelle avant ouverture de la ville
       };
 
       if (this.onTravel) {
         setTimeout(() => {
-          this.onTravel(arrivedCity);
+          this.onTravel(arrivedCity, isNewCity);
           this.arrivalEffect = null;
         }, 1100);
       }
@@ -5212,6 +5318,7 @@ export class TunisiaMapEngine {
     ctx.stroke();
     ctx.shadowBlur = 0;
 
+    const isNewCity = this.arrivalEffect.isNewCity || false;
     const curLvl = this.engine.getPlayerLevel ? this.engine.getPlayerLevel() : (this.engine.playerLevel || 1);
 
     ctx.fillStyle = '#fef08a';
@@ -5219,13 +5326,17 @@ export class TunisiaMapEngine {
     ctx.textAlign = 'center';
     ctx.fillText(`🎉 مرحباً بك في ${city.name} ! 🇹🇳`, city.x, bannerY + 20);
 
-    ctx.fillStyle = '#34d399';
+    ctx.fillStyle = isNewCity ? '#34d399' : '#38bdf8';
     ctx.font = '900 11px "Cairo", sans-serif';
-    ctx.fillText(`⭐ ارتقيت إلى المستوى ${curLvl} في الإمبراطورية !`, city.x, bannerY + 35);
+    if (isNewCity) {
+      ctx.fillText(`⭐ ارتقيت إلى المستوى ${curLvl} في الإمبراطورية !`, city.x, bannerY + 35);
+    } else {
+      ctx.fillText(`🚗 رحلة موفقة عبر شبكة الطرقات السريعة`, city.x, bannerY + 35);
+    }
 
-    ctx.fillStyle = '#38bdf8';
+    ctx.fillStyle = '#94a3b8';
     ctx.font = '700 9.5px "Cairo", sans-serif';
-    ctx.fillText('شوارع ومشاريع جديدة جاهزة للاستثمار', city.x, bannerY + 47);
+    ctx.fillText(isNewCity ? 'شوارع ومشاريع جديدة جاهزة للاستثمار' : 'استأنف أعمالك ومشاريعك في المدينة', city.x, bannerY + 47);
 
     ctx.restore();
   }

@@ -112,7 +112,7 @@
       background: #090d16;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.7);
-      touch-action: pan-y;
+      touch-action: none;
       cursor: grab;
     }
     .quartier-canvas-wrap:active {
@@ -2217,8 +2217,8 @@
     .tunisia-map-canvas-wrap {
       position: relative;
       width: 100%;
-      height: 520px !important;
-      min-height: 500px !important;
+      height: 600px !important;
+      min-height: 540px !important;
       flex-shrink: 0;
       background: radial-gradient(circle at center, #0f2942 0%, #0a192f 100%);
       border-radius: 12px;
@@ -2227,16 +2227,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      touch-action: none;
     }
     .tunisia-map-canvas-wrap canvas {
       display: block;
       width: 100%;
       height: 100%;
-      touch-action: manipulation;
+      touch-action: none;
     }
     @media (max-width: 480px) {
       .tunisia-map-canvas-wrap {
-        height: 400px;
+        height: 520px !important;
+        min-height: 480px !important;
       }
     }
 
@@ -2309,8 +2311,8 @@
           <button class="nav-tab-item" id="tabBtnTactics" title="تكتيكات وصنعة">
             <span>⚡</span><span>الصنعة</span>
           </button>
-          <button class="nav-tab-item" id="tabBtnZones" title="الأحياء والمدن">
-            <span>🗺️</span><span id="currentZoneName">باب سويقة</span>
+          <button class="nav-tab-item" id="tabBtnZones" title="خريطة تونس والأحياء" style="background: linear-gradient(135deg, rgba(2, 132, 199, 0.28) 0%, rgba(3, 105, 161, 0.38) 100%); border-color: rgba(56, 189, 248, 0.6); color: #7dd3fc; font-weight: 900; padding: 4px 9px;">
+            <span style="font-size: 14px;">🗺️</span><span>الخريطة:</span><span id="currentZoneName" style="color: #fef08a;">تونس</span>
           </button>
           <button class="nav-tab-item" id="tabBtnLeague" title="البطولة وصابة النهار">
             <span>🏆</span><span>البطولة</span>
@@ -3868,7 +3870,7 @@
       if (!mapCanvas) return;
       if (!tunisiaMap) {
         tunisiaMap = new TunisiaMapEngine(mapCanvas, engine, {
-          onTravel: (city) => {
+          onTravel: (city, isNewCity = false) => {
             // Effet d'arrivée terminé -> fermeture de la map et basculement automatique vers la rue de la nouvelle ville
             applyZoneTheme();
             renderZonesUI();
@@ -3880,8 +3882,12 @@
             if (window.soundFX && window.soundFX.playCoin) window.soundFX.playCoin();
             soundEngine.playEventFanfare();
             const newLvl = engine.getPlayerLevel ? engine.getPlayerLevel() : (engine.playerLevel || 1);
-            showRewardModalUI('⭐', `ارتقيت للمستوى ${newLvl} !`, `مبروك ! بفتح ${city.name} كبرت إمبراطوريتك ودخلت مرحلة جديدة من الأرباح 🇹🇳`, '🚀 واصل التوسّع');
-            showFeedbackToast(`🎉 وصلت بالسلامة إلى ${city.name} (المستوى ${newLvl}) ! الشوارع والمشاريع مفتوحة للاستثمار 🇹🇳`);
+            if (isNewCity) {
+              showRewardModalUI('⭐', `ارتقيت للمستوى ${newLvl} !`, `مبروك ! بفتح ${city.name} كبرت إمبراطوريتك ودخلت مرحلة جديدة من الأرباح 🇹🇳`, '🚀 واصل التوسّع');
+              showFeedbackToast(`🎉 أهلاً بك في ${city.name} ! ارتقيت للمستوى ${newLvl} 🇹🇳`);
+            } else {
+              showFeedbackToast(`🚗 وصلت بالسلامة إلى ${city.name} 🇹🇳`);
+            }
             // Basculer vers l'onglet rue
             switchTab('businesses');
           },

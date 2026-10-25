@@ -15,6 +15,16 @@
 
 ﻿# CHANGELOG
 
+## [v88] - 2026-10-25
+
+### Added / Changed
+- Système de navigation routière réaliste : les trajets inter-villes suivent désormais fidèlement les autoroutes (A1, A3, A4, GP) avec calcul d'itinéraire (ex: Kairouan -> Sousse -> Tunis -> Bizerte).
+- Carte de Tunisie complète & scrollable : intégration d'un défilement vertical tactile/molette fluide (`panY`) permettant d'explorer toutes les régions du Nord verdoyant au Sud saharien (Gabès, Médenine, Djerba).
+- Visibilité du bouton carte dans le header renforcée avec badge stylisé (`🗺️ الخريطة`).
+- Arrivée en ville conditionnelle : le pop-up et l'effet de niveau (« ارتقيت للمستوى ») s'affichent EXCLUSIVEMENT lors de l'ouverture d'une nouvelle ville. Une simple salutation de voyage s'affiche pour les villes déjà ouvertes.
+- Révision réaliste des prix : café dans قهوة شعبية à 1.8 DT, café dans salon de thé à 3.0 DT, menus et articles harmonisés sur toute la grille économique.
+- Scroll de la rue rendu ultra-léger et direct (`touch-action: none`, `setPointerCapture`, vélocité instantanée).
+
 ## [v87] - 2026-10-25
 
 ### Added / Changed
