@@ -300,7 +300,7 @@ test('getBusinessDetail returns complete inner breakdown for immersive view', ()
 test('Tunisian 14 cities progression: listing, retrieval and initial state', () => {
   const engine = new TycoonEngine();
   const cities = engine.getCities();
-  assert.equal(cities.length, 14);
+  assert.equal(cities.length, 17);
 
   // Ville de départ : Tunis
   assert.equal(engine.currentCityId, 'tunis');

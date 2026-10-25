@@ -1667,7 +1667,19 @@ export class QuartierAnimator {
       fricasse: { id: 'fricasse', width: 155, height: 122, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
       kahwa: { id: 'kahwa', width: 170, height: 132, style: 'cafe_terrasse', color: '#eab308', roofColor: '#1e3a8a' },
       attariya: { id: 'attariya', width: 155, height: 128, style: 'attariya_shop', color: '#10b981', roofColor: '#047857' },
-      patisserie: { id: 'patisserie', width: 165, height: 138, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
+              fruits_de_mer: {
+          w: 170,
+          h: 150,
+          roof: 'dome',
+          wallColor: '#f0fdfa',
+          roofColor: '#0284c7',
+          doorColor: '#0f766e',
+          canopy: ['#0284c7', '#38bdf8', '#0f766e'],
+          decor: 'fish',
+          signColor: '#0284c7',
+          signText: 'مارشي فواكه البحر والسمك 🦐'
+        },
+        patisserie: { id: 'patisserie', width: 165, height: 138, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
       taxi_collectif: { id: 'taxi_collectif', width: 185, height: 120, style: 'taxi_station', color: '#facc15', roofColor: '#1f2937' },
       superette: { id: 'superette', width: 170, height: 138, style: 'superette_modern', color: '#06b6d4', roofColor: '#0e7490' },
       supermarche: { id: 'supermarche', width: 190, height: 152, style: 'supermarket_mall', color: '#3b82f6', roofColor: '#1d4ed8' },
@@ -1759,6 +1771,7 @@ export class QuartierAnimator {
         { type: 'house', style: 'djerba', name: 'حوش جربة الكبير', width: 140, height: 148, wallColor: '#f8fafc', doorColor: '#0284c7' },
         { type: 'biz', id: 'showroom_auto' },
         { type: 'crossroad', streetName: 'ساحة قرطاج الدولية', width: 135, nextZoneId: 'bab_souika', nextZoneLabel: 'تونس' },
+        { type: 'biz', id: 'fruits_de_mer' },
         { type: 'biz', id: 'promoteur_immobilier' },
         { type: 'house', style: 'djerba', name: 'قصر الأغالبة', width: 145, height: 155, wallColor: '#fef3c7', doorColor: '#b45309' },
         { type: 'biz', id: 'tayaran_el_ghzela' },
@@ -1802,6 +1815,7 @@ export class QuartierAnimator {
       { type: 'house', style: 'goulette', name: 'برج الرباط البحري', width: 135, height: 145, wallColor: '#f8fafc', doorColor: '#0369a1' },
       { type: 'biz', id: 'patisserie' },
       { type: 'crossroad', streetName: 'مارينا المنستير', width: 130, nextZoneId: 'sfax', nextZoneLabel: 'صفاقس' },
+      { type: 'biz', id: 'fruits_de_mer' },
       { type: 'biz', id: 'hotel' },
       { type: 'house', style: 'goulette', name: 'دار سقيفة الفاطميين', width: 130, height: 135, wallColor: '#fef3c7', doorColor: '#b45309' },
       { type: 'biz', id: 'centre_commercial' },
@@ -1820,6 +1834,7 @@ export class QuartierAnimator {
       { type: 'house', style: 'medina', name: 'عمارة برج النار', width: 135, height: 155, wallColor: '#f8fafc', doorColor: '#0284c7' },
       { type: 'biz', id: 'supermarche' },
       { type: 'crossroad', streetName: 'ساحة باب الديوان', width: 130, nextZoneId: 'gabes', nextZoneLabel: 'قابس' },
+      { type: 'biz', id: 'fruits_de_mer' },
       { type: 'biz', id: 'usine_conserves' },
       { type: 'house', style: 'medina', name: 'دار الزيتونة المباركة', width: 135, height: 140, wallColor: '#fef3c7', doorColor: '#16a34a' },
       { type: 'biz', id: 'showroom_auto' },
@@ -2035,6 +2050,9 @@ export class QuartierAnimator {
       tozeur: '🌴',
       gabes: '🌊',
       medenine_zarzis: '🏺',
+      sbeitla: '🏛️',
+      annaba: '🇩🇿',
+      tripoli: '🇱🇾',
       djerba_holding: '👑'
     };
     const zoneSubtitles = {
@@ -2055,6 +2073,9 @@ export class QuartierAnimator {
       tozeur: 'بلاد دقلة النور والواحات الصحراوية والشبيكة',
       gabes: 'واحة الحناء البحرية وسوق جارة والموانئ التجارية',
       medenine_zarzis: 'قصور مدنين وتجارة جرجيس وبوابة الصحراء',
+      sbeitla: 'عاصمة الكابيتول الروماني والمعابد الأثرية الخالدة',
+      annaba: 'ميناء بونة التجاري والتبادل المغاربي الجزائري',
+      tripoli: 'عروس البحر وأسواق التجارة والعبور الدولي الليبي',
       djerba_holding: 'قمة الاستثمار الدولي وأسطول طيران الغزالة'
     };
     this.transitionZoneIcon = zoneIcons[zoneId] || '🇹🇳';
@@ -4516,6 +4537,42 @@ export class TunisiaMapEngine {
         themeClass: 'zone-kairouan'
       },
       {
+        id: 'sbeitla',
+        name: 'سبيطلة',
+        fullName: 'سبيطلة',
+        icon: '🏛️',
+        x: 180,
+        y: 285,
+        tagline: 'عاصمة سفيطلة الرومانية، المعابد الثلاثة، الكابيتول التاريخي وزيت الزيتون العريق',
+        reqDinars: 600000,
+        bonusDesc: 'الآثار والتجارة الفلاحية الرومانية (+40%)',
+        themeClass: 'zone-sbeitla'
+      },
+      {
+        id: 'annaba',
+        name: 'عنابة',
+        fullName: 'عنابة (الجزائر)',
+        icon: '🇩🇿',
+        x: 48,
+        y: 120,
+        tagline: 'بونة الجزائرية، الميناء التجاري العريق، الفولاذ وسوق التبادل الحدودي المغاربي',
+        reqDinars: 80000000,
+        bonusDesc: 'التجارة المغاربية والاستيراد والتصدير مع الجزائر (x2.5)',
+        themeClass: 'zone-annaba'
+      },
+      {
+        id: 'tripoli',
+        name: 'طرابلس',
+        fullName: 'طرابلس (ليبيا)',
+        icon: '🇱🇾',
+        x: 395,
+        y: 540,
+        tagline: 'عروس البحر، باب البحر، أسواق الذهب والتجارة والعبور الدولي المغاربي',
+        reqDinars: 120000000,
+        bonusDesc: 'التجارة والعبور الدولي مع ليبيا الشقيقة (x3)',
+        themeClass: 'zone-tripoli'
+      },
+      {
         id: 'sfax',
         name: 'صفاقس',
         fullName: 'صفاقس',
@@ -4602,6 +4659,11 @@ export class TunisiaMapEngine {
       { from: 'le_kef', to: 'kairouan', name: 'GP12' },
       { from: 'kairouan', to: 'sfax', name: 'A1 Centre' },
       { from: 'sousse', to: 'sfax', name: 'A1 Côtière' },
+      { from: 'annaba', to: 'beja', name: 'الطريق المغاربي A3 Ouest' },
+      { from: 'annaba', to: 'le_kef', name: 'طريق الحدود الجزائرية GP17' },
+      { from: 'kairouan', to: 'sbeitla', name: 'GP3 سفيطلة' },
+      { from: 'sbeitla', to: 'gafsa', name: 'GP12 الوسط الغربي' },
+      { from: 'medenine_zarzis', to: 'tripoli', name: 'الطريق الساحلي المغاربي رأس جدير' },
       { from: 'kairouan', to: 'gafsa', name: 'GP3' },
       { from: 'gafsa', to: 'tozeur', name: 'GP16 Oasis' },
       { from: 'gafsa', to: 'gabes', name: 'GP15' },
@@ -5518,14 +5580,14 @@ export class TunisiaMapEngine {
         city: arrivedCity,
         isNewCity: isNewCity,
         startTime: performance.now(),
-        duration: 1200 // 1.2s de célébration visuelle avant ouverture de la ville
+        duration: 900
       };
 
       if (this.onTravel) {
         setTimeout(() => {
           this.onTravel(arrivedCity, isNewCity);
           this.arrivalEffect = null;
-        }, 1100);
+        }, 850);
       }
     }
   }

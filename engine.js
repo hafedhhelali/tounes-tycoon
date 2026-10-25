@@ -58,6 +58,20 @@ export const BUSINESS_CONFIGS = [
     ],
   },
   {
+    id: 'fruits_de_mer',
+    name: 'مارشي فواكه البحر والسمك الطازج',
+    tagline: 'قرنيط، كروفيت شايح، حوت مشوي وسردينة ذهبية من أعماق البحر المتوسط !',
+    icon: '🦐',
+    baseCost: 18000.0,
+    baseRevenue: 750.0,
+    costMultiplier: 1.10,
+    cycleDurationMs: 12000,
+    managers: [
+      { name: 'الشاف عمار البحري', role: 'ريس المارشي والمطعم', avatar: '👨‍🍳', cost: 75000.0 },
+      { name: 'المعلم كمال الصياد', role: 'قبطان الشباك والقرنيط', avatar: '🎣', cost: 220000.0 }
+    ],
+  },
+  {
     id: 'patisserie',
     name: 'حلويات عربي وبقلاوة',
     tagline: 'مقروض القيروان وبقلاوة بالعسل الحر تذوب في الفم',
@@ -487,7 +501,10 @@ export const PLAYER_CITY_LEVELS = [
   { level: 11, title: 'سلطان دقلة وواحات توزر 🌴', badge: 'المستوى 11', minCities: 11 },
   { level: 12, title: 'حاكم خليج وموانئ قابس 🌊', badge: 'المستوى 12', minCities: 12 },
   { level: 13, title: 'بارون قصور مدنين وجرجيس 🏺', badge: 'المستوى 13', minCities: 13 },
-  { level: 14, title: 'إمبراطور الهولدينغ الوطني بجربة 👑', badge: 'المستوى 14 (القمة)', minCities: 14 }
+  { level: 14, title: 'حاكم سبيطلة والآثار الرومانية 🏛️', badge: 'المستوى 14', minCities: 14 },
+  { level: 15, title: 'سفير التجارة المغاربية في عنابة 🇩🇿', badge: 'المستوى 15', minCities: 15 },
+  { level: 16, title: 'زعيم أسواق العبور في طرابلس 🇱🇾', badge: 'المستوى 16', minCities: 16 },
+  { level: 17, title: 'إمبراطور الهولدينغ الوطني الشامل 👑', badge: 'المستوى 17 (القمة)', minCities: 17 }
 ];
 
 export const TUNISIAN_CITIES = [
@@ -594,6 +611,43 @@ export const TUNISIAN_CITIES = [
     themeClass: 'zone-kairouan'
   },
   {
+    id: 'sbeitla',
+    name: 'سبيطلة',
+    icon: '🏛️',
+    tagline: 'عاصمة سفيطلة الرومانية، المعابد الثلاثة، الكابيتول التاريخي وزيت الزيتون العريق',
+    costDinars: 600000,
+    criteriaDesc: '600,000 د.ت + مشروع واحد مستوى 30',
+    minPrestige: 0,
+    reqDinars: 600000,
+    reqBizLevel: { count: 1, minLevel: 30 },
+    bonusDesc: 'الآثار والتجارة الفلاحية الرومانية (+40%)',
+    themeClass: 'zone-sbeitla'
+  },
+  {
+    id: 'annaba',
+    name: 'عنابة (الجزائر)',
+    icon: '🇩🇿',
+    tagline: 'بونة الجزائرية، الميناء التجاري العريق، الفولاذ وسوق التبادل الحدودي المغاربي',
+    costDinars: 80000000,
+    criteriaDesc: '80,000,000 د.ت + فتح الكاف وباجة',
+    minPrestige: 3,
+    reqDinars: 80000000,
+    bonusDesc: 'التجارة المغاربية والاستيراد والتصدير مع الجزائر (x2.5)',
+    themeClass: 'zone-annaba'
+  },
+  {
+    id: 'tripoli',
+    name: 'طرابلس (ليبيا)',
+    icon: '🇱🇾',
+    tagline: 'عروس البحر، باب البحر، أسواق الذهب والتجارة والعبور الدولي المغاربي',
+    costDinars: 120000000,
+    criteriaDesc: '120,000,000 د.ت + فتح مدنين',
+    minPrestige: 5,
+    reqDinars: 120000000,
+    bonusDesc: 'التجارة والعبور الدولي مع ليبيا الشقيقة (x3)',
+    themeClass: 'zone-tripoli'
+  },
+  {
     id: 'sfax',
     name: 'صفاقس',
     icon: '🏭',
@@ -675,6 +729,7 @@ export class TycoonEngine {
   constructor(initialState = null) {
     this.BUSINESS_CONFIGS = BUSINESS_CONFIGS;
     this.cityBusinesses = {};
+    this.cityBalances = { tunis: 5.0 };
     this.businesses = this.initCityBusinesses('tunis');
 
     // Économie
@@ -765,6 +820,7 @@ export class TycoonEngine {
       // Dans les autres villes, le premier commerce est le fricassé/bambalouni ou pâtisserie
       const configs = this.BUSINESS_CONFIGS.filter(cfg => {
         if (cfg.id === 'kaskrout' && cityId !== 'tunis') return false;
+        if (cfg.id === 'fruits_de_mer' && !['sfax', 'djerba_holding', 'monastir_mahdia'].includes(cityId)) return false;
         return true;
       });
 
@@ -792,8 +848,17 @@ export class TycoonEngine {
   switchCity(cityId) {
     const city = this.getCityById(cityId);
     if (!city) return false;
+    if (this.currentCityId) {
+      if (!this.cityBalances) this.cityBalances = {};
+      this.cityBalances[this.currentCityId] = this.dinars;
+    }
     this.currentCityId = city.id;
     this.currentZoneId = city.id;
+    if (!this.cityBalances) this.cityBalances = {};
+    if (this.cityBalances[city.id] === undefined) {
+      this.cityBalances[city.id] = 0;
+    }
+    this.dinars = this.cityBalances[city.id];
     this.initCityBusinesses(city.id);
     this.businesses = this.cityBusinesses[city.id];
     return true;
@@ -872,7 +937,13 @@ export class TycoonEngine {
     }
 
     this.unlockedCityIds.push(city.id);
+    const remainingWallet = this.dinars;
     this.switchCity(city.id);
+    // Au premier déblocage de la ville, le reliquat du voyage constitue la trésorerie initiale
+    if (this.cityBalances[city.id] === undefined || this.cityBalances[city.id] === 0) {
+      this.cityBalances[city.id] = remainingWallet;
+      this.dinars = remainingWallet;
+    }
     this.updatePlayerPrestigeTitle();
     return true;
   }
@@ -1664,6 +1735,11 @@ export class TycoonEngine {
         { item: 'صبّان صولد وتيكيات هواتف', price: 5.0, sharePct: 30 },
         { item: 'سلعة الصغار والشكلاطة والبيمو', price: 2.5, sharePct: 20 }
       ],
+      fruits_de_mer: [
+        { item: 'صحن قرنيط مفوّر وشوربة بحر', price: 16.5, sharePct: 45 },
+        { item: 'كروفيت مشوي وغلال البحر طازجة', price: 24.0, sharePct: 35 },
+        { item: 'حوتة وراطة مشوية بالكمون', price: 18.0, sharePct: 20 }
+      ],
       patisserie: [
         { item: 'صحن بقلاوة ومقروض قيرواني بالعسل', price: 18.0, sharePct: 50 },
         { item: 'قرون غزال وحلو درع وزرير', price: 14.0, sharePct: 30 },
@@ -2080,6 +2156,19 @@ export class TycoonEngine {
     return true;
   }
 
+  
+  getTotalFortune() {
+    let sum = this.dinars || 0;
+    if (this.cityBalances) {
+      for (const [cId, bal] of Object.entries(this.cityBalances)) {
+        if (cId !== this.currentCityId) {
+          sum += (bal || 0);
+        }
+      }
+    }
+    return sum;
+  }
+
   getProfileStats(now = Date.now()) {
     const unlockedCount = this.businesses.filter(b => b.level > 0).length;
     const totalLevels = this.businesses.reduce((sum, b) => sum + (b.level || 0), 0);
@@ -2115,6 +2204,7 @@ export class TycoonEngine {
       prestigePoints: this.prestigePoints || 0,
       lifetimeDinars: lifetime,
       currentDinars: this.dinars || 0,
+      totalEmpireFortune: this.getTotalFortune(),
       totalExpensesPaid: this.totalExpensesPaid || 0,
       expensesSummary: this.getCurrentExpensesSummary(),
       totalPlayTimeSeconds: playTimeSeconds
@@ -2194,6 +2284,7 @@ export class TycoonEngine {
       createdAt: this.createdAt || Date.now(),
       totalPlayTimeSeconds: this.totalPlayTimeSeconds || 0,
       dinars: this.dinars,
+      cityBalances: this.cityBalances || { [this.currentCityId || "tunis"]: this.dinars },
       totalDinarsEarned: this.totalDinarsEarned,
       lifetimeDinarsEarned: this.lifetimeDinarsEarned || this.totalDinarsEarned,
       totalExpensesPaid: this.totalExpensesPaid || 0,
@@ -2247,6 +2338,7 @@ export class TycoonEngine {
     this.createdAt = state.createdAt ?? this.createdAt;
     this.totalPlayTimeSeconds = state.totalPlayTimeSeconds ?? this.totalPlayTimeSeconds;
     this.dinars = state.dinars ?? this.dinars;
+    this.cityBalances = state.cityBalances ?? { [this.currentCityId || "tunis"]: this.dinars };
     this.totalDinarsEarned = state.totalDinarsEarned ?? this.totalDinarsEarned;
     this.lifetimeDinarsEarned = state.lifetimeDinarsEarned ?? this.totalDinarsEarned;
     this.totalExpensesPaid = state.totalExpensesPaid ?? 0;

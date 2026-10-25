@@ -2663,6 +2663,13 @@
                 <strong class="stat-value" id="statTotalManagers">0</strong>
               </div>
             </div>
+                        <div class="settings-stat-card">
+              <div class="stat-icon">🏛️</div>
+              <div class="stat-info">
+                <span class="stat-label">الثروة الإجمالية للإمبراطورية (كافة المدن)</span>
+                <strong class="stat-value gold" id="statEmpireFortune">0 د.ت</strong>
+              </div>
+            </div>
             <div class="settings-stat-card">
               <div class="stat-icon">💰</div>
               <div class="stat-info">
@@ -3907,8 +3914,11 @@
             } else {
               showFeedbackToast(`🚗 وصلت بالسلامة إلى ${city.name} 🇹🇳`);
             }
-            // Basculer vers l'onglet rue
+            // Basculer immédiatement vers l'onglet rue avec animation de transition
             switchTab('businesses');
+            if (quartierEngine) {
+              quartierEngine.transitionToZone(city.id, city.name);
+            }
           },
           onSelect: (city) => {
             const badge = document.getElementById('mapActiveCityBadge');
@@ -4231,6 +4241,8 @@
       if (statUnlockedBiz) statUnlockedBiz.innerText = `${stats.unlockedBusinessesCount}/17`;
       if (statTotalManagers) statTotalManagers.innerText = `${stats.totalManagersHired}`;
       if (statLifetimeDinars) statLifetimeDinars.innerHTML = formatCurrency(stats.lifetimeDinars, 0);
+      const statEmpireFortune = document.getElementById("statEmpireFortune");
+      if (statEmpireFortune) statEmpireFortune.innerHTML = formatCurrency(stats.totalEmpireFortune || stats.currentDinars || 0, 0);
       if (statPrestigeCount) statPrestigeCount.innerText = `${stats.prestigeCount}`;
       if (statTotalExpenses) statTotalExpenses.innerHTML = formatCurrency(stats.totalExpensesPaid || 0, 0);
 

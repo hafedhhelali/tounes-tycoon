@@ -15,6 +15,14 @@
 
 # CHANGELOG
 
+## [v93] - 2026-10-25
+
+### Added / Changed
+- Soldes indépendants par ville (errassid) : chaque ville gère sa propre trésorerie locale (cityBalances). La fortune globale de l'empire est consolidée et affichée dans le profil/paramètres (statEmpireFortune).
+- Nouvelles villes et capitales historiques : ajout de Sbeitla (سبيطلة 🏛️), Annaba (عنابة 🇩🇿) et Tripoli (طرابلس 🇱🇾) avec leurs routes et autoroutes.
+- Vente de fruits de mer et poissons frais (fruits_de_mer 🦐) : intégration exclusive pour les villes côtières Sfax, Monastir et Djerba avec recettes traditionnelles et gérants dédiés.
+- Célébration et transition fluide vers la rue : animation d'arrivée cinématique et basculement automatique vers la vue de rue du quartier lors de tout arrivée en ville.
+
 ## [v92] - 2026-10-25
 
 ### Added / Changed

@@ -1,4 +1,12 @@
 # HANDOFF — Tounes Tycoon
+MAJ: 2026-10-25T13:30:00.000Z - etat = HEAD de main (v93)
+
+## État en 3 lignes
+Soldes Isolés & Fortune Empire : chaque ville possède désormais son solde autonome en dinars (cityBalances), la fortune totale de l'Empire est visualisée dans le profil.
+Expansion 17 Villes : intégration de Sbeitla 🏛️, Annaba 🇩🇿 et Tripoli 🇱🇾 sur la carte, réseau autoroutier et progression (17 paliers de niveaux).
+Fruits de Mer & Arrivée Cinématique : nouveau commerce fruits_de_mer 🦐 réservé à Sfax, Djerba et Monastir, transition cinématique d'arrivée fluide vers la rue.
+
+# HANDOFF — Tounes Tycoon
 MAJ: 2026-10-25T12:25:00.000Z - etat = HEAD de main (v92)
 
 ## État en 3 lignes
