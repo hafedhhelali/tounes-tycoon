@@ -2984,9 +2984,23 @@
     }, { once: true });
 
     // Restauration d'état et calcul gain hors ligne
-    const saved = localStorage.getItem('tounes_tycoon_save');
-    const engine = new TycoonEngine(saved ? JSON.parse(saved) : null);
-    const offlineGain = engine.processOfflineProgress();
+    let savedData = null;
+    try {
+      const saved = localStorage.getItem('tounes_tycoon_save');
+      if (saved && saved !== 'undefined' && saved !== 'null') {
+        savedData = JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Corruption de sauvegarde localStorage détectée, initialisation propre:', e);
+      savedData = null;
+    }
+    const engine = new TycoonEngine(savedData);
+    let offlineGain = 0;
+    try {
+      offlineGain = engine.processOfflineProgress();
+    } catch (e) {
+      console.warn('Erreur processOfflineProgress sécurisée:', e);
+    }
 
     const dinarsDisplay = document.getElementById('dinarsDisplay');
     if (dinarsDisplay) {
@@ -3417,6 +3431,16 @@
       toastTimeout = setTimeout(() => {
         if (errorToast) errorToast.classList.remove('show');
       }, 2200);
+    }
+
+    function showFeedbackToast(msg) {
+      if (toastMsg) toastMsg.innerHTML = msg;
+      if (errorToast) errorToast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        if (errorToast) errorToast.classList.remove('show');
+      }, 3500);
+    }
     }
 
     // UI Helper: Fenêtre de célébration Tycoon (sans alert() navigateur)
@@ -4211,9 +4235,9 @@
       }
     }
 
+    applyZoneTheme();
     renderDOM();
     updateSynergiesUI();
-    applyZoneTheme();
     updateWheelBtnState();
 
     // --- GESTION DU PROFIL & PARAMÈTRES DE L'EMPIRE ---

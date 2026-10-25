@@ -2353,7 +2353,8 @@ export class QuartierAnimator {
         p.visitTimer = 5 + Math.random() * 8;
         // Détecter si le piéton passe devant un commerce actif
         let nearbyBiz = null;
-        for (const item of this.buildingLayout) {
+        const layoutList = this.streetLayout || this.buildingLayout || [];
+        for (const item of layoutList) {
           if (item.type === 'biz') {
             const bizX = item.x + item.width / 2;
             if (Math.abs(p.x - bizX) < item.width / 2 + 15) {

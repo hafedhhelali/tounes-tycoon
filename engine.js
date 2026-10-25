@@ -1870,7 +1870,7 @@ export class TycoonEngine {
     if (business.level === 0) return 0;
     const prestigeMultiplier = this.getPrestigeMultiplier();
     let eventMultiplier = 1.0;
-    if (this.activeEvent && this.activeEvent.event.multipliers[business.id]) {
+    if (this.activeEvent && this.activeEvent.event && this.activeEvent.event.multipliers && this.activeEvent.event.multipliers[business.id]) {
       eventMultiplier = this.activeEvent.event.multipliers[business.id];
     }
     const adMultiplier = this.isAdBoostActive(now) ? 2.0 : 1.0;

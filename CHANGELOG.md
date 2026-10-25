@@ -15,6 +15,15 @@
 
 # CHANGELOG
 
+## [v98] - 2026-10-25
+
+### Fixed
+- **Protection Sauvegarde & Boot sans échec** : encapsulation de `JSON.parse(localStorage)` dans un `try/catch` avec fallback automatique évitant tout arrêt du `<script type="module">`.
+- **Résilience événements actifs** : sécurisation par chaînage de `this.activeEvent.event.multipliers[business.id]` dans `engine.js`.
+- **Moteur d'animation des piétons** : correction de `this.buildingLayout` vers `this.streetLayout` dans `store_animator.js` pour éviter les `TypeError` après quelques secondes de jeu.
+- **Fonction toast manquante** : implémentation de `showFeedbackToast` pour les transitions entre villes.
+- **Ordre d'initialisation** : exécution de `applyZoneTheme()` avant `renderDOM()`.
+
 ## [v97] - 2026-10-25
 
 ### Fixed
