@@ -4304,7 +4304,12 @@
           openBizDetailModalUI(bizId);
         },
         onUpgrade: (bizId) => {
-          const biz = engine.businesses.find(b => b.id === bizId);
+          let biz = engine.businesses.find(b => b.id === bizId);
+          // Si le commerce appartient à la ville actuelle mais n'était pas encore instancié
+          if (!biz && engine.currentCityId) {
+            engine.initCityBusinesses(engine.currentCityId);
+            biz = engine.businesses.find(b => b.id === bizId);
+          }
           if (biz) {
             const oldLevel = biz.level;
             if (engine.buyBusiness(biz.id)) {
@@ -4320,6 +4325,8 @@
             } else {
               const manque = Math.max(0, engine.getCost(biz) - engine.dinars);
               triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تفتح المشروع ! 💰`);
+              // Ouvrir la modale détail si pas assez d'argent
+              openBizDetailModalUI(biz.id);
             }
           }
         },

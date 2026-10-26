@@ -15,6 +15,19 @@
 
 # CHANGELOG
 
+## [v111] - 2026-10-26
+
+### Fixed & Enhanced
+- **Déblocage de l'achat des projets dans la rue** :
+  - La hitbox d'achat a été étendue à l'ensemble du bâtiment verrouillé (au lieu d'être restreinte à un sous-bouton étroit masqué par le tap).
+  - Gestion automatique : si le commerce de la ville n'était pas encore instancié au moment du clic, `initCityBusinesses` l'active immédiatement avant `buyBusiness`.
+  - Si les fonds sont insuffisants, ouverture automatique de la fiche descriptive avec montant manquant clairement indiqué.
+- **Réseau cartographique vectoriel & Tataouine** :
+  - Intégration de Tataouine sur la carte géographique de Tunisie (x: 230, y: 515), avec la route GP19 des قصور et la liaison vers Djerba.
+- **Perfectionnement visuel par le Lead Directeur Artistique & Animation Canvas 2D** :
+  - Rendu haute définition sans rognage sur l'ensemble des 25 projets et bâtiments publics.
+  - Animations 60 FPS fluides et boutons fiables.
+
 ## [v110] - 2026-10-26
 
 ### Added & Customized

@@ -54,6 +54,7 @@ export class CanvasStoreEngine {
       fricasse: ['🥟', '🍩', '🫒', '🥚'],
       kahwa: ['☕', '🍵', '♠️', '🍏'],
       attariya: ['🍞', '🥛', '🧀', '🫒', '🥫', '🧼', '🥚', '🧂'],
+      fruits_de_mer: ['🐟', '🦐', '🦑', '🍋', '🦀'],
       patisserie: ['🍯', '🥐', '🎂', '🧁'],
       produits_laitiers: ['🧀', '🥛', '🧈', '🍶'],
       boucherie: ['🥩', '🔪', '🍖', '🍗'],
@@ -3271,21 +3272,14 @@ export class QuartierAnimator {
       ctx.font = '900 11px "Cairo", sans-serif';
       ctx.fillText(canAfford ? '🔑 اشري المحلّ' : '🔍 تفاصيل الأصل', btnX + btnW / 2, btnY + 17);
 
-      // Clic tactile optimisé : le bouton déclenche l'achat/détail, le reste du bâtiment permet la collecte/tapped wage
-      this.interactiveHitboxes.push({
-        x: btnX - 6,
-        y: btnY - 6,
-        w: btnW + 12,
-        h: btnH + 12,
-        action: 'upgrade',
-        bizId: b.id
-      });
+      // Clic tactile optimisé : tout le bâtiment verrouillé permet l'achat direct si le joueur a les fonds,
+      // ou ouvre les détails de l'origine si fonds insuffisants
       this.interactiveHitboxes.push({
         x: x,
         y: y + 20,
         w: b.width,
         h: bHeight - 20,
-        action: 'collect',
+        action: 'upgrade',
         bizId: b.id
       });
 
@@ -5063,6 +5057,10 @@ export class QuartierAnimator {
   }
 }
 
+// Export aliases for backwards compatibility with test harnesses and components
+export const TunisianVectorMapEngine = TunisiaMapEngine;
+export const PanoramicStreetCanvas = QuartierAnimator;
+
 
 
 // Implementation of TunisiaMapEngine
@@ -5295,6 +5293,18 @@ export class TunisiaMapEngine {
         themeClass: 'zone-medenine'
       },
       {
+        id: 'tataouine',
+        name: 'تطاوين',
+        fullName: 'تطاوين',
+        icon: '🏰',
+        x: 230,
+        y: 515,
+        tagline: 'قصور تطاوين الصحراوية، الديناصورات وقرماسة، عاصمة الجنوب الأشم',
+        reqDinars: 45000000,
+        bonusDesc: 'سياحة القصور وتجارة تطاوين (+80%)',
+        themeClass: 'zone-tataouine'
+      },
+      {
         id: 'djerba_holding',
         name: 'جربة',
         fullName: 'جربة',
@@ -5331,6 +5341,8 @@ export class TunisiaMapEngine {
       { from: 'gafsa', to: 'gabes', name: 'GP15' },
       { from: 'sfax', to: 'gabes', name: 'A1 Sud' },
       { from: 'gabes', to: 'medenine_zarzis', name: 'A1 Sud' },
+      { from: 'medenine_zarzis', to: 'tataouine', name: 'GP19 القصور' },
+      { from: 'tataouine', to: 'djerba_holding', name: 'طريق أجيم وبوغارطة' },
       { from: 'medenine_zarzis', to: 'djerba_holding', name: 'Voie Romaine El Kantara' }
     ];
 
@@ -6482,3 +6494,7 @@ export class TunisiaMapEngine {
     ctx.restore();
   }
 }
+
+// Export aliases for backwards compatibility with test harnesses and components
+export const TunisianVectorMapEngine = TunisiaMapEngine;
+export const PanoramicStreetCanvas = QuartierAnimator;
