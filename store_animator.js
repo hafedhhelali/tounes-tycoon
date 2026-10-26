@@ -5057,10 +5057,6 @@ export class QuartierAnimator {
   }
 }
 
-// Export aliases for backwards compatibility with test harnesses and components
-export const TunisianVectorMapEngine = TunisiaMapEngine;
-export const PanoramicStreetCanvas = QuartierAnimator;
-
 
 
 // Implementation of TunisiaMapEngine
@@ -6498,3 +6494,6 @@ export class TunisiaMapEngine {
 // Export aliases for backwards compatibility with test harnesses and components
 export const TunisianVectorMapEngine = TunisiaMapEngine;
 export const PanoramicStreetCanvas = QuartierAnimator;
+
+
+

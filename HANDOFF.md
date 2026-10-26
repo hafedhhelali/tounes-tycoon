@@ -1,13 +1,13 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-10-26T19:58:00.000Z - etat = HEAD de main (v111-purchase-hitboxes-and-visual-overhaul)
+MAJ: 2026-10-26T20:07:00.000Z - etat = HEAD de main (v112-fix-store-animator-syntax-error)
 
 ## État en 3 lignes
-Achat direct des projets débloqué : Tout le bâtiment verrouillé déclenche l'achat immédiat dès tap tactile sans blocage de hitbox.
-Directeur Artistique PhD & Animations : Architecture des 25 projets, Banque, Police, Guichet de tabac, et carte vectorielle avec Tataouine connectée.
-Intégrité 100% : Tests unitaires 67/67 au vert, zéro régression, boutons réactifs et vérifiés.
+Écran noir résolu : Suppression du doublon d'export (`TunisianVectorMapEngine` / `PanoramicStreetCanvas`) qui bloquait le parsing JS et figeait l'UI.
+Syntaxe ES Module 100% propre : Vérifiée par `node -c store_animator.js`, `node -c engine.js` et exécution expérimentale VM Module.
+Rendu Rue & Carte réactivé : Canvas, modales, interactions tactiles et suite de tests 67/67 opérationnels.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main`).
-- Modifs : `store_animator.js`, `index.html`, `engine.js`.
+- Modif : `store_animator.js` (suppression de l'export dupliqué au milieu du fichier).
 - Suite de tests : 67/67 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

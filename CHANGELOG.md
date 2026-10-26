@@ -15,6 +15,14 @@
 
 # CHANGELOG
 
+## [v112] - 2026-10-26
+
+### Fixed
+- **Élimination définitive du bug d'écran noir (SyntaxError duplicate export)** :
+  - Un doublon d'exportation ES Module (`export const TunisianVectorMapEngine = TunisiaMapEngine; export const PanoramicStreetCanvas = QuartierAnimator;`) au milieu du fichier `store_animator.js` provoquait une erreur fatale `SyntaxError: Identifier has already been declared` dès le chargement du script par le navigateur/WebView.
+  - Cette erreur interrompait l'exécution de tout le module, empêchant l'initialisation du DOM, de la rue Canvas, de la carte et des écouteurs de clics (laissant l'écran noir avec le contour seul).
+  - Suppression du doublon, validation syntaxique stricte avec `node -c store_animator.js` et vérification de l'inline module `index.html`.
+
 ## [v111] - 2026-10-26
 
 ### Fixed & Enhanced
