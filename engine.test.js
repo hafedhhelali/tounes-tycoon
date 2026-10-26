@@ -536,6 +536,32 @@ test('Expenses & charges system calculates realistic corporate deductions', () =
   assert.ok(engine.dinars > 0); // Le joueur n'est jamais bloqué à 0
 });
 
+test('Bank account: deposits, withdrawals and double balance management (souyoula / rassid fel banka)', () => {
+  const engine = new TycoonEngine();
+  engine.dinars = 1000;
+  assert.equal(engine.bankBalance, 0);
+
+  // Dépôt de 400 DT
+  const dep = engine.depositToBank(400);
+  assert.equal(dep.success, true);
+  assert.equal(engine.dinars, 600);
+  assert.equal(engine.bankBalance, 400);
+  assert.equal(engine.getTotalFortune(), 1000);
+
+  // Retrait de 150 DT
+  const withdr = engine.withdrawFromBank(150);
+  assert.equal(withdr.success, true);
+  assert.equal(engine.dinars, 750);
+  assert.equal(engine.bankBalance, 250);
+  assert.equal(engine.getTotalFortune(), 1000);
+
+  // Dépôt invalide (montant > solde disponible)
+  assert.equal(engine.depositToBank(9999), false);
+  // Retrait invalide (montant > solde en banque)
+  assert.equal(engine.withdrawFromBank(9999), false);
+});
+
+
 
 
 

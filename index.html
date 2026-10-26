@@ -2326,9 +2326,13 @@
           </div>
         </div>
         <div class="header-actions">
-          <div class="balance-hero">
-            <span class="balance-label">الرصيد:</span>
+          <div class="balance-hero" id="balanceHeroWallet" title="السيولة المتاحة في الجيب (كاش)">
+            <span class="balance-label">💵 سيولة:</span>
             <span class="balance-val" id="dinarsDisplay">0.00 د.ت</span>
+          </div>
+          <div class="balance-hero bank-hero-pill" id="balanceHeroBank" title="الرصيد في البنك (اضغط للدخول للبنك)" style="border-color: #38bdf8; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(2, 132, 199, 0.25) 100%); cursor: pointer;">
+            <span class="balance-label" style="color: #7dd3fc;">🏦 بنك:</span>
+            <span class="balance-val" id="bankDisplay" style="color: #38bdf8; text-shadow: 0 0 14px rgba(56, 189, 248, 0.65);">0.00 د.ت</span>
           </div>
           <button class="nav-tab-item active" id="tabBtnBusinesses" title="الشارع والمشاريع">
             <span>🏪</span><span>الشارع</span>
@@ -2618,6 +2622,96 @@
 
       <button class="modal-btn" id="closeZonesModalBtn" style="background: #4f46e5; border-color: #818cf8; padding: 7px;">
         رجوع للمشروع 💼
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL BANQUE NATIONALE : DÉPÔT & RETRAIT (وكالة بنكية وطنية) -->
+  <div class="modal-overlay" id="bankModal">
+    <div class="modal-card" style="border-color: #38bdf8; max-width: 440px; width: 94%; padding: 14px 18px; gap: 10px; direction: rtl; text-align: right;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(56, 189, 248, 0.25); padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="modal-icon-glow" style="font-size: 28px;">🏦</div>
+          <div>
+            <div class="modal-title" style="font-size: 16px; color: #7dd3fc;">بنك الإمبراطورية الوطني</div>
+            <div class="modal-subtitle" style="font-size: 10.5px; color: #94a3b8;">إيداع وحفظ الأموال، وسحب السيولة للاستثمار</div>
+          </div>
+        </div>
+        <button id="closeBankModalTopBtn" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 4px;">✕</button>
+      </div>
+
+      <!-- Récapitulatif des deux soldes -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0;">
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #f59e0b; border-radius: 10px; padding: 8px 10px; text-align: center;">
+          <div style="font-size: 11px; font-weight: 800; color: #fde047; margin-bottom: 2px;">💵 السيولة (في الجيب)</div>
+          <div id="bankModalWalletDisplay" style="font-size: 15px; font-weight: 900; color: #fbbf24; direction: ltr;">0.00 د.ت</div>
+        </div>
+        <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #38bdf8; border-radius: 10px; padding: 8px 10px; text-align: center;">
+          <div style="font-size: 11px; font-weight: 800; color: #7dd3fc; margin-bottom: 2px;">🏦 الرصيد في البنك</div>
+          <div id="bankModalBankDisplay" style="font-size: 15px; font-weight: 900; color: #38bdf8; direction: ltr;">0.00 د.ت</div>
+        </div>
+      </div>
+
+      <!-- Actions de Dépôt / Retrait rapides -->
+      <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 11.5px; font-weight: 800; color: #f8fafc;">📥 إيداع في البنك (حفظ السيولة)</div>
+        <div style="display: flex; gap: 6px;">
+          <button class="modal-btn" id="bankDeposit10PctBtn" style="flex: 1; padding: 6px 4px; font-size: 11px; background: rgba(2, 132, 199, 0.4); border-color: #38bdf8;">25%</button>
+          <button class="modal-btn" id="bankDeposit50PctBtn" style="flex: 1; padding: 6px 4px; font-size: 11px; background: rgba(2, 132, 199, 0.6); border-color: #38bdf8;">50%</button>
+          <button class="modal-btn" id="bankDepositAllBtn" style="flex: 1.5; padding: 6px 4px; font-size: 11.5px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: #38bdf8; font-weight: 900;">📥 صبّ الكلّ</button>
+        </div>
+      </div>
+
+      <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 11.5px; font-weight: 800; color: #f8fafc;">📤 سحب من البنك (إلى السيولة)</div>
+        <div style="display: flex; gap: 6px;">
+          <button class="modal-btn" id="bankWithdraw10PctBtn" style="flex: 1; padding: 6px 4px; font-size: 11px; background: rgba(217, 119, 6, 0.35); border-color: #f59e0b;">25%</button>
+          <button class="modal-btn" id="bankWithdraw50PctBtn" style="flex: 1; padding: 6px 4px; font-size: 11px; background: rgba(217, 119, 6, 0.55); border-color: #f59e0b;">50%</button>
+          <button class="modal-btn" id="bankWithdrawAllBtn" style="flex: 1.5; padding: 6px 4px; font-size: 11.5px; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); border-color: #f59e0b; font-weight: 900;">📤 اجبد الكلّ</button>
+        </div>
+      </div>
+
+      <button class="modal-btn" id="closeBankModalBtn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 8px; margin-top: 2px;">
+        رجوع للشارع 🏪
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL POSTE DE POLICE : SÉCURITÉ DE LA VILLE (مركز الأمن الوطني) -->
+  <div class="modal-overlay" id="policeModal">
+    <div class="modal-card" style="border-color: #2563eb; max-width: 440px; width: 94%; padding: 14px 18px; gap: 10px; direction: rtl; text-align: right;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(37, 99, 235, 0.3); padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="modal-icon-glow" style="font-size: 28px;">👮</div>
+          <div>
+            <div class="modal-title" style="font-size: 16px; color: #60a5fa;">مركز الأمن والشرطة البلدية</div>
+            <div class="modal-subtitle" style="font-size: 10.5px; color: #94a3b8;">حماية المتاجر، مراقبة الشوارع وردع السرقات</div>
+          </div>
+        </div>
+        <button id="closePoliceModalTopBtn" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 4px;">✕</button>
+      </div>
+
+      <!-- Statut de sécurité -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #2563eb; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-size: 12px; font-weight: 800; color: #93c5fd;">مستوى الأمان في الحي:</div>
+          <div style="font-size: 10px; color: #94a3b8;">الدوريات متواصلة على مدار الساعة 24/7</div>
+        </div>
+        <div style="background: #1e3a8a; border: 1px solid #60a5fa; color: #67e8f9; font-weight: 900; font-size: 12px; padding: 4px 10px; border-radius: 8px;">
+          🛡️ 100% مؤمّن
+        </div>
+      </div>
+
+      <div style="background: rgba(30, 41, 59, 0.5); border-radius: 10px; padding: 10px; font-size: 11px; color: #cbd5e1; line-height: 1.6;">
+        🚨 دوريات الشرطة تؤمّن كل مشاريعك ضد أي مشاكل، ومصاريف الحراسة مدرجة ضمن الأداءات الدورية الرسمية.
+      </div>
+
+      <button class="modal-btn" id="policePatrolBoostBtn" style="background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); border-color: #60a5fa; color: #ffffff; padding: 8px; font-weight: 900;">
+        🚓 تسيير دورية تفقد فورية
+      </button>
+
+      <button class="modal-btn" id="closePoliceModalBtn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 8px;">
+        رجوع للشارع 🏪
       </button>
     </div>
   </div>
@@ -4266,6 +4360,14 @@
         onSwitchZone: (targetZoneId) => {
           soundEngine.playCoin();
           switchTab('zones');
+        },
+        onOpenBank: () => {
+          soundEngine.playCoin();
+          openBankModalUI();
+        },
+        onOpenPolice: () => {
+          soundEngine.playCoin();
+          openPoliceModalUI();
         }
       });
       quartierEngine.start();
@@ -4414,6 +4516,145 @@
         renderSettingsAndProfileUI();
         switchTab('businesses');
         triggerBalanceAlert('تمّ إعلان إفلاس المشروع بنجاح ! رجعنا لباب سويقة من الصفر 🚀');
+      };
+    }
+
+    // --- MODALES BANQUE & POLICE (إيداع، سحب، وأمن) ---
+    const bankModal = document.getElementById('bankModal');
+    const policeModal = document.getElementById('policeModal');
+    const bankDisplay = document.getElementById('bankDisplay');
+    const bankModalWalletDisplay = document.getElementById('bankModalWalletDisplay');
+    const bankModalBankDisplay = document.getElementById('bankModalBankDisplay');
+    const balanceHeroBank = document.getElementById('balanceHeroBank');
+
+    function updateBankModalDisplays() {
+      const walletTxt = formatCurrency(engine.dinars || 0);
+      const bankTxt = formatCurrency(engine.bankBalance || 0);
+      if (bankDisplay) bankDisplay.innerHTML = bankTxt;
+      if (bankModalWalletDisplay) bankModalWalletDisplay.innerHTML = walletTxt;
+      if (bankModalBankDisplay) bankModalBankDisplay.innerHTML = bankTxt;
+      if (dinarsDisplay) dinarsDisplay.innerHTML = walletTxt;
+    }
+
+    function openBankModalUI() {
+      updateBankModalDisplays();
+      if (bankModal) bankModal.classList.add('active');
+    }
+
+    function closeBankModalUI() {
+      if (bankModal) bankModal.classList.remove('active');
+    }
+
+    function openPoliceModalUI() {
+      if (policeModal) policeModal.classList.add('active');
+    }
+
+    function closePoliceModalUI() {
+      if (policeModal) policeModal.classList.remove('active');
+    }
+
+    if (balanceHeroBank) balanceHeroBank.onclick = () => { soundEngine.playCoin(); openBankModalUI(); };
+    const closeBankModalBtn = document.getElementById('closeBankModalBtn');
+    const closeBankModalTopBtn = document.getElementById('closeBankModalTopBtn');
+    if (closeBankModalBtn) closeBankModalBtn.onclick = () => { soundEngine.playCoin(); closeBankModalUI(); };
+    if (closeBankModalTopBtn) closeBankModalTopBtn.onclick = () => { soundEngine.playCoin(); closeBankModalUI(); };
+
+    const closePoliceModalBtn = document.getElementById('closePoliceModalBtn');
+    const closePoliceModalTopBtn = document.getElementById('closePoliceModalTopBtn');
+    if (closePoliceModalBtn) closePoliceModalBtn.onclick = () => { soundEngine.playCoin(); closePoliceModalUI(); };
+    if (closePoliceModalTopBtn) closePoliceModalTopBtn.onclick = () => { soundEngine.playCoin(); closePoliceModalUI(); };
+
+    // Dépôt bancaire (25%, 50%, 100%)
+    const bankDeposit10PctBtn = document.getElementById('bankDeposit10PctBtn');
+    const bankDeposit50PctBtn = document.getElementById('bankDeposit50PctBtn');
+    const bankDepositAllBtn = document.getElementById('bankDepositAllBtn');
+
+    if (bankDeposit10PctBtn) {
+      bankDeposit10PctBtn.onclick = () => {
+        const amt = Math.floor(engine.dinars * 0.25 * 100) / 100;
+        if (amt > 0 && engine.depositToBank(amt)) {
+          soundEngine.playCoin();
+          updateBankModalDisplays();
+          renderDOM();
+        } else {
+          triggerBalanceAlert('ما عندكش سيولة كافية للإيداع ! 💰');
+        }
+      };
+    }
+    if (bankDeposit50PctBtn) {
+      bankDeposit50PctBtn.onclick = () => {
+        const amt = Math.floor(engine.dinars * 0.50 * 100) / 100;
+        if (amt > 0 && engine.depositToBank(amt)) {
+          soundEngine.playCoin();
+          updateBankModalDisplays();
+          renderDOM();
+        } else {
+          triggerBalanceAlert('ما عندكش سيولة كافية للإيداع ! 💰');
+        }
+      };
+    }
+    if (bankDepositAllBtn) {
+      bankDepositAllBtn.onclick = () => {
+        const amt = engine.dinars;
+        if (amt > 0 && engine.depositToBank(amt)) {
+          soundEngine.playCoin();
+          updateBankModalDisplays();
+          renderDOM();
+        } else {
+          triggerBalanceAlert('ما عندكش سيولة كافية للإيداع ! 💰');
+        }
+      };
+    }
+
+    // Retrait bancaire (25%, 50%, 100%)
+    const bankWithdraw10PctBtn = document.getElementById('bankWithdraw10PctBtn');
+    const bankWithdraw50PctBtn = document.getElementById('bankWithdraw50PctBtn');
+    const bankWithdrawAllBtn = document.getElementById('bankWithdrawAllBtn');
+
+    if (bankWithdraw10PctBtn) {
+      bankWithdraw10PctBtn.onclick = () => {
+        const amt = Math.floor((engine.bankBalance || 0) * 0.25 * 100) / 100;
+        if (amt > 0 && engine.withdrawFromBank(amt)) {
+          soundEngine.playCoin();
+          updateBankModalDisplays();
+          renderDOM();
+        } else {
+          triggerBalanceAlert('رصيدك في البنك فارغ ما فيهوش فلوس ! 🏦');
+        }
+      };
+    }
+    if (bankWithdraw50PctBtn) {
+      bankWithdraw50PctBtn.onclick = () => {
+        const amt = Math.floor((engine.bankBalance || 0) * 0.50 * 100) / 100;
+        if (amt > 0 && engine.withdrawFromBank(amt)) {
+          soundEngine.playCoin();
+          updateBankModalDisplays();
+          renderDOM();
+        } else {
+          triggerBalanceAlert('رصيدك في البنك فارغ ما فيهوش فلوس ! 🏦');
+        }
+      };
+    }
+    if (bankWithdrawAllBtn) {
+      bankWithdrawAllBtn.onclick = () => {
+        const amt = engine.bankBalance || 0;
+        if (amt > 0 && engine.withdrawFromBank(amt)) {
+          soundEngine.playCoin();
+          updateBankModalDisplays();
+          renderDOM();
+        } else {
+          triggerBalanceAlert('رصيدك في البنك فارغ ما فيهوش فلوس ! 🏦');
+        }
+      };
+    }
+
+    const policePatrolBoostBtn = document.getElementById('policePatrolBoostBtn');
+    if (policePatrolBoostBtn) {
+      policePatrolBoostBtn.onclick = () => {
+        soundEngine.playHorn();
+        policePatrolBoostBtn.innerText = '🚓 الدورية انطلقت في الشارع ✓';
+        setTimeout(() => { if (policePatrolBoostBtn) policePatrolBoostBtn.innerText = '🚓 تسيير دورية تفقد فورية'; }, 2200);
+        showFeedbackToast('🚓 انطلقت دورية الشرطة لتأمين المتاجر والشارع بنجاح ! 🇹🇳');
       };
     }
 
@@ -4852,6 +5093,7 @@
     // Boucle de rendu fluide 60 FPS (Optimisée zéro-reflow inutile)
     let lastSave = Date.now();
     let lastDisplayedDinars = '';
+    let lastDisplayedBank = '';
     let lastDisplayedTitle = '';
     let lastUiSyncAt = 0;
     let isAppPaused = false;
@@ -4890,6 +5132,12 @@
           bizBalanceEl.innerHTML = formatCompactDinars(engine.dinars);
         }
         lastDisplayedDinars = formattedDinars;
+      }
+
+      const formattedBank = formatCurrency(engine.bankBalance || 0);
+      if (formattedBank !== lastDisplayedBank) {
+        if (bankDisplay) bankDisplay.innerHTML = formattedBank;
+        lastDisplayedBank = formattedBank;
       }
 
       if (titleBadgeEl) {

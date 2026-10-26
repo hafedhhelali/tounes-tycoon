@@ -1869,13 +1869,15 @@ export class QuartierAnimator {
     this.resize();
   }
 
-  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone, onOpenMap }) {
+  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone, onOpenMap, onOpenBank, onOpenPolice }) {
     if (onOpenMap) this.onOpenMap = onOpenMap;
     if (onInspect) this.onInspectBiz = onInspect;
     if (onUpgrade) this.onUpgradeBiz = onUpgrade;
     if (onCollect) this.onCollectBiz = onCollect;
     if (onHudAction) this.onHudAction = onHudAction;
     if (onSwitchZone) this.onSwitchZone = onSwitchZone;
+    if (onOpenBank) this.onOpenBank = onOpenBank;
+    if (onOpenPolice) this.onOpenPolice = onOpenPolice;
   }
 
   buildZoneLayout(zoneId) {
@@ -2044,7 +2046,32 @@ export class QuartierAnimator {
       { type: 'crossroad', streetName: 'مفترق بن قردان الدولي', width: 130, nextZoneId: 'gabes', nextZoneLabel: 'قابس' }
     ];
 
-    const rawItems = zoneSpecs[zoneId] || zoneSpecs.bab_souika;
+    let rawItems = zoneSpecs[zoneId] || zoneSpecs.bab_souika;
+
+    // Insertion automatique et garantie d'une Banque et d'un Poste de Police dans chaque ville
+    const hasBank = rawItems.some(it => it.type === 'bank_branch');
+    const hasPolice = rawItems.some(it => it.type === 'police_station');
+    if (!hasBank || !hasPolice) {
+      const augmented = [];
+      let bankInserted = hasBank;
+      let policeInserted = hasPolice;
+      rawItems.forEach((it, idx) => {
+        augmented.push(it);
+        // Insérer la banque après le 1er ou 2ème élément
+        if (!bankInserted && idx === 1) {
+          augmented.push({ type: 'bank_branch', width: 135 });
+          bankInserted = true;
+        }
+        // Insérer le poste de police après le 4ème élément
+        if (!policeInserted && idx === 4) {
+          augmented.push({ type: 'police_station', width: 135 });
+          policeInserted = true;
+        }
+      });
+      if (!bankInserted) augmented.push({ type: 'bank_branch', width: 135 });
+      if (!policeInserted) augmented.push({ type: 'police_station', width: 135 });
+      rawItems = augmented;
+    }
 
     // Quartier précédent (cyclique) pour permettre la navigation dans les deux sens
     const zoneOrder = ['bab_souika', 'la_goulette', 'lac_2', 'hammamet', 'djerba_holding'];
@@ -2084,7 +2111,7 @@ export class QuartierAnimator {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
         curX += item.width + 24;
-      } else if (item.type === 'garden' || item.type === 'service_station' || item.type === 'bank_branch') {
+      } else if (item.type === 'garden' || item.type === 'service_station' || item.type === 'bank_branch' || item.type === 'police_station') {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
         curX += item.width + 24;
@@ -2378,6 +2405,10 @@ export class QuartierAnimator {
       this.onUpgradeBiz(bizId);
     } else if (action === 'collect' && this.onCollectBiz) {
       this.onCollectBiz(bizId);
+    } else if (action === 'open_bank' && this.onOpenBank) {
+      this.onOpenBank();
+    } else if (action === 'open_police' && this.onOpenPolice) {
+      this.onOpenPolice();
     } else if (action.startsWith('hud_') && this.onHudAction) {
       this.onHudAction(action);
     }
@@ -2650,6 +2681,8 @@ export class QuartierAnimator {
           this.drawServiceStation(ctx, item, screenX, groundY, timestamp);
         } else if (item.type === 'bank_branch') {
           this.drawBankBranch(ctx, item, screenX, groundY, timestamp);
+        } else if (item.type === 'police_station') {
+          this.drawPoliceStation(ctx, item, screenX, groundY, timestamp);
         }
       }
     });
@@ -3809,10 +3842,10 @@ export class QuartierAnimator {
 
   drawBankBranch(ctx, bItem, x, groundY, timestamp) {
     const w = bItem.width || 135;
-    const h = 90;
+    const h = 95;
     const y = groundY - h;
     ctx.save();
-    // Façade vitrée moderne bancaire
+    // Façade vitrée moderne bancaire avec pilastres dorés
     ctx.fillStyle = '#0f172a';
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 1.5;
@@ -3821,22 +3854,151 @@ export class QuartierAnimator {
     ctx.fill();
     ctx.stroke();
 
-    // Enseigne Banque
+    // Enseigne lumineuse Banque
     ctx.fillStyle = '#0284c7';
-    ctx.fillRect(x + 6, y + 8, w - 12, 20);
+    ctx.fillRect(x + 6, y + 8, w - 12, 22);
+    ctx.strokeStyle = '#38bdf8';
+    ctx.strokeRect(x + 6, y + 8, w - 12, 22);
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 10px "Cairo", sans-serif';
+    ctx.font = '900 10.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🏦 وكالة بنكية وطنية', x + w / 2, y + 22);
+    ctx.fillText('🏦 بنك الإمبراطورية الوطني', x + w / 2, y + 23);
+
+    // Vitrines et guichets
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+    ctx.fillRect(x + 12, y + 36, w - 24, 22);
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+    ctx.strokeRect(x + 12, y + 36, w - 24, 22);
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '800 8px "Cairo", sans-serif';
+    ctx.fillText('إيداع وسحب وتصريف أموال 💵', x + w / 2, y + 51);
+
+    // Porte d'entrée sécurisée / Guichet central avec bouton interactif
+    const doorW = 42;
+    const doorH = 32;
+    const doorX = x + (w - doorW) / 2;
+    const doorY = groundY - doorH;
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.roundRect(doorX, doorY, doorW, doorH, [4, 4, 0, 0]);
+    ctx.fill();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '900 8.5px "Cairo", sans-serif';
+    ctx.fillText('ادخل 🚪', doorX + doorW / 2, doorY + 18);
 
     // Distributeur automatique DAB / GAB
     ctx.fillStyle = '#1e293b';
-    ctx.fillRect(x + 16, groundY - 42, 24, 42);
+    ctx.fillRect(x + 8, groundY - 38, 22, 38);
     ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(x + 20, groundY - 36, 16, 12);
+    ctx.fillRect(x + 11, groundY - 33, 16, 10);
     ctx.fillStyle = '#fef08a';
-    ctx.font = '700 7px "Cairo", sans-serif';
-    ctx.fillText('DAB', x + 28, groundY - 27);
+    ctx.font = '700 6.5px "Cairo", sans-serif';
+    ctx.fillText('DAB', x + 19, groundY - 25);
+
+    // Enregistrement de la hitbox cliquable pour entrer dans la banque
+    this.interactiveHitboxes.push({
+      x: x,
+      y: y,
+      w: w,
+      h: h,
+      action: 'open_bank',
+      bizId: null
+    });
+
+    ctx.restore();
+  }
+
+  drawPoliceStation(ctx, pItem, x, groundY, timestamp) {
+    const w = pItem.width || 135;
+    const h = 95;
+    const y = groundY - h;
+    ctx.save();
+
+    // Façade officielle bleu nuit et pierre de sécurité
+    ctx.fillStyle = '#0b1329';
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, [6, 6, 0, 0]);
+    ctx.fill();
+    ctx.stroke();
+
+    // Gyrophare de police clignotant sur le toit (Rouge / Bleu alternatif réaliste)
+    const sirenX = x + w / 2;
+    const sirenY = y - 7;
+    const isBlueCycle = Math.floor(timestamp / 240) % 2 === 0;
+    const sirenColor = isBlueCycle ? '#38bdf8' : '#ef4444';
+    ctx.fillStyle = sirenColor;
+    ctx.shadowColor = sirenColor;
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(sirenX, sirenY, 5.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Enseigne officielle Poste de Police
+    ctx.fillStyle = '#1d4ed8';
+    ctx.fillRect(x + 6, y + 8, w - 12, 22);
+    ctx.strokeStyle = '#60a5fa';
+    ctx.strokeRect(x + 6, y + 8, w - 12, 22);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 10px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('👮 مركز الأمن والشرطة', x + w / 2, y + 23);
+
+    // Fenêtres à barreaux sécurisées et caméra de surveillance
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(x + 12, y + 36, 32, 18);
+    ctx.fillRect(x + w - 44, y + 36, 32, 18);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1;
+    for (let bx = x + 18; bx < x + 42; bx += 8) {
+      ctx.beginPath();
+      ctx.moveTo(bx, y + 36);
+      ctx.lineTo(bx, y + 54);
+      ctx.stroke();
+    }
+    for (let bx = x + w - 38; bx < x + w - 14; bx += 8) {
+      ctx.beginPath();
+      ctx.moveTo(bx, y + 36);
+      ctx.lineTo(bx, y + 54);
+      ctx.stroke();
+    }
+
+    // Caméra de sécurité
+    ctx.font = '10px sans-serif';
+    ctx.fillText('📹', x + 16, y + 30);
+
+    // Porte blindée centrale avec badge
+    const doorW = 40;
+    const doorH = 34;
+    const doorX = x + (w - doorW) / 2;
+    const doorY = groundY - doorH;
+    ctx.fillStyle = '#1e3a8a';
+    ctx.beginPath();
+    ctx.roundRect(doorX, doorY, doorW, doorH, [4, 4, 0, 0]);
+    ctx.fill();
+    ctx.strokeStyle = '#60a5fa';
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 8.5px "Cairo", sans-serif';
+    ctx.fillText('دورية 🚓', doorX + doorW / 2, doorY + 20);
+
+    // Enregistrement de la hitbox cliquable pour interaction commissariat
+    this.interactiveHitboxes.push({
+      x: x,
+      y: y,
+      w: w,
+      h: h,
+      action: 'open_police',
+      bizId: null
+    });
+
     ctx.restore();
   }
 

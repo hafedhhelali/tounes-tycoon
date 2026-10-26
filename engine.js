@@ -733,7 +733,8 @@ export class TycoonEngine {
     this.businesses = this.initCityBusinesses('tunis');
 
     // Économie
-    this.dinars = 5.0; // Don de départ (pour acheter le 1er kiosque كسكروت عيّاري à 5 DT)
+    this.dinars = 5.0; // السيولة في الجيب (Cash disponible)
+    this.bankBalance = 0.0; // الرصيد في البنك (Compte bancaire sécurisé)
     this.totalDinarsEarned = 5.0;
     this.lifetimeDinarsEarned = 5.0; // Cumul tous prestiges confondus
     this.prestigePoints = 0; // Ma3rouf / Réputation / Expérience
@@ -1357,6 +1358,7 @@ export class TycoonEngine {
     });
 
     this.dinars = 5.0; // Nouveau don de démarrage
+    this.bankBalance = 0.0;
     this.totalDinarsEarned = 5.0;
     this.manualServesCount = 0;
     this.activeEvent = null;
@@ -2197,7 +2199,7 @@ export class TycoonEngine {
 
   
   getTotalFortune() {
-    let sum = this.dinars || 0;
+    let sum = (this.dinars || 0) + (this.bankBalance || 0);
     if (this.cityBalances) {
       for (const [cId, bal] of Object.entries(this.cityBalances)) {
         if (cId !== this.currentCityId) {
@@ -2206,6 +2208,31 @@ export class TycoonEngine {
       }
     }
     return sum;
+  }
+
+  // --- COMPTE BANCAIRE : DÉPÔT / RETRAIT (سيولة ورصيد في البنك) ---
+  depositToBank(amount) {
+    const val = Math.max(0, parseFloat(amount) || 0);
+    if (val <= 0 || val > this.dinars) return false;
+    this.dinars -= val;
+    this.bankBalance = (this.bankBalance || 0) + val;
+    if (this.currentCityId) {
+      if (!this.cityBalances) this.cityBalances = {};
+      this.cityBalances[this.currentCityId] = this.dinars;
+    }
+    return { success: true, amount: val, dinars: this.dinars, bankBalance: this.bankBalance };
+  }
+
+  withdrawFromBank(amount) {
+    const val = Math.max(0, parseFloat(amount) || 0);
+    if (val <= 0 || val > (this.bankBalance || 0)) return false;
+    this.bankBalance = (this.bankBalance || 0) - val;
+    this.dinars += val;
+    if (this.currentCityId) {
+      if (!this.cityBalances) this.cityBalances = {};
+      this.cityBalances[this.currentCityId] = this.dinars;
+    }
+    return { success: true, amount: val, dinars: this.dinars, bankBalance: this.bankBalance };
   }
 
   getProfileStats(now = Date.now()) {
@@ -2243,6 +2270,7 @@ export class TycoonEngine {
       prestigePoints: this.prestigePoints || 0,
       lifetimeDinars: lifetime,
       currentDinars: this.dinars || 0,
+      bankBalance: this.bankBalance || 0,
       totalEmpireFortune: this.getTotalFortune(),
       totalExpensesPaid: this.totalExpensesPaid || 0,
       expensesSummary: this.getCurrentExpensesSummary(),
@@ -2323,6 +2351,7 @@ export class TycoonEngine {
       createdAt: this.createdAt || Date.now(),
       totalPlayTimeSeconds: this.totalPlayTimeSeconds || 0,
       dinars: this.dinars,
+      bankBalance: this.bankBalance || 0,
       cityBalances: this.cityBalances || { [this.currentCityId || "tunis"]: this.dinars },
       totalDinarsEarned: this.totalDinarsEarned,
       lifetimeDinarsEarned: this.lifetimeDinarsEarned || this.totalDinarsEarned,
@@ -2377,6 +2406,7 @@ export class TycoonEngine {
     this.createdAt = state.createdAt ?? this.createdAt;
     this.totalPlayTimeSeconds = state.totalPlayTimeSeconds ?? this.totalPlayTimeSeconds;
     this.dinars = state.dinars ?? this.dinars;
+    this.bankBalance = state.bankBalance ?? 0;
     this.cityBalances = state.cityBalances ?? { [this.currentCityId || "tunis"]: this.dinars };
     this.totalDinarsEarned = state.totalDinarsEarned ?? this.totalDinarsEarned;
     this.lifetimeDinarsEarned = state.lifetimeDinarsEarned ?? this.totalDinarsEarned;

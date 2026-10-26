@@ -15,6 +15,17 @@
 
 # CHANGELOG
 
+## [v107] - 2026-10-26
+
+### Added & Enhanced
+- **Ajout systématique de la Banque et du Poste de Police dans chaque ville** :
+  - **Banque Nationale (`bank_branch`)** : Bâtiment interactif avec DAB/GAB, guichets et porte d'entrée. Permet de déposer et retirer son argent avec gestion de deux soldes distincts :
+    - `💵 السيولة (في الجيب)` : Cash liquide disponible pour les achats immédiats.
+    - `🏦 الرصيد في البنك` : Argent placé en sécurité dans le compte bancaire.
+  - **Affichage Double Solde dans le Header** : Deux badges distincts (`#dinarsDisplay` et `#bankDisplay`) avec accès direct à la banque au tap.
+  - **Poste de Police (`police_station`)** : Bâtiment officiel avec gyrophare bicolore animé, fenêtres sécurisées, caméras et patrouille immédiate de sécurité municipale.
+  - **Présence garantie dans les 14 villes** : Génération dynamique garantissant la présence d'une banque et d'un commissariat dans chaque artère urbaine.
+
 ## [v106] - 2026-10-26
 
 ### Fixed & Cleaned
