@@ -1070,6 +1070,66 @@ export class TycoonEngine {
     return true;
   }
 
+  // Diagnostic précis et dynamique des critères manquants pour une ville verrouillée
+  getCityLockDiagnosis(cityOrId) {
+    const city = typeof cityOrId === 'string' ? this.getCityById(cityOrId) : cityOrId;
+    if (!city) return 'ولاية غير معروفة';
+    if (this.unlockedCityIds.includes(city.id)) return 'مفتوحة ✓';
+
+    const missing = [];
+
+    // 1. Argent liquide requis
+    if (city.costDinars > 0 && this.dinars < city.costDinars) {
+      const diff = Math.ceil(city.costDinars - this.dinars);
+      missing.push(`ناقصك ${diff.toLocaleString()} د.ت في الكاسة`);
+    }
+
+    // 2. Prestige requis
+    if (city.minPrestige > 0 && (this.prestigeLevel || 0) < city.minPrestige) {
+      missing.push(`يلزم برستيج ${city.minPrestige} (إنت في ${this.prestigeLevel || 0})`);
+    }
+
+    // 3. Revenu cumulé requis
+    if (city.reqTotalDinars) {
+      const curTotal = Math.max(this.lifetimeDinarsEarned || 0, this.totalDinarsEarned || 0);
+      if (curTotal < city.reqTotalDinars) {
+        const diffTot = Math.ceil(city.reqTotalDinars - curTotal);
+        missing.push(`ناقصك ${diffTot.toLocaleString()} د.ت مداخيل جملية`);
+      }
+    }
+
+    // 4. Managers recrutés requis
+    if (city.reqManagers && city.reqManagers > 0) {
+      const allEmpireBusinesses = Object.values(this.cityBusinesses).flat();
+      const totalManagers = allEmpireBusinesses.reduce((sum, b) => sum + (b.hiredManagersCount || (b.hasManager ? 1 : 0)), 0);
+      if (totalManagers < city.reqManagers) {
+        missing.push(`يلزم ${city.reqManagers} معلّمين مسيّرين (عندك ${totalManagers})`);
+      }
+    }
+
+    // 5. Niveaux de projets requis
+    if (city.reqBizLevel) {
+      const { count = 1, minLevel = 1 } = city.reqBizLevel;
+      const allEmpireBusinesses = Object.values(this.cityBusinesses).flat();
+      const qualified = allEmpireBusinesses.filter(b => (b.level || 0) >= minLevel).length;
+      if (qualified < count) {
+        missing.push(`يلزم ${count} مشاريع مستوى ${minLevel} (عندك ${qualified}/${count})`);
+      }
+    }
+
+    // 6. Titre Légende
+    if (city.reqLegendTitle) {
+      const isLegend = (this.prestigeLevel >= 10) ||
+        (this.playerTitle && (this.playerTitle.includes('إمبراطور') || this.playerTitle.includes('أسطورة')));
+      if (!isLegend) {
+        missing.push(`يلزم لقب الأسطورة / برستيج 10 (إنت في ${this.prestigeLevel || 0})`);
+      }
+    }
+
+    if (missing.length === 0) return city.criteriaDesc || 'جاهزة للفتح 🚀';
+    return missing.join(' • ');
+  }
+
   unlockCity(cityId) {
     const city = this.getCityById(cityId);
     if (!city) return false;

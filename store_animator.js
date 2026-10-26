@@ -199,7 +199,16 @@ export class CanvasStoreEngine {
         this.engine.cityBalances[this.engine.currentCityId] = this.engine.dinars;
       }
     }
-    const gainText = cycleRevenue > 0 ? ('+' + cycleRevenue.toFixed(1) + ' DT') : '+د.ت';
+    const gainText = cycleRevenue > 0 ? ('+' + this.formatNumber(cycleRevenue) + ' DT') : '+د.ت';
+    this.registerFlash = 1.0;
+
+    if (typeof window !== 'undefined' && window.soundEngine) {
+      if (window.soundEngine.playWorkSound) {
+        window.soundEngine.playWorkSound(this.bizId);
+      } else if (window.soundEngine.playCoin) {
+        window.soundEngine.playCoin();
+      }
+    }
 
     // Money float puff
     this.moneyPuffs.push({
@@ -944,10 +953,15 @@ export class CanvasStoreEngine {
     ctx.strokeRect(counterX, counterY + 12, deskW, deskH);
 
     // Caisse enregistreuse moderne tunisienne positionnée à DROITE du comptoir pour ne JAMAIS masquer le caissier
+    const regSpring = (this.registerFlash || 0) * Math.sin(timeSec * 30) * 1.5;
     const regX = counterX + deskW - 38;
-    const regY = counterY - 8;
+    const regY = counterY - 8 - Math.abs(regSpring);
     const regW = 34;
     const regH = 24;
+
+    if (this.registerFlash > 0) {
+      this.registerFlash = Math.max(0, this.registerFlash - 0.04);
+    }
 
     // Ombre portée sous la caisse
     ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
@@ -1170,7 +1184,7 @@ export class CanvasStoreEngine {
       ctx.fillRect(x + 4, y - 8, 10, 3);
     }
 
-    // 2. CAFÉ ARBI : Zazoua en cuivre sur كانون فخار مع جمر مشتعل ورغوة التاي
+    // 2. CAFÉ ARBI : Zazoua en cuivre sur كانون فخار مع جمر مشتعل ورغوة التاي وجدول صب التاي المنعنع
     else if (bizId === 'kahwa' || bizId === 'salon_de_the') {
       ctx.fillStyle = '#9a3412';
       ctx.beginPath();
@@ -1190,38 +1204,227 @@ export class CanvasStoreEngine {
       ctx.arc(x + 22, y - 18, 9, 0, Math.PI, true);
       ctx.fill();
 
+      // Braises crépitantes animées
       ctx.fillStyle = '#fbbf24';
       ctx.beginPath();
       ctx.arc(x + 18, y - 19, 2.5, 0, Math.PI * 2);
       ctx.arc(x + 26, y - 19, 2, 0, Math.PI * 2);
       ctx.fill();
 
-      const zazX = x + 18;
-      const zazY = y - 28;
+      // Théière / Zazoua inclinée versant le thé à la menthe en hauteur (التشحيرة التونسية)
+      const pourTilt = isBusy ? Math.sin(timeSec * 4) * 0.25 + 0.35 : 0;
+      const zazX = x + 16;
+      const zazY = y - 30 - (isBusy ? Math.abs(Math.sin(timeSec * 4)) * 6 : 0);
+
+      ctx.save();
+      ctx.translate(zazX + 5, zazY + 5);
+      ctx.rotate(pourTilt);
       ctx.fillStyle = '#b45309';
       ctx.beginPath();
-      ctx.moveTo(zazX, zazY + 10);
-      ctx.lineTo(zazX + 10, zazY + 10);
-      ctx.lineTo(zazX + 8, zazY);
-      ctx.lineTo(zazX + 2, zazY);
+      ctx.moveTo(-5, 5);
+      ctx.lineTo(5, 5);
+      ctx.lineTo(3, -5);
+      ctx.lineTo(-3, -5);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = '#d97706';
+      ctx.strokeStyle = '#fbbf24';
       ctx.stroke();
 
+      // Manche en bois
       ctx.strokeStyle = '#78350f';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(zazX + 2, zazY + 3);
-      ctx.lineTo(zazX - 7, zazY - 4);
+      ctx.moveTo(-3, -2);
+      ctx.lineTo(-11, -8);
       ctx.stroke();
+      ctx.restore();
 
-      ctx.fillStyle = 'rgba(254, 240, 138, 0.7)';
+      // Jet de thé ambré parabolique coulant dans le verre lors du service
+      if (isBusy) {
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.85)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(zazX + 10, zazY + 4);
+        ctx.quadraticCurveTo(x + 35, zazY + 6, x + 35, y - 12);
+        ctx.stroke();
+      }
+
+      // Verre de thé avec mousse blanche et feuille de menthe fraîche
+      ctx.fillStyle = 'rgba(217, 119, 6, 0.85)';
       ctx.fillRect(x + 32, y - 12, 6, 10);
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(x + 32, y - 14, 6, 2.5);
+      ctx.fillRect(x + 32, y - 14.5, 6, 2.5);
       ctx.fillStyle = '#10b981';
-      ctx.fillRect(x + 34, y - 15, 2, 2);
+      ctx.fillRect(x + 34, y - 16, 2.5, 2.5);
+    }
+
+    // POISSONNERIE / MARÉE (FRUITS DE MER) : Étal de glace pilée scintillante, poissons sautillants et citron
+    else if (bizId === 'fruits_de_mer' || bizId === 'croisiere_mer') {
+      // Bac réfrigéré inox & glace pilée
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(x + 2, y - 16, 40, 16);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 2, y - 16, 40, 16);
+
+      // Lit de glace pilée cristalline
+      ctx.fillStyle = '#e0f2fe';
+      ctx.beginPath();
+      ctx.moveTo(x + 3, y - 16);
+      ctx.lineTo(x + 12, y - 21);
+      ctx.lineTo(x + 22, y - 18);
+      ctx.lineTo(x + 32, y - 22);
+      ctx.lineTo(x + 41, y - 16);
+      ctx.closePath();
+      ctx.fill();
+
+      // Poissons frais & crevettes animés avec reflets d'eau
+      const fishHop = isBusy ? Math.abs(Math.sin(timeSec * 7)) * 4 : 0;
+      ctx.font = '13px serif';
+      ctx.fillText('🐟', x + 6, y - 18 - fishHop);
+      ctx.fillText('🦐', x + 22, y - 17 - (isBusy ? Math.abs(Math.cos(timeSec * 7)) * 3 : 0));
+      if (isBusy) {
+        ctx.fillStyle = '#7dd3fc';
+        ctx.beginPath();
+        ctx.arc(x + 18, y - 26 - (timeSec * 15 % 8), 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // BOUCHERIE TRADITIONNELLE : Billot de bois massif, couperet animé et pièces de viande
+    else if (bizId === 'boucherie') {
+      // Billot en bois d'olivier épais
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+
+      // Pièce de viande rouge sur le billot
+      ctx.font = '13px serif';
+      ctx.fillText('🥩', x + 8, y - 18);
+
+      // Couperet de boucher animé en cadence (تقصيص اللحم)
+      const chopAngle = isBusy ? Math.sin(timeSec * 9) * 0.45 : -0.2;
+      ctx.save();
+      ctx.translate(x + 28, y - 22);
+      ctx.rotate(chopAngle);
+      ctx.font = '14px serif';
+      ctx.fillText('🔪', -6, 0);
+      ctx.restore();
+    }
+
+    // LIBRAIRIE & PAPETERIE : Presse/Reliure, pile de livres qui s'empilent et plume calligraphique
+    else if (bizId === 'librairie') {
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(x + 4, y - 16, 36, 16);
+      ctx.strokeStyle = '#d97706';
+      ctx.strokeRect(x + 4, y - 16, 36, 16);
+
+      const bookFloat = isBusy ? Math.sin(timeSec * 6) * 2.5 : 0;
+      ctx.font = '13px serif';
+      ctx.fillText('📚', x + 6, y - 17);
+      ctx.fillText('📖', x + 21, y - 19 + bookFloat);
+      if (isBusy) {
+        ctx.font = '11px serif';
+        ctx.fillText('✏️', x + 24 + Math.cos(timeSec * 8) * 3, y - 27);
+      }
+    }
+
+    // PRODUITS LAITIERS & FROMAGERIE (BÉJA) : Baratte à lait, meules de fromage dorées et pot de crème
+    else if (bizId === 'produits_laitiers') {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x + 4, y - 16, 36, 16);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.strokeRect(x + 4, y - 16, 36, 16);
+
+      const churnMove = isBusy ? Math.sin(timeSec * 8) * 3 : 0;
+      ctx.font = '13px serif';
+      ctx.fillText('🧀', x + 6, y - 17);
+      ctx.fillText('🥛', x + 22, y - 17 + churnMove);
+    }
+
+    // BOUTIQUE DE MODE & VÊTEMENTS : Mannequin de couture, ciseaux de tailleur et étoffes
+    else if (bizId === 'vente_vetements') {
+      ctx.fillStyle = '#4a044e';
+      ctx.fillRect(x + 4, y - 16, 36, 16);
+      ctx.strokeStyle = '#f472b6';
+      ctx.strokeRect(x + 4, y - 16, 36, 16);
+
+      const dressSway = isBusy ? Math.sin(timeSec * 5) * 0.12 : 0;
+      ctx.save();
+      ctx.translate(x + 15, y - 22);
+      ctx.rotate(dressSway);
+      ctx.font = '15px serif';
+      ctx.fillText('👗', -7, 4);
+      ctx.restore();
+      ctx.font = '12px serif';
+      ctx.fillText('👕', x + 24, y - 18);
+    }
+
+    // HORLOGERIE & BIJOUTERIE : Vitrine blindée illuminée, montres suisses et éclats de diamant rotatifs
+    else if (bizId === 'vente_montres') {
+      ctx.fillStyle = '#1e1b4b';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+
+      ctx.font = '13px serif';
+      ctx.fillText('⌚', x + 7, y - 19);
+      ctx.fillText('💎', x + 22, y - 19);
+
+      // Éclat stellaire tournant sur le diamant
+      const sparkScale = 0.7 + Math.sin(timeSec * 9) * 0.35;
+      ctx.save();
+      ctx.translate(x + 28, y - 27);
+      ctx.scale(sparkScale, sparkScale);
+      ctx.font = '10px sans-serif';
+      ctx.fillText('✨', -5, 4);
+      ctx.restore();
+    }
+
+    // SALLE DE JEUX / GAMING ARENA : Borne d'arcade néon clignotante et manettes vibrantes
+    else if (bizId === 'salle_de_jeux') {
+      ctx.fillStyle = '#09090b';
+      ctx.fillRect(x + 4, y - 22, 36, 22);
+      ctx.strokeStyle = (Math.floor(timeSec * 6) % 2 === 0) ? '#a855f7' : '#06b6d4';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(x + 4, y - 22, 36, 22);
+
+      const padShake = isBusy ? Math.sin(timeSec * 16) * 2 : 0;
+      ctx.font = '14px serif';
+      ctx.fillText('🕹️', x + 7, y - 6);
+      ctx.fillText('🎮', x + 21 + padShake, y - 20);
+    }
+
+    // CONDITIONNEMENT DE DATTES (DEGLET NOUR) : Tapis roulant doré et régimes de dattes
+    else if (bizId === 'emballage_dattes') {
+      ctx.fillStyle = '#431407';
+      ctx.fillRect(x + 4, y - 16, 36, 16);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.strokeRect(x + 4, y - 16, 36, 16);
+
+      const beltShift = isBusy ? (timeSec * 14) % 8 : 0;
+      ctx.font = '13px serif';
+      ctx.fillText('🌴', x + 6, y - 18);
+      ctx.fillText('📦', x + 18 + beltShift * 0.8, y - 17);
+    }
+
+    // HÔTEL / AGENCE DE VOYAGES / SUPERMARCHÉ
+    else if (bizId === 'hotel' || bizId === 'agence_voyages' || bizId === 'superette' || bizId === 'supermarche') {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+
+      const icon1 = bizId === 'hotel' ? '🛎️' : (bizId === 'agence_voyages' ? '✈️' : '🛒');
+      const icon2 = bizId === 'hotel' ? '🔑' : (bizId === 'agence_voyages' ? '🎫' : '🧺');
+      const bob = isBusy ? Math.abs(Math.sin(timeSec * 6)) * 3 : 0;
+      ctx.font = '13px serif';
+      ctx.fillText(icon1, x + 7, y - 19 - bob);
+      ctx.fillText(icon2, x + 22, y - 19);
     }
 
     // 3. OLIVE OIL MILL (SFAX) : Meules en pierre rotatives et filet d'huile dorée
@@ -1557,11 +1760,21 @@ export class CanvasStoreEngine {
     ctx.quadraticCurveTo(-2 + kabbousSway * 0.5, -43, -4 + kabbousSway, -39.5);
     ctx.stroke();
 
-    // 9. Yeux expressifs avec pupilles et sourcils
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(1.5, -41, 1.6, 1.8);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(2.2, -41, 0.7, 0.7); // Reflet oculaire
+    // 9. Yeux expressifs avec clignement naturel (Blinking State Machine) et sourcils
+    const isBlinking = ((timeSec + seed * 0.7) % 3.8) < 0.14;
+    if (isBlinking) {
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(1.2, -40.2);
+      ctx.lineTo(3.4, -40.2);
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(1.5, -41, 1.6, 1.8);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(2.2, -41, 0.7, 0.7); // Reflet oculaire
+    }
 
     // Sourcils fins
     ctx.strokeStyle = '#451a03';
@@ -1889,11 +2102,26 @@ export class CanvasStoreEngine {
       ctx.moveTo(0, 0);
       ctx.lineTo(0, len);
       ctx.stroke();
-      const glow = ctx.createRadialGradient(0, len + 6, 1, 0, len + 6, isProducing ? 28 : 20);
-      glow.addColorStop(0, 'rgba(253, 186, 116, 0.6)');
+
+      // Faisceau volumétrique doux orienté vers le sol
+      const beamAlpha = isProducing ? (0.12 + 0.04 * Math.sin(t * 4 + i)) : 0.06;
+      const beamGrad = ctx.createLinearGradient(0, len + 10, 0, len + 115);
+      beamGrad.addColorStop(0, `rgba(253, 224, 71, ${beamAlpha})`);
+      beamGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(-6, len + 10);
+      ctx.lineTo(-34, len + 115);
+      ctx.lineTo(34, len + 115);
+      ctx.lineTo(6, len + 10);
+      ctx.closePath();
+      ctx.fill();
+
+      const glow = ctx.createRadialGradient(0, len + 6, 1, 0, len + 6, isProducing ? 32 : 22);
+      glow.addColorStop(0, 'rgba(253, 186, 116, 0.65)');
       glow.addColorStop(1, 'rgba(253, 186, 116, 0)');
       ctx.fillStyle = glow;
-      ctx.fillRect(-30, len - 24, 60, 60);
+      ctx.fillRect(-32, len - 26, 64, 64);
       ctx.fillStyle = i % 2 ? '#dc2626' : '#f59e0b';
       ctx.beginPath();
       ctx.roundRect(-5, len, 10, 13, 3);
@@ -5934,10 +6162,12 @@ export class TunisiaMapEngine {
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
         } else if (c && !this.isCityUnlocked(c) && !this.canUnlockCity(c)) {
-          const engCity = this.engine.getCityById ? this.engine.getCityById(c.id) : null;
-          const critDesc = (engCity && engCity.criteriaDesc) ? engCity.criteriaDesc : c.tagline;
+          const diag = this.engine.getCityLockDiagnosis ? this.engine.getCityLockDiagnosis(c.id) : c.tagline;
+          if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playBuzzer) {
+            window.soundEngine.playBuzzer();
+          }
           if (typeof window !== 'undefined' && window.showFeedbackToast) {
-            window.showFeedbackToast(`🔒 ولاية ${c.name} مقفلة ! الشروط: ${critDesc}`, '🔒');
+            window.showFeedbackToast(`🔒 ${c.name} مقفلة : ${diag}`, '🔒');
           }
         }
         return;
@@ -5950,13 +6180,15 @@ export class TunisiaMapEngine {
       if (dist <= 42) {
         const isUnlocked = this.isCityUnlocked(c);
         const canUnlock = this.canUnlockCity(c);
-        const engCity = this.engine.getCityById ? this.engine.getCityById(c.id) : null;
-        const critDesc = (engCity && engCity.criteriaDesc) ? engCity.criteriaDesc : c.tagline;
+        const diag = this.engine.getCityLockDiagnosis ? this.engine.getCityLockDiagnosis(c.id) : c.tagline;
 
-        // Si la ville est verrouillée, TOUJOURS afficher le toast d'explication avec le cadenas et les critères précis
+        // Si la ville est verrouillée, TOUJOURS afficher le diagnostic exact de ce qui manque + son buzzer
         if (!isUnlocked && !canUnlock) {
+          if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playBuzzer) {
+            window.soundEngine.playBuzzer();
+          }
           if (typeof window !== 'undefined' && window.showFeedbackToast) {
-            window.showFeedbackToast(`🔒 ولاية ${c.name} مقفلة ! الشروط : ${critDesc}`, '🔒');
+            window.showFeedbackToast(`🔒 ${c.name} مقفلة : ${diag}`, '🔒');
           }
         }
 
@@ -6802,13 +7034,12 @@ export class TunisiaMapEngine {
       ctx.font = '900 9.5px "Cairo", sans-serif';
       ctx.fillText('🔒 مقفلة (' + Math.round(pct * 100) + '%)', btnX - 20 + (btnW + 20) / 2, btnY + 14);
 
-      // Critère complet adaptatif sans coupure
-      const engineCity = this.engine.getCityById ? this.engine.getCityById(c.id) : null;
-      const critText = engineCity && engineCity.criteriaDesc ? engineCity.criteriaDesc : `يتطلب ${c.reqDinars || 0} د.ت`;
-      ctx.fillStyle = '#fde047';
-      const cFontSize = critText.length > 28 ? 7 : (critText.length > 20 ? 7.5 : 8);
+      // Diagnostic complet adaptatif sans coupure (précise exactement pourquoi la ville est verrouillée)
+      const diagText = this.engine.getCityLockDiagnosis ? this.engine.getCityLockDiagnosis(c.id) : (c.criteriaDesc || `يتطلب ${c.reqDinars || 0} د.ت`);
+      ctx.fillStyle = '#fca5a5';
+      const cFontSize = diagText.length > 34 ? 6.5 : (diagText.length > 24 ? 7 : 7.8);
       ctx.font = `800 ${cFontSize}px "Cairo", sans-serif`;
-      ctx.fillText(critText, btnX - 20 + (btnW + 20) / 2, btnY + 25);
+      ctx.fillText(diagText, btnX - 20 + (btnW + 20) / 2, btnY + 25);
     }
 
     ctx.restore();

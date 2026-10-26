@@ -19,48 +19,105 @@ class SoundEngine {
     }
   }
 
-  // Tintement de pièces de Dinars
+  // Tintement cristallin de pièces de Dinars (harmonique double richesse)
   playCoin() {
     if (this.muted) return;
     this.init();
     const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(987.77, now); // B5
-    osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.08); // E6
+    // Fondamentale + harmonique d'octave dorée
+    [987.77, 1318.51].forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = now + i * 0.045;
 
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      osc.type = i === 0 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.33, t + 0.09);
 
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
+      gain.gain.setValueAtTime(i === 0 ? 0.14 : 0.10, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
 
-    osc.start(now);
-    osc.stop(now + 0.15);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.16);
+    });
   }
 
-  // Tintement du verre de thé à la cuillère
+  // Son de tiroir-caisse (Cha-Ching ! authentique de caisse enregistreuse)
+  playCashRegister() {
+    if (this.muted) return;
+    this.init();
+    const now = this.ctx.currentTime;
+
+    // 1. Claquement mécanique du tiroir
+    const osc1 = this.ctx.createOscillator();
+    const gain1 = this.ctx.createGain();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(320, now);
+    osc1.frequency.exponentialRampToValueAtTime(110, now + 0.05);
+    gain1.gain.setValueAtTime(0.18, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+    osc1.connect(gain1);
+    gain1.connect(this.ctx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.055);
+
+    // 2. Clochette aiguë de caisse (Ching!)
+    [1567.98, 2093.00].forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = now + 0.05 + idx * 0.035;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.24);
+    });
+  }
+
+  // Tintement cristallin du verre de thé à la menthe et service
   playTeaCup() {
     if (this.muted) return;
     this.init();
     const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
 
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(2400, now);
-    osc.frequency.exponentialRampToValueAtTime(2800, now + 0.04);
+    [2400, 3100].forEach((f, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = now + idx * 0.05;
 
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, t);
+      osc.frequency.exponentialRampToValueAtTime(f * 1.12, t + 0.04);
 
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
+      gain.gain.setValueAtTime(0.16, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
 
-    osc.start(now);
-    osc.stop(now + 0.1);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.12);
+    });
+  }
+
+  // Son d'ambiance métier lors d'un service à l'intérieur d'un projet
+  playWorkSound(bizId) {
+    if (this.muted) return;
+    this.init();
+    if (bizId === 'kahwa' || bizId === 'salon_de_the') {
+      this.playTeaCup();
+    } else if (bizId === 'taxi_collectif' || bizId === 'showroom_auto') {
+      this.playHorn();
+    } else {
+      this.playCashRegister();
+    }
   }
 
   // Double coup de klaxon de Louage / Taxi Collectif (Tut Tut !)

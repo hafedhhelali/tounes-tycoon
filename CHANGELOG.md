@@ -15,6 +15,21 @@
 
 # CHANGELOG
 
+## [v116] - 2026-10-26
+
+### Added & Enhanced
+- **Animations Intérieures Révolutionnées par Métier (`CanvasStoreEngine`)** :
+  - *Café & Salon de thé* : Théière inclinée en l'air versant un jet de thé ambré parabolique dans le verre moussant à la menthe.
+  - *Poissonnerie & Croisière* : Étalage réfrigéré de glace pilée cristalline avec poissons et crevettes sautillants.
+  - *Boucherie* : Billot en bois d'olivier et couperet de boucher animé en cadence.
+  - *Horlogerie & Bijouterie* : Vitrine blindée et éclats stellaires rotatifs sur le diamant.
+  - *Librairie, Laiterie de Béja, Mode, Salle de Jeux Arcade Néon, Dattes Deglet Nour, Hôtel & Voyages* : Postes de travail animés dédiés (plus aucun carton générique).
+  - *Éclairage Volumétrique & Vie* : Faisceaux lumineux dorés sous les lanternes orientés vers le sol, clignement naturel des yeux des artisans (`Blinking State Machine`) et rebond physique élastique de la caisse enregistreuse à chaque encaissement.
+- **Amélioration du Moteur Audio (`audio.js`)** :
+  - Ajout de `playCashRegister()` (claquement mécanique du tiroir + double clochette Cha-Ching!), `playWorkSound(bizId)` synchronisé avec chaque encaissement client, et enrichissement harmonique de `playCoin()` et `playTeaCup()`.
+- **Diagnostic Temps Réel des Villes Verrouillées (`getCityLockDiagnosis`)** :
+  - Calcul dynamique exact de la raison du blocage affiché sur la Carte et dans la liste (ex: `ناقصك X د.ت في الكاسة`, `يلزم برستيج 1 (إنت في 0)`, `يلزم 4 مشاريع مستوى 35 (عندك 2/4)`, `يلزم 5 معلّمين مسيّرين (عندك 3)`).
+
 ## [v115] - 2026-10-26
 
 ### Fixed & Enhanced
