@@ -1081,9 +1081,12 @@ export class CanvasStoreEngine {
   drawWorkstations(ctx, detail, isBusy, now) {
     if (!detail.staffSlots) return;
     const timeSec = now / 1000;
-    const startX = 104;
+    const startX = 112;
     const baseY = 148;
-    const spacing = 62;
+    const spacing = 64;
+
+    // Poste central animé en permanence au milieu de la boutique (même avant d'avoir recruté tous les employés)
+    this.drawCentralActionShowcase(ctx, this.bizId, timeSec, isBusy);
 
     detail.staffSlots.slice(1).forEach((slot, idx) => {
       const stationX = startX + idx * spacing;
@@ -1091,11 +1094,12 @@ export class CanvasStoreEngine {
 
       ctx.save();
 
-      // 1. Machine ou poste thématique au sol
-      this.drawMachineProp(ctx, this.bizId, stationX, baseY, isBusy, timeSec, slot);
-
       if (slot.hired) {
-        this.drawWorker(ctx, stationX + 22, baseY, idx + 1, isBusy, timeSec);
+        // 1. Artisan / Employé en arrière-plan de son établi
+        this.drawWorker(ctx, stationX + 22, baseY - 2, idx + 1, true, timeSec);
+
+        // 2. Machine & poste de fabrication au premier plan (ne masque plus le visage de l'employé, et reste 100% visible)
+        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, true, timeSec, slot);
 
         // Hitbox ouvrier pour affichage rôle au clic
         this.clickZones.push({
@@ -1108,17 +1112,54 @@ export class CanvasStoreEngine {
           role: slot.role
         });
 
-        const effIcon = isBusy ? (slot.icon || '⚡') : (slot.icon || '👔');
+        const effIcon = slot.icon || '⚡';
         ctx.font = '13px sans-serif';
         ctx.textAlign = 'center';
-        const effBounce = isBusy ? -Math.abs(Math.sin(timeSec * 5 + idx) * 5) : 0;
-        ctx.fillText(effIcon, stationX + 22, baseY - 54 + effBounce);
+        const effBounce = -Math.abs(Math.sin(timeSec * 5 + idx) * 5);
+        ctx.fillText(effIcon, stationX + 22, baseY - 56 + effBounce);
       } else {
-        this.drawHireButton(ctx, stationX + 2, baseY - 56, 48, 54, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
+        // Si pas encore recruté : afficher la machine animée en bas ET le bouton de recrutement compact juste au-dessus !
+        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, true, timeSec, slot);
+        this.drawHireButton(ctx, stationX + 1, baseY - 64, 46, 36, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
       }
 
       ctx.restore();
     });
+  }
+
+  // --- SPECTACLE CENTRAL ANIMÉ EN PERMANENCE SELON LE MÉTIER ---
+  drawCentralActionShowcase(ctx, bizId, timeSec, isBusy) {
+    ctx.save();
+    const cx = this.width * 0.56;
+    const cy = 112;
+
+    // Halo d'activité chaud sous la zone centrale
+    const pulse = 0.5 + 0.5 * Math.sin(timeSec * 4);
+    const glow = ctx.createRadialGradient(cx, cy, 4, cx, cy, 38);
+    glow.addColorStop(0, `rgba(251, 191, 36, ${0.18 + pulse * 0.1})`);
+    glow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Animation flottante d'articles fabriqués en temps réel (Cycle continu fluide)
+    const icons = this.orderIcons[bizId] || this.orderIcons.default;
+    for (let i = 0; i < 3; i++) {
+      const progress = ((timeSec * 0.65 + i * 0.33) % 1);
+      const itemX = cx - 35 + progress * 70;
+      const itemY = cy - 18 - Math.sin(progress * Math.PI) * 16;
+      const alpha = Math.sin(progress * Math.PI);
+
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.92;
+      ctx.font = '14px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(icons[i % icons.length], itemX, itemY);
+      ctx.restore();
+    }
+
+    ctx.restore();
   }
 
   // --- DESSIN DES MACHINES ET ANIMATIONS ÉLÉVÉES SELON LE MÉTIER ---
@@ -1856,14 +1897,14 @@ export class CanvasStoreEngine {
 
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 11px "Cairo", sans-serif';
+    ctx.font = height < 42 ? '900 9.5px "Cairo", sans-serif' : '900 11px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('➕ ' + label, x + width / 2, y + 18);
+    ctx.fillText('➕ ' + label, x + width / 2, y + (height < 42 ? 14 : 18));
 
     if (cost !== null) {
       ctx.fillStyle = canAfford ? '#fef08a' : '#94a3b8';
-      ctx.font = 'bold 9px "Cairo", sans-serif';
-      ctx.fillText(this.formatNumber(cost) + ' DT', x + width / 2, y + 33);
+      ctx.font = height < 42 ? 'bold 8.5px "Cairo", sans-serif' : 'bold 9px "Cairo", sans-serif';
+      ctx.fillText(this.formatNumber(cost) + ' DT', x + width / 2, y + (height < 42 ? 27 : 33));
     }
 
     this.clickZones.push({
@@ -2225,19 +2266,20 @@ export class CanvasStoreEngine {
       }
     }
 
-    // 3. Particules d'ambiance et vapeur active
-    if (isProducing && Math.random() < 0.4) {
+    // 3. Particules d'ambiance et vapeur active (actives dès que le projet est ouvert au niveau > 0)
+    if (biz && biz.level > 0 && Math.random() < 0.35 && this.particles.length < 32) {
       const sourceX = 110 + Math.random() * (this.width - 150);
+      const isHotFood = ['kaskrout', 'fricasse', 'kahwa', 'salon_de_the', 'restaurant', 'patisserie'].includes(this.bizId);
       this.particles.push({
         x: sourceX,
-        y: 120,
+        y: 128,
         vx: Math.random() * 8 - 4,
-        vy: -22 - Math.random() * 25,
-        color: 'rgba(255, 255, 255, 0.38)',
-        radius: 2 + Math.random() * 3,
+        vy: -22 - Math.random() * 20,
+        color: isHotFood ? 'rgba(255, 255, 255, 0.42)' : 'rgba(251, 191, 36, 0.45)',
+        radius: isHotFood ? (2 + Math.random() * 2.5) : (1.5 + Math.random() * 1.5),
         life: 0.9,
         maxLife: 0.9,
-        isSparkle: false
+        isSparkle: !isHotFood
       });
     }
 
@@ -6143,21 +6185,12 @@ export class TunisiaMapEngine {
     // 1. Détection de clic sur la carte Popover en bas (coordonnées écran fixes)
     if (this.selectedCityId) {
       const cardW = this.width - 32;
-      const cardH = 92;
+      const cardH = 110;
       const cardX = 16;
-      const cardY = this.height - cardH - 12;
-      const btnW = 120;
-      const btnH = 40;
-      const btnX = cardX + 12;
-      const btnY = cardY + 44;
+      const cardY = this.height - cardH - 10;
 
-      // Hitbox calibrée exactement sur le bouton d'action affiché
-      const actualBtnX = cardX - 8;
-      const actualBtnY = cardY + 48;
-      const actualBtnW = 125;
-      const actualBtnH = 34;
-
-      if (screenX >= actualBtnX - 10 && screenX <= actualBtnX + actualBtnW + 10 && screenY >= actualBtnY - 6 && screenY <= actualBtnY + actualBtnH + 6) {
+      // Hitbox large sur le bouton ou le bandeau de la carte Popover
+      if (screenX >= cardX && screenX <= cardX + cardW && screenY >= cardY && screenY <= cardY + cardH) {
         const c = this.cities.find(item => item.id === this.selectedCityId);
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
@@ -6166,7 +6199,9 @@ export class TunisiaMapEngine {
           if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playBuzzer) {
             window.soundEngine.playBuzzer();
           }
-          if (typeof window !== 'undefined' && window.showFeedbackToast) {
+          if (typeof window !== 'undefined' && window.showRewardModalUI) {
+            window.showRewardModalUI('🔒', `ولاية ${c.name} مقفلة !`, `علاش ما تنجمش تسافر لـ ${c.name} توا :`, `⚠️ ${diag}`);
+          } else if (typeof window !== 'undefined' && window.showFeedbackToast) {
             window.showFeedbackToast(`🔒 ${c.name} مقفلة : ${diag}`, '🔒');
           }
         }
@@ -6182,13 +6217,17 @@ export class TunisiaMapEngine {
         const canUnlock = this.canUnlockCity(c);
         const diag = this.engine.getCityLockDiagnosis ? this.engine.getCityLockDiagnosis(c.id) : c.tagline;
 
-        // Si la ville est verrouillée, TOUJOURS afficher le diagnostic exact de ce qui manque + son buzzer
+        // Si la ville est verrouillée, TOUJOURS afficher le diagnostic exact de ce qui manque + modale/toast + son buzzer
         if (!isUnlocked && !canUnlock) {
           if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playBuzzer) {
             window.soundEngine.playBuzzer();
           }
           if (typeof window !== 'undefined' && window.showFeedbackToast) {
             window.showFeedbackToast(`🔒 ${c.name} مقفلة : ${diag}`, '🔒');
+          }
+          // Si on reclique sur la ville verrouillée déjà sélectionnée, ouvrir la fenêtre modale grand format
+          if (this.selectedCityId === c.id && typeof window !== 'undefined' && window.showRewardModalUI) {
+            window.showRewardModalUI('🔒', `ولاية ${c.name} مقفلة !`, `الشروط اللازمة باش تحلّ ${c.name} :`, `⚠️ ${diag}`);
           }
         }
 
@@ -6573,6 +6612,12 @@ export class TunisiaMapEngine {
     ctx.restore();
   }
 
+  formatMapCompact(n) {
+    if (n >= 1e6) return (n / 1e6).toFixed(n % 1e6 === 0 ? 0 : 1) + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(n % 1e3 === 0 ? 0 : 1) + 'K';
+    return '' + n;
+  }
+
   drawCityNodes(ctx, t) {
     const activeCity = this.getActiveCity();
     const nextCity = this.getNextCityToUnlock();
@@ -6679,17 +6724,22 @@ export class TunisiaMapEngine {
         ctx.font = 'bold 9px "Cairo", sans-serif';
         ctx.fillText('⭐ مستوى ' + pLvl, c.x, c.y + pinRadius + 12);
       } else if (!isUnlocked) {
-        if (isNext) {
-          const pctText = Math.round(this.getCityUnlockProgress(c) * 100) + '%';
-          ctx.fillStyle = '#fde047';
-          ctx.font = 'bold 8.5px "Cairo", sans-serif';
-          ctx.fillText('🔓 ' + pctText, c.x, c.y + pinRadius + 12);
-        } else {
-          // Mention élégante discrète pour les villes verrouillées
-          ctx.fillStyle = '#94a3b8';
-          ctx.font = '800 7.5px "Cairo", sans-serif';
-          ctx.fillText('🔒 مقفلة', c.x, c.y + pinRadius + 11);
+        const engC = this.engine.getCityById ? this.engine.getCityById(c.id) : null;
+        let shortLockReason = '🔒 مقفلة';
+        if (engC) {
+          if (engC.minPrestige > 0 && (this.engine.prestigeLevel || 0) < engC.minPrestige) {
+            shortLockReason = `🔒 برستيج ${engC.minPrestige}`;
+          } else if (engC.reqBizLevel && engC.reqBizLevel.minLevel) {
+            shortLockReason = `🔒 ${engC.reqBizLevel.count}xL${engC.reqBizLevel.minLevel}`;
+          } else if (engC.reqManagers > 0) {
+            shortLockReason = `🔒 ${engC.reqManagers} معلّم`;
+          } else if (engC.costDinars > 0) {
+            shortLockReason = `🔒 ${this.formatMapCompact(engC.costDinars)} د.ت`;
+          }
         }
+        ctx.fillStyle = isNext ? '#fde047' : '#fca5a5';
+        ctx.font = '800 7.5px "Cairo", sans-serif';
+        ctx.fillText(shortLockReason, c.x, c.y + pinRadius + 11.5);
       }
 
       ctx.restore();
@@ -6938,49 +6988,49 @@ export class TunisiaMapEngine {
 
     // Boîte Popover en bas de la carte
     const cardW = this.width - 32;
-    const cardH = 92;
+    const cardH = 110;
     const cardX = 16;
-    const cardY = this.height - cardH - 12;
+    const cardY = this.height - cardH - 10;
 
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
     ctx.shadowBlur = 18;
 
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
     ctx.beginPath();
     ctx.roundRect(cardX, cardY, cardW, cardH, 12);
     ctx.fill();
 
-    ctx.strokeStyle = isActive ? '#10b981' : (isUnlocked ? '#38bdf8' : '#f59e0b');
-    ctx.lineWidth = 1.8;
+    ctx.strokeStyle = isActive ? '#10b981' : (isUnlocked ? '#38bdf8' : '#ef4444');
+    ctx.lineWidth = 2;
     ctx.stroke();
 
     ctx.shadowBlur = 0;
 
     // Titre et icône avec numéro de niveau de ville
     ctx.font = '22px sans-serif';
-    ctx.fillText(c.icon, cardX + cardW - 28, cardY + 30);
+    ctx.fillText(c.icon, cardX + cardW - 28, cardY + 26);
 
     const cityIndex = this.cities.findIndex(item => item.id === c.id) + 1;
 
     ctx.textAlign = 'right';
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 13px "Cairo", sans-serif';
-    ctx.fillText(`${c.fullName} (محطّة ${cityIndex})`, cardX + cardW - 40, cardY + 24);
+    ctx.fillText(`${c.fullName} (محطّة ${cityIndex})`, cardX + cardW - 40, cardY + 22);
 
     ctx.fillStyle = '#94a3b8';
     ctx.font = '700 9.5px "Cairo", sans-serif';
-    ctx.fillText(c.tagline.slice(0, 48), cardX + cardW - 12, cardY + 42);
+    ctx.fillText(c.tagline.slice(0, 48), cardX + cardW - 12, cardY + 38);
 
     // Boni de production
     ctx.fillStyle = '#38bdf8';
     ctx.font = '800 10px "Cairo", sans-serif';
-    ctx.fillText('🎁 ' + c.bonusDesc, cardX + cardW - 12, cardY + 60);
+    ctx.fillText('🎁 ' + c.bonusDesc, cardX + cardW - 12, cardY + 54);
 
     // Bouton d'action à gauche
     const btnW = 105;
     const btnH = 30;
     const btnX = cardX + 12;
-    const btnY = cardY + 48;
+    const btnY = cardY + 46;
 
     const canUnlock = this.canUnlockCity(c);
     if (isActive) {
@@ -7020,26 +7070,46 @@ export class TunisiaMapEngine {
       ctx.font = '900 10px "Cairo", sans-serif';
       ctx.fillText('✨ افتح الولاية', btnX + btnW / 2, btnY + 19);
     } else {
-      // Mention élégante des critères de déblocage avec cadenas doré
-      ctx.fillStyle = 'rgba(51, 65, 85, 0.85)';
+      // Bouton cadenas rouge/ambre à gauche
+      ctx.fillStyle = 'rgba(127, 29, 29, 0.85)';
       ctx.beginPath();
-      ctx.roundRect(btnX - 20, btnY, btnW + 20, btnH, 8);
+      ctx.roundRect(btnX, btnY, btnW, btnH, 8);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)';
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 1.4;
       ctx.stroke();
 
       ctx.fillStyle = '#fef08a';
       ctx.textAlign = 'center';
-      ctx.font = '900 9.5px "Cairo", sans-serif';
-      ctx.fillText('🔒 مقفلة (' + Math.round(pct * 100) + '%)', btnX - 20 + (btnW + 20) / 2, btnY + 14);
+      ctx.font = '900 10px "Cairo", sans-serif';
+      ctx.fillText('🔒 مقفلة (' + Math.round(pct * 100) + '%)', btnX + btnW / 2, btnY + 19);
 
-      // Diagnostic complet adaptatif sans coupure (précise exactement pourquoi la ville est verrouillée)
+      // BANDEAU PLEINE LARGEUR EN BAS DE LA CARTE EXPLIQUANT POURQUOI LA VILLE EST BLOQUÉE
+      const reasonBoxX = cardX + 10;
+      const reasonBoxY = cardY + 80;
+      const reasonBoxW = cardW - 20;
+      const reasonBoxH = 23;
+
+      ctx.fillStyle = 'rgba(153, 27, 27, 0.35)';
+      ctx.beginPath();
+      ctx.roundRect(reasonBoxX, reasonBoxY, reasonBoxW, reasonBoxH, 6);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(248, 113, 113, 0.6)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
       const diagText = this.engine.getCityLockDiagnosis ? this.engine.getCityLockDiagnosis(c.id) : (c.criteriaDesc || `يتطلب ${c.reqDinars || 0} د.ت`);
-      ctx.fillStyle = '#fca5a5';
-      const cFontSize = diagText.length > 34 ? 6.5 : (diagText.length > 24 ? 7 : 7.8);
-      ctx.font = `800 ${cFontSize}px "Cairo", sans-serif`;
-      ctx.fillText(diagText, btnX - 20 + (btnW + 20) / 2, btnY + 25);
+      const fullReason = `⚠️ علاش مقفولة : ${diagText}`;
+      ctx.fillStyle = '#fef08a';
+      ctx.textAlign = 'center';
+      let rFont = 10;
+      ctx.font = `900 ${rFont}px "Cairo", sans-serif`;
+      const mW = ctx.measureText(fullReason).width;
+      if (mW > reasonBoxW - 12) {
+        rFont = Math.max(7.5, Math.floor((reasonBoxW - 14) / mW * rFont * 10) / 10);
+        ctx.font = `900 ${rFont}px "Cairo", sans-serif`;
+      }
+      ctx.fillText(fullReason, cardX + cardW / 2, reasonBoxY + 15);
     }
 
     ctx.restore();

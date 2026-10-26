@@ -15,6 +15,19 @@
 
 # CHANGELOG
 
+## [v117] - 2026-10-26
+
+### Fixed & Enhanced
+- **Correction critique d'affichage de la raison des villes bloquées** :
+  - Correction du bug de portée ES Module : `showFeedbackToast` et `showRewardModalUI` n'étaient pas attachés à `window`, ce qui empêchait `store_animator.js` d'afficher le toast lors du clic sur une ville verrouillée.
+  - Ajout d'un bandeau d'explication pleine largeur en bas de la Popover de la Carte (`⚠️ علاش مقفولة : ...`) pour ne jamais tronquer le texte.
+  - Affichage direct de la condition sous l'épingle de chaque ville verrouillée sur la carte (`🔒 برستيج 1`, `🔒 4xL35`, `🔒 5 معلّم`, etc.).
+- **Visibilité permanente des animations intérieures des projets** :
+  - Auparavant, les boutons de recrutement (`➕ خدّم`) étaient dessinés par-dessus les machines (`y = 92..146`), cachant complètement les animations tant que les employés n'étaient pas recrutés, et `isBusy` figeait les machines hors clic.
+  - Désormais, les postes et machines fonctionnent en continu dès que le projet est acheté (`level > 0`), le bouton de recrutement est compacté et placé au-dessus de la machine sans la couvrir, et un spectacle central animé (`drawCentralActionShowcase`) fait circuler les produits fabriqués au cœur de la boutique.
+- **Synchronisation `www/` & Cache-Busting `?v=117`** :
+  - Synchronisation complète de `www/` (qui était resté sur la version du 24/10) et ajout de `?v=117` sur les imports ES Modules pour invalider tout cache navigateur/WebView.
+
 ## [v116] - 2026-10-26
 
 ### Added & Enhanced

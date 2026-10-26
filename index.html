@@ -3167,11 +3167,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js';
-    import { soundEngine } from './audio.js';
+    import { TycoonEngine } from './engine.js?v=117';
+    import { soundEngine } from './audio.js?v=117';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js';
+    import { AdsService } from './ads_service.js?v=117';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=117';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -3655,6 +3655,7 @@
         }
       }, 3500);
     }
+    if (typeof window !== 'undefined') window.showFeedbackToast = showFeedbackToast;
 
     // UI Helper: Fenêtre de célébration Tycoon (sans alert() navigateur)
     function showRewardModalUI(emoji, title, subtitle, amount) {
@@ -3664,6 +3665,7 @@
       modalRewardAmount.innerHTML = amount;
       rewardModal.classList.add('active');
     }
+    if (typeof window !== 'undefined') window.showRewardModalUI = showRewardModalUI;
 
     modalCloseBtn.onclick = () => {
       soundEngine.playCoin();
