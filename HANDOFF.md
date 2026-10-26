@@ -1,13 +1,13 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-10-26T08:00:00.000Z - etat = HEAD de main (v108-rebalanced-revenue-and-luxury-pos-caisse)
+MAJ: 2026-10-26T08:30:00.000Z - etat = HEAD de main (v109-header-buttons-bank-modal-arrival-toast-fixed)
 
 ## État en 3 lignes
-Économie rééquilibrée : Hausse des gains par niveau recalibrée à +40% modéré et milestones amortis, évitant l'inflation astronomique.
-Graphismes caisses : Refonte luxueuse 3D des caisses enregistreuses (écran tactile incliné, TPE carte bancaire, tiroir noyer/or).
-Intégrité & Tests : 67/67 tests unitaires au vert (225ms), ESM validé, commit & push origin/main automatique.
+Boutons Header complets : Badges compactés et scroll horizontal invisible empêchant toute coupure des boutons de gauche et de بريم.
+Modale Banque ajustée : Hauteur max 100vh-20px et défilement fluide sans aucune coupure de texte haut/bas.
+Message d'arrivée vert : Toast de bienvenue festif vert émeraude (icône 🚗/🎉) remplaçant l'alerte danger rouge.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main`).
-- Dernier commit : feat(v108): rebalance level revenue scaling to prevent runaway inflation and redesign luxury 3d cash registers
+- Dernier commit : fix(v109): fix header buttons overflow, bank modal text clipping and arrival danger toast style
 - Suite de tests : 67/67 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

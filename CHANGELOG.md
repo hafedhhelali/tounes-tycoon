@@ -15,6 +15,18 @@
 
 # CHANGELOG
 
+## [v109] - 2026-10-26
+
+### Fixed & Enhanced
+- **Rétablissement complet de la visibilité des boutons du Header (Gauche & Centre)** :
+  - **Correction du débordement / rognage** : Densification et compacité des badges de solde (`balance-hero` : padding 2px 6px, font-size 13px, min-width auto) et des onglets de navigation (`nav-tab-item` : padding 3px 7px, font-size 11px) évitant l'éviction des boutons de gauche (`بريم`, ⚙️, 🔊, 🚪).
+  - **Scroll horizontal tactile de secours** : Ajout de `overflow-x: auto` et `-webkit-overflow-scrolling: touch` avec scrollbar masquée sur `header`, garantissant l'accès immédiat à 100% des boutons sur n'importe quel ratio d'écran mobile sans troncature.
+- **Correction des coupures haut/bas de la Modale Banque et Police** :
+  - `padding: 10px 14px`, `max-height: calc(100vh - 20px)` et `overflow-y: auto` sur `.modal-card` et overlay, éliminant tout texte coupé en haut et en bas.
+- **Remplacement du style du message d'arrivée en ville (Alerte danger -> Toast festif vert)** :
+  - Création de la variante `.toast-box.toast-success` avec dégradé émeraude prestige, bordure verte `#10b981` et icônes d'ambiance contextuelles (`🚗` / `🎉` / `🚓`) en remplacement du bandeau rouge d'alerte danger.
+
+
 ## [v108] - 2026-10-26
 
 ### Balanced & Redesigned
