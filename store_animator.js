@@ -2821,12 +2821,13 @@ export class QuartierAnimator {
   }
 
   triggerPolicePatrol() {
-    // Ajouter un véhicule d'intervention rapide de la police nationale
+    // Spawn immédiat à proximité directe de la caméra pour apparition sous 0.3s
     const dir = Math.random() > 0.5 ? 1 : -1;
-    const startX = dir > 0 ? -80 : this.worldWidth + 80;
+    // Si roule vers la droite, démarre juste à gauche de la caméra ; sinon juste à droite
+    const startX = dir > 0 ? (this.cameraX - 60) : (this.cameraX + this.width + 60);
     this.taxis.push({
       x: startX,
-      speed: 135, // Vitesse d'intervention rapide
+      speed: 240, // Vitesse d'intervention d'urgence sportive
       dir: dir,
       type: 'police_patrol',
       isOneShot: true
@@ -5922,7 +5923,13 @@ export class TunisiaMapEngine {
       const btnX = cardX + 12;
       const btnY = cardY + 44;
 
-      if (screenX >= btnX - 8 && screenX <= btnX + btnW + 8 && screenY >= btnY - 8 && screenY <= btnY + btnH + 8) {
+      // Hitbox calibrée exactement sur le bouton d'action affiché
+      const actualBtnX = cardX - 8;
+      const actualBtnY = cardY + 48;
+      const actualBtnW = 125;
+      const actualBtnH = 34;
+
+      if (screenX >= actualBtnX - 10 && screenX <= actualBtnX + actualBtnW + 10 && screenY >= actualBtnY - 6 && screenY <= actualBtnY + actualBtnH + 6) {
         const c = this.cities.find(item => item.id === this.selectedCityId);
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
@@ -6795,12 +6802,13 @@ export class TunisiaMapEngine {
       ctx.font = '900 9.5px "Cairo", sans-serif';
       ctx.fillText('🔒 مقفلة (' + Math.round(pct * 100) + '%)', btnX - 20 + (btnW + 20) / 2, btnY + 14);
 
-      // Critère explicite
+      // Critère complet adaptatif sans coupure
       const engineCity = this.engine.getCityById ? this.engine.getCityById(c.id) : null;
       const critText = engineCity && engineCity.criteriaDesc ? engineCity.criteriaDesc : `يتطلب ${c.reqDinars || 0} د.ت`;
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '800 8px "Cairo", sans-serif';
-      ctx.fillText(critText.slice(0, 24), btnX - 20 + (btnW + 20) / 2, btnY + 25);
+      ctx.fillStyle = '#fde047';
+      const cFontSize = critText.length > 28 ? 7 : (critText.length > 20 ? 7.5 : 8);
+      ctx.font = `800 ${cFontSize}px "Cairo", sans-serif`;
+      ctx.fillText(critText, btnX - 20 + (btnW + 20) / 2, btnY + 25);
     }
 
     ctx.restore();

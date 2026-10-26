@@ -92,38 +92,39 @@ class SoundEngine {
   }
 
   // Sirène de Police tunisienne réaliste à deux tons (Pin-Pon Pin-Pon !)
+  // Sirène de Police tunisienne réaliste à deux tons avec balayage et écho
   playPoliceSiren() {
     if (this.muted) return;
     this.init();
     const now = this.ctx.currentTime;
 
-    // Deux tonalités alternées (La 440 Hz et Ré 587 Hz)
-    const tones = [
-      { f: 587.33, dur: 0.22 }, // Re5
-      { f: 440.00, dur: 0.22 }, // La4
-      { f: 587.33, dur: 0.22 }, // Re5
-      { f: 440.00, dur: 0.22 }  // La4
-    ];
-
+    // Deux tonalités alternées répétées sur 2.5 secondes complètes
+    const cycles = 6;
     let t = now;
-    tones.forEach((tone) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
+    for (let c = 0; c < cycles; c++) {
+      const f1 = 659.25; // Mi5
+      const f2 = 493.88; // Si4
+      const dur = 0.20;
 
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(tone.f, t);
+      [f1, f2].forEach((freq) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
 
-      gain.gain.setValueAtTime(0.18, t);
-      gain.gain.exponentialRampToValueAtTime(0.01, t + tone.dur);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, t);
 
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
+        gain.gain.setValueAtTime(0.18, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + dur);
 
-      osc.start(t);
-      osc.stop(t + tone.dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
 
-      t += tone.dur;
-    });
+        osc.start(t);
+        osc.stop(t + dur);
+
+        t += dur;
+      });
+    }
   }
 
   // Son de déblocage / Achat de niveau

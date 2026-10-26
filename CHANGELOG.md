@@ -15,6 +15,18 @@
 
 # CHANGELOG
 
+## [v115] - 2026-10-26
+
+### Fixed & Enhanced
+- **Élimination de la troncature des critères sur la Carte** :
+  - Suppression de la coupure artificielle `.slice(0, 24)` qui masquait la fin des conditions de déblocage (ex. pour Kairouan, la mention essentielle « 4 مشاريع مستوى 35 » était tronquée).
+  - Taille de police adaptative proportionnelle à la longueur du texte.
+- **Calibrage précis de la Hitbox de clic de la Carte** :
+  - Alignement exact de la zone réactive tactile sur le bouton visuel de la popover (`cardX - 8, cardY + 48, 125x34 px`).
+- **Apparition immédiate de la patrouille de Police (`دورية`)** :
+  - Ajustement du point de spawn directement à côté du viewport de la caméra (`cameraX ± 60 px`) au lieu des extrémités éloignées du monde, réduisant le délai d'apparition de 10s à moins de 0.3s.
+  - Vitesse portée à 240 px/s et prolongation de la sirène officielle à 2.5 secondes.
+
 ## [v114] - 2026-10-26
 
 ### Added & Enhanced
