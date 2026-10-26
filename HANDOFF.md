@@ -1,13 +1,13 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-10-26T08:30:00.000Z - etat = HEAD de main (v109-header-buttons-bank-modal-arrival-toast-fixed)
+MAJ: 2026-10-26T19:48:00.000Z - etat = HEAD de main (v110-unified-budget-city-businesses-tabac-police-bank)
 
 ## État en 3 lignes
-Boutons Header complets : Badges compactés et scroll horizontal invisible empêchant toute coupure des boutons de gauche et de بريم.
-Modale Banque ajustée : Hauteur max 100vh-20px et défilement fluide sans aucune coupure de texte haut/bas.
-Message d'arrivée vert : Toast de bienvenue festif vert émeraude (icône 🚗/🎉) remplaçant l'alerte danger rouge.
+Budget impérial unifié : Solde unique et partagé (سيولة + رصيد بنكي) utilisable dans toutes les villes sans reset à 0.
+Villes & commerces personnalisés : Commerces fidèles pour les 15 villes (Tunis, Bizerte, Nabeul, Kairouan, Sbeitla, Sfax, Djerba, Gabes, Gafsa, Tozeur, Béja, Kef, Tataouine, Médenine, Monastir).
+Infrastructures obligatoires toutes villes : Banque, Poste de Police et Guichet de tabac (قمريڨ) avec animations 60 FPS et interactions complètes.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main`).
-- Dernier commit : fix(v109): fix header buttons overflow, bank modal text clipping and arrival danger toast style
+- Nouveaux projets : `produits_laitiers`, `boucherie`, `vente_montres`, `croisiere_mer`, `librairie`, `vente_vetements`, `salle_de_jeux`, `emballage_dattes`.
 - Suite de tests : 67/67 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

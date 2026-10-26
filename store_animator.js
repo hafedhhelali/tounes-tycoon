@@ -55,6 +55,14 @@ export class CanvasStoreEngine {
       kahwa: ['☕', '🍵', '♠️', '🍏'],
       attariya: ['🍞', '🥛', '🧀', '🫒', '🥫', '🧼', '🥚', '🧂'],
       patisserie: ['🍯', '🥐', '🎂', '🧁'],
+      produits_laitiers: ['🧀', '🥛', '🧈', '🍶'],
+      boucherie: ['🥩', '🔪', '🍖', '🍗'],
+      librairie: ['📚', '📖', '✏️', '📰'],
+      vente_vetements: ['👕', '👗', '🧥', '👖'],
+      vente_montres: ['⌚', '🕰️', '💎', '✨'],
+      croisiere_mer: ['⛵', '⚓', '🛥️', '🌊'],
+      salle_de_jeux: ['🎮', '🕹️', '🎱', '🎧'],
+      emballage_dattes: ['🌴', '📦', '🍯', '✨'],
       taxi_collectif: ['🚖', '🏁', '🚕', '🛣️'],
       superette: ['🛒', '🍫', '🧃', '🧼'],
       supermarche: ['🥩', '📦', '🛒', '🧺'],
@@ -1910,6 +1918,14 @@ export class QuartierAnimator {
         signText: 'مارشي فواكه البحر والسمك 🦐'
       },
         patisserie: { id: 'patisserie', width: 165, height: 138, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
+      produits_laitiers: { id: 'produits_laitiers', width: 160, height: 132, style: 'fromagerie_beja', color: '#fef08a', roofColor: '#16a34a' },
+      boucherie: { id: 'boucherie', width: 165, height: 136, style: 'boucherie_viande', color: '#fca5a5', roofColor: '#991b1b' },
+      librairie: { id: 'librairie', width: 165, height: 138, style: 'librairie_livres', color: '#bae6fd', roofColor: '#0369a1' },
+      vente_vetements: { id: 'vente_vetements', width: 175, height: 144, style: 'boutique_vetements', color: '#fbcfe8', roofColor: '#be185d' },
+      vente_montres: { id: 'vente_montres', width: 170, height: 142, style: 'horlogerie_suisse', color: '#fef08a', roofColor: '#ca8a04' },
+      croisiere_mer: { id: 'croisiere_mer', width: 195, height: 160, style: 'croisiere_port', color: '#e0f2fe', roofColor: '#0284c7' },
+      salle_de_jeux: { id: 'salle_de_jeux', width: 175, height: 142, style: 'gaming_room', color: '#c7d2fe', roofColor: '#4338ca' },
+      emballage_dattes: { id: 'emballage_dattes', width: 190, height: 154, style: 'dattes_factory', color: '#fed7aa', roofColor: '#c2410c' },
       taxi_collectif: { id: 'taxi_collectif', width: 185, height: 120, style: 'taxi_station', color: '#facc15', roofColor: '#1f2937' },
       superette: { id: 'superette', width: 170, height: 138, style: 'superette_modern', color: '#06b6d4', roofColor: '#0e7490' },
       supermarche: { id: 'supermarche', width: 190, height: 152, style: 'supermarket_mall', color: '#3b82f6', roofColor: '#1d4ed8' },
@@ -1943,7 +1959,7 @@ export class QuartierAnimator {
     this.resize();
   }
 
-  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone, onOpenMap, onOpenBank, onOpenPolice }) {
+  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone, onOpenMap, onOpenBank, onOpenPolice, onOpenTobacco }) {
     if (onOpenMap) this.onOpenMap = onOpenMap;
     if (onInspect) this.onInspectBiz = onInspect;
     if (onUpgrade) this.onUpgradeBiz = onUpgrade;
@@ -1952,6 +1968,7 @@ export class QuartierAnimator {
     if (onSwitchZone) this.onSwitchZone = onSwitchZone;
     if (onOpenBank) this.onOpenBank = onOpenBank;
     if (onOpenPolice) this.onOpenPolice = onOpenPolice;
+    if (onOpenTobacco) this.onOpenTobacco = onOpenTobacco;
   }
 
   buildZoneLayout(zoneId) {
@@ -2013,122 +2030,213 @@ export class QuartierAnimator {
     };
 
     // Mappings alias villes tunisiennes <-> zones
-    zoneSpecs.tunis = zoneSpecs.bab_souika;
+    zoneSpecs.tunis = [
+      { type: 'house', style: 'medina', name: 'دار بن عاشور', width: 115, height: 118, wallColor: '#fef3c7', doorColor: '#2563eb' },
+      { type: 'biz', id: 'kaskrout' },
+      { type: 'garden', name: 'حديقة الياسمين والزيتون', width: 95 },
+      { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'bizerte', nextZoneLabel: 'بنزرت' },
+      { type: 'biz', id: 'kahwa' },
+      { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
+      { type: 'biz', id: 'superette' },
+      { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'bizerte', nextZoneLabel: 'بنزرت' },
+      { type: 'biz', id: 'supermarche' },
+      { type: 'biz', id: 'agence_voyages' },
+      { type: 'house', style: 'medina', name: 'دار سيدي محرز', width: 115, height: 120, wallColor: '#f8fafc', doorColor: '#0284c7' }
+    ];
+    zoneSpecs.bab_souika = zoneSpecs.tunis;
+
     zoneSpecs.bizerte = [
       { type: 'house', style: 'goulette', name: 'فيلا سيدي سالم الكورنيش', width: 125, height: 130, wallColor: '#f8fafc', doorColor: '#0284c7' },
-      { type: 'biz', id: 'fricasse' },
-      { type: 'crossroad', streetName: 'قنال بنزert والميناء العتيق', width: 125, nextZoneId: 'lac_2', nextZoneLabel: 'الحمامات' },
-      { type: 'biz', id: 'patisserie' },
+      { type: 'biz', id: 'fruits_de_mer' },
+      { type: 'crossroad', streetName: 'قنال بنزرت والميناء العتيق', width: 125, nextZoneId: 'nabeul_hammamet', nextZoneLabel: 'نابل' },
+      { type: 'biz', id: 'attariya' },
       { type: 'house', style: 'goulette', name: 'دار الكورنيش العتيق', width: 125, height: 126, wallColor: '#f0f9ff', doorColor: '#2563eb' },
-      { type: 'biz', id: 'taxi_collectif' },
-      { type: 'crossroad', streetName: 'جسر بنزرت المتحرك', width: 130, nextZoneId: 'lac_2', nextZoneLabel: 'الحمامات' },
-      { type: 'biz', id: 'superette' },
+      { type: 'biz', id: 'supermarche' },
+      { type: 'crossroad', streetName: 'جسر بنزرت المتحرك', width: 130, nextZoneId: 'nabeul_hammamet', nextZoneLabel: 'نابل' },
+      { type: 'biz', id: 'librairie' },
       { type: 'house', style: 'goulette', name: 'دار حوت المنارة', width: 120, height: 122, wallColor: '#ffffff', doorColor: '#0369a1' }
     ];
     zoneSpecs.la_goulette = zoneSpecs.bizerte;
-    zoneSpecs.nabeul_hammamet = zoneSpecs.hammamet;
-    zoneSpecs.beja = [
-      { type: 'house', style: 'medina', name: 'قصر القمح الباجي', width: 125, height: 125, wallColor: '#fef3c7', doorColor: '#059669' },
-      { type: 'biz', id: 'fricasse' },
-      { type: 'crossroad', streetName: 'طريق الشمال الغربي', width: 125, nextZoneId: 'le_kef', nextZoneLabel: 'الكاف' },
-      { type: 'biz', id: 'attariya' },
-      { type: 'house', style: 'medina', name: 'دار الجبن والخيرات', width: 120, height: 120, wallColor: '#fffbeb', doorColor: '#eab308' },
-      { type: 'biz', id: 'patisserie' },
-      { type: 'crossroad', streetName: 'ساحة الشهداء بباجة', width: 130, nextZoneId: 'tunis', nextZoneLabel: 'تونس' }
-    ];
-    zoneSpecs.le_kef = [
-      { type: 'house', style: 'medina', name: 'دار سيدي بومخلوف', width: 130, height: 135, wallColor: '#f8fafc', doorColor: '#0284c7' },
+
+    zoneSpecs.nabeul_hammamet = [
+      { type: 'house', style: 'hammamet', name: 'فيلا ياسمين نابل', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#d97706' },
+      { type: 'biz', id: 'librairie' },
+      { type: 'crossroad', streetName: 'شارع الحبيب بورقيبة نابل', width: 125, nextZoneId: 'kairouan', nextZoneLabel: 'القيروان' },
+      { type: 'biz', id: 'superette' },
+      { type: 'house', style: 'hammamet', name: 'دار الفخار والزهر', width: 125, height: 130, wallColor: '#fef3c7', doorColor: '#059669' },
       { type: 'biz', id: 'kahwa' },
-      { type: 'crossroad', streetName: 'طريق القصبة العالية', width: 125, nextZoneId: 'kairouan', nextZoneLabel: 'القيروان' },
-      { type: 'biz', id: 'attariya' },
-      { type: 'house', style: 'medina', name: 'دار الجبل والكرم', width: 125, height: 125, wallColor: '#fef3c7', doorColor: '#78350f' },
-      { type: 'biz', id: 'taxi_collectif' },
-      { type: 'crossroad', streetName: 'نهج برنوس الكاف', width: 130, nextZoneId: 'beja', nextZoneLabel: 'باجة' }
+      { type: 'crossroad', streetName: 'مفترق الحمامات السياحي', width: 130, nextZoneId: 'kairouan', nextZoneLabel: 'القيروان' },
+      { type: 'biz', id: 'croisiere_mer' }
     ];
-    zoneSpecs.sousse = [
-      { type: 'house', style: 'goulette', name: 'فيلا مرسى القنطاوي', width: 135, height: 140, wallColor: '#f0f9ff', doorColor: '#0284c7' },
-      { type: 'biz', id: 'salon_de_the' },
-      { type: 'crossroad', streetName: 'كورنيش بوجعفر', width: 130, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
-      { type: 'biz', id: 'hotel' },
-      { type: 'house', style: 'goulette', name: 'إقامة جوهرة الساحل', width: 130, height: 142, wallColor: '#ffffff', doorColor: '#38bdf8' },
-      { type: 'biz', id: 'restaurant' },
-      { type: 'crossroad', streetName: 'مفترق سهلول', width: 130, nextZoneId: 'tunis', nextZoneLabel: 'تونس' }
-    ];
-    zoneSpecs.monastir_mahdia = [
-      { type: 'house', style: 'goulette', name: 'برج الرباط البحري', width: 135, height: 145, wallColor: '#f8fafc', doorColor: '#0369a1' },
-      { type: 'biz', id: 'patisserie' },
-      { type: 'crossroad', streetName: 'مارينا المنستير', width: 130, nextZoneId: 'sfax', nextZoneLabel: 'صفاقس' },
-      { type: 'biz', id: 'fruits_de_mer' },
-      { type: 'biz', id: 'hotel' },
-      { type: 'house', style: 'goulette', name: 'دار سقيفة الفاطميين', width: 130, height: 135, wallColor: '#fef3c7', doorColor: '#b45309' },
-      { type: 'biz', id: 'centre_commercial' },
-      { type: 'crossroad', streetName: 'طريق المهدية الكحلة', width: 130, nextZoneId: 'sousse', nextZoneLabel: 'سوسة' }
-    ];
+    zoneSpecs.lac_2 = zoneSpecs.nabeul_hammamet;
+
     zoneSpecs.kairouan = [
       { type: 'house', style: 'medina', name: 'دار الأغالبة المعتّقة', width: 135, height: 140, wallColor: '#fef3c7', doorColor: '#059669' },
-      { type: 'biz', id: 'patisserie' },
-      { type: 'crossroad', streetName: 'ساحة فسقية الأغالبة', width: 130, nextZoneId: 'sfax', nextZoneLabel: 'صفاقس' },
-      { type: 'biz', id: 'attariya' },
-      { type: 'house', style: 'medina', name: 'قصر الزربية القيروانية', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#d97706' },
       { type: 'biz', id: 'kahwa' },
-      { type: 'crossroad', streetName: 'نهج جامع عقبة', width: 130, nextZoneId: 'tunis', nextZoneLabel: 'تونس' }
+      { type: 'crossroad', streetName: 'ساحة فسقية الأغالبة', width: 130, nextZoneId: 'sbeitla', nextZoneLabel: 'سبيطلة' },
+      { type: 'biz', id: 'patisserie' },
+      { type: 'house', style: 'medina', name: 'قصر الزربية القيروانية', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#d97706' },
+      { type: 'biz', id: 'superette' },
+      { type: 'biz', id: 'vente_vetements' },
+      { type: 'crossroad', streetName: 'نهج جامع عقبة', width: 130, nextZoneId: 'sbeitla', nextZoneLabel: 'سبيطلة' },
+      { type: 'biz', id: 'salle_de_jeux' }
     ];
+
+    zoneSpecs.sbeitla = [
+      { type: 'house', style: 'medina', name: 'قصر الكابيتول الروماني', width: 135, height: 145, wallColor: '#fef3c7', doorColor: '#b45309' },
+      { type: 'biz', id: 'kahwa' },
+      { type: 'crossroad', streetName: 'طريق الآثار والمعابد الثلاثة', width: 130, nextZoneId: 'sfax', nextZoneLabel: 'صفاقس' },
+      { type: 'biz', id: 'superette' },
+      { type: 'biz', id: 'salle_de_jeux' },
+      { type: 'house', style: 'medina', name: 'دار الزيتون العريق', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#16a34a' },
+      { type: 'biz', id: 'vente_vetements' },
+      { type: 'crossroad', streetName: 'ساحة سفيطلة التاريخية', width: 130, nextZoneId: 'sfax', nextZoneLabel: 'صفاقس' },
+      { type: 'biz', id: 'librairie' },
+      { type: 'biz', id: 'attariya' }
+    ];
+
     zoneSpecs.sfax = [
       { type: 'house', style: 'medina', name: 'عمارة برج النار', width: 135, height: 155, wallColor: '#f8fafc', doorColor: '#0284c7' },
-      { type: 'biz', id: 'supermarche' },
-      { type: 'crossroad', streetName: 'ساحة باب الديوان', width: 130, nextZoneId: 'gabes', nextZoneLabel: 'قابس' },
       { type: 'biz', id: 'fruits_de_mer' },
-      { type: 'biz', id: 'usine_conserves' },
+      { type: 'crossroad', streetName: 'ساحة باب الديوان', width: 130, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
+      { type: 'biz', id: 'librairie' },
+      { type: 'biz', id: 'vente_vetements' },
       { type: 'house', style: 'medina', name: 'دار الزيتونة المباركة', width: 135, height: 140, wallColor: '#fef3c7', doorColor: '#16a34a' },
-      { type: 'biz', id: 'showroom_auto' },
-      { type: 'crossroad', streetName: 'طريق تنيور والمهدية', width: 130, nextZoneId: 'kairouan', nextZoneLabel: 'القيروان' }
-    ];
-    zoneSpecs.gafsa = [
-      { type: 'house', style: 'medina', name: 'دار البركة الرومانية', width: 130, height: 135, wallColor: '#fef3c7', doorColor: '#d97706' },
-      { type: 'biz', id: 'taxi_collectif' },
-      { type: 'crossroad', streetName: 'شارع الحوض المنجمي', width: 130, nextZoneId: 'tozeur', nextZoneLabel: 'توزر' },
-      { type: 'biz', id: 'superette' },
-      { type: 'house', style: 'medina', name: 'واحة قفصة الجبلية', width: 125, height: 128, wallColor: '#fffbeb', doorColor: '#059669' },
-      { type: 'biz', id: 'attariya' },
-      { type: 'crossroad', streetName: 'مفترق المتلوي', width: 130, nextZoneId: 'kairouan', nextZoneLabel: 'القيروان' }
-    ];
-    zoneSpecs.tozeur = [
-      { type: 'house', style: 'djerba', name: 'قصر دقلة النور والواحات', width: 135, height: 140, wallColor: '#fef3c7', doorColor: '#b45309' },
-      { type: 'biz', id: 'agence_voyages' },
-      { type: 'crossroad', streetName: 'طريق الشبيكة وتمغزة', width: 130, nextZoneId: 'gafsa', nextZoneLabel: 'قفصة' },
-      { type: 'biz', id: 'hotel' },
-      { type: 'house', style: 'djerba', name: 'رياض شط الجريد', width: 135, height: 142, wallColor: '#fffbeb', doorColor: '#d97706' },
+      { type: 'biz', id: 'kahwa' },
       { type: 'biz', id: 'salon_de_the' },
-      { type: 'crossroad', streetName: 'جادة النخيل الذهبي', width: 130, nextZoneId: 'gabes', nextZoneLabel: 'قابس' }
+      { type: 'crossroad', streetName: 'طريق تنيور وقرمدة', width: 130, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
+      { type: 'biz', id: 'superette' }
     ];
+
+    zoneSpecs.djerba_holding = [
+      { type: 'house', style: 'djerba', name: 'حوش جربة الكبير', width: 140, height: 148, wallColor: '#f8fafc', doorColor: '#0284c7' },
+      { type: 'biz', id: 'kahwa' },
+      { type: 'crossroad', streetName: 'ساحة حومة السوق', width: 135, nextZoneId: 'gabes', nextZoneLabel: 'قابس' },
+      { type: 'biz', id: 'fruits_de_mer' },
+      { type: 'biz', id: 'hotel' },
+      { type: 'house', style: 'djerba', name: 'قصر ميدون', width: 145, height: 155, wallColor: '#fef3c7', doorColor: '#b45309' },
+      { type: 'biz', id: 'salon_de_the' },
+      { type: 'crossroad', streetName: 'مفترق المنطقة السياحية', width: 135, nextZoneId: 'gabes', nextZoneLabel: 'قابس' },
+      { type: 'biz', id: 'superette' },
+      { type: 'biz', id: 'croisiere_mer' }
+    ];
+
     zoneSpecs.gabes = [
       { type: 'house', style: 'goulette', name: 'فيلا الواحة البحرية', width: 130, height: 138, wallColor: '#f0f9ff', doorColor: '#0284c7' },
-      { type: 'biz', id: 'attariya' },
-      { type: 'crossroad', streetName: 'سوق جارة للحناء', width: 130, nextZoneId: 'medenine_zarzis', nextZoneLabel: 'مدنين' },
       { type: 'biz', id: 'usine_conserves' },
+      { type: 'crossroad', streetName: 'سوق جارة للحناء', width: 130, nextZoneId: 'gafsa', nextZoneLabel: 'قفصة' },
+      { type: 'biz', id: 'superette' },
+      { type: 'biz', id: 'kahwa' },
       { type: 'house', style: 'goulette', name: 'دار خليج قابس', width: 130, height: 135, wallColor: '#f8fafc', doorColor: '#059669' },
-      { type: 'biz', id: 'supermarche' },
-      { type: 'crossroad', streetName: 'مفترق ميناء قابس التجاري', width: 130, nextZoneId: 'sfax', nextZoneLabel: 'صفاقس' }
+      { type: 'biz', id: 'attariya' },
+      { type: 'biz', id: 'vente_vetements' },
+      { type: 'crossroad', streetName: 'مفترق ميناء قابس التجاري', width: 130, nextZoneId: 'gafsa', nextZoneLabel: 'قفصة' },
+      { type: 'biz', id: 'fricasse' }
     ];
+
+    zoneSpecs.gafsa = [
+      { type: 'house', style: 'medina', name: 'دار البركة الرومانية', width: 130, height: 135, wallColor: '#fef3c7', doorColor: '#d97706' },
+      { type: 'biz', id: 'emballage_dattes' },
+      { type: 'crossroad', streetName: 'شارع الحوض المنجمي', width: 130, nextZoneId: 'tozeur', nextZoneLabel: 'توزر' },
+      { type: 'biz', id: 'attariya' },
+      { type: 'house', style: 'medina', name: 'واحة قفصة الجبلية', width: 125, height: 128, wallColor: '#fffbeb', doorColor: '#059669' },
+      { type: 'biz', id: 'hotel' },
+      { type: 'biz', id: 'vente_vetements' },
+      { type: 'crossroad', streetName: 'مفترق المتلوي', width: 130, nextZoneId: 'tozeur', nextZoneLabel: 'توزر' },
+      { type: 'biz', id: 'kahwa' }
+    ];
+
+    zoneSpecs.tozeur = [
+      { type: 'house', style: 'djerba', name: 'قصر دقلة النور والواحات', width: 135, height: 140, wallColor: '#fef3c7', doorColor: '#b45309' },
+      { type: 'biz', id: 'hotel' },
+      { type: 'crossroad', streetName: 'طريق الشبيكة وتمغزة', width: 130, nextZoneId: 'beja', nextZoneLabel: 'باجة' },
+      { type: 'biz', id: 'salon_de_the' },
+      { type: 'biz', id: 'kahwa' },
+      { type: 'house', style: 'djerba', name: 'رياض شط الجريد', width: 135, height: 142, wallColor: '#fffbeb', doorColor: '#d97706' },
+      { type: 'biz', id: 'attariya' },
+      { type: 'biz', id: 'superette' },
+      { type: 'crossroad', streetName: 'جادة النخيل الذهبي', width: 130, nextZoneId: 'beja', nextZoneLabel: 'باجة' },
+      { type: 'biz', id: 'salle_de_jeux' },
+      { type: 'biz', id: 'fricasse' }
+    ];
+
+    zoneSpecs.beja = [
+      { type: 'house', style: 'medina', name: 'قصر القمح الباجي', width: 125, height: 125, wallColor: '#fef3c7', doorColor: '#059669' },
+      { type: 'biz', id: 'produits_laitiers' },
+      { type: 'crossroad', streetName: 'طريق الشمال الغربي', width: 125, nextZoneId: 'le_kef', nextZoneLabel: 'الكاف' },
+      { type: 'biz', id: 'boucherie' },
+      { type: 'biz', id: 'kahwa' },
+      { type: 'house', style: 'medina', name: 'دار الجبن والخيرات', width: 120, height: 120, wallColor: '#fffbeb', doorColor: '#eab308' },
+      { type: 'biz', id: 'attariya' },
+      { type: 'biz', id: 'superette' },
+      { type: 'crossroad', streetName: 'ساحة الشهداء بباجة', width: 130, nextZoneId: 'le_kef', nextZoneLabel: 'الكاف' },
+      { type: 'biz', id: 'fricasse' }
+    ];
+
+    zoneSpecs.le_kef = [
+      { type: 'house', style: 'medina', name: 'دار سيدي بومخلوف', width: 130, height: 135, wallColor: '#f8fafc', doorColor: '#0284c7' },
+      { type: 'biz', id: 'boucherie' },
+      { type: 'crossroad', streetName: 'طريق القصبة العالية', width: 125, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
+      { type: 'biz', id: 'produits_laitiers' },
+      { type: 'biz', id: 'superette' },
+      { type: 'house', style: 'medina', name: 'دار الجبل والكرم', width: 125, height: 125, wallColor: '#fef3c7', doorColor: '#78350f' },
+      { type: 'biz', id: 'kahwa' },
+      { type: 'biz', id: 'patisserie' },
+      { type: 'crossroad', streetName: 'نهج برنوس الكاف', width: 130, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
+      { type: 'biz', id: 'salle_de_jeux' }
+    ];
+
+    zoneSpecs.monastir_mahdia = [
+      { type: 'house', style: 'goulette', name: 'برج الرباط البحري', width: 135, height: 145, wallColor: '#f8fafc', doorColor: '#0369a1' },
+      { type: 'biz', id: 'hotel' },
+      { type: 'crossroad', streetName: 'مارينا المنستير', width: 130, nextZoneId: 'medenine_zarzis', nextZoneLabel: 'مدنين' },
+      { type: 'biz', id: 'salon_de_the' },
+      { type: 'biz', id: 'superette' },
+      { type: 'house', style: 'goulette', name: 'دار سقيفة الفاطميين', width: 130, height: 135, wallColor: '#fef3c7', doorColor: '#b45309' },
+      { type: 'biz', id: 'supermarche' },
+      { type: 'biz', id: 'patisserie' },
+      { type: 'crossroad', streetName: 'طريق المهدية الكحلة', width: 130, nextZoneId: 'medenine_zarzis', nextZoneLabel: 'مدنين' },
+      { type: 'biz', id: 'vente_vetements' },
+      { type: 'biz', id: 'librairie' },
+      { type: 'biz', id: 'croisiere_mer' }
+    ];
+
+    zoneSpecs.tataouine = [
+      { type: 'house', style: 'djerba', name: 'قصر أولاد دباب الصحراوي', width: 135, height: 145, wallColor: '#fef3c7', doorColor: '#b45309' },
+      { type: 'biz', id: 'hotel' },
+      { type: 'crossroad', streetName: 'طريق القصور الصحراوية وغيلان', width: 130, nextZoneId: 'medenine_zarzis', nextZoneLabel: 'مدنين' },
+      { type: 'biz', id: 'vente_vetements' },
+      { type: 'biz', id: 'vente_montres' },
+      { type: 'house', style: 'djerba', name: 'دار شنني والدويرات العريقة', width: 130, height: 140, wallColor: '#fffbeb', doorColor: '#d97706' },
+      { type: 'biz', id: 'attariya' },
+      { type: 'crossroad', streetName: 'ساحة الديناصورات بتطاوين', width: 130, nextZoneId: 'medenine_zarzis', nextZoneLabel: 'مدنين' },
+      { type: 'biz', id: 'supermarche' }
+    ];
+
     zoneSpecs.medenine_zarzis = [
       { type: 'house', style: 'djerba', name: 'قصر الغرفة التاريخي', width: 135, height: 145, wallColor: '#fef3c7', doorColor: '#b45309' },
-      { type: 'biz', id: 'restaurant' },
-      { type: 'crossroad', streetName: 'طريق القصور وجرجيس', width: 130, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
-      { type: 'biz', id: 'agence_voyages' },
+      { type: 'biz', id: 'vente_vetements' },
+      { type: 'crossroad', streetName: 'طريق القصور وجرجيس', width: 130, nextZoneId: 'tunis', nextZoneLabel: 'تونس' },
+      { type: 'biz', id: 'attariya' },
+      { type: 'biz', id: 'superette' },
       { type: 'house', style: 'djerba', name: 'إقامة مرسى جرجيس', width: 135, height: 140, wallColor: '#ffffff', doorColor: '#0284c7' },
-      { type: 'biz', id: 'showroom_auto' },
-      { type: 'crossroad', streetName: 'مفترق بن قردان الدولي', width: 130, nextZoneId: 'gabes', nextZoneLabel: 'قابس' }
+      { type: 'biz', id: 'fricasse' },
+      { type: 'biz', id: 'patisserie' },
+      { type: 'crossroad', streetName: 'مفترق بن قردان الدولي', width: 130, nextZoneId: 'tunis', nextZoneLabel: 'تونس' },
+      { type: 'biz', id: 'salle_de_jeux' }
     ];
 
     let rawItems = zoneSpecs[zoneId] || zoneSpecs.bab_souika;
 
-    // Insertion automatique et garantie d'une Banque et d'un Poste de Police dans chaque ville
+    // Insertion automatique et garantie d'une Banque, d'un Poste de Police et d'un Guichet de Tabac dans chaque ville
     const hasBank = rawItems.some(it => it.type === 'bank_branch');
     const hasPolice = rawItems.some(it => it.type === 'police_station');
-    if (!hasBank || !hasPolice) {
+    const hasTobacco = rawItems.some(it => it.type === 'tobacco_kiosk');
+    if (!hasBank || !hasPolice || !hasTobacco) {
       const augmented = [];
       let bankInserted = hasBank;
       let policeInserted = hasPolice;
+      let tobaccoInserted = hasTobacco;
       rawItems.forEach((it, idx) => {
         augmented.push(it);
         // Insérer la banque après le 1er ou 2ème élément
@@ -2136,13 +2244,19 @@ export class QuartierAnimator {
           augmented.push({ type: 'bank_branch', width: 135 });
           bankInserted = true;
         }
-        // Insérer le poste de police après le 4ème élément
-        if (!policeInserted && idx === 4) {
+        // Insérer le guichet de tabac (قمريڨ ومكتب التبغ والوقيد) après le 3ème élément
+        if (!tobaccoInserted && idx === 3) {
+          augmented.push({ type: 'tobacco_kiosk', width: 125 });
+          tobaccoInserted = true;
+        }
+        // Insérer le poste de police après le 5ème élément
+        if (!policeInserted && idx === 5) {
           augmented.push({ type: 'police_station', width: 135 });
           policeInserted = true;
         }
       });
       if (!bankInserted) augmented.push({ type: 'bank_branch', width: 135 });
+      if (!tobaccoInserted) augmented.push({ type: 'tobacco_kiosk', width: 125 });
       if (!policeInserted) augmented.push({ type: 'police_station', width: 135 });
       rawItems = augmented;
     }
@@ -2185,7 +2299,7 @@ export class QuartierAnimator {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
         curX += item.width + 24;
-      } else if (item.type === 'garden' || item.type === 'service_station' || item.type === 'bank_branch' || item.type === 'police_station') {
+      } else if (item.type === 'garden' || item.type === 'service_station' || item.type === 'bank_branch' || item.type === 'police_station' || item.type === 'tobacco_kiosk') {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
         curX += item.width + 24;
@@ -2483,6 +2597,11 @@ export class QuartierAnimator {
       this.onOpenBank();
     } else if (action === 'open_police' && this.onOpenPolice) {
       this.onOpenPolice();
+    } else if (action === 'open_tobacco' && this.onOpenTobacco) {
+      this.onOpenTobacco();
+    } else if (action === 'open_tobacco') {
+      // Action par défaut : petit pourboire / تفتوفة سريعة من القمريڨ
+      if (this.onHudAction) this.onHudAction('hud_tobacco');
     } else if (action.startsWith('hud_') && this.onHudAction) {
       this.onHudAction(action);
     }
@@ -2757,6 +2876,8 @@ export class QuartierAnimator {
           this.drawBankBranch(ctx, item, screenX, groundY, timestamp);
         } else if (item.type === 'police_station') {
           this.drawPoliceStation(ctx, item, screenX, groundY, timestamp);
+        } else if (item.type === 'tobacco_kiosk') {
+          this.drawTobaccoKiosk(ctx, item, screenX, groundY, timestamp);
         }
       }
     });
@@ -4070,6 +4191,79 @@ export class QuartierAnimator {
       w: w,
       h: h,
       action: 'open_police',
+      bizId: null
+    });
+
+    ctx.restore();
+  }
+
+  drawTobaccoKiosk(ctx, tItem, x, groundY, timestamp) {
+    const w = tItem.width || 125;
+    const h = 88;
+    const y = groundY - h;
+    ctx.save();
+
+    // Façade officielle bordeaux & blanc d'un guichet / bureau de tabac tunisien (قمريڨ ومكتب التبغ والوقيد)
+    ctx.fillStyle = '#831843';
+    ctx.strokeStyle = '#f43f5e';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, [6, 6, 0, 0]);
+    ctx.fill();
+    ctx.stroke();
+
+    // Toit / Auvent rayé bordeaux et or
+    ctx.fillStyle = '#be123c';
+    ctx.fillRect(x - 2, y, w + 4, 14);
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(x - 2, y, w + 4, 14);
+
+    // Enseigne officielle Guichet de Tabac & الوقيد
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '900 9.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🚬 قمريڨ ومكتب التبغ والوقيد', x + w / 2, y + 10.5);
+
+    // Vitrine avec paquets de cigarettes, tabac et timbres fiscaux
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.strokeStyle = '#fda4af';
+    ctx.lineWidth = 1;
+    ctx.fillRect(x + 10, y + 20, w - 20, 36);
+    ctx.strokeRect(x + 10, y + 20, w - 20, 36);
+
+    // Articles en rayon (Cigarettes 20 Mars, Cristal, Timbres fiscaux)
+    ctx.font = '11px sans-serif';
+    ctx.fillText('🚬', x + 24, y + 36);
+    ctx.fillText('🔥', x + w / 2, y + 36);
+    ctx.fillText('🎟️', x + w - 24, y + 36);
+
+    ctx.fillStyle = '#fde047';
+    ctx.font = '800 8px "Cairo", sans-serif';
+    ctx.fillText('20 مارص • كريستال • طوابع جبائية', x + w / 2, y + 50);
+
+    // Guichet de vente ouvert en bas
+    const counterW = 46;
+    const counterH = 26;
+    const counterX = x + (w - counterW) / 2;
+    const counterY = groundY - counterH;
+    ctx.fillStyle = '#9f1239';
+    ctx.fillRect(counterX, counterY, counterW, counterH);
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(counterX, counterY, counterW, counterH);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 8px "Cairo", sans-serif';
+    ctx.fillText('شباك البيع 🪙', counterX + counterW / 2, counterY + 16);
+
+    // Hitbox cliquable pour interaction guichet de tabac
+    this.interactiveHitboxes.push({
+      x: x,
+      y: y,
+      w: w,
+      h: h,
+      action: 'open_tobacco',
       bizId: null
     });
 

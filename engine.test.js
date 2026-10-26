@@ -300,7 +300,7 @@ test('getBusinessDetail returns complete inner breakdown for immersive view', ()
 test('Tunisian 14 cities progression: listing, retrieval and initial state', () => {
   const engine = new TycoonEngine();
   const cities = engine.getCities();
-  assert.equal(cities.length, 17);
+  assert.equal(cities.length, 18);
 
   // Ville de départ : Tunis
   assert.equal(engine.currentCityId, 'tunis');
@@ -410,9 +410,18 @@ test('City unlock criteria: Monastir/Mahdia, Kairouan, Sfax, Gafsa, Tozeur, Gabe
 
   // Monastir (350k + 5 managers)
   engine.dinars = 400000;
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < Math.min(5, engine.businesses.length); i++) {
     engine.businesses[i].hasManager = true;
     engine.businesses[i].hiredManagersCount = 1;
+  }
+  // S'il y a d'autres villes débloquées ou commerces
+  const allBiz = Object.values(engine.cityBusinesses).flat();
+  let assigned = 0;
+  for (const b of allBiz) {
+    b.hasManager = true;
+    b.hiredManagersCount = 1;
+    assigned++;
+    if (assigned >= 5) break;
   }
   assert.equal(engine.unlockCity('monastir_mahdia'), true);
 
@@ -439,9 +448,10 @@ test('City unlock criteria: Monastir/Mahdia, Kairouan, Sfax, Gafsa, Tozeur, Gabe
 
   // Gabès (25,000,000 DT + 10 managers)
   engine.dinars = 26000000;
-  for (let i = 0; i < 10; i++) {
-    engine.businesses[i].hasManager = true;
-    engine.businesses[i].hiredManagersCount = 1;
+  const currentEmpireBiz = Object.values(engine.cityBusinesses).flat();
+  for (let i = 0; i < Math.min(10, currentEmpireBiz.length); i++) {
+    currentEmpireBiz[i].hasManager = true;
+    currentEmpireBiz[i].hiredManagersCount = 1;
   }
   assert.equal(engine.unlockCity('gabes'), true);
 

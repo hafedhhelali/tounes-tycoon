@@ -15,6 +15,34 @@
 
 # CHANGELOG
 
+## [v110] - 2026-10-26
+
+### Added & Customized
+- **Budget impérial unifié et partagé entre toutes les villes** :
+  - `dinars` (سيولة) et `bankBalance` (رصيد بنكي) sont désormais conservés et utilisables dans n'importe quelle ville tunisienne, supprimant la remise à zéro lors des voyages.
+- **Attribution personnalisée et exacte des commerces par ville (`CITY_BUSINESS_MAP`)** :
+  - **Tunis** : نصبة كسكروت، فريكاسي، قهوة، سوبيرات، مغازة عامة، وكالة أسفار.
+  - **Bizerte** : مارشي فواكه البحر والسمك، عطارية، مغازة عامة، مكتبة.
+  - **Nabeul** : مكتبة، سوبيرات، قهوة، رحلات بحرية ويخوت.
+  - **Kairouan** : قهوة، حلويات ومقروض، سوبيرات، محل ملابس، قاعة ألعاب.
+  - **Sbeitla** : قهوة، سوبيرات، قاعة ألعاب، محل ملابس، مكتبة، عطارية.
+  - **Sfax** : فواكه البحر، مكتبة، محل ملابس، قهوة، صالون شاي، سوبيرات.
+  - **Djerba** : قهوة، فواكه البحر، نزل وفندق، صالون شاي، سوبيرات، رحلات بحرية ويخوت.
+  - **Gabes** : معمل مصبرات، سوبيرات، قهوة، عطارية، محل ملابس، فريكاسي.
+  - **Gafsa** : وحدة تعليب وتصدير دقلة النور، عطارية، نزل، محل ملابس، قهوة.
+  - **Tozeur** : نزل، صالون شاي، قهوة، عطارية، سوبيرات، قاعة ألعاب، فريكاسي.
+  - **Béja** : بيع مشتقات الحليب والأجبان، جزارة وبيع اللحوم، قهوة، عطارية، سوبيرات، فريكاسي.
+  - **Le Kef** : جزارة وبيع اللحوم، بيع مشتقات الحليب، سوبيرات، قهوة، حلويات وبقلاوة، قاعة ألعاب.
+  - **Tataouine** : نزل، محل ملابس، محل ساعات فاخرة، عطارية، مغازة عامة.
+  - **Médenine** : محل ملابس، عطارية، سوبيرات، فريكاسي، حلويات وبقلاوة، قاعة ألعاب.
+  - **Monastir** : نزل، صالون شاي، سوبيرات، مغازة عامة، حلويات، محل ملابس، مكتبة، رحلات بحرية ويخوت.
+- **Présence garantie dans chaque ville tunisienne** :
+  - **Banque (فرع البنك)** avec double solde (سيولة / بنك) et opérations de dépôt/retrait.
+  - **Poste de Police (مركز الأمن والشرطة)** avec patrouilles de sécurité.
+  - **Guichet de Tabac (قمريڨ ومكتب التبغ والوقيد)** avec vente de cigarettes nationales, timbres fiscaux et pourboire.
+- **Nouveaux commerces modélisés dans le moteur & animations Canvas 2D 60 FPS** :
+  - `librairie` (📚), `vente_vetements` (👕), `salle_de_jeux` (🎮), `emballage_dattes` (🌴), `produits_laitiers` (🧀), `boucherie` (🥩), `vente_montres` (⌚), `croisiere_mer` (⛵).
+
 ## [v109] - 2026-10-26
 
 ### Fixed & Enhanced

@@ -86,6 +86,118 @@ export const BUSINESS_CONFIGS = [
     ],
   },
   {
+    id: 'produits_laitiers',
+    name: 'بيع مشتقات الحليب والأجبان التقليدية',
+    tagline: 'جبن باجي مالح، ريكوتا طازجة، لبن حليب طازج وسمن بلدي يفوح',
+    icon: '🧀',
+    baseCost: 200.0,
+    baseRevenue: 18.0,
+    costMultiplier: 1.09,
+    cycleDurationMs: 2800, // 2.8s
+    managers: [
+      { name: 'عمّ عثمان الجبّان', role: 'خبير صناعة الجبن والتخمير', avatar: '🧀', cost: 900.0 },
+      { name: 'مدام حسيبة', role: 'مسؤولة الجودة والتوزيع', avatar: '👩‍🌾', cost: 3000.0 }
+    ],
+  },
+  {
+    id: 'boucherie',
+    name: 'جزارة وبيع اللحوم الحمراء الفاخرة',
+    tagline: 'علوش بركوس معلوف بالزعتر والإكليل، وكبدة وبقري بلدي مسمن',
+    icon: '🥩',
+    baseCost: 1500.0,
+    baseRevenue: 95.0,
+    costMultiplier: 1.10,
+    cycleDurationMs: 6000, // 6.0s
+    managers: [
+      { name: 'المعلّم الهادي الجزّار', role: 'كابو القصابين والسلخ', avatar: '🔪', cost: 6500.0 },
+      { name: 'صلاح الساطور', role: 'فنان الفصالة والوزن', avatar: '🥩', cost: 20000.0 }
+    ],
+  },
+  {
+    id: 'librairie',
+    name: 'مكتبة وأدوات مدرسية وروايات',
+    tagline: 'كراريس، أقلام باركر، روايات عالمية وجرائد الصباح مع قهوة رايقة',
+    icon: '📚',
+    baseCost: 400.0,
+    baseRevenue: 30.0,
+    costMultiplier: 1.09,
+    cycleDurationMs: 3500, // 3.5s
+    managers: [
+      { name: 'سي البشير الكتبي', role: 'حافظ الكتب والورّاق', avatar: '📖', cost: 1600.0 },
+      { name: 'أستاذ منير', role: 'مسؤول المراجع والمطالعة', avatar: '👓', cost: 5000.0 }
+    ],
+  },
+  {
+    id: 'vente_vetements',
+    name: 'محل ملابس وفريب شيك',
+    tagline: 'شياكة وأناقة، ماركات عالمية وفريب دي لوكس، لبسة على الموضة',
+    icon: '👕',
+    baseCost: 2500.0,
+    baseRevenue: 130.0,
+    costMultiplier: 1.10,
+    cycleDurationMs: 7000, // 7.0s
+    managers: [
+      { name: 'مدام سامية الستيليست', role: 'مسؤولة الموضة والأناقة', avatar: '👗', cost: 10000.0 },
+      { name: 'معلّم كريم الفصّال', role: 'خبير القياسات والموديلات', avatar: '👔', cost: 30000.0 }
+    ],
+  },
+  {
+    id: 'vente_montres',
+    name: 'محل ساعات فاخرة ومجوهرات',
+    tagline: 'ساعات سويسرية، عقارب ذهب وماركات عالمية، أناقة وضبط للوقت',
+    icon: '⌚',
+    baseCost: 3500.0,
+    baseRevenue: 175.0,
+    costMultiplier: 1.10,
+    cycleDurationMs: 8000, // 8.0s
+    managers: [
+      { name: 'سي أنيس الميقاني', role: 'صنائعي الساعات الدقيقة', avatar: '⌚', cost: 14000.0 },
+      { name: 'مدام ليلى', role: 'خبيرة المجوهرات والماركات', avatar: '💎', cost: 42000.0 }
+    ],
+  },
+  {
+    id: 'salle_de_jeux',
+    name: 'قاعة ألعاب فيديو وبلياردو',
+    tagline: 'بلايستيشن 5، بلياردو وطاولات بيبي فوت، جو الشباب والمنافسة السخونة !',
+    icon: '🎮',
+    baseCost: 12000.0,
+    baseRevenue: 520.0,
+    costMultiplier: 1.11,
+    cycleDurationMs: 10000, // 10.0s
+    managers: [
+      { name: 'وليد الغيمر', role: 'مسؤول الصالة والبطولات', avatar: '🎧', cost: 50000.0 },
+      { name: 'حمادي التقني', role: 'خبير الصيانة والشبكات', avatar: '🕹️', cost: 140000.0 }
+    ],
+  },
+  {
+    id: 'emballage_dattes',
+    name: 'وحدة تعليب وتصدير دقلة النور',
+    tagline: 'عرجون الذهب التونسي، فرز وتعليب وتصدير لأرقى أسواق العالم',
+    icon: '🌴',
+    baseCost: 50000.0,
+    baseRevenue: 1800.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 20000, // 20.0s
+    managers: [
+      { name: 'الحاج بلقاسم الجريدي', role: 'خبير جودة الدقلة والعرجون', avatar: '🌴', cost: 200000.0 },
+      { name: 'المهندس فاروق التصديري', role: 'مدير الشحن واللوجستيك', avatar: '🚢', cost: 600000.0 }
+    ],
+  },
+  {
+    id: 'croisiere_mer',
+    name: 'رحلات بحرية ويخوت (Croisières en mer)',
+    tagline: 'جولات باليخت في عرض البحر، قوارب القراصنة، سباحة وغطس وسهرات بحرية',
+    icon: '⛵',
+    baseCost: 80000.0,
+    baseRevenue: 2400.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 25000, // 25.0s
+    managers: [
+      { name: 'القبطان مراد الريس', role: 'ربان اليخوت والرحلات', avatar: '⚓', cost: 320000.0 },
+      { name: 'سي مكرم المنظم', role: 'مدير الرحلات البحرية', avatar: '🧭', cost: 950000.0 }
+    ],
+  },
+  {
     id: 'taxi_collectif',
     name: 'محطة تاكسي جماعي',
     tagline: 'سكّر الباب بالسياسة، خمسة ومارش وطيران للبلاد !',
@@ -503,8 +615,9 @@ export const PLAYER_CITY_LEVELS = [
   { level: 13, title: 'بارون قصور مدنين وجرجيس 🏺', badge: 'المستوى 13', minCities: 13 },
   { level: 14, title: 'حاكم سبيطلة والآثار الرومانية 🏛️', badge: 'المستوى 14', minCities: 14 },
   { level: 15, title: 'سفير التجارة المغاربية في عنابة 🇩🇿', badge: 'المستوى 15', minCities: 15 },
-  { level: 16, title: 'زعيم أسواق العبور في طرابلس 🇱🇾', badge: 'المستوى 16', minCities: 16 },
-  { level: 17, title: 'إمبراطور الهولدينغ الوطني الشامل 👑', badge: 'المستوى 17 (القمة)', minCities: 17 }
+  { level: 16, title: 'حاكم قصور وصحراء تطاوين 🏰', badge: 'المستوى 16', minCities: 16 },
+  { level: 17, title: 'زعيم أسواق العبور في طرابلس 🇱🇾', badge: 'المستوى 17', minCities: 17 },
+  { level: 18, title: 'إمبراطور الهولدينغ الوطني الشامل 👑', badge: 'المستوى 18 (القمة)', minCities: 18 }
 ];
 
 export const TUNISIAN_CITIES = [
@@ -698,6 +811,19 @@ export const TUNISIAN_CITIES = [
     themeClass: 'zone-gabes'
   },
   {
+    id: 'tataouine',
+    name: 'تطاوين',
+    icon: '🏰',
+    tagline: 'قصور تطاوين الصحراوية، الديناصورات وقرماسة، عاصمة الجنوب الأشم',
+    costDinars: 45000000,
+    criteriaDesc: '45,000,000 د.ت + 6 معلّمين مسيّرين',
+    minPrestige: 0,
+    reqDinars: 45000000,
+    reqManagers: 6,
+    bonusDesc: 'سياحة القصور وتجارة تطاوين (+80%)',
+    themeClass: 'zone-tataouine'
+  },
+  {
     id: 'medenine_zarzis',
     name: 'مدنين',
     icon: '🏺',
@@ -724,6 +850,28 @@ export const TUNISIAN_CITIES = [
     themeClass: 'zone-djerba'
   }
 ];
+
+export const CITY_BUSINESS_MAP = {
+  tunis: ['kaskrout', 'fricasse', 'kahwa', 'superette', 'supermarche', 'agence_voyages'],
+  bizerte: ['fruits_de_mer', 'attariya', 'supermarche', 'librairie'],
+  nabeul_hammamet: ['librairie', 'superette', 'kahwa', 'croisiere_mer'],
+  kairouan: ['kahwa', 'patisserie', 'superette', 'vente_vetements', 'salle_de_jeux'],
+  sbeitla: ['kahwa', 'superette', 'salle_de_jeux', 'vente_vetements', 'librairie', 'attariya'],
+  sfax: ['fruits_de_mer', 'librairie', 'vente_vetements', 'kahwa', 'salon_de_the', 'superette'],
+  djerba_holding: ['kahwa', 'fruits_de_mer', 'hotel', 'salon_de_the', 'superette', 'croisiere_mer'],
+  gabes: ['usine_conserves', 'superette', 'kahwa', 'attariya', 'vente_vetements', 'fricasse'],
+  gafsa: ['emballage_dattes', 'attariya', 'hotel', 'vente_vetements', 'kahwa'],
+  tozeur: ['hotel', 'salon_de_the', 'kahwa', 'attariya', 'superette', 'salle_de_jeux', 'fricasse'],
+  beja: ['produits_laitiers', 'boucherie', 'kahwa', 'attariya', 'superette', 'fricasse'],
+  le_kef: ['boucherie', 'produits_laitiers', 'superette', 'kahwa', 'patisserie', 'salle_de_jeux'],
+  tataouine: ['hotel', 'vente_vetements', 'vente_montres', 'attariya', 'supermarche'],
+  medenine_zarzis: ['vente_vetements', 'attariya', 'superette', 'fricasse', 'patisserie', 'salle_de_jeux'],
+  monastir_mahdia: ['hotel', 'salon_de_the', 'superette', 'supermarche', 'patisserie', 'vente_vetements', 'librairie', 'croisiere_mer'],
+  // Compléments pour les autres villes
+  sousse: ['salon_de_the', 'hotel', 'restaurant', 'supermarche'],
+  annaba: ['fruits_de_mer', 'supermarche', 'usine_conserves', 'agence_voyages'],
+  tripoli: ['showroom_auto', 'supermarche', 'promoteur_immobilier', 'hotel']
+};
 
 export class TycoonEngine {
   constructor(initialState = null) {
@@ -817,13 +965,21 @@ export class TycoonEngine {
 
   initCityBusinesses(cityId) {
     if (!this.cityBusinesses[cityId]) {
-      // نصبة كسكروت عياري : UNE SEULE, DANS la ville de départ ('tunis')
-      // Dans les autres villes, le premier commerce est le fricassé/bambalouni ou pâtisserie
-      const configs = this.BUSINESS_CONFIGS.filter(cfg => {
-        if (cfg.id === 'kaskrout' && cityId !== 'tunis') return false;
-        if (cfg.id === 'fruits_de_mer' && !['sfax', 'djerba_holding', 'monastir_mahdia'].includes(cityId)) return false;
-        return true;
-      });
+      const allowedIds = CITY_BUSINESS_MAP[cityId];
+      let configs;
+      if (allowedIds && Array.isArray(allowedIds)) {
+        // Conserver l'ordre exact configuré pour la ville
+        configs = allowedIds
+          .map(id => this.BUSINESS_CONFIGS.find(cfg => cfg.id === id))
+          .filter(Boolean);
+      } else {
+        // Fallback générique
+        configs = this.BUSINESS_CONFIGS.filter(cfg => {
+          if (cfg.id === 'kaskrout' && cityId !== 'tunis') return false;
+          if (cfg.id === 'fruits_de_mer' && !['sfax', 'djerba_holding', 'monastir_mahdia', 'bizerte'].includes(cityId)) return false;
+          return true;
+        });
+      }
 
       this.cityBusinesses[cityId] = configs.map(cfg => ({
         id: cfg.id,
@@ -849,17 +1005,11 @@ export class TycoonEngine {
   switchCity(cityId) {
     const city = this.getCityById(cityId);
     if (!city) return false;
-    if (this.currentCityId) {
-      if (!this.cityBalances) this.cityBalances = {};
-      this.cityBalances[this.currentCityId] = this.dinars;
-    }
     this.currentCityId = city.id;
     this.currentZoneId = city.id;
+    // Trésorerie globale unifiée partagée dans toutes les villes
     if (!this.cityBalances) this.cityBalances = {};
-    if (this.cityBalances[city.id] === undefined) {
-      this.cityBalances[city.id] = 0;
-    }
-    this.dinars = this.cityBalances[city.id];
+    this.cityBalances[city.id] = this.dinars;
     this.initCityBusinesses(city.id);
     this.businesses = this.cityBusinesses[city.id];
     return true;
@@ -897,7 +1047,8 @@ export class TycoonEngine {
 
     // 4. Condition gérants / managers recrutés
     if (city.reqManagers && city.reqManagers > 0) {
-      const totalManagers = this.businesses.reduce((sum, b) => sum + (b.hiredManagersCount || (b.hasManager ? 1 : 0)), 0);
+      const allEmpireBusinesses = Object.values(this.cityBusinesses).flat();
+      const totalManagers = allEmpireBusinesses.reduce((sum, b) => sum + (b.hiredManagersCount || (b.hasManager ? 1 : 0)), 0);
       if (totalManagers < city.reqManagers) return false;
     }
 
@@ -938,13 +1089,7 @@ export class TycoonEngine {
     }
 
     this.unlockedCityIds.push(city.id);
-    const remainingWallet = this.dinars;
     this.switchCity(city.id);
-    // Au premier déblocage de la ville, le reliquat du voyage constitue la trésorerie initiale
-    if (this.cityBalances[city.id] === undefined || this.cityBalances[city.id] === 0) {
-      this.cityBalances[city.id] = remainingWallet;
-      this.dinars = remainingWallet;
-    }
     this.updatePlayerPrestigeTitle();
     return true;
   }
@@ -1746,6 +1891,36 @@ export class TycoonEngine {
         { item: 'صحن بقلاوة ومقروض قيرواني بالعسل', price: 18.0, sharePct: 50 },
         { item: 'قرون غزال وحلو درع وزرير', price: 14.0, sharePct: 30 },
         { item: 'تورتة عيد ميلاد بريستيج', price: 45.0, sharePct: 20 }
+      ],
+      librairie: [
+        { item: 'أدوات مدرسية وكراريس ومحافظ', price: 25.0, sharePct: 50 },
+        { item: 'روايات وقصص وكتب فكرية', price: 18.0, sharePct: 30 },
+        { item: 'جرائد يومية وطباعة وثائق', price: 3.5, sharePct: 20 }
+      ],
+      produits_laitiers: [
+        { item: 'جبن باجي وريكوتا طازجة', price: 15.0, sharePct: 50 },
+        { item: 'حليب بقر طازج وسمن بلدي', price: 8.0, sharePct: 30 },
+        { item: 'لبن حامض وزبدة بلدية', price: 5.0, sharePct: 20 }
+      ],
+      boucherie: [
+        { item: 'لحم علوش بركوس بلدي (1 كغ)', price: 42.0, sharePct: 50 },
+        { item: 'لحم بقري مسمن وكبدة طازجة', price: 36.0, sharePct: 30 },
+        { item: 'مرقاز دياري وشحم فاوح', price: 20.0, sharePct: 20 }
+      ],
+      vente_vetements: [
+        { item: 'قميص وسروال كلاس ماركة عالمية', price: 85.0, sharePct: 50 },
+        { item: 'فريب شيك بياسات نادرة', price: 35.0, sharePct: 30 },
+        { item: 'أحذية وإكسسوارات أنيقة', price: 55.0, sharePct: 20 }
+      ],
+      salle_de_jeux: [
+        { item: 'ساعة بلايستيشن 5 وماتش فيفا', price: 6.0, sharePct: 50 },
+        { item: 'طرح بلياردو ومشروبات منعشة', price: 8.0, sharePct: 30 },
+        { item: 'بطولات بيبي فوت وتحديات شبابية', price: 4.0, sharePct: 20 }
+      ],
+      emballage_dattes: [
+        { item: 'صندوق دقلة النور الفاخرة عرجون 1 كغ', price: 22.0, sharePct: 50 },
+        { item: 'شحنة تصدير تمور بيو معلبة', price: 1500.0, sharePct: 35 },
+        { item: 'ربّ التمر وعسل الواحات المركز', price: 12.0, sharePct: 15 }
       ],
       taxi_collectif: [
         { item: 'توصيلة ركاب سنتر فيل خط سريع', price: 2.5, sharePct: 70 },
