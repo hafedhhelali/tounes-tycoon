@@ -91,6 +91,41 @@ class SoundEngine {
     playBeep(now + 0.15);
   }
 
+  // Sirène de Police tunisienne réaliste à deux tons (Pin-Pon Pin-Pon !)
+  playPoliceSiren() {
+    if (this.muted) return;
+    this.init();
+    const now = this.ctx.currentTime;
+
+    // Deux tonalités alternées (La 440 Hz et Ré 587 Hz)
+    const tones = [
+      { f: 587.33, dur: 0.22 }, // Re5
+      { f: 440.00, dur: 0.22 }, // La4
+      { f: 587.33, dur: 0.22 }, // Re5
+      { f: 440.00, dur: 0.22 }  // La4
+    ];
+
+    let t = now;
+    tones.forEach((tone) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(tone.f, t);
+
+      gain.gain.setValueAtTime(0.18, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + tone.dur);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + tone.dur);
+
+      t += tone.dur;
+    });
+  }
+
   // Son de déblocage / Achat de niveau
   playUpgrade() {
     if (this.muted) return;

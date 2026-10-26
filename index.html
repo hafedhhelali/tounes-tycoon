@@ -4222,13 +4222,20 @@
                 🚀 افتح (${z.costDinars ? z.costDinars.toLocaleString() + ' د.ت' : 'مجاناً'})
               </button>
             ` : `
-              <div style="font-size: 10px; font-weight: 900; color: #ef4444; text-align: center; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 4px 8px;">
+              <button class="upg-buy-btn locked-zone-btn" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-size: 10px; cursor: pointer;" id="zone-locked-${z.id}">
                 🔒 مقفول
-              </div>
+              </button>
             `}
           </div>
         `;
         zonesListContainer.appendChild(card);
+
+        const lockedBtn = card.querySelector(`#zone-locked-${z.id}`);
+        if (lockedBtn) {
+          lockedBtn.onclick = () => {
+            showFeedbackToast(`🔒 ولاية ${z.name} مقفلة ! الشروط : ${z.criteriaDesc || 'راجع المتطلبات'}`, '🔒');
+          };
+        }
 
         const moveBtn = card.querySelector(`#zone-move-${z.id}`);
         if (moveBtn) {
@@ -4269,10 +4276,21 @@
               <button class="upg-buy-btn" style="padding: 3px 8px; font-size: 9.5px; ${isUnlocked ? 'background: #3b82f6;' : ''}" id="modal-zone-move-${z.id}">
                 ${isUnlocked ? 'سافر 🚗' : 'افتح 🚀'}
               </button>
-            ` : '<span style="font-size: 9.5px; color: #ef4444;">🔒 مقفول</span>'}
+            ` : `
+              <button class="upg-buy-btn" style="padding: 3px 8px; font-size: 9.5px; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; cursor: pointer;" id="modal-zone-locked-${z.id}">
+                🔒 مقفول
+              </button>
+            `}
           </div>
         `;
         modalZonesList.appendChild(item);
+
+        const modalLockedBtn = item.querySelector(`#modal-zone-locked-${z.id}`);
+        if (modalLockedBtn) {
+          modalLockedBtn.onclick = () => {
+            showFeedbackToast(`🔒 ولاية ${z.name} مقفلة ! الشروط : ${z.criteriaDesc || 'راجع المتطلبات'}`, '🔒');
+          };
+        }
 
         const moveBtn = item.querySelector(`#modal-zone-move-${z.id}`);
         if (moveBtn) {
@@ -4793,10 +4811,18 @@
     const policePatrolBoostBtn = document.getElementById('policePatrolBoostBtn');
     if (policePatrolBoostBtn) {
       policePatrolBoostBtn.onclick = () => {
-        soundEngine.playHorn();
+        if (soundEngine.playPoliceSiren) {
+          soundEngine.playPoliceSiren();
+        } else {
+          soundEngine.playHorn();
+        }
+        if (quartierEngine && quartierEngine.triggerPolicePatrol) {
+          quartierEngine.triggerPolicePatrol();
+        }
         policePatrolBoostBtn.innerText = '🚓 الدورية انطلقت في الشارع ✓';
         setTimeout(() => { if (policePatrolBoostBtn) policePatrolBoostBtn.innerText = '🚓 تسيير دورية تفقد فورية'; }, 2200);
         showFeedbackToast('🚓 انطلقت دورية الشرطة لتأمين المتاجر والشارع بنجاح ! 🇹🇳', '🚓');
+        closePoliceModalUI();
       };
     }
 

@@ -2820,6 +2820,19 @@ export class QuartierAnimator {
     }
   }
 
+  triggerPolicePatrol() {
+    // Ajouter un véhicule d'intervention rapide de la police nationale
+    const dir = Math.random() > 0.5 ? 1 : -1;
+    const startX = dir > 0 ? -80 : this.worldWidth + 80;
+    this.taxis.push({
+      x: startX,
+      speed: 135, // Vitesse d'intervention rapide
+      dir: dir,
+      type: 'police_patrol',
+      isOneShot: true
+    });
+  }
+
   update(dt, timestamp) {
     this.cameraX += (this.targetCameraX - this.cameraX) * Math.min(1, dt * 10);
 
@@ -2843,10 +2856,15 @@ export class QuartierAnimator {
       if (s.x > this.worldWidth + 100) s.x = -80;
     });
 
-    this.taxis.forEach(t => {
+    this.taxis.forEach((t, idx) => {
       t.x += t.speed * t.dir * dt;
-      if (t.dir > 0 && t.x > this.worldWidth + 120) t.x = -100;
-      if (t.dir < 0 && t.x < -120) t.x = this.worldWidth + 100;
+      if (t.isOneShot) {
+        if (t.dir > 0 && t.x > this.worldWidth + 120) this.taxis.splice(idx, 1);
+        if (t.dir < 0 && t.x < -120) this.taxis.splice(idx, 1);
+      } else {
+        if (t.dir > 0 && t.x > this.worldWidth + 120) t.x = -100;
+        if (t.dir < 0 && t.x < -120) t.x = this.worldWidth + 100;
+      }
     });
 
     this.pedestrians.forEach(p => {
@@ -4746,7 +4764,52 @@ export class QuartierAnimator {
     if (!isRight) ctx.scale(-1, 1);
     ctx.translate(-vW / 2, 0);
 
-    if (t.type === 'taxi_collectif' || t.type === 'louage') {
+    if (t.type === 'police_patrol') {
+      // Voiture de Police Nationale Tunisienne (Blanche avec bandes bleues et gyrophare clignotant)
+      ctx.fillStyle = '#f8fafc';
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 1.4;
+
+      // Bas de caisse blanc
+      ctx.beginPath();
+      ctx.roundRect(0, -15, 52, 11, [3, 6, 2, 2]);
+      ctx.fill();
+      ctx.stroke();
+
+      // Bande latérale bleue de la police tunisienne
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(0, -10, 52, 4);
+
+      // Inscription "POLICE" ou symbole
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 6px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('POLICE 🇹🇳', 26, -7);
+
+      // Habitacle profilé
+      ctx.fillStyle = '#e2e8f0';
+      ctx.beginPath();
+      ctx.moveTo(9, -15);
+      ctx.lineTo(15, -23);
+      ctx.lineTo(35, -23);
+      ctx.lineTo(43, -15);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Gyrophare bicolore clignotant d'urgence (Rouge / Bleu alternatif rapide)
+      const flashFast = Math.floor(timestamp / 100) % 2 === 0;
+      ctx.fillStyle = flashFast ? '#ef4444' : '#38bdf8';
+      ctx.shadowColor = flashFast ? '#ef4444' : '#38bdf8';
+      ctx.shadowBlur = 10;
+      ctx.fillRect(23, -28, 8, 5);
+      ctx.shadowBlur = 0;
+
+      // Vitres teintées
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(13, -21, 10, 6);
+      ctx.fillRect(26, -21, 12, 6);
+    } else if (t.type === 'taxi_collectif' || t.type === 'louage') {
       const isLouage = t.type === 'louage';
       // Carrosserie minibus (Jaune Taxi Collectif ou Blanc Louage)
       ctx.fillStyle = isLouage ? '#f8fafc' : '#facc15';
@@ -5863,6 +5926,12 @@ export class TunisiaMapEngine {
         const c = this.cities.find(item => item.id === this.selectedCityId);
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
+        } else if (c && !this.isCityUnlocked(c) && !this.canUnlockCity(c)) {
+          const engCity = this.engine.getCityById ? this.engine.getCityById(c.id) : null;
+          const critDesc = (engCity && engCity.criteriaDesc) ? engCity.criteriaDesc : c.tagline;
+          if (typeof window !== 'undefined' && window.showFeedbackToast) {
+            window.showFeedbackToast(`🔒 ولاية ${c.name} مقفلة ! الشروط: ${critDesc}`, '🔒');
+          }
         }
         return;
       }
@@ -5872,15 +5941,25 @@ export class TunisiaMapEngine {
     for (const c of this.cities) {
       const dist = Math.hypot(screenX - c.x, mapY - c.y);
       if (dist <= 42) {
-        // Si la ville n'était pas sélectionnée, la sélectionner
-        if (this.selectedCityId !== c.id) {
-          this.selectedCityId = c.id;
-          if (this.onSelect) this.onSelect(c);
-        } else {
-          // Si déjà sélectionnée et accessible, déclencher le voyage directement
-          if ((this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
-            this.travelTo(c.id);
+        const isUnlocked = this.isCityUnlocked(c);
+        const canUnlock = this.canUnlockCity(c);
+        const engCity = this.engine.getCityById ? this.engine.getCityById(c.id) : null;
+        const critDesc = (engCity && engCity.criteriaDesc) ? engCity.criteriaDesc : c.tagline;
+
+        // Si la ville est verrouillée, TOUJOURS afficher le toast d'explication avec le cadenas et les critères précis
+        if (!isUnlocked && !canUnlock) {
+          if (typeof window !== 'undefined' && window.showFeedbackToast) {
+            window.showFeedbackToast(`🔒 ولاية ${c.name} مقفلة ! الشروط : ${critDesc}`, '🔒');
           }
+        }
+
+        // Mettre à jour la sélection de la ville
+        this.selectedCityId = c.id;
+        if (this.onSelect) this.onSelect(c);
+
+        // Si accessible et pas encore dans cette ville, voyager
+        if ((isUnlocked || canUnlock) && c.id !== this.getActiveCity().id) {
+          this.travelTo(c.id);
         }
         return;
       }

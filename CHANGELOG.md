@@ -15,6 +15,19 @@
 
 # CHANGELOG
 
+## [v114] - 2026-10-26
+
+### Added & Enhanced
+- **Feedback d'accès aux Villes (Toast cadenas & critères)** :
+  - Sur la Carte vectorielle et dans les listes de villes, tout clic sur une ville verrouillée déclenche immédiatement un toast clair avec cadenas 🔒 et les critères exacts requis :
+    - **سوسة (Sousse)** : `150,000 د.ت + برستيج 1`
+    - **القيروان (Kairouan)** : `800,000 د.ت + 4 مشاريع مستوى 35`
+    - **صفاقس (Sfax)** : `2,000,000 د.ت + برستيج 2`
+    - Et tous les critères précis pour l'ensemble des 14 villes (Bizerte, Nabeul, Béja, Le Kef, Monastir, Sbeïtla, Gafsa, Tozeur, Gabès, Médenine, Djerba Holding).
+- **Animation et Sirène de Patrouille de Police (`دورية`)** :
+  - Synthèse audio WebAudio de la sirène officielle tunisienne à deux tons (`playPoliceSiren()`).
+  - Déploiement en temps réel d'un véhicule de patrouille rapide de la police nationale avec gyrophare clignotant rouge/bleu traversant la rue.
+
 ## [v113] - 2026-10-26
 
 ### Fixed & Enhanced
