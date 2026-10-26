@@ -15,6 +15,18 @@
 
 # CHANGELOG
 
+## [v113] - 2026-10-26
+
+### Fixed & Enhanced
+- **Accès intérieur restreint aux projets achetés** :
+  - Interdiction formelle d'entrer à l'intérieur d'un commerce ou de voir la simulation Canvas si `level === 0` (notification contextuelle : « لازم تشري المشروع قبل باش تنجم تدخل للمحلّ ! »).
+  - Suppression de la hitbox de visite tactile sur les bâtiments et parasols non débloqués.
+- **Orientation de la voiture sur la Carte de Tunisie** :
+  - Élimination du retournement du véhicule (roues en l'air) lors des trajets Sud/Nord ou Est/Ouest grâce à un flip horizontal `scale(-1, 1)` et un angle d'inclinaison borné (voiture toujours les 4 roues sur la route).
+- **Intérieur et Kiosque de Tabac** :
+  - Ajout de la modale d'entrée au kiosque de tabac avec articles conformes (cigarettes 20 Mars/Cristal 4.5 DT, journaux 1.2 DT, bouteilles d'eau 0.8 DT) et pourboire.
+  - Caissier rehaussé, montant LED dynamique sans débordement, icône superflue supprimée, étagères 100% compatibles par métier (librairie, marée, etc.).
+
 ## [v112] - 2026-10-26
 
 ### Fixed

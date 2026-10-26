@@ -54,11 +54,12 @@ export class CanvasStoreEngine {
       fricasse: ['🥟', '🍩', '🫒', '🥚'],
       kahwa: ['☕', '🍵', '♠️', '🍏'],
       attariya: ['🍞', '🥛', '🧀', '🫒', '🥫', '🧼', '🥚', '🧂'],
-      fruits_de_mer: ['🐟', '🦐', '🦑', '🍋', '🦀'],
+      fruits_de_mer: ['🐟', '🦐', '🦑', '🦀', '🐟'],
       patisserie: ['🍯', '🥐', '🎂', '🧁'],
       produits_laitiers: ['🧀', '🥛', '🧈', '🍶'],
       boucherie: ['🥩', '🔪', '🍖', '🍗'],
       librairie: ['📚', '📖', '✏️', '📰'],
+      tobacco_kiosk: ['🚬', '📰', '💧', '🎟️'],
       vente_vetements: ['👕', '👗', '🧥', '👖'],
       vente_montres: ['⌚', '🕰️', '💎', '✨'],
       croisiere_mer: ['⛵', '⚓', '🛥️', '🌊'],
@@ -297,6 +298,42 @@ export class CanvasStoreEngine {
       wallGrad.addColorStop(0, '#1c2833');
       wallGrad.addColorStop(0.6, '#131e29');
       wallGrad.addColorStop(1, '#0c141c');
+    } else if (bizId === 'fruits_de_mer' || bizId === 'croisiere_mer') {
+      wallGrad.addColorStop(0, '#0c4a6e');
+      wallGrad.addColorStop(0.6, '#0369a1');
+      wallGrad.addColorStop(1, '#082f49');
+    } else if (bizId === 'librairie') {
+      wallGrad.addColorStop(0, '#1e293b');
+      wallGrad.addColorStop(0.6, '#0f172a');
+      wallGrad.addColorStop(1, '#020617');
+    } else if (bizId === 'boucherie') {
+      wallGrad.addColorStop(0, '#450a0a');
+      wallGrad.addColorStop(0.6, '#7f1d1d');
+      wallGrad.addColorStop(1, '#1c0505');
+    } else if (bizId === 'produits_laitiers') {
+      wallGrad.addColorStop(0, '#14532d');
+      wallGrad.addColorStop(0.6, '#166534');
+      wallGrad.addColorStop(1, '#052e16');
+    } else if (bizId === 'vente_vetements') {
+      wallGrad.addColorStop(0, '#4a044e');
+      wallGrad.addColorStop(0.6, '#701a75');
+      wallGrad.addColorStop(1, '#2e0238');
+    } else if (bizId === 'vente_montres') {
+      wallGrad.addColorStop(0, '#1e1b4b');
+      wallGrad.addColorStop(0.6, '#312e81');
+      wallGrad.addColorStop(1, '#0f0d28');
+    } else if (bizId === 'salle_de_jeux') {
+      wallGrad.addColorStop(0, '#09090b');
+      wallGrad.addColorStop(0.6, '#18181b');
+      wallGrad.addColorStop(1, '#030712');
+    } else if (bizId === 'emballage_dattes') {
+      wallGrad.addColorStop(0, '#431407');
+      wallGrad.addColorStop(0.6, '#7c2d12');
+      wallGrad.addColorStop(1, '#1a0502');
+    } else if (bizId === 'tobacco_kiosk') {
+      wallGrad.addColorStop(0, '#500724');
+      wallGrad.addColorStop(0.6, '#831843');
+      wallGrad.addColorStop(1, '#250210');
     } else if (bizId === 'patisserie') {
       wallGrad.addColorStop(0, '#38203f');
       wallGrad.addColorStop(0.6, '#24132a');
@@ -599,6 +636,144 @@ export class CanvasStoreEngine {
       ctx.fillText('✈ TUNIS', 12, 49);
       ctx.fillText('✈ PARIS', 12, 60);
       ctx.fillText('✈ DUBAI', 12, 71);
+    } else if (bizId === 'fruits_de_mer') {
+      // Poissonnerie / Marché aux poissons avec étalage glacé de poissons frais
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const fishItems = ['🐟', '🦐', '🦑', '🦀', '🐟', '🦐'];
+      fishItems.forEach((f, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(f, 112 + idx * 32, 46);
+        ctx.fillText(fishItems[(idx + 2) % fishItems.length], 112 + idx * 32, 82);
+      });
+      // Panneau criée aux poissons
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(40, 20, 54, 40);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(40, 20, 54, 40);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 8.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('حوت المارشي 🐟', 67, 34);
+      ctx.font = '7.5px sans-serif';
+      ctx.fillStyle = '#67e8f9';
+      ctx.fillText('طازج من البحر', 67, 48);
+      ctx.textAlign = 'left';
+    } else if (bizId === 'librairie') {
+      // Bibliothèque & librairie : rangées de livres, cahiers, stylos et romans
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(100, 46, w - 120, 6);
+      ctx.fillRect(100, 82, w - 120, 6);
+      const bookItems = ['📚', '📖', '✏️', '📰', '📐', '📚'];
+      bookItems.forEach((b, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(b, 112 + idx * 32, 44);
+        ctx.fillText(bookItems[(idx + 1) % bookItems.length], 112 + idx * 32, 80);
+      });
+      // Tableau d'affichage culturel
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(40, 20, 54, 40);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(40, 20, 54, 40);
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 8.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ركن المطالعة 📚', 67, 34);
+      ctx.font = '7.5px sans-serif';
+      ctx.fillStyle = '#fde047';
+      ctx.fillText('كتب وأدوات مدرسية', 67, 48);
+      ctx.textAlign = 'left';
+    } else if (bizId === 'boucherie') {
+      // Boucherie : crochets de viande, billot de découpe
+      ctx.fillStyle = '#991b1b';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const meatItems = ['🥩', '🔪', '🍖', '🍗', '🥩', '🍖'];
+      meatItems.forEach((m, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(m, 112 + idx * 32, 46);
+        ctx.fillText(meatItems[(idx + 1) % meatItems.length], 112 + idx * 32, 82);
+      });
+    } else if (bizId === 'produits_laitiers') {
+      // Fromagerie / Laiterie : fromages meules, pots de ricotta, bouteilles de lait
+      ctx.fillStyle = '#15803d';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const dairyItems = ['🧀', '🥛', '🧈', '🍶', '🥣', '🧀'];
+      dairyItems.forEach((d, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(d, 112 + idx * 32, 46);
+        ctx.fillText(dairyItems[(idx + 1) % dairyItems.length], 112 + idx * 32, 82);
+      });
+    } else if (bizId === 'vente_vetements') {
+      // Boutique de mode : cintres, costumes, robes, chaussures
+      ctx.fillStyle = '#a21caf';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const clothItems = ['👕', '👗', '🧥', '👖', '👔', '👠'];
+      clothItems.forEach((c, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(c, 112 + idx * 32, 46);
+        ctx.fillText(clothItems[(idx + 1) % clothItems.length], 112 + idx * 32, 82);
+      });
+    } else if (bizId === 'vente_montres') {
+      // Horlogerie / Bijouterie : vitrines de montres dorées et bijoux
+      ctx.fillStyle = '#312e81';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const watchItems = ['⌚', '🕰️', '💎', '✨', '🪙', '⌚'];
+      watchItems.forEach((wi, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(wi, 112 + idx * 32, 46);
+        ctx.fillText(watchItems[(idx + 1) % watchItems.length], 112 + idx * 32, 82);
+      });
+    } else if (bizId === 'salle_de_jeux') {
+      // Gaming Room : manettes, consoles, casques
+      ctx.fillStyle = '#27272a';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const gameItems = ['🎮', '🕹️', '🎱', '🎧', '🎲', '👾'];
+      gameItems.forEach((gi, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(gi, 112 + idx * 32, 46);
+        ctx.fillText(gameItems[(idx + 1) % gameItems.length], 112 + idx * 32, 82);
+      });
+    } else if (bizId === 'emballage_dattes') {
+      // Station de dattes : caisses de dattes, palmiers, miel de datte
+      ctx.fillStyle = '#9a3412';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const dateItems = ['🌴', '📦', '🍯', '✨', '🌴', '📦'];
+      dateItems.forEach((di, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(di, 112 + idx * 32, 46);
+        ctx.fillText(dateItems[(idx + 1) % dateItems.length], 112 + idx * 32, 82);
+      });
+    } else if (bizId === 'croisiere_mer') {
+      // Port de plaisance & croisière : hublots, bouées de sauvetage, ancres
+      ctx.fillStyle = '#0369a1';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const cruiseItems = ['⛵', '⚓', '🛥️', '🌊', '🧭', '🛟'];
+      cruiseItems.forEach((cri, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(cri, 112 + idx * 32, 46);
+        ctx.fillText(cruiseItems[(idx + 1) % cruiseItems.length], 112 + idx * 32, 82);
+      });
+    } else if (bizId === 'tobacco_kiosk') {
+      // Kiosque de tabac : paquets de cigarettes, journaux du matin, bouteilles d'eau
+      ctx.fillStyle = '#831843';
+      ctx.fillRect(100, 48, w - 120, 6);
+      ctx.fillRect(100, 84, w - 120, 6);
+      const tobItems = ['🚬', '📰', '💧', '🎟️', '🔥', '🚬'];
+      tobItems.forEach((ti, idx) => {
+        ctx.font = '16px serif';
+        ctx.fillText(ti, 112 + idx * 32, 46);
+        ctx.fillText(tobItems[(idx + 1) % tobItems.length], 112 + idx * 32, 82);
+      });
     } else if (bizId === 'taxi_collectif') {
       // Panneau indicateur des lignes de louage et taxi collectif (محطة النقل)
       const boardW = Math.min(180, w - 120);
@@ -670,6 +845,38 @@ export class CanvasStoreEngine {
       const taxiRack = ['🔑', '🎫', '🚖', '🛣️'];
       taxiRack.forEach((item, i) => ctx.fillText(item, counterX + 8 + i * 22, 66));
     } else {
+      // Étagères avec marchandises STRICTEMENT COMPATIBLES avec le commerce actif
+      const shelfThemes = {
+        kaskrout: ['🥖', '🥪', '🌶️', '🫒', '🥤'],
+        fricasse: ['🥟', '🍩', '🫒', '🥚', '🥤'],
+        kahwa: ['☕', '🍵', '🫖', '🍏', '🍯'],
+        attariya: ['🍞', '🥛', '🥫', '🧀', '🧂'],
+        fruits_de_mer: ['🐟', '🦐', '🦑', '🦀', '🐟'],
+        patisserie: ['🍯', '🥐', '🎂', '🧁', '🍰'],
+        produits_laitiers: ['🧀', '🥛', '🧈', '🍶', '🥣'],
+        boucherie: ['🥩', '🔪', '🍖', '🍗', '🥩'],
+        librairie: ['📚', '📖', '✏️', '📰', '📐'],
+        tobacco_kiosk: ['🚬', '📰', '💧', '🎟️', '🔥'],
+        vente_vetements: ['👕', '👗', '🧥', '👖', '👔'],
+        vente_montres: ['⌚', '🕰️', '💎', '✨', '🪙'],
+        croisiere_mer: ['⛵', '⚓', '🛥️', '🌊', '🧭'],
+        salle_de_jeux: ['🎮', '🕹️', '🎱', '🎧', '🎲'],
+        emballage_dattes: ['🌴', '📦', '🍯', '✨', '🌴'],
+        superette: ['🛒', '🍫', '🧃', '🧼', '🥫'],
+        supermarche: ['🧺', '🥩', '📦', '🥫', '🥛'],
+        salon_de_the: ['🍹', '🍸', '🍰', '🕶️', '🍓'],
+        restaurant: ['🍗', '🥘', '🥗', '🍖', '🍲'],
+        agence_voyages: ['✈️', '🎫', '🏝️', '🧳', '🌍'],
+        hotel: ['🛎️', '🍸', '🛏️', '🏊', '🗝️'],
+        centre_commercial: ['🛍️', '👗', '👟', '🎮', '💎'],
+        usine_conserves: ['🥫', '🐟', '🍅', '🫒', '📦'],
+        showroom_auto: ['🚗', '🚘', '🔑', '🏎️', '⚙️'],
+        promoteur_immobilier: ['🏢', '🏗️', '📐', '🏡', '🔑'],
+        tayaran_el_ghzela: ['✈️', '🛫', '💺', '🌍', '🧳'],
+        default: ['🥫', '🫒', '🍯', '🧂', '📦']
+      };
+      const goodsPool = shelfThemes[currentBizId] || shelfThemes.default;
+
       for (let sIdx = 0; sIdx < 2; sIdx++) {
         const shelfY = 44 + sIdx * 22;
         ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
@@ -683,16 +890,22 @@ export class CanvasStoreEngine {
         ctx.lineWidth = 1;
         ctx.strokeRect(counterX - 4, shelfY, deskW + 8, 5);
         ctx.font = '12px serif';
-        const shelfGoods = ['🥫', '🫒', '🍯', '🧂', '📦'];
+        const shelfGoods = [
+          goodsPool[sIdx * 2 % goodsPool.length],
+          goodsPool[(sIdx * 2 + 1) % goodsPool.length],
+          goodsPool[(sIdx * 2 + 2) % goodsPool.length],
+          goodsPool[(sIdx * 2 + 3) % goodsPool.length],
+          goodsPool[(sIdx * 2 + 4) % goodsPool.length]
+        ];
         shelfGoods.forEach((g, gIdx) => ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 3));
       }
     }
     ctx.restore();
 
-    // 2. Caissier debout au sol derrière le comptoir (Z-index intermédiaire, calé au sol)
+    // 2. Caissier debout derrière le comptoir (remonté et décalé pour être parfaitement visible à côté de la caisse)
     const cashierSlot = detail.staffSlots && detail.staffSlots[0];
-    const cashierX = counterX + 22;
-    const cashierFootY = 148; // Calé au sol réel pour éviter qu'il flotte
+    const cashierX = counterX + 10;
+    const cashierFootY = 136; // Remonté pour dégager totalement le buste et la tête au-dessus du comptoir
 
     if (cashierSlot && cashierSlot.hired) {
       this.drawWorker(ctx, cashierX + 16, cashierFootY, 0, isBusy, timeSec);
@@ -706,13 +919,7 @@ export class CanvasStoreEngine {
         name: cashierSlot.name,
         role: cashierSlot.role
       });
-
-      // Icône de métier centrée au-dessus de la tête, sans emoji endormi '💤'
-      const iconToDraw = isBusy ? (cashierSlot.icon || '⚡') : (cashierSlot.icon || '👔');
-      ctx.font = '13px sans-serif';
-      ctx.textAlign = 'center';
-      const iconBounce = isBusy ? -Math.abs(Math.sin(timeSec * 6) * 4) : 0;
-      ctx.fillText(iconToDraw, cashierX + 16, cashierFootY - 52 + iconBounce);
+      // L'icône au-dessus de la tête du caissier a été supprimée selon la demande
     } else {
       this.drawHireButton(ctx, counterX + 6, counterY - 44, 66, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
     }
@@ -736,11 +943,11 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1.8;
     ctx.strokeRect(counterX, counterY + 12, deskW, deskH);
 
-    // Caisse enregistreuse moderne tunisienne (Design Luxe 3D, écran tactile incliné, TPE carte bancaire et tiroir doré)
-    const regX = counterX + deskW - 44;
-    const regY = counterY - 14;
-    const regW = 40;
-    const regH = 28;
+    // Caisse enregistreuse moderne tunisienne positionnée à DROITE du comptoir pour ne JAMAIS masquer le caissier
+    const regX = counterX + deskW - 38;
+    const regY = counterY - 8;
+    const regW = 34;
+    const regH = 24;
 
     // Ombre portée sous la caisse
     ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
@@ -788,12 +995,17 @@ export class CanvasStoreEngine {
     ctx.closePath();
     ctx.fill();
 
-    // Écran LED : Montant encaissé en vert fluo / or avec logo dinar
+    // Écran LED : Montant encaissé en vert fluo / or avec adaptation dynamique de taille pour zéro débordement
+    const rawVal = counterBiz ? (this.engine.getRevenue(counterBiz, now) || 0) : 0;
+    const formattedVal = this.formatNumber(rawVal);
+    const dynCash = formattedVal + ' DT';
+    
+    // Taille de police proportionnelle et ajustée
+    const fontSize = dynCash.length > 7 ? 6 : (dynCash.length > 5 ? 6.5 : 7.5);
     ctx.fillStyle = '#34d399';
-    ctx.font = '900 7px monospace';
+    ctx.font = `900 ${fontSize}px monospace`;
     ctx.textAlign = 'right';
-    const dynCash = counterBiz ? (this.engine.getRevenue(counterBiz, now) || 0).toFixed(1) : '0.0';
-    ctx.fillText(dynCash + ' د.ت', screenX + screenW - 3, screenY + 8);
+    ctx.fillText(dynCash, screenX + screenW - 3, screenY + 8);
 
     // Mini icône de transaction en cours
     ctx.fillStyle = isBusy ? '#fde047' : '#38bdf8';
@@ -3453,15 +3665,17 @@ export class QuartierAnimator {
         action: 'collect',
         bizId: b.id
       });
-      // Seul le bouton ciblé "زيارة" déclenche l'entrée dans le projet
-      this.interactiveHitboxes.push({
-        x: enterX,
-        y: enterY,
-        w: enterW,
-        h: enterH,
-        action: 'inspect',
-        bizId: b.id
-      });
+      // Si le commerce n'est pas encore acheté (level 0), interdire la visite intérieure
+      if (b.level > 0) {
+        this.interactiveHitboxes.push({
+          x: enterX,
+          y: enterY,
+          w: enterW,
+          h: enterH,
+          action: 'inspect',
+          bizId: b.id
+        });
+      }
 
       ctx.restore();
       return;
@@ -3786,15 +4000,17 @@ export class QuartierAnimator {
       bizId: b.id
     });
 
-    // 2. Hitbox porte sculptée (enregistrée EN DERNIER pour être prioritaire au clic ciblé sur la porte)
-    this.interactiveHitboxes.push({
-      x: doorX - 2,
-      y: doorY - 4,
-      w: doorW + 4,
-      h: doorH + 6,
-      action: 'inspect',
-      bizId: b.id
-    });
+    // 2. Hitbox porte sculptée : UNIQUEMENT active si le projet est acheté (level > 0)
+    if (level > 0) {
+      this.interactiveHitboxes.push({
+        x: doorX - 2,
+        y: doorY - 4,
+        w: doorW + 4,
+        h: doorH + 6,
+        action: 'inspect',
+        bizId: b.id
+      });
+    }
 
     ctx.restore();
   }
@@ -4208,23 +4424,23 @@ export class QuartierAnimator {
 
     // Toit / Auvent rayé bordeaux et or
     ctx.fillStyle = '#be123c';
-    ctx.fillRect(x - 2, y, w + 4, 14);
+    ctx.fillRect(x - 2, y, w + 4, 15);
     ctx.strokeStyle = '#fbbf24';
     ctx.lineWidth = 1.2;
-    ctx.strokeRect(x - 2, y, w + 4, 14);
+    ctx.strokeRect(x - 2, y, w + 4, 15);
 
-    // Enseigne officielle Guichet de Tabac & الوقيد
+    // Enseigne officielle Guichet de Tabac & الوقيد (taille calibrée pour zéro débordement)
     ctx.fillStyle = '#fbbf24';
-    ctx.font = '900 9.5px "Cairo", sans-serif';
+    ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🚬 قمريڨ ومكتب التبغ والوقيد', x + w / 2, y + 10.5);
+    ctx.fillText('🚬 قمريڨ • بيع التبغ والوقيد', x + w / 2, y + 10.5);
 
     // Vitrine avec paquets de cigarettes, tabac et timbres fiscaux
     ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
     ctx.strokeStyle = '#fda4af';
     ctx.lineWidth = 1;
-    ctx.fillRect(x + 10, y + 20, w - 20, 36);
-    ctx.strokeRect(x + 10, y + 20, w - 20, 36);
+    ctx.fillRect(x + 10, y + 21, w - 20, 36);
+    ctx.strokeRect(x + 10, y + 21, w - 20, 36);
 
     // Articles en rayon (Cigarettes 20 Mars, Cristal, Timbres fiscaux)
     ctx.font = '11px sans-serif';
@@ -4233,7 +4449,7 @@ export class QuartierAnimator {
     ctx.fillText('🎟️', x + w - 24, y + 36);
 
     ctx.fillStyle = '#fde047';
-    ctx.font = '800 8px "Cairo", sans-serif';
+    ctx.font = '800 7px "Cairo", sans-serif';
     ctx.fillText('20 مارص • كريستال • طوابع جبائية', x + w / 2, y + 50);
 
     // Guichet de vente ouvert en bas
@@ -6209,11 +6425,22 @@ export class TunisiaMapEngine {
     ctx.arc(curX, curY, 11, 0, Math.PI * 2);
     ctx.fill();
 
-    // 3. Faisceau de phares avant illuminant la route en direction de la destination
+    // 3. Faisceau de phares avant et véhicule
     ctx.save();
     ctx.translate(curX, curY);
-    ctx.rotate(angle);
 
+    // Orientation naturelle du véhicule :
+    // L'émoji 🚗 roule naturellement vers la gauche dans les polices standards.
+    // Si la voiture roule vers la droite (dx > 0), on applique un flip horizontal (scale(-1, 1)).
+    // Pour éviter que la voiture se retrouve sur le toit (à l'envers) lors des trajets Sud/Nord ou Nord/Sud,
+    // on ne la fait jamais pivoter la tête en bas.
+    const dx = segTo.x - segFrom.x;
+    const dy = segTo.y - segFrom.y;
+    const goingEast = dx >= 0;
+
+    // Phares illuminant la route en direction du déplacement
+    ctx.save();
+    ctx.rotate(angle);
     const beamGrad = ctx.createRadialGradient(8, 0, 2, 40, 0, 30);
     beamGrad.addColorStop(0, 'rgba(254, 240, 138, 0.7)');
     beamGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
@@ -6225,12 +6452,22 @@ export class TunisiaMapEngine {
     ctx.lineTo(8, 4);
     ctx.closePath();
     ctx.fill();
+    ctx.restore();
 
-    // Voiture tunisienne stylisée
-    ctx.font = '20px sans-serif';
+    // Rendu de la voiture toujours à l'endroit (tête en haut, roues sur la route)
+    ctx.save();
+    // Légère inclinaison selon la pente de la route sans jamais retourner le véhicule
+    const pitch = Math.max(-0.35, Math.min(0.35, Math.atan2(dy, Math.abs(dx) || 1)));
+    ctx.rotate(goingEast ? -pitch : pitch);
+    if (goingEast) {
+      ctx.scale(-1, 1); // Flip pour orienter l'avant de 🚗 vers l'Est
+    }
+    ctx.font = '22px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('🚗', 0, 0);
+    ctx.restore();
+
     ctx.restore();
 
     // 4. Bulle d'ambiance de voyage animée au-dessus du convoi

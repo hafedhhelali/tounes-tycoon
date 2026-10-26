@@ -2741,6 +2741,70 @@
     </div>
   </div>
 
+  <!-- MODAL KIOSQUE DE TABAC : ENTRÉE & ARTICLES OFFICIELS (قمريڨ ومكتب التبغ والوقيد) -->
+  <div class="modal-overlay" id="tobaccoModal" style="padding: 10px 8px; overflow-y: auto;">
+    <div class="modal-card" style="border-color: #f43f5e; max-width: 440px; width: 96%; max-height: calc(100vh - 20px); overflow-y: auto; padding: 12px 14px; gap: 8px; direction: rtl; text-align: right; margin: auto;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(244, 63, 94, 0.3); padding-bottom: 6px; width: 100%;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="modal-icon-glow" style="font-size: 24px;">🚬</div>
+          <div>
+            <div class="modal-title" style="font-size: 15px; color: #fda4af; line-height: 1.2;">قمريڨ • مكتب التبغ والوقيد والصحف</div>
+            <div class="modal-subtitle" style="font-size: 10px; color: #94a3b8; line-height: 1.2;">سجائر وطنية، جرائد الصباح ودبابز ماء باردة</div>
+          </div>
+        </div>
+        <button id="closeTobaccoModalTopBtn" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 2px 6px;">✕</button>
+      </div>
+
+      <!-- Rayonnage intérieur du Kiosque -->
+      <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #f43f5e; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; width: 100%;">
+        <div style="font-size: 11.5px; font-weight: 900; color: #fde047; border-bottom: 1px solid rgba(251, 191, 36, 0.25); padding-bottom: 4px;">
+          🏪 سلعة القمريڨ المتوفرة للحرفاء :
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.6); padding: 6px 8px; border-radius: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 18px;">🚬</span>
+            <div>
+              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">سجائر وتبغ وطني (20 مارص، كريستال)</div>
+              <div style="font-size: 9px; color: #94a3b8;">توزيع رسمي مرخّص مع علب الوقيد</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; font-weight: 900; color: #34d399;">4.500 د.ت</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.6); padding: 6px 8px; border-radius: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 18px;">📰</span>
+            <div>
+              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">جرائد يومية ومجلات أسبوعية</div>
+              <div style="font-size: 9px; color: #94a3b8;">أخبار الصباح والصحافة التونسية</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; font-weight: 900; color: #34d399;">1.200 د.ت</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.6); padding: 6px 8px; border-radius: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 18px;">💧</span>
+            <div>
+              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">دبوزة ماء معدنية باردة (صافية / حياة)</div>
+              <div style="font-size: 9px; color: #94a3b8;">ماء عذب ومثلجات سريعة للعطاشى</div>
+            </div>
+          </div>
+          <span style="font-size: 11px; font-weight: 900; color: #34d399;">0.800 د.ت</span>
+        </div>
+      </div>
+
+      <button class="modal-btn" id="tobaccoTipBtn" style="background: linear-gradient(135deg, #be123c 0%, #831843 100%); border-color: #fbbf24; color: #ffffff; padding: 6px; font-weight: 900; width: 100%; font-size: 11.5px;">
+        🪙 شراء باكي وقضية سريعة (+تفتوفة كاسة)
+      </button>
+
+      <button class="modal-btn" id="closeTobaccoModalBtn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 6px; width: 100%; font-size: 11px;">
+        رجوع للشارع 🏪
+      </button>
+    </div>
+  </div>
+
   <!-- MODAL EXPERT TYCOON REWARD (AdMob / Offline) -->
   <div class="modal-overlay" id="rewardModal">
     <div class="modal-card" style="max-width: 400px; padding: 12px 16px; gap: 6px;">
@@ -4325,8 +4389,6 @@
             } else {
               const manque = Math.max(0, engine.getCost(biz) - engine.dinars);
               triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تفتح المشروع ! 💰`);
-              // Ouvrir la modale détail si pas assez d'argent
-              openBizDetailModalUI(biz.id);
             }
           }
         },
@@ -4412,6 +4474,10 @@
         onOpenPolice: () => {
           soundEngine.playCoin();
           openPoliceModalUI();
+        },
+        onOpenTobacco: () => {
+          soundEngine.playCoin();
+          openTobaccoModalUI();
         }
       });
       quartierEngine.start();
@@ -4597,6 +4663,38 @@
       if (policeModal) policeModal.classList.remove('active');
     }
 
+    const tobaccoModal = document.getElementById('tobaccoModal');
+    function openTobaccoModalUI() {
+      if (tobaccoModal) tobaccoModal.classList.add('active');
+    }
+
+    function closeTobaccoModalUI() {
+      if (tobaccoModal) tobaccoModal.classList.remove('active');
+    }
+
+    const closeTobaccoModalBtn = document.getElementById('closeTobaccoModalBtn');
+    const closeTobaccoModalTopBtn = document.getElementById('closeTobaccoModalTopBtn');
+    const tobaccoTipBtn = document.getElementById('tobaccoTipBtn');
+
+    if (closeTobaccoModalBtn) closeTobaccoModalBtn.onclick = () => { soundEngine.playCoin(); closeTobaccoModalUI(); };
+    if (closeTobaccoModalTopBtn) closeTobaccoModalTopBtn.onclick = () => { soundEngine.playCoin(); closeTobaccoModalUI(); };
+    if (tobaccoTipBtn) {
+      tobaccoTipBtn.onclick = () => {
+        const bonus = 2.5;
+        engine.dinars += bonus;
+        engine.totalDinarsEarned += bonus;
+        engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + bonus;
+        if (engine.currentCityId) {
+          if (!engine.cityBalances) engine.cityBalances = {};
+          engine.cityBalances[engine.currentCityId] = engine.dinars;
+        }
+        soundEngine.playCoin();
+        triggerBalanceAlert('🚬 صحة بالشفاء ! خذيت تفتوفة +2.50 د.ت من القمريڨ 🪙');
+        renderDOM();
+        closeTobaccoModalUI();
+      };
+    }
+
     if (balanceHeroBank) balanceHeroBank.onclick = () => { soundEngine.playCoin(); openBankModalUI(); };
     const closeBankModalBtn = document.getElementById('closeBankModalBtn');
     const closeBankModalTopBtn = document.getElementById('closeBankModalTopBtn');
@@ -4737,6 +4835,13 @@
     let currentDetailBizId = null;
 
     function openBizDetailModalUI(bizId) {
+      const targetBiz = engine.businesses.find(b => b.id === bizId);
+      // Règle d'accès : on ne peut entrer dans le projet que si le projet est acheté (niveau > 0)
+      if (targetBiz && targetBiz.level === 0) {
+        triggerBalanceAlert('🔑 لازم تشري المشروع قبل باش تنجم تدخل للمحلّ !');
+        return;
+      }
+
       currentDetailBizId = bizId;
       renderBizDetailContent();
       if (bizDetailModal) bizDetailModal.classList.add('active');
