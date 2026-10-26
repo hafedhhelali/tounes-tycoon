@@ -998,10 +998,10 @@ export class TycoonEngine {
   // --- MILESTONES DE NIVEAU (x25, x50, x100, x200) ---
   getBusinessMilestones(business) {
     const milestones = [
-      { level: 25, mult: 2.0, name: 'دفعة المعلّم (x2)' },
-      { level: 50, mult: 2.0, name: 'صنعة الحريف (x2)' },
-      { level: 100, mult: 3.0, name: 'شهرية ذهبية (x3)' },
-      { level: 200, mult: 4.0, name: 'إمبراطور الصنعة (x4)' }
+      { level: 25, mult: 1.25, name: 'دفعة المعلّم (+25%)' },
+      { level: 50, mult: 1.30, name: 'صنعة الحريف (+30%)' },
+      { level: 100, mult: 1.50, name: 'شهرية ذهبية (+50%)' },
+      { level: 200, mult: 1.75, name: 'إمبراطور الصنعة (+75%)' }
     ];
     let totalMult = 1.0;
     let nextMilestone = null;
@@ -1896,13 +1896,16 @@ export class TycoonEngine {
     const milestoneInfo = this.getBusinessMilestones ? this.getBusinessMilestones(business) : { multiplier: 1.0 };
     const milestoneMultiplier = milestoneInfo.multiplier || 1.0;
 
-    const rawRevenue = business.baseRevenue * business.level * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier;
+    // Progression progressive et équilibrée des gains par niveau :
+    // Au lieu d'une explosion astronomique, montée calibrée pour préserver la valeur de la monnaie
+    const levelMultiplier = 1.0 + ((business.level - 1) * 0.40);
+    const rawRevenue = business.baseRevenue * levelMultiplier * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier;
 
-    // Équilibrage macro-économique tunisien : au-delà de 5 millions DT / cycle,
+    // Équilibrage macro-économique tunisien : au-delà de 2 millions DT / cycle,
     // amortissement d'échelle (loi des rendements décroissants réaliste)
-    if (rawRevenue > 5000000) {
-      const excess = rawRevenue - 5000000;
-      return 5000000 + Math.pow(excess, 0.85);
+    if (rawRevenue > 2000000) {
+      const excess = rawRevenue - 2000000;
+      return 2000000 + Math.pow(excess, 0.75);
     }
     return rawRevenue;
   }

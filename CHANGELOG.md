@@ -15,6 +15,20 @@
 
 # CHANGELOG
 
+## [v108] - 2026-10-26
+
+### Balanced & Redesigned
+- **Rééquilibrage de la montée de niveau des commerces (Anti-inflation)** :
+  - Formule de revenu par niveau recalibrée : `levelMultiplier = 1.0 + ((level - 1) * 0.40)` (croissance progressive de +40% par niveau au lieu d'une explosion exponentielle ou linéaire brutale).
+  - Paliers de paliers (milestones) ajustés : L25 (+25%), L50 (+30%), L100 (+50%), L200 (+75%) au lieu de doublements/quadruplements excessifs.
+  - Seuil d'amortissement macro-économique ajusté à 2,000,000 DT pour garantir un endgame stimulant sans dérive vers des chiffres infinis.
+- **Refonte graphique intégrale des caisses enregistreuses (Vue intérieure des boutiques)** :
+  - Postes de caisse 3D biseautés haut de gamme avec socle titane brossé et liseré doré.
+  - Écran POS tactile incliné haute brillance avec verre biseauté, reflets lumineux et télémetrie dynamique fluo.
+  - Terminal de paiement électronique (TPE) carte bancaire moderne avec voyants LED interactifs.
+  - Tiroir-caisse ouvragé en bois de noyer massif avec fente à billets réaliste et poignée dorée.
+
+
 ## [v107] - 2026-10-26
 
 ### Added & Enhanced

@@ -727,44 +727,118 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1.8;
     ctx.strokeRect(counterX, counterY + 12, deskW, deskH);
 
-    // Caisse enregistreuse moderne tunisienne (Pos tactile dorée et écran dynamique)
-    const regX = counterX + deskW - 40;
-    const regY = counterY - 6;
-    ctx.fillStyle = '#0f172a';
+    // Caisse enregistreuse moderne tunisienne (Design Luxe 3D, écran tactile incliné, TPE carte bancaire et tiroir doré)
+    const regX = counterX + deskW - 44;
+    const regY = counterY - 14;
+    const regW = 40;
+    const regH = 28;
+
+    // Ombre portée sous la caisse
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
     ctx.beginPath();
-    ctx.roundRect(regX, regY, 34, 22, 4);
+    ctx.ellipse(regX + regW / 2, counterY + 12, regW * 0.48, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Socle / Base métallique de la caisse (Design biseauté titane et or)
+    const baseGrad = ctx.createLinearGradient(regX, regY + 14, regX, regY + regH);
+    baseGrad.addColorStop(0, '#1e293b');
+    baseGrad.addColorStop(0.5, '#0f172a');
+    baseGrad.addColorStop(1, '#020617');
+    ctx.fillStyle = baseGrad;
+    ctx.beginPath();
+    ctx.roundRect(regX, regY + 12, regW, 16, [3, 3, 2, 2]);
     ctx.fill();
     ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+
+    // Écran tactile grand format incliné (POS tactile professionnel haute brillance)
+    const screenX = regX + 2;
+    const screenY = regY - 2;
+    const screenW = regW - 4;
+    const screenH = 17;
+
+    const screenGrad = ctx.createLinearGradient(screenX, screenY, screenX, screenY + screenH);
+    screenGrad.addColorStop(0, '#090d16');
+    screenGrad.addColorStop(0.2, '#0f172a');
+    screenGrad.addColorStop(1, '#022c22');
+    ctx.fillStyle = screenGrad;
+    ctx.beginPath();
+    ctx.roundRect(screenX, screenY, screenW, screenH, 4);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Écran LED lumineux avec reflet et clignotement
-    ctx.fillStyle = '#022c22';
-    ctx.fillRect(regX + 3, regY + 3, 28, 8);
+    // Reflet de vitre biseautée sur l'écran
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.beginPath();
+    ctx.moveTo(screenX + 2, screenY + 2);
+    ctx.lineTo(screenX + screenW - 10, screenY + 2);
+    ctx.lineTo(screenX + 2, screenY + screenH - 2);
+    ctx.closePath();
+    ctx.fill();
+
+    // Écran LED : Montant encaissé en vert fluo / or avec logo dinar
     ctx.fillStyle = '#34d399';
-    ctx.font = '900 6.5px monospace';
+    ctx.font = '900 7px monospace';
     ctx.textAlign = 'right';
     const dynCash = counterBiz ? (this.engine.getRevenue(counterBiz, now) || 0).toFixed(1) : '0.0';
-    ctx.fillText(dynCash + ' DT', regX + 29, regY + 9);
+    ctx.fillText(dynCash + ' د.ت', screenX + screenW - 3, screenY + 8);
 
-    // Clavier tactile rétroéclairé
-    ctx.fillStyle = '#fbbf24';
-    for (let row = 0; row < 2; row++) {
-      for (let col = 0; col < 4; col++) {
-        ctx.fillRect(regX + 4 + col * 6.5, regY + 13 + row * 3.8, 5, 2.8);
-      }
+    // Mini icône de transaction en cours
+    ctx.fillStyle = isBusy ? '#fde047' : '#38bdf8';
+    ctx.font = '8px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(isBusy ? '⚡' : '💳', screenX + 3, screenY + 8);
+
+    // Mini clavier de saisie rapide rétroéclairé
+    for (let c = 0; c < 3; c++) {
+      ctx.fillStyle = isBusy ? '#fbbf24' : '#64748b';
+      ctx.fillRect(screenX + 3 + c * 7, screenY + 11, 5, 3);
     }
 
-    // Tiroir-caisse avec fente et serrure dorée ouvragée
-    ctx.fillStyle = '#b45309';
-    ctx.fillRect(counterX + 16, counterY + 28, deskW - 32, 14);
+    // TPE / Lecteur de carte bancaire & code-barres posé à côté
+    const tpeX = regX - 11;
+    const tpeY = counterY + 2;
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.roundRect(tpeX, tpeY, 9, 12, 2);
+    ctx.fill();
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#34d399';
+    ctx.fillRect(tpeX + 2, tpeY + 2, 5, 3);
+
+    // Tiroir-caisse lourd en noyer massif avec façade dorée et double fente
+    const drawerX = counterX + 14;
+    const drawerY = counterY + 26;
+    const drawerW = deskW - 28;
+    const drawerH = 17;
+
+    const drawerGrad = ctx.createLinearGradient(drawerX, drawerY, drawerX, drawerY + drawerH);
+    drawerGrad.addColorStop(0, '#92400e');
+    drawerGrad.addColorStop(0.4, '#b45309');
+    drawerGrad.addColorStop(1, '#78350f');
+    ctx.fillStyle = drawerGrad;
+    ctx.beginPath();
+    ctx.roundRect(drawerX, drawerY, drawerW, drawerH, 4);
+    ctx.fill();
     ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 1.2;
-    ctx.strokeRect(counterX + 16, counterY + 28, deskW - 32, 14);
+    ctx.lineWidth = 1.4;
+    ctx.stroke();
+
+    // Poignée dorée ouvragée et fente d'encaissement des billets
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(drawerX + 10, drawerY + 3, drawerW - 20, 2); // Fente billets
     ctx.fillStyle = '#fef08a';
     ctx.beginPath();
-    ctx.arc(counterX + deskW / 2, counterY + 35, 3, 0, Math.PI * 2);
+    ctx.arc(drawerX + drawerW / 2, drawerY + 10, 3.5, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1;
+    ctx.stroke();
     ctx.restore();
   }
 
