@@ -1938,7 +1938,18 @@ export class QuartierAnimator {
 
     // Mappings alias villes tunisiennes <-> zones
     zoneSpecs.tunis = zoneSpecs.bab_souika;
-    zoneSpecs.bizerte = zoneSpecs.la_goulette;
+    zoneSpecs.bizerte = [
+      { type: 'house', style: 'goulette', name: 'فيلا سيدي سالم الكورنيش', width: 125, height: 130, wallColor: '#f8fafc', doorColor: '#0284c7' },
+      { type: 'biz', id: 'fricasse' },
+      { type: 'crossroad', streetName: 'قنال بنزert والميناء العتيق', width: 125, nextZoneId: 'lac_2', nextZoneLabel: 'الحمامات' },
+      { type: 'biz', id: 'patisserie' },
+      { type: 'house', style: 'goulette', name: 'دار الكورنيش العتيق', width: 125, height: 126, wallColor: '#f0f9ff', doorColor: '#2563eb' },
+      { type: 'biz', id: 'taxi_collectif' },
+      { type: 'crossroad', streetName: 'جسر بنزرت المتحرك', width: 130, nextZoneId: 'lac_2', nextZoneLabel: 'الحمامات' },
+      { type: 'biz', id: 'superette' },
+      { type: 'house', style: 'goulette', name: 'دار حوت المنارة', width: 120, height: 122, wallColor: '#ffffff', doorColor: '#0369a1' }
+    ];
+    zoneSpecs.la_goulette = zoneSpecs.bizerte;
     zoneSpecs.nabeul_hammamet = zoneSpecs.hammamet;
     zoneSpecs.beja = [
       { type: 'house', style: 'medina', name: 'قصر القمح الباجي', width: 125, height: 125, wallColor: '#fef3c7', doorColor: '#059669' },
@@ -3032,7 +3043,7 @@ export class QuartierAnimator {
       ctx.font = '900 11px "Cairo", sans-serif';
       ctx.fillText(canAfford ? '🔑 اشري المحلّ' : '🔍 تفاصيل الأصل', btnX + btnW / 2, btnY + 17);
 
-      // Clic tactile optimisé : hitbox du bouton d'achat et de tout le bâtiment
+      // Clic tactile optimisé : le bouton déclenche l'achat/détail, le reste du bâtiment permet la collecte/tapped wage
       this.interactiveHitboxes.push({
         x: btnX - 6,
         y: btnY - 6,
@@ -3046,7 +3057,7 @@ export class QuartierAnimator {
         y: y + 20,
         w: b.width,
         h: bHeight - 20,
-        action: 'upgrade',
+        action: 'collect',
         bizId: b.id
       });
 

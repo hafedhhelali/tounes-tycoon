@@ -967,8 +967,8 @@ export class TycoonEngine {
     return this.unlockCity(mappedId);
   }
 
-  getZoneMultiplier(businessId) {
-    const city = this.getCurrentCity();
+  getZoneMultiplier(businessId, targetCityId = null) {
+    const city = targetCityId ? this.getCityById(targetCityId) : this.getCurrentCity();
     if (!city) return 1.0;
 
     // Djerba / Holding National applique un multiplicateur massif x5 sur tous les commerces
@@ -1866,7 +1866,7 @@ export class TycoonEngine {
     };
   }
 
-  getRevenue(business, now = Date.now()) {
+  getRevenue(business, now = Date.now(), cityId = null) {
     if (business.level === 0) return 0;
     const prestigeMultiplier = this.getPrestigeMultiplier();
     let eventMultiplier = 1.0;
@@ -1884,7 +1884,8 @@ export class TycoonEngine {
     const staffMultiplier = 1.0 + (extraStaff * 0.25);
 
     // Multiplicateurs de conquête urbaine (Quartier)
-    const zoneMultiplier = this.getZoneMultiplier ? this.getZoneMultiplier(business.id) : 1.0;
+    const targetCity = cityId || this.currentCityId;
+    const zoneMultiplier = this.getZoneMultiplier ? this.getZoneMultiplier(business.id, targetCity) : 1.0;
 
     // Multiplicateurs d'améliorations tactiques achetées
     const upgradeMultiplier = this.getUpgradeMultiplier ? this.getUpgradeMultiplier(business.id) : 1.0;
@@ -2021,26 +2022,43 @@ export class TycoonEngine {
 
     let revenueEarned = 0;
 
-    for (const biz of this.businesses) {
-      if (biz.level === 0) continue;
+    for (const [cId, bList] of Object.entries(this.cityBusinesses)) {
+      const isCurrentCity = (cId === this.currentCityId);
+      let cityRev = 0;
 
-      if (biz.hasManager) {
-        // Mode passif auto : calcul continu sans perte
-        const totalMs = biz.progressMs + deltaMs;
-        const cycles = Math.floor(totalMs / biz.cycleDurationMs);
-        if (cycles > 0) {
-          revenueEarned += cycles * this.getRevenue(biz, now);
-          biz.progressMs = totalMs % biz.cycleDurationMs;
-        } else {
-          biz.progressMs = totalMs;
+      for (const biz of bList) {
+        if (biz.level === 0) continue;
+
+        if (biz.hasManager) {
+          // Mode passif auto : calcul continu sans perte
+          const totalMs = biz.progressMs + deltaMs;
+          const cycles = Math.floor(totalMs / biz.cycleDurationMs);
+          if (cycles > 0) {
+            const rev = cycles * this.getRevenue(biz, now, cId);
+            cityRev += rev;
+            biz.progressMs = totalMs % biz.cycleDurationMs;
+          } else {
+            biz.progressMs = totalMs;
+          }
+        } else if (isCurrentCity && biz.isProducing) {
+          // Mode manuel (tap) pour la ville où se trouve le joueur
+          biz.progressMs += deltaMs;
+          if (biz.progressMs >= biz.cycleDurationMs) {
+            cityRev += this.getRevenue(biz, now, cId);
+            biz.progressMs = 0;
+            biz.isProducing = false;
+          }
         }
-      } else if (biz.isProducing) {
-        // Mode manuel (tap)
-        biz.progressMs += deltaMs;
-        if (biz.progressMs >= biz.cycleDurationMs) {
-          revenueEarned += this.getRevenue(biz, now);
-          biz.progressMs = 0;
-          biz.isProducing = false;
+      }
+
+      if (cityRev > 0) {
+        if (!this.cityBalances) this.cityBalances = {};
+        this.cityBalances[cId] = (this.cityBalances[cId] || 0) + cityRev;
+        if (isCurrentCity) {
+          revenueEarned += cityRev;
+        } else {
+          this.totalDinarsEarned += cityRev;
+          this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + cityRev;
         }
       }
     }

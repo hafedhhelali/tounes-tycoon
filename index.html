@@ -4213,6 +4213,21 @@
             else soundEngine.playCoin();
             quartierEngine.spawnGainBubble(biz.id, `+${formatCurrencyPlain(rev)} 🪙`);
             renderDOM();
+          } else if (biz && biz.level === 0) {
+            // Anti-softlock : travail à la journée / تفتوفة خدمة بالنهار
+            const tapWage = 1.0;
+            engine.dinars += tapWage;
+            engine.totalDinarsEarned += tapWage;
+            engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + tapWage;
+            if (engine.currentCityId) {
+              if (!engine.cityBalances) engine.cityBalances = {};
+              engine.cityBalances[engine.currentCityId] = engine.dinars;
+            }
+            if (dinarsDisplay) dinarsDisplay.innerHTML = formatCurrency(engine.dinars);
+            if (bizBalanceEl) bizBalanceEl.innerHTML = formatCompactDinars(engine.dinars);
+            soundEngine.playCoin();
+            quartierEngine.spawnGainBubble(biz.id, `+1.00 د.ت 🪙`);
+            renderDOM();
           }
         },
         onHudAction: (action) => {

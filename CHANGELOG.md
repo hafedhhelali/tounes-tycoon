@@ -15,6 +15,15 @@
 
 # CHANGELOG
 
+## [v106] - 2026-10-26
+
+### Fixed & Cleaned
+- **Élimination définitive du solde figé à Bizerte (et autres villes)** :
+  - **Revenus passifs multi-villes continus** : `engine.update()` calcule désormais en temps réel les cycles passifs de tous les gérants de l'empire dans chaque ville débloquée (`this.cityBusinesses`), maintenant la production active de Tunis même en visite à Bizerte.
+  - **Commerce d'entrée accessible à Bizerte** : Insertion de `fricasse` (coût abordable de 30 DT) en tête de rue avant la pâtisserie et les commerces lourds, empêchant tout soft-lock économique.
+  - **Anti-softlock par travail d'appoint (« تفتوفة بالنهار »)** : Taper sur un commerce non encore débloqué (niveau 0) verse désormais un salaire d'appoint immédiat (+1.00 DT 🪙) avec animation sonore et bulle dorée.
+  - **Architecture Clean & Découplée** : Nettoyage de la synchronisation de `cityBalances` sans boucles redondantes ni spaghetti.
+
 ## [v105] - 2026-10-25
 
 ### Fixed & Changed
