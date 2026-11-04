@@ -1,13 +1,13 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-10-26T21:38:00.000Z - etat = HEAD de main (v117-sync-www-visible-interior-anims-lock-reasons)
+MAJ: 2026-11-04T16:36:00.000Z - etat = HEAD de main (v118-true-tycoon-interior-engine-clean-code)
 
 ## État en 3 lignes
-Synchronisation `www/` & Cache-Busting `?v=117` : Tous les fichiers (`index.html`, `store_animator.js`, `engine.js`, `audio.js`) synchronisés dans `www/` pour prise en compte immédiate dans l'app/serveur.
-Animations intérieures 100% visibles même sans employés : Les machines spécialisées ne sont plus masquées par les boutons `خدّم`, avec spectacle central animé en continu (`drawCentralActionShowcase`).
-Raison des villes bloquées triple affichage : Sous chaque épingle verrouillée de la carte (`🔒 برستيج 1`, `🔒 4xL35`), dans le bandeau Popover pleine largeur (`⚠️ علاش مقفولة : ...`) et en modale/toast au clic (`window.showFeedbackToast`).
+Refonte Tycoon Authentique (`CanvasStoreEngine` v118) : Jauges radiales temps réel (`drawRadialGauge`) synchronisées avec `biz.progressMs / biz.cycleDurationMs`, tapis roulant 2.5D (`conveyorItems`) acheminant les marchandises produites jusqu'au présentoir de caisse (`counterStock`), évolution visuelle par palier (`Tier 1..5` avec tapis VIP et néons LED), porte vitrée battante à clochette (`drawEntranceDoor`), file d'attente structurée sans collision (`QUEUE_SLOTS`) et cabas vectoriel en main à la sortie.
+Clean Code & Zéro Bug Économique : Purge intégrale du code mort (`steamWisps`, `drawRoleTag`, `avatarsPool`, `onUpgradeClick`), mise en cache de `getBusinessDetail`, plafonds mémoire stricts sur les pools (`pushParticle`, `pushMoneyPuff`), correction du ratio vertical `clickY`, et suppression du bug de double/triple créditation de `engine.dinars` lors des taps intérieurs.
+Synchronisation `www/` & Tests : Cache-buster `?v=118` sur tous les modules ES, dossier `www/` synchronisé, 68/68 tests unitaires au vert (`npm test`).
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs : `index.html`, `store_animator.js`, `www/*`.
-- Suite de tests : 67/67 au vert (`npm test`).
+- Modifs : `store_animator.js`, `index.html`, `www/*`.
+- Suite de tests : 68/68 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

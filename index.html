@@ -3167,11 +3167,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=117';
-    import { soundEngine } from './audio.js?v=117';
+    import { TycoonEngine } from './engine.js?v=118';
+    import { soundEngine } from './audio.js?v=118';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=117';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=117';
+    import { AdsService } from './ads_service.js?v=118';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=118';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -4899,19 +4899,13 @@
             onServe: (bizId) => {
               const servedBiz = engine.businesses.find(b => b.id === bizId);
               if (servedBiz && servedBiz.level > 0) {
-                const rev = engine.getRevenue(servedBiz, Date.now());
-                if (rev > 0) {
-                  engine.dinars += rev;
-                  engine.totalDinarsEarned += rev;
-                  engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + rev;
-                  if (engine.currentCityId) {
-                    if (!engine.cityBalances) engine.cityBalances = {};
-                    engine.cityBalances[engine.currentCityId] = engine.dinars;
-                  }
-                  engine.startProduction(bizId);
+                engine.startProduction(bizId);
+                if (soundEngine.playWorkSound) {
+                  soundEngine.playWorkSound(bizId);
+                } else {
                   soundEngine.playCoin();
-                  renderDOM();
                 }
+                renderDOM();
               }
             }
           });

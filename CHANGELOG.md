@@ -15,6 +15,25 @@
 
 # CHANGELOG
 
+## [v118] - 2026-11-04
+
+### Added, Refactored & Cleaned (True Tycoon Interior Engine)
+- **Boucle Visuelle Tycoon Authentique (`CanvasStoreEngine`)** :
+  - **Jauges Radiales & Barres Temps Réel (`drawRadialGauge`)** : Synchronisées au milliseconde près avec `biz.progressMs / biz.cycleDurationMs` au-dessus de chaque artisan recruté, sur l'écran POS de la caisse, sur l'enseigne supérieure et au-dessus du client en cours d'encaissement.
+  - **Supply Chain & Tapis Roulant 2.5D (`conveyorItems` & `counterStock`)** : Les postes de travail fabriquent physiquement des produits sur plateaux dorés qui glissent sur un rail convoyeur animé jusqu'au présentoir vitré du comptoir avant d'être remis aux clients.
+  - **Évolution Architecturale par Palier (`getStoreTier` Tier 1..5)** : Déblocage automatique de tapis VIP à franges dorées (Tier >= 2), bandeaux Néons LED sur les corniches et sous le marbre du comptoir (Tier >= 3), comptoirs dorés (Tier >= 4) et badge `★T1..T5` sur l'enseigne.
+  - **Porte Vitrée Battante, File d'Attente Structurée & Sac de Sortie** :
+    - Vraie porte d'entrée vitrée battante à droite (`drawEntranceDoor`) avec enseigne lumineuse `مفتوح` et clochette dorée (`🔔`) qui oscille à chaque passage.
+    - File d'attente déterministe à 4 emplacements (`96, 122, 148, 174`) éliminant toute superposition entre clients.
+    - Les clients servis repartent vers la porte de sortie avec un cabas de shopping vectoriel en main (`c.hasBag`) d'où dépasse l'article acheté, sans jamais traverser le meuble comptoir.
+  - **Onde de Choc Interactive au Tap (`tapRipples`)** : Chaque tap dans la boutique génère une onde dorée et propulse immédiatement un produit turbo sur la chaîne de production.
+- **Audit Lead Dev — Clean Code, Zéro Fuite Mémoire & Intégrité Économique** :
+  - Suppression de tout le code mort (`this.steamWisps`, `drawRoleTag`, `this.avatarsPool`, `this.onUpgradeClick`, doublons de variables).
+  - Mise en cache intelligente de `engine.getBusinessDetail(bizId)` dans la boucle 60 FPS (recalculé uniquement lors d'un changement de niveau ou d'effectif).
+  - Plafonnement strict FIFO des pools mémoire (`particles <= 42`, `moneyPuffs <= 14`, `conveyorItems <= 6`, `tapRipples <= 6`).
+  - Correction du bug d'exploit de double/triple créditation de `engine.dinars` dans `triggerPayment`, `handleCanvasClick` et `onServe` (`engine.update` demeure la source unique de vérité financière).
+  - Correction du ratio vertical `clickY` dans `handleCanvasClick`.
+
 ## [v117] - 2026-10-26
 
 ### Fixed & Enhanced

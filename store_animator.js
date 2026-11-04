@@ -35,17 +35,23 @@ export class CanvasStoreEngine {
     this.width = 340;
     this.height = 200;
 
-    // Simulation entities
+    // Simulation entities (bounded pools — zero memory leak)
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
-    this.steamWisps = [];
+    this.conveyorItems = [];
+    this.tapRipples = [];
+    this.counterStock = 2;
+    this.doorSwing = 0;
+    this.conveyorTimer = 0;
+    this.lastProgressMs = 0;
+    this.cachedDetail = null;
+    this.cachedDetailKey = '';
 
     // Interaction clickable regions
     this.clickZones = [];
 
     this.onHireClick = null;
-    this.onUpgradeClick = null;
     this.onServeClick = null;
 
     // Émotes & répertoires d'articles authentiques et spécifiques pour CHAQUE projet
@@ -81,16 +87,14 @@ export class CanvasStoreEngine {
     };
 
     this.happyReactions = ['😋', '⭐', '🥰', '👌', '❤️', '👏', '🔥'];
-    this.avatarsPool = ['🚶‍♂️', '🧕', '🧔', '👴', '👩‍💻', '👨‍💼', '🧓', '🧑‍🎓'];
 
     this.handleCanvasClick = this.handleCanvasClick.bind(this);
     this.onWindowResize = () => this.resize();
     this.canvas.addEventListener('click', this.handleCanvasClick);
   }
 
-  setCallbacks({ onHire, onUpgrade, onServe }) {
+  setCallbacks({ onHire, onServe }) {
     this.onHireClick = onHire;
-    this.onUpgradeClick = onUpgrade;
     this.onServeClick = onServe;
   }
 
@@ -120,11 +124,19 @@ export class CanvasStoreEngine {
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
-    this.steamWisps = [];
-    this.spawnTimer = 0.5;
+    this.conveyorItems = [];
+    this.tapRipples = [];
+    this.counterStock = 2;
+    this.doorSwing = 0;
+    this.conveyorTimer = 0;
+    this.cachedDetail = null;
+    this.cachedDetailKey = '';
+    const biz = this.getBiz();
+    this.lastProgressMs = biz ? (biz.progressMs || 0) : 0;
+    this.spawnTimer = 0.4;
     this.resize();
     this.resizeTimer = setTimeout(() => this.resize(), 300);
-    if (typeof window !== 'undefined') if (typeof window !== 'undefined') window.addEventListener('resize', this.onWindowResize);
+    if (typeof window !== 'undefined') window.addEventListener('resize', this.onWindowResize);
     this.lastTime = performance.now();
     this.loop = (now) => {
       try {
@@ -143,12 +155,15 @@ export class CanvasStoreEngine {
       this.animId = null;
     }
     clearTimeout(this.resizeTimer);
-    if (typeof window !== 'undefined') if (typeof window !== 'undefined') window.removeEventListener('resize', this.onWindowResize);
+    if (typeof window !== 'undefined') window.removeEventListener('resize', this.onWindowResize);
     this.customers = [];
     this.particles = [];
     this.moneyPuffs = [];
-    this.steamWisps = [];
+    this.conveyorItems = [];
+    this.tapRipples = [];
     this.clickZones = [];
+    this.cachedDetail = null;
+    this.cachedDetailKey = '';
     if (this.ctx && this.width && this.height) {
       this.ctx.clearRect(0, 0, this.width, this.height);
     }
@@ -165,42 +180,97 @@ export class CanvasStoreEngine {
     return this.engine.businesses.find(b => b.id === this.bizId);
   }
 
+  getStoreTier(biz) {
+    const lvl = biz ? (biz.level || 1) : 1;
+    if (lvl >= 100) return { tier: 5, name: 'VIP ملكي', color: '#f43f5e', border: '#fde047', neon: '#38bdf8', carpet: ['#991b1b', '#fbbf24'] };
+    if (lvl >= 50)  return { tier: 4, name: 'ذهبي فاخر', color: '#f59e0b', border: '#fef08a', neon: '#facc15', carpet: ['#7f1d1d', '#f59e0b'] };
+    if (lvl >= 25)  return { tier: 3, name: 'تيربو نيون', color: '#a855f7', border: '#e9d5ff', neon: '#c084fc', carpet: ['#1e1b4b', '#a855f7'] };
+    if (lvl >= 10)  return { tier: 2, name: 'حرفي ممتاز', color: '#10b981', border: '#a7f3d0', neon: '#34d399', carpet: ['#064e3b', '#10b981'] };
+    return                 { tier: 1, name: 'محلّ أصيل', color: '#64748b', border: '#cbd5e1', neon: null,      carpet: null };
+  }
+
+  getCycleProgressRatio(biz) {
+    if (!biz || !biz.cycleDurationMs || biz.cycleDurationMs <= 0) return 0;
+    if (biz.hasManager || biz.isProducing) {
+      return Math.min(1, Math.max(0, (biz.progressMs || 0) / biz.cycleDurationMs));
+    }
+    return 0;
+  }
+
+  drawRadialGauge(ctx, cx, cy, r, ratio, color, label) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + 2.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const clamped = Math.min(1, Math.max(0.04, ratio));
+    ctx.strokeStyle = color;
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamped);
+    ctx.stroke();
+
+    if (label) {
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 7.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, cx, cy + 0.5);
+    }
+    ctx.restore();
+  }
+
+  pushParticle(p) {
+    if (this.particles.length >= 42) this.particles.shift();
+    this.particles.push(p);
+  }
+
+  pushMoneyPuff(m) {
+    if (this.moneyPuffs.length >= 14) this.moneyPuffs.shift();
+    this.moneyPuffs.push(m);
+  }
+
   getOrderIcon() {
     const list = this.orderIcons[this.bizId] || this.orderIcons.default;
     return list[Math.floor(Math.random() * list.length)];
   }
 
   spawnCustomer() {
+    const activeQueueCount = this.customers.filter(c => c.state !== 'walking_out').length;
+    if (activeQueueCount >= 4) return;
+    const slotX = 96 + activeQueueCount * 26;
     const customer = {
       id: Math.random(),
-      x: this.width + 25,
+      x: this.width - 18,
       y: 154,
-      targetX: 68 + Math.random() * 18,
-      state: 'walking_in', // walking_in, paying, walking_out
-      avatar: this.avatarsPool[Math.floor(Math.random() * this.avatarsPool.length)],
+      targetX: slotX,
+      state: 'walking_in', // walking_in, queued, paying, walking_out
       orderIcon: this.getOrderIcon(),
       reaction: null,
-      payDuration: 0.9,
+      payDuration: 0.85,
       payTimer: 0,
+      waitTimer: 0,
+      hasBag: false,
       walkCycle: Math.random() * Math.PI * 2
     };
+    this.doorSwing = 1.0;
     this.customers.push(customer);
   }
 
   triggerPayment(customer, isProducing) {
     const biz = this.getBiz();
     const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
-    if (cycleRevenue > 0) {
-      this.engine.dinars += cycleRevenue;
-      this.engine.totalDinarsEarned += cycleRevenue;
-      this.engine.lifetimeDinarsEarned = (this.engine.lifetimeDinarsEarned || 0) + cycleRevenue;
-      if (this.engine.currentCityId) {
-        if (!this.engine.cityBalances) this.engine.cityBalances = {};
-        this.engine.cityBalances[this.engine.currentCityId] = this.engine.dinars;
-      }
-    }
     const gainText = cycleRevenue > 0 ? ('+' + this.formatNumber(cycleRevenue) + ' DT') : '+د.ت';
     this.registerFlash = 1.0;
+    this.counterStock = Math.max(0, (this.counterStock || 1) - 1);
 
     if (typeof window !== 'undefined' && window.soundEngine) {
       if (window.soundEngine.playWorkSound) {
@@ -210,31 +280,30 @@ export class CanvasStoreEngine {
       }
     }
 
-    // Money float puff
-    this.moneyPuffs.push({
-      x: customer.x - 10,
-      y: customer.y - 45,
-      vy: -35,
+    const px = customer ? (customer.x - 4) : 76;
+    const py = customer ? (customer.y - 46) : 104;
+    this.pushMoneyPuff({
+      x: px,
+      y: py,
+      vy: -36,
       text: '✨ ' + gainText + ' 🪙',
-      life: 0.9,
-      maxLife: 0.9,
-      alpha: 1.0
+      life: 0.95,
+      maxLife: 0.95
     });
 
-    // Golden sparkles / coin shower particles
-    const count = isProducing ? 16 : 8;
+    const count = isProducing ? 14 : 8;
     for (let i = 0; i < count; i++) {
       const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
-      const speed = 40 + Math.random() * 60;
-      this.particles.push({
-        x: 48,
-        y: 135,
+      const speed = 38 + Math.random() * 58;
+      this.pushParticle({
+        x: 64,
+        y: 122,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 22,
-        color: Math.random() > 0.3 ? '#fbbf24' : '#f59e0b',
-        radius: 1.8 + Math.random() * 2.2,
-        life: 0.7 + Math.random() * 0.3,
-        maxLife: 0.8,
+        color: Math.random() > 0.3 ? '#fbbf24' : '#34d399',
+        radius: 1.8 + Math.random() * 2.1,
+        life: 0.65 + Math.random() * 0.25,
+        maxLife: 0.85,
         isSparkle: true
       });
     }
@@ -242,9 +311,14 @@ export class CanvasStoreEngine {
 
   handleCanvasClick(event) {
     const rect = this.canvas.getBoundingClientRect();
-    const ratio = rect.width > 0 ? this.width / rect.width : 1;
-    const clickX = (event.clientX - rect.left) * ratio;
-    const clickY = (event.clientY - rect.top) * ratio;
+    const ratioX = rect.width > 0 ? this.width / rect.width : 1;
+    const ratioY = rect.height > 0 ? this.height / rect.height : 1;
+    const clickX = (event.clientX - rect.left) * ratioX;
+    const clickY = (event.clientY - rect.top) * ratioY;
+
+    // 1. Onde de choc Tycoon au point de tap
+    if (this.tapRipples.length >= 6) this.tapRipples.shift();
+    this.tapRipples.push({ x: clickX, y: clickY, r: 4, maxR: 28, life: 0.38, maxLife: 0.38 });
 
     for (const zone of this.clickZones) {
       if (
@@ -256,40 +330,44 @@ export class CanvasStoreEngine {
         if (zone.type === 'hire_cashier' || zone.type === 'hire_worker') {
           if (this.onHireClick) this.onHireClick(this.bizId, zone.slotIndex);
         } else if (zone.type === 'employee_info') {
-          // Affichage bulle informative sur l'employé au tap
-          this.moneyPuffs.push({
+          this.pushMoneyPuff({
             x: zone.x + zone.width / 2,
             y: zone.y - 12,
             vy: -25,
             text: `👤 ${zone.name} : ${zone.role}`,
-            life: 1.4,
-            maxLife: 1.4,
-            alpha: 1
+            life: 1.3,
+            maxLife: 1.3
           });
         }
         return;
       }
     }
 
-    // Tap dans la scène = servir et encaisser directement
+    // 2. Tap dans la scène = démarrer / accélérer la production réelle Tycoon
     const biz = this.getBiz();
     if (biz && biz.level > 0) {
-      const rev = this.engine.getRevenue(biz, Date.now());
-      if (rev > 0) {
-        this.engine.dinars += rev;
-        this.engine.totalDinarsEarned += rev;
-        this.engine.lifetimeDinarsEarned = (this.engine.lifetimeDinarsEarned || 0) + rev;
-        if (this.engine.currentCityId) {
-          if (!this.engine.cityBalances) this.engine.cityBalances = {};
-          this.engine.cityBalances[this.engine.currentCityId] = this.engine.dinars;
-        }
+      const wasRunning = biz.hasManager || biz.isProducing;
+      if (this.onServeClick) {
+        this.onServeClick(this.bizId);
+      } else if (this.engine.startProduction) {
+        this.engine.startProduction(this.bizId);
       }
-      const puffText = rev > 0 ? `+${rev.toFixed(1)} د.ت 🪙` : '🪙';
-      this.moneyPuffs.push({ x: clickX, y: clickY - 10, vy: -40, text: puffText, life: 0.8, maxLife: 0.8, alpha: 1 });
-    } else {
-      this.moneyPuffs.push({ x: clickX, y: clickY - 10, vy: -40, text: '🪙', life: 0.7, maxLife: 0.7, alpha: 1 });
+      // Impulsion Tycoon : spawner immédiatement un produit sur le tapis roulant
+      if (this.conveyorItems.length < 6) {
+        this.conveyorItems.push({
+          x: Math.min(this.width - 55, Math.max(125, clickX)),
+          y: 135,
+          targetX: 90,
+          icon: this.getOrderIcon(),
+          speed: 95
+        });
+      }
+      const rev = this.engine.getRevenue(biz, Date.now());
+      const label = !wasRunning
+        ? `⚡ إنتاج: +${this.formatNumber(rev)} د.ت`
+        : `⚡ تيربو! (${Math.round(this.getCycleProgressRatio(biz) * 100)}%)`;
+      this.pushMoneyPuff({ x: clickX, y: clickY - 10, vy: -38, text: label, life: 0.75, maxLife: 0.75 });
     }
-    if (this.onServeClick) this.onServeClick(this.bizId);
   }
 
   // --- RENDU D'ARRIÈRE-PLAN TUNISIEN DÉTAILLÉ & ARCHITECTURE EN PERSPECTIVE ---
@@ -449,6 +527,114 @@ export class CanvasStoreEngine {
     // Reflets de lumière sur le carrelage
     ctx.fillStyle = 'rgba(251, 191, 36, 0.03)';
     ctx.fillRect(0, floorY, w, 20);
+    ctx.restore();
+
+    // 6. Tapis VIP & Néons Architecturaux selon le palier Tycoon (Tier 2..5)
+    const biz = this.getBiz();
+    const tier = this.getStoreTier(biz);
+    if (tier.carpet) {
+      ctx.save();
+      const cX = 92;
+      const cY = h - 31;
+      const cW = Math.max(80, w - 122);
+      const cH = 18;
+      ctx.fillStyle = tier.carpet[0];
+      ctx.beginPath();
+      ctx.roundRect(cX, cY, cW, cH, 3);
+      ctx.fill();
+      ctx.strokeStyle = tier.carpet[1];
+      ctx.lineWidth = 1.6;
+      ctx.strokeRect(cX + 2, cY + 2, cW - 4, cH - 4);
+      // Franges dorées du tapis VIP
+      ctx.fillStyle = tier.carpet[1];
+      for (let fy = cY + 2; fy < cY + cH - 1; fy += 3.5) {
+        ctx.fillRect(cX - 3, fy, 3, 1.5);
+        ctx.fillRect(cX + cW, fy, 3, 1.5);
+      }
+      ctx.restore();
+    }
+    if (tier.neon) {
+      ctx.save();
+      ctx.strokeStyle = tier.neon;
+      ctx.shadowColor = tier.neon;
+      ctx.shadowBlur = 7;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(12, 19.5);
+      ctx.lineTo(w - 12, 19.5);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 7. Porte d'entrée vitrée battante avec clochette dorée à droite
+    this.drawEntranceDoor(ctx, now, w, h);
+  }
+
+  drawEntranceDoor(ctx, now, w, h) {
+    ctx.save();
+    const doorX = w - 26;
+    const doorY = h - 120;
+    const doorW = 22;
+    const doorH = 70;
+    const swing = this.doorSwing || 0;
+
+    // Cadre de porte en bois de cèdre & laiton
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(doorX, doorY, doorW, doorH);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 2.2;
+    ctx.strokeRect(doorX, doorY, doorW, doorH);
+
+    // Battant vitré animé en perspective lors du passage d'un client
+    const openScaleX = 1 - swing * 0.42;
+    ctx.save();
+    ctx.translate(doorX + doorW, doorY);
+    ctx.scale(openScaleX, 1);
+    const glassGrad = ctx.createLinearGradient(-doorW, 0, 0, doorH);
+    glassGrad.addColorStop(0, 'rgba(56, 189, 248, 0.28)');
+    glassGrad.addColorStop(0.5, 'rgba(186, 230, 253, 0.14)');
+    glassGrad.addColorStop(1, 'rgba(14, 165, 233, 0.25)');
+    ctx.fillStyle = glassGrad;
+    ctx.fillRect(-doorW + 2, 2, doorW - 4, doorH - 4);
+
+    // Reflet diagonal sur la vitre
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+    ctx.beginPath();
+    ctx.moveTo(-doorW + 4, 10);
+    ctx.lineTo(-4, 24);
+    ctx.lineTo(-4, 34);
+    ctx.lineTo(-doorW + 4, 20);
+    ctx.closePath();
+    ctx.fill();
+
+    // Poignée en laiton
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillRect(-doorW + 4, doorH * 0.52, 2.5, 9);
+    ctx.restore();
+
+    // Plaque lumineuse "مفتوح" (Ouvert) + Clochette de boutique
+    ctx.fillStyle = '#064e3b';
+    ctx.beginPath();
+    ctx.roundRect(doorX - 3, doorY - 12, doorW + 4, 10, 3);
+    ctx.fill();
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#34d399';
+    ctx.font = 'bold 6.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('مفتوح', doorX + doorW / 2 - 1, doorY - 4.5);
+
+    // Clochette dorée qui tinte à l'ouverture
+    if (swing > 0.08) {
+      const bellAngle = Math.sin(now * 0.045) * 0.35 * swing;
+      ctx.save();
+      ctx.translate(doorX + 4, doorY + 7);
+      ctx.rotate(bellAngle);
+      ctx.font = '9px sans-serif';
+      ctx.fillText('🔔', 0, 3);
+      ctx.restore();
+    }
     ctx.restore();
   }
 
@@ -826,7 +1012,7 @@ export class CanvasStoreEngine {
     ctx.restore();
   }
 
-  // --- POSTE DE LA CAISSE (COMPTOIR VERNIS + CAISSIER + MACHINE) ---
+  // --- POSTE DE LA CAISSE (COMPTOIR VERNIS + CAISSIER + MACHINE + JAUGE TYCOON) ---
   drawCashierCounter(ctx, detail, isBusy, now) {
     const timeSec = now / 1000;
     const counterX = 14;
@@ -835,14 +1021,12 @@ export class CanvasStoreEngine {
     const deskH = 50;
 
     ctx.save();
-    const bounce = isBusy ? Math.sin(timeSec * 8) * 2 : 0;
-    const counterBiz = this.getBiz();
-
-
-
-    // 1. Étagères murales d'arrière-boutique (DESSINÉES EN PREMIER au fond du mur)
     const currentBiz = this.getBiz();
     const currentBizId = currentBiz ? currentBiz.id : '';
+    const tier = this.getStoreTier(currentBiz);
+    const cycleRatio = this.getCycleProgressRatio(currentBiz);
+
+    // 1. Étagères murales d'arrière-boutique (DESSINÉES EN PREMIER au fond du mur)
     ctx.save();
     if (currentBizId === 'taxi_collectif') {
       ctx.fillStyle = '#1e293b';
@@ -854,38 +1038,7 @@ export class CanvasStoreEngine {
       const taxiRack = ['🔑', '🎫', '🚖', '🛣️'];
       taxiRack.forEach((item, i) => ctx.fillText(item, counterX + 8 + i * 22, 66));
     } else {
-      // Étagères avec marchandises STRICTEMENT COMPATIBLES avec le commerce actif
-      const shelfThemes = {
-        kaskrout: ['🥖', '🥪', '🌶️', '🫒', '🥤'],
-        fricasse: ['🥟', '🍩', '🫒', '🥚', '🥤'],
-        kahwa: ['☕', '🍵', '🫖', '🍏', '🍯'],
-        attariya: ['🍞', '🥛', '🥫', '🧀', '🧂'],
-        fruits_de_mer: ['🐟', '🦐', '🦑', '🦀', '🐟'],
-        patisserie: ['🍯', '🥐', '🎂', '🧁', '🍰'],
-        produits_laitiers: ['🧀', '🥛', '🧈', '🍶', '🥣'],
-        boucherie: ['🥩', '🔪', '🍖', '🍗', '🥩'],
-        librairie: ['📚', '📖', '✏️', '📰', '📐'],
-        tobacco_kiosk: ['🚬', '📰', '💧', '🎟️', '🔥'],
-        vente_vetements: ['👕', '👗', '🧥', '👖', '👔'],
-        vente_montres: ['⌚', '🕰️', '💎', '✨', '🪙'],
-        croisiere_mer: ['⛵', '⚓', '🛥️', '🌊', '🧭'],
-        salle_de_jeux: ['🎮', '🕹️', '🎱', '🎧', '🎲'],
-        emballage_dattes: ['🌴', '📦', '🍯', '✨', '🌴'],
-        superette: ['🛒', '🍫', '🧃', '🧼', '🥫'],
-        supermarche: ['🧺', '🥩', '📦', '🥫', '🥛'],
-        salon_de_the: ['🍹', '🍸', '🍰', '🕶️', '🍓'],
-        restaurant: ['🍗', '🥘', '🥗', '🍖', '🍲'],
-        agence_voyages: ['✈️', '🎫', '🏝️', '🧳', '🌍'],
-        hotel: ['🛎️', '🍸', '🛏️', '🏊', '🗝️'],
-        centre_commercial: ['🛍️', '👗', '👟', '🎮', '💎'],
-        usine_conserves: ['🥫', '🐟', '🍅', '🫒', '📦'],
-        showroom_auto: ['🚗', '🚘', '🔑', '🏎️', '⚙️'],
-        promoteur_immobilier: ['🏢', '🏗️', '📐', '🏡', '🔑'],
-        tayaran_el_ghzela: ['✈️', '🛫', '💺', '🌍', '🧳'],
-        default: ['🥫', '🫒', '🍯', '🧂', '📦']
-      };
-      const goodsPool = shelfThemes[currentBizId] || shelfThemes.default;
-
+      const goodsPool = this.orderIcons[currentBizId] || this.orderIcons.default;
       for (let sIdx = 0; sIdx < 2; sIdx++) {
         const shelfY = 44 + sIdx * 22;
         ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
@@ -899,14 +1052,10 @@ export class CanvasStoreEngine {
         ctx.lineWidth = 1;
         ctx.strokeRect(counterX - 4, shelfY, deskW + 8, 5);
         ctx.font = '12px serif';
-        const shelfGoods = [
-          goodsPool[sIdx * 2 % goodsPool.length],
-          goodsPool[(sIdx * 2 + 1) % goodsPool.length],
-          goodsPool[(sIdx * 2 + 2) % goodsPool.length],
-          goodsPool[(sIdx * 2 + 3) % goodsPool.length],
-          goodsPool[(sIdx * 2 + 4) % goodsPool.length]
-        ];
-        shelfGoods.forEach((g, gIdx) => ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 3));
+        for (let gIdx = 0; gIdx < 5; gIdx++) {
+          const g = goodsPool[(sIdx * 2 + gIdx) % goodsPool.length];
+          ctx.fillText(g, counterX + 6 + gIdx * 18, shelfY - 3);
+        }
       }
     }
     ctx.restore();
@@ -914,7 +1063,7 @@ export class CanvasStoreEngine {
     // 2. Caissier debout derrière le comptoir (remonté et décalé pour être parfaitement visible à côté de la caisse)
     const cashierSlot = detail.staffSlots && detail.staffSlots[0];
     const cashierX = counterX + 10;
-    const cashierFootY = 136; // Remonté pour dégager totalement le buste et la tête au-dessus du comptoir
+    const cashierFootY = 136;
 
     if (cashierSlot && cashierSlot.hired) {
       this.drawWorker(ctx, cashierX + 16, cashierFootY, 0, isBusy, timeSec);
@@ -928,16 +1077,21 @@ export class CanvasStoreEngine {
         name: cashierSlot.name,
         role: cashierSlot.role
       });
-      // L'icône au-dessus de la tête du caissier a été supprimée selon la demande
     } else {
       this.drawHireButton(ctx, counterX + 6, counterY - 44, 66, 52, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
     }
 
-    // 2. Meuble Comptoir au PREMIER PLAN (cache le bas du corps de l'employé)
+    // 3. Meuble Comptoir au PREMIER PLAN (évolue avec le Tier du commerce)
     const woodGrad = ctx.createLinearGradient(counterX, counterY + 12, counterX, counterY + 12 + deskH);
-    woodGrad.addColorStop(0, '#d97706');
-    woodGrad.addColorStop(0.3, '#b45309');
-    woodGrad.addColorStop(1, '#78350f');
+    if (tier.tier >= 4) {
+      woodGrad.addColorStop(0, '#f59e0b');
+      woodGrad.addColorStop(0.35, '#b45309');
+      woodGrad.addColorStop(1, '#451a03');
+    } else {
+      woodGrad.addColorStop(0, '#d97706');
+      woodGrad.addColorStop(0.3, '#b45309');
+      woodGrad.addColorStop(1, '#78350f');
+    }
     ctx.fillStyle = woodGrad;
     ctx.beginPath();
     ctx.roundRect(counterX, counterY + 12, deskW, deskH, [8, 8, 4, 4]);
@@ -947,12 +1101,43 @@ export class CanvasStoreEngine {
     ctx.fillStyle = '#fef3c7';
     ctx.fillRect(counterX - 2, counterY + 10, deskW + 4, 5);
 
+    // Bandeau Néon LED sous le marbre (Tier >= 3)
+    if (tier.neon) {
+      ctx.save();
+      ctx.strokeStyle = tier.neon;
+      ctx.shadowColor = tier.neon;
+      ctx.shadowBlur = 6;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(counterX, counterY + 15.5);
+      ctx.lineTo(counterX + deskW, counterY + 15.5);
+      ctx.stroke();
+      ctx.restore();
+    }
+
     // Bordure dorée du comptoir
-    ctx.strokeStyle = '#fbbf24';
+    ctx.strokeStyle = tier.border || '#fbbf24';
     ctx.lineWidth = 1.8;
     ctx.strokeRect(counterX, counterY + 12, deskW, deskH);
 
-    // Caisse enregistreuse moderne tunisienne positionnée à DROITE du comptoir pour ne JAMAIS masquer le caissier
+    // 4. Présentoir vitré de stock prêt à vendre (alimenté par le tapis roulant Tycoon)
+    const trayX = counterX + 8;
+    const trayY = counterY - 2;
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+    ctx.beginPath();
+    ctx.roundRect(trayX, trayY, 34, 13, 3);
+    ctx.fill();
+    ctx.strokeStyle = isBusy ? '#34d399' : '#fbbf24';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    const stockIcons = this.orderIcons[currentBizId] || this.orderIcons.default;
+    const visibleStock = Math.min(3, Math.max(1, this.counterStock || 1));
+    ctx.font = '9.5px serif';
+    for (let s = 0; s < visibleStock; s++) {
+      ctx.fillText(stockIcons[s % stockIcons.length], trayX + 3 + s * 10, trayY + 10);
+    }
+
+    // 5. Caisse enregistreuse moderne tunisienne positionnée à DROITE du comptoir
     const regSpring = (this.registerFlash || 0) * Math.sin(timeSec * 30) * 1.5;
     const regX = counterX + deskW - 38;
     const regY = counterY - 8 - Math.abs(regSpring);
@@ -969,7 +1154,7 @@ export class CanvasStoreEngine {
     ctx.ellipse(regX + regW / 2, counterY + 12, regW * 0.48, 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Socle / Base métallique de la caisse (Design biseauté titane et or)
+    // Socle / Base métallique de la caisse
     const baseGrad = ctx.createLinearGradient(regX, regY + 14, regX, regY + regH);
     baseGrad.addColorStop(0, '#1e293b');
     baseGrad.addColorStop(0.5, '#0f172a');
@@ -982,7 +1167,7 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1.6;
     ctx.stroke();
 
-    // Écran tactile grand format incliné (POS tactile professionnel haute brillance)
+    // Écran tactile grand format incliné (POS tactile professionnel)
     const screenX = regX + 2;
     const screenY = regY - 2;
     const screenW = regW - 4;
@@ -996,44 +1181,40 @@ export class CanvasStoreEngine {
     ctx.beginPath();
     ctx.roundRect(screenX, screenY, screenW, screenH, 4);
     ctx.fill();
-    ctx.strokeStyle = '#38bdf8';
+    ctx.strokeStyle = isBusy ? '#10b981' : '#38bdf8';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Reflet de vitre biseautée sur l'écran
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-    ctx.beginPath();
-    ctx.moveTo(screenX + 2, screenY + 2);
-    ctx.lineTo(screenX + screenW - 10, screenY + 2);
-    ctx.lineTo(screenX + 2, screenY + screenH - 2);
-    ctx.closePath();
-    ctx.fill();
+    // Barre de progression Tycoon en direct intégrée dans l'écran POS
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+    ctx.fillRect(screenX + 2, screenY + 11, screenW - 4, 3);
+    ctx.fillStyle = isBusy ? '#10b981' : '#f59e0b';
+    ctx.fillRect(screenX + 2, screenY + 11, (screenW - 4) * (isBusy ? Math.max(0.12, cycleRatio) : 0), 3);
 
-    // Écran LED : Montant encaissé en vert fluo / or avec adaptation dynamique de taille pour zéro débordement
-    const rawVal = counterBiz ? (this.engine.getRevenue(counterBiz, now) || 0) : 0;
+    // Écran LED : Montant encaissé par cycle en vert fluo / or
+    const rawVal = currentBiz ? (this.engine.getRevenue(currentBiz, now) || 0) : 0;
     const formattedVal = this.formatNumber(rawVal);
     const dynCash = formattedVal + ' DT';
-    
-    // Taille de police proportionnelle et ajustée
-    const fontSize = dynCash.length > 7 ? 6 : (dynCash.length > 5 ? 6.5 : 7.5);
+    const fontSize = dynCash.length > 7 ? 5.8 : (dynCash.length > 5 ? 6.4 : 7.2);
     ctx.fillStyle = '#34d399';
     ctx.font = `900 ${fontSize}px monospace`;
     ctx.textAlign = 'right';
-    ctx.fillText(dynCash, screenX + screenW - 3, screenY + 8);
+    ctx.fillText(dynCash, screenX + screenW - 2.5, screenY + 8);
 
     // Mini icône de transaction en cours
     ctx.fillStyle = isBusy ? '#fde047' : '#38bdf8';
-    ctx.font = '8px sans-serif';
+    ctx.font = '7.5px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(isBusy ? '⚡' : '💳', screenX + 3, screenY + 8);
+    ctx.fillText(isBusy ? '⚡' : '💳', screenX + 2.5, screenY + 8);
 
-    // Mini clavier de saisie rapide rétroéclairé
-    for (let c = 0; c < 3; c++) {
-      ctx.fillStyle = isBusy ? '#fbbf24' : '#64748b';
-      ctx.fillRect(screenX + 3 + c * 7, screenY + 11, 5, 3);
+    // Jauge radiale Tycoon flottante au-dessus de la caisse enregistreuse
+    if (currentBiz && currentBiz.level > 0) {
+      const gaugeLabel = currentBiz.hasManager ? 'AUTO' : (isBusy ? `${Math.round(cycleRatio * 100)}%` : 'TAP');
+      const gaugeColor = currentBiz.hasManager ? '#10b981' : (isBusy ? '#fbbf24' : '#38bdf8');
+      this.drawRadialGauge(ctx, regX + regW / 2, regY - 13, 8.5, isBusy ? cycleRatio : 1, gaugeColor, gaugeLabel === 'AUTO' ? '⚙️' : '⚡');
     }
 
-    // TPE / Lecteur de carte bancaire & code-barres posé à côté
+    // TPE / Lecteur de carte bancaire posé à côté
     const tpeX = regX - 11;
     const tpeY = counterY + 2;
     ctx.fillStyle = '#1e293b';
@@ -1046,7 +1227,7 @@ export class CanvasStoreEngine {
     ctx.fillStyle = '#34d399';
     ctx.fillRect(tpeX + 2, tpeY + 2, 5, 3);
 
-    // Tiroir-caisse lourd en noyer massif avec façade dorée et double fente
+    // Tiroir-caisse lourd en noyer massif avec façade dorée
     const drawerX = counterX + 14;
     const drawerY = counterY + 26;
     const drawerW = deskW - 28;
@@ -1064,9 +1245,8 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1.4;
     ctx.stroke();
 
-    // Poignée dorée ouvragée et fente d'encaissement des billets
     ctx.fillStyle = '#1e293b';
-    ctx.fillRect(drawerX + 10, drawerY + 3, drawerW - 20, 2); // Fente billets
+    ctx.fillRect(drawerX + 10, drawerY + 3, drawerW - 20, 2);
     ctx.fillStyle = '#fef08a';
     ctx.beginPath();
     ctx.arc(drawerX + drawerW / 2, drawerY + 10, 3.5, 0, Math.PI * 2);
@@ -1077,29 +1257,31 @@ export class CanvasStoreEngine {
     ctx.restore();
   }
 
-  // --- POSTES DE TRAVAIL DES EMPLOYÉS (MACHINES & OUVRIERS) ---
+  // --- POSTES DE TRAVAIL DES EMPLOYÉS (MACHINES, JAUGES RADIALES & TAPIS ROULANT TYCOON) ---
   drawWorkstations(ctx, detail, isBusy, now) {
     if (!detail.staffSlots) return;
     const timeSec = now / 1000;
-    const startX = 112;
+    const startX = 116;
     const baseY = 148;
     const spacing = 64;
+    const biz = this.getBiz();
+    const baseRatio = this.getCycleProgressRatio(biz);
 
-    // Poste central animé en permanence au milieu de la boutique (même avant d'avoir recruté tous les employés)
+    // 1. Tapis roulant / Rail de convoyage Tycoon acheminant les produits vers le comptoir
     this.drawCentralActionShowcase(ctx, this.bizId, timeSec, isBusy);
 
     detail.staffSlots.slice(1).forEach((slot, idx) => {
       const stationX = startX + idx * spacing;
-      if (stationX > this.width - 40) return;
+      if (stationX > this.width - 42) return;
 
       ctx.save();
 
       if (slot.hired) {
-        // 1. Artisan / Employé en arrière-plan de son établi
-        this.drawWorker(ctx, stationX + 22, baseY - 2, idx + 1, true, timeSec);
+        // 1. Artisan / Employé actif derrière son poste
+        this.drawWorker(ctx, stationX + 22, baseY - 2, idx + 1, isBusy, timeSec);
 
-        // 2. Machine & poste de fabrication au premier plan (ne masque plus le visage de l'employé, et reste 100% visible)
-        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, true, timeSec, slot);
+        // 2. Machine & poste de fabrication au premier plan
+        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, isBusy, timeSec);
 
         // Hitbox ouvrier pour affichage rôle au clic
         this.clickZones.push({
@@ -1112,14 +1294,20 @@ export class CanvasStoreEngine {
           role: slot.role
         });
 
-        const effIcon = slot.icon || '⚡';
-        ctx.font = '13px sans-serif';
-        ctx.textAlign = 'center';
-        const effBounce = -Math.abs(Math.sin(timeSec * 5 + idx) * 5);
-        ctx.fillText(effIcon, stationX + 22, baseY - 56 + effBounce);
+        // 3. Jauge radiale Tycoon temps réel au-dessus de l'artisan
+        const workerRatio = isBusy ? ((baseRatio + idx * 0.28) % 1) : 0.15;
+        this.drawRadialGauge(
+          ctx,
+          stationX + 22,
+          baseY - 55,
+          8,
+          workerRatio,
+          isBusy ? '#10b981' : '#f59e0b',
+          slot.icon || '⚡'
+        );
       } else {
-        // Si pas encore recruté : afficher la machine animée en bas ET le bouton de recrutement compact juste au-dessus !
-        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, true, timeSec, slot);
+        // Poste en attente d'embauche : machine visible + bouton de recrutement
+        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, isBusy, timeSec);
         this.drawHireButton(ctx, stationX + 1, baseY - 64, 46, 36, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
       }
 
@@ -1127,35 +1315,59 @@ export class CanvasStoreEngine {
     });
   }
 
-  // --- SPECTACLE CENTRAL ANIMÉ EN PERMANENCE SELON LE MÉTIER ---
+  // --- RAIL DE CONVOYAGE & FLUX PHYSIQUE DE MARCHANDISES TYCOON ---
   drawCentralActionShowcase(ctx, bizId, timeSec, isBusy) {
     ctx.save();
-    const cx = this.width * 0.56;
-    const cy = 112;
+    const beltLeft = 96;
+    const beltRight = Math.max(175, this.width - 46);
+    const beltW = beltRight - beltLeft;
+    const beltY = 136;
+    const beltH = 7;
 
-    // Halo d'activité chaud sous la zone centrale
-    const pulse = 0.5 + 0.5 * Math.sin(timeSec * 4);
-    const glow = ctx.createRadialGradient(cx, cy, 4, cx, cy, 38);
-    glow.addColorStop(0, `rgba(251, 191, 36, ${0.18 + pulse * 0.1})`);
-    glow.addColorStop(1, 'rgba(251, 191, 36, 0)');
-    ctx.fillStyle = glow;
+    // 1. Structure métallique 2.5D du tapis roulant de livraison
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
     ctx.beginPath();
-    ctx.arc(cx, cy, 38, 0, Math.PI * 2);
+    ctx.roundRect(beltLeft, beltY, beltW, beltH, 3);
     ctx.fill();
+    ctx.strokeStyle = isBusy ? '#38bdf8' : '#475569';
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
 
-    // Animation flottante d'articles fabriqués en temps réel (Cycle continu fluide)
-    const icons = this.orderIcons[bizId] || this.orderIcons.default;
-    for (let i = 0; i < 3; i++) {
-      const progress = ((timeSec * 0.65 + i * 0.33) % 1);
-      const itemX = cx - 35 + progress * 70;
-      const itemY = cy - 18 - Math.sin(progress * Math.PI) * 16;
-      const alpha = Math.sin(progress * Math.PI);
+    // Chevrons lumineux défilant vers le comptoir de gauche
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(beltLeft + 2, beltY + 1, beltW - 4, beltH - 2, 2);
+    ctx.clip();
+    const shift = isBusy ? ((timeSec * 42) % 14) : 0;
+    ctx.strokeStyle = isBusy ? 'rgba(52, 211, 153, 0.65)' : 'rgba(148, 163, 184, 0.25)';
+    ctx.lineWidth = 1.4;
+    for (let rx = beltLeft - 10; rx < beltRight + 14; rx += 14) {
+      const cx = rx - shift;
+      ctx.beginPath();
+      ctx.moveTo(cx + 4, beltY + 1.5);
+      ctx.lineTo(cx, beltY + beltH / 2);
+      ctx.lineTo(cx + 4, beltY + beltH - 1.5);
+      ctx.stroke();
+    }
+    ctx.restore();
 
+    // 2. Produits/Colis glissant physiquement des postes de travail vers le comptoir
+    for (const item of this.conveyorItems) {
       ctx.save();
-      ctx.globalAlpha = alpha * 0.92;
-      ctx.font = '14px serif';
+      // Plateau doré sous le produit
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.ellipse(item.x, beltY - 1, 8, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Produit fabriqué
+      const bob = Math.sin(timeSec * 12 + item.x * 0.1) * 1.2;
+      ctx.font = '12.5px serif';
       ctx.textAlign = 'center';
-      ctx.fillText(icons[i % icons.length], itemX, itemY);
+      ctx.fillText(item.icon, item.x, beltY - 4 + bob);
       ctx.restore();
     }
 
@@ -1163,7 +1375,7 @@ export class CanvasStoreEngine {
   }
 
   // --- DESSIN DES MACHINES ET ANIMATIONS ÉLÉVÉES SELON LE MÉTIER ---
-  drawMachineProp(ctx, bizId, x, y, isBusy, timeSec, slot) {
+  drawMachineProp(ctx, bizId, x, y, isBusy, timeSec) {
     ctx.save();
 
     // 1. TRADITIONAL FOOD / LABLABI / KASKROUT : marmite fumante, découpe de baguette, louche en mouvement
@@ -1841,31 +2053,6 @@ export class CanvasStoreEngine {
 
     ctx.restore();
   }
-  // Étiquette de rôle complète
-  drawRoleTag(ctx, cx, y, role) {
-    if (!role) return;
-    ctx.save();
-    ctx.font = 'bold 8px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    const textW = ctx.measureText(role).width;
-    const pad = 6;
-    const rw = textW + pad * 2;
-    const rh = 13;
-    const rx = cx - rw / 2;
-    const ry = y - rh / 2;
-
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-    ctx.beginPath();
-    ctx.roundRect(rx, ry, rw, rh, 4);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.fillStyle = '#fef08a';
-    ctx.fillText(role, cx, ry + 9.5);
-    ctx.restore();
-  }
 
   // Dessin d'un bouton de recrutement très lisible
   drawHireButton(ctx, x, y, width, height, label, slotIndex, type, cost = null, now = 0) {
@@ -1926,32 +2113,35 @@ export class CanvasStoreEngine {
     return '' + Math.round(n);
   }
 
-  // --- CLIENTS VIVANTS AVEC BULLES DE COMMANDE ET DÉPLACEMENT ---
-  drawCustomers(ctx, now) {
+  // --- CLIENTS VIVANTS AVEC FILE D'ATTENTE TYCOON, JAUGE DE SERVICE & CABAS DE SORTIE ---
+  drawCustomers(ctx) {
+    const styles = [
+      { robe: '#1e3a8a', coat: '#2563eb', skin: '#fcd34d', hat: 'chechia' },
+      { robe: '#065f46', coat: '#059669', skin: '#f59e0b', hat: 'tarbouch' },
+      { robe: '#7c2d12', coat: '#d97706', skin: '#fde68a', hat: 'hijab' },
+      { robe: '#0f172a', coat: '#334155', skin: '#fcd34d', hat: 'hair' }
+    ];
+
     for (const c of this.customers) {
       ctx.save();
-      // Ombre portée au sol
       ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
       ctx.beginPath();
       ctx.ellipse(c.x + 12, c.y + 4, 11, 3.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
       const isWalking = c.state === 'walking_in' || c.state === 'walking_out';
-      const bounce = isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 3 : 0;
-      const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.06 : 0;
+      const bounce = isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 2.8 : 0;
+      const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.05 : 0;
 
       ctx.save();
       ctx.translate(c.x + 12, c.y - 6 - bounce);
+      // En sortant vers la porte de droite, le client se tourne vers la droite
+      if (c.state === 'walking_out') {
+        ctx.scale(-1, 1);
+      }
       ctx.rotate(tilt);
 
-      // Personnage vectoriel élégant (Corps, Vêtements tunisiens, Chéchia ou Coiffure)
       const seed = Math.floor(Math.abs(c.id * 1000));
-      const styles = [
-        { robe: '#1e3a8a', coat: '#2563eb', skin: '#fcd34d', hat: 'chechia' },
-        { robe: '#065f46', coat: '#059669', skin: '#f59e0b', hat: 'tarbouch' },
-        { robe: '#7c2d12', coat: '#d97706', skin: '#fde68a', hat: 'hijab' },
-        { robe: '#0f172a', coat: '#334155', skin: '#fcd34d', hat: 'hair' }
-      ];
       const st = styles[seed % styles.length];
 
       // Jambes animées
@@ -1974,7 +2164,7 @@ export class CanvasStoreEngine {
       ctx.fillStyle = st.robe;
       ctx.fillRect(-2, -18, 4, 18);
 
-      // Bras tenant l'article acheté ou un couffin
+      // Bras
       ctx.strokeStyle = st.coat;
       ctx.lineWidth = 2.2;
       ctx.beginPath();
@@ -1984,12 +2174,29 @@ export class CanvasStoreEngine {
       ctx.lineTo(8, -4);
       ctx.stroke();
 
-      // Simulation d'article pris en main lors du départ (سرفيس وأخذ السلعة)
-      if (c.state === 'walking_out' && c.orderIcon) {
+      // Cabas de shopping Tycoon vectoriel + produit emporté lors du départ
+      if (c.state === 'walking_out' && c.hasBag) {
         ctx.save();
-        ctx.font = '11px serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(c.orderIcon, 9, -2);
+        // Anse du cabas
+        ctx.strokeStyle = '#fef08a';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(-8, -4, 3, Math.PI, 0);
+        ctx.stroke();
+        // Corps du sac de shopping
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.roundRect(-12, -4, 8, 9, 1.5);
+        ctx.fill();
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        // Produit qui dépasse du sac
+        if (c.orderIcon) {
+          ctx.font = '8.5px serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(c.orderIcon, -8, -4);
+        }
         ctx.restore();
       }
 
@@ -2036,21 +2243,20 @@ export class CanvasStoreEngine {
 
       ctx.restore();
 
-      // Bulle de commande / réaction compacte et élégante PLACÉE AU-DESSUS DE LA TÊTE (ZÉRO MASQUAGE DU VISAGE)
+      // Bulle de commande / réaction + jauge de service Tycoon au-dessus de la tête
       const bubbleX = c.x + 12;
-      const bubbleY = c.y - 52 - bounce; // Dégage complètement la tête et la chéchia
+      const bubbleY = c.y - 52 - bounce;
       const bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
+      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : 'rgba(255, 255, 255, 0.98)';
       ctx.beginPath();
       ctx.roundRect(bubbleX - 10, bubbleY - 9, 20, 17, 5);
       ctx.fill();
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = c.state === 'paying' ? '#10b981' : '#f59e0b';
+      ctx.lineWidth = 1.3;
       ctx.stroke();
 
-      // Petite pointe de bulle pointant vers le sommet de la tête
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : '#ffffff';
       ctx.beginPath();
       ctx.moveTo(bubbleX - 2.5, bubbleY + 8);
       ctx.lineTo(bubbleX + 2.5, bubbleY + 8);
@@ -2063,12 +2269,29 @@ export class CanvasStoreEngine {
       ctx.textBaseline = 'middle';
       ctx.fillText(bubbleIcon, bubbleX, bubbleY);
 
+      // Jauge radiale d'encaissement pendant que le client est servi au comptoir
+      if (c.state === 'paying') {
+        const payRatio = Math.min(1, c.payTimer / Math.max(0.1, c.payDuration));
+        this.drawRadialGauge(ctx, bubbleX, bubbleY - 19, 6.5, payRatio, '#10b981', '🪙');
+      }
+
       ctx.restore();
     }
   }
 
-  // --- PARTICULES (FUMÉE VAPEUR, PIÈCES D'OR, ÉTINCELLES) ---
+  // --- PARTICULES, ONDES DE TAP & GAIN FLOTTANT ---
   drawParticles(ctx) {
+    for (const r of this.tapRipples) {
+      ctx.save();
+      const alpha = Math.max(0, r.life / r.maxLife);
+      ctx.strokeStyle = `rgba(251, 191, 36, ${alpha * 0.85})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
     for (const p of this.particles) {
       ctx.save();
       ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
@@ -2082,7 +2305,7 @@ export class CanvasStoreEngine {
     for (const m of this.moneyPuffs) {
       ctx.save();
       ctx.globalAlpha = Math.max(0, m.life / m.maxLife);
-      ctx.font = 'bold 13px "Cairo", sans-serif';
+      ctx.font = 'bold 12.5px "Cairo", sans-serif';
       ctx.fillStyle = '#fef08a';
       ctx.shadowColor = '#000000';
       ctx.shadowBlur = 4;
@@ -2092,7 +2315,7 @@ export class CanvasStoreEngine {
     }
   }
 
-  // --- AMBIANCE CRÉATIVE : lanternes tunisiennes, rayons de lumière, poussière dorée ---
+  // --- AMBIANCE CRÉATIVE & HUD TYCOON SUR L'ENSEIGNE (PALIER + BARRE DE CYCLE) ---
   drawAmbience(ctx, now, isProducing) {
     const w = this.width;
     const h = this.height;
@@ -2100,32 +2323,67 @@ export class CanvasStoreEngine {
 
     const signBiz = this.getBiz();
     if (signBiz) {
-      const signW = Math.min(260, Math.max(190, w * 0.55));
+      const tier = this.getStoreTier(signBiz);
+      const cycleRatio = this.getCycleProgressRatio(signBiz);
+      const signW = Math.min(265, Math.max(195, w * 0.58));
       const sx = (w - signW) / 2;
       const flicker = 0.88 + 0.12 * Math.sin(t * 7) * Math.sin(t * 3.1);
       ctx.save();
-      ctx.shadowColor = 'rgba(251, 191, 36, ' + (0.8 * flicker) + ')';
-      ctx.shadowBlur = 14;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-      ctx.strokeStyle = 'rgba(251, 191, 36, ' + flicker + ')';
-      ctx.lineWidth = 2;
+      ctx.shadowColor = 'rgba(251, 191, 36, ' + (0.75 * flicker) + ')';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+      ctx.strokeStyle = tier.border || ('rgba(251, 191, 36, ' + flicker + ')');
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
-      ctx.roundRect(sx, 22, signW, 28, 14);
+      ctx.roundRect(sx, 20, signW, 31, 14);
       ctx.fill();
       ctx.stroke();
       ctx.shadowBlur = 0;
-      ctx.fillStyle = '#fef08a';
 
+      // Badge de Palier Tycoon (Tier 1..5) intégré à gauche de l'enseigne
+      ctx.fillStyle = tier.color;
+      ctx.beginPath();
+      ctx.roundRect(sx + 6, 24, 38, 13, 6);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 7.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`★T${tier.tier} L${signBiz.level || 1}`, sx + 25, 33);
+
+      // Nom du projet
+      ctx.fillStyle = '#fef08a';
       const signFullName = (signBiz.icon ? (signBiz.icon + ' ') : '') + signBiz.name;
-      let sFont = 12;
+      let sFont = 11.5;
       ctx.font = '900 ' + sFont + 'px "Cairo", sans-serif';
-      let sWidth = ctx.measureText(signFullName).width;
-      if (sWidth > signW - 20) {
-        sFont = Math.max(8.5, Math.floor((signW - 22) / sWidth * sFont));
+      const availW = signW - 56;
+      const sWidth = ctx.measureText(signFullName).width;
+      if (sWidth > availW) {
+        sFont = Math.max(8, Math.floor((availW / sWidth) * sFont));
         ctx.font = '900 ' + sFont + 'px "Cairo", sans-serif';
       }
       ctx.textAlign = 'center';
-      ctx.fillText(signFullName, w / 2, 40);
+      ctx.fillText(signFullName, sx + 46 + availW / 2, 35);
+
+      // Barre de progression Tycoon du cycle en temps réel au bas de l'enseigne
+      const barX = sx + 14;
+      const barY = 44.5;
+      const barW = signW - 28;
+      const barH = 3.2;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barW, barH, 1.5);
+      ctx.fill();
+
+      const fillRatio = isProducing ? Math.max(0.06, cycleRatio) : 0;
+      if (fillRatio > 0) {
+        const barGrad = ctx.createLinearGradient(barX, barY, barX + barW, barY);
+        barGrad.addColorStop(0, '#10b981');
+        barGrad.addColorStop(1, '#fbbf24');
+        ctx.fillStyle = barGrad;
+        ctx.beginPath();
+        ctx.roundRect(barX, barY, barW * fillRatio, barH, 1.5);
+        ctx.fill();
+      }
       ctx.restore();
     }
 
@@ -2144,7 +2402,6 @@ export class CanvasStoreEngine {
       ctx.lineTo(0, len);
       ctx.stroke();
 
-      // Faisceau volumétrique doux orienté vers le sol
       const beamAlpha = isProducing ? (0.12 + 0.04 * Math.sin(t * 4 + i)) : 0.06;
       const beamGrad = ctx.createLinearGradient(0, len + 10, 0, len + 115);
       beamGrad.addColorStop(0, `rgba(253, 224, 71, ${beamAlpha})`);
@@ -2196,81 +2453,141 @@ export class CanvasStoreEngine {
     ctx.fillRect(0, 0, w, h);
   }
 
-  // --- BOUCLE D'ANIMATION 60 FPS ---
+  // --- BOUCLE D'ANIMATION 60 FPS SYNCHRONISÉE AVEC LE MOTEUR TYCOON ---
   step(now) {
     if (!this.lastTime) this.lastTime = now;
     const dt = Math.min((now - this.lastTime) / 1000, 0.1);
     this.lastTime = now;
 
     const biz = this.getBiz();
-    const detail = this.engine.getBusinessDetail ? this.engine.getBusinessDetail(this.bizId) : null;
-    const isProducing = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
+    const detailKey = biz ? `${biz.id}_${biz.level}_${biz.hiredManagersCount || 0}_${biz.hasManager ? 1 : 0}` : '';
+    if (!this.cachedDetail || this.cachedDetailKey !== detailKey) {
+      this.cachedDetail = this.engine.getBusinessDetail ? this.engine.getBusinessDetail(this.bizId) : null;
+      this.cachedDetailKey = detailKey;
+    }
+    const detail = this.cachedDetail;
+    const isProducing = Boolean(biz && biz.level > 0 && (biz.isProducing || biz.hasManager || biz.progressMs > 0));
 
-    // 1. Spawner de حرفاء (rythme posé, naturel et gratifiant)
+    // Animation de fermeture souple de la porte battante
+    if (this.doorSwing > 0) {
+      this.doorSwing = Math.max(0, this.doorSwing - dt * 2.2);
+    }
+
+    // Détection de complétion d'un cycle réel de production dans engine.js
+    const curProgress = biz ? (biz.progressMs || 0) : 0;
+    const cycleWrapped = isProducing && curProgress < this.lastProgressMs;
+    this.lastProgressMs = curProgress;
+    if (cycleWrapped) {
+      const payingCust = this.customers.find(c => c.state === 'paying');
+      this.triggerPayment(payingCust || null, true);
+    }
+
+    // 1. Flux de production physique sur le tapis roulant (Supply Chain Tycoon)
+    if (isProducing) {
+      this.conveyorTimer += dt;
+      if (this.conveyorTimer >= 0.95 && this.conveyorItems.length < 6) {
+        this.conveyorTimer = 0;
+        const hiredCount = biz ? Math.max(1, biz.hiredManagersCount || 1) : 1;
+        const sourceIdx = Math.floor(Math.random() * Math.min(3, hiredCount));
+        const spawnX = Math.min(this.width - 52, 134 + sourceIdx * 64);
+        this.conveyorItems.push({
+          x: spawnX,
+          y: 135,
+          targetX: 92,
+          icon: this.getOrderIcon(),
+          speed: 58 + Math.min(35, (biz.level || 1) * 0.4)
+        });
+      }
+    }
+    for (let i = this.conveyorItems.length - 1; i >= 0; i--) {
+      const item = this.conveyorItems[i];
+      item.x -= item.speed * dt;
+      if (item.x <= item.targetX) {
+        this.counterStock = Math.min(4, (this.counterStock || 0) + 1);
+        this.conveyorItems.splice(i, 1);
+      }
+    }
+
+    // 2. Spawner de clients (file d'attente structurée sans collision)
     this.spawnTimer += dt;
-    const spawnThreshold = isProducing ? 2.6 : 4.8;
-    if (this.spawnTimer > spawnThreshold && this.customers.length < 4) {
+    const spawnThreshold = isProducing ? 2.2 : 4.2;
+    const activeInStore = this.customers.filter(c => c.state !== 'walking_out').length;
+    if (this.spawnTimer > spawnThreshold && activeInStore < 4 && this.customers.length < 6) {
       this.spawnCustomer();
       this.spawnTimer = 0;
     }
 
-    // 2. Mise à jour de la physique des حرفاء
+    // 3. Mise à jour des slots de file d'attente (Queue Slots : 96, 122, 148, 174)
+    const queueList = this.customers.filter(c => c.state !== 'walking_out');
+    queueList.forEach((c, qIdx) => {
+      c.targetX = 96 + qIdx * 26;
+      c.queueIndex = qIdx;
+    });
+
     for (let i = this.customers.length - 1; i >= 0; i--) {
       const c = this.customers[i];
       c.walkCycle += dt;
 
-      if (c.state === 'walking_in') {
-        const speed = isProducing ? 58 : 42;
-        c.x -= speed * dt;
-        if (c.x <= c.targetX) {
+      if (c.state === 'walking_in' || c.state === 'queued') {
+        const speed = isProducing ? 64 : 46;
+        if (c.x > c.targetX + 1) {
+          c.x = Math.max(c.targetX, c.x - speed * dt);
+          c.state = 'walking_in';
+        } else {
           c.x = c.targetX;
-          c.state = 'paying';
-          this.triggerPayment(c, isProducing);
+          if (c.queueIndex === 0) {
+            c.state = 'paying';
+          } else {
+            c.state = 'queued';
+          }
         }
       } else if (c.state === 'paying') {
         const hasStaff = biz && (biz.hasManager || (biz.hiredManagersCount && biz.hiredManagersCount > 0));
-        c.payTimer += dt;
-
-        if (hasStaff || biz.isProducing) {
-          // Personnel présent ou clic manuel : servi avec succès !
+        if (hasStaff || isProducing) {
+          c.payTimer += dt;
           if (c.payTimer >= c.payDuration) {
+            this.triggerPayment(c, isProducing);
+            c.hasBag = true;
             c.state = 'walking_out';
             c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
           }
         } else {
-          // Pas de personnel recruté : le client attend 2.2s puis sort fâché
-          if (c.payTimer > 2.2) {
+          c.waitTimer = (c.waitTimer || 0) + dt;
+          if (c.waitTimer > 2.4) {
+            c.hasBag = false;
             c.state = 'walking_out';
             c.reaction = '😡';
-            c.isAngry = true;
-            // Particule fumée de colère
-            this.particles.push({
-              x: c.x,
+            this.pushParticle({
+              x: c.x + 10,
               y: c.y - 30,
               vx: 0,
-              vy: -15,
+              vy: -16,
               color: '#ef4444',
-              radius: 4,
+              radius: 3.8,
               life: 0.6,
               maxLife: 0.6,
-              alpha: 1.0
+              isSparkle: false
             });
           }
         }
       } else if (c.state === 'walking_out') {
-        c.x -= 52 * dt;
-        if (c.x < -40) {
+        // Le client servi repart avec son sac vers la porte d'entrée à droite (sans traverser le comptoir !)
+        c.x += 62 * dt;
+        if (Math.abs(c.x - (this.width - 28)) < 8) {
+          this.doorSwing = 1.0;
+        }
+        if (c.x > this.width + 16) {
           this.customers.splice(i, 1);
           continue;
         }
       }
     }
 
-    // 3. Particules d'ambiance et vapeur active (actives dès que le projet est ouvert au niveau > 0)
+    // 4. Particules d'ambiance et vapeur active
     if (biz && biz.level > 0 && Math.random() < 0.35 && this.particles.length < 32) {
       const sourceX = 110 + Math.random() * (this.width - 150);
       const isHotFood = ['kaskrout', 'fricasse', 'kahwa', 'salon_de_the', 'restaurant', 'patisserie'].includes(this.bizId);
-      this.particles.push({
+      this.pushParticle({
         x: sourceX,
         y: 128,
         vx: Math.random() * 8 - 4,
@@ -2281,6 +2598,14 @@ export class CanvasStoreEngine {
         maxLife: 0.9,
         isSparkle: !isHotFood
       });
+    }
+
+    // Mise à jour ondes de tap
+    for (let i = this.tapRipples.length - 1; i >= 0; i--) {
+      const r = this.tapRipples[i];
+      r.life -= dt;
+      r.r += (r.maxR - r.r) * Math.min(1, dt * 12);
+      if (r.life <= 0) this.tapRipples.splice(i, 1);
     }
 
     // Mise à jour particules
@@ -2301,19 +2626,19 @@ export class CanvasStoreEngine {
       if (m.life <= 0) this.moneyPuffs.splice(i, 1);
     }
 
-    // 4. Dessin complet de la frame Canvas
+    // 5. Dessin complet de la frame Canvas
     this.clickZones = [];
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     this.drawBackdrop(this.ctx, this.bizId, now);
-    this.drawAmbience(this.ctx, now, !!isProducing);
+    this.drawAmbience(this.ctx, now, isProducing);
 
     if (detail) {
       this.drawCashierCounter(this.ctx, detail, isProducing, now);
       this.drawWorkstations(this.ctx, detail, isProducing, now);
     }
 
-    this.drawCustomers(this.ctx, now);
+    this.drawCustomers(this.ctx);
     this.drawParticles(this.ctx);
     this.drawVignette(this.ctx);
   }
