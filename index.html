@@ -2300,9 +2300,181 @@
       }
     }
 
+    /* --- ANIMATION D'ACCUEIL ROYALE (SPLASH SCREEN TYCOON) --- */
+    #welcomeSplashScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 25000;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(245, 158, 11, 0.24) 0%, rgba(16, 185, 129, 0.12) 38%, rgba(2, 6, 23, 0.98) 78%),
+        linear-gradient(180deg, #050811 0%, #090d16 55%, #020617 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 20px 18px;
+      direction: rtl;
+      text-align: center;
+      transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      user-select: none;
+    }
+    #welcomeSplashScreen.splash-hide {
+      opacity: 0;
+      transform: scale(1.04);
+      pointer-events: none;
+    }
+    .splash-CenterStage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      max-width: 460px;
+      width: 100%;
+      margin: auto 0;
+      position: relative;
+      z-index: 2;
+    }
+    .splash-crest-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: splashFloatCrest 2.8s ease-in-out infinite;
+    }
+    .splash-crest-halo {
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(251, 191, 36, 0.42) 0%, rgba(16, 185, 129, 0.15) 50%, transparent 72%);
+      animation: splashPulseHalo 2.2s ease-in-out infinite;
+    }
+    .splash-title-designed {
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      font-size: clamp(28px, 6vw, 40px);
+      font-weight: 950;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef08a 28%, #f59e0b 55%, #fde047 80%, #fffbeb 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 18px rgba(245, 158, 11, 0.45));
+      animation: splashGoldShimmer 3s linear infinite;
+      margin: 0;
+    }
+    .splash-subtitle-designed {
+      font-size: clamp(13px, 3vw, 15.5px);
+      font-weight: 800;
+      color: #a7f3d0;
+      background: rgba(6, 78, 59, 0.45);
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      padding: 5px 16px;
+      border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+    .splash-progress-box {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .splash-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #fde68a;
+      padding: 0 4px;
+    }
+    .splash-progress-track {
+      width: 100%;
+      height: 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1.5px solid rgba(251, 191, 36, 0.5);
+      border-radius: 999px;
+      overflow: hidden;
+      padding: 1.5px;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.25), inset 0 2px 6px rgba(0, 0, 0, 0.75);
+    }
+    .splash-progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #059669 0%, #10b981 35%, #f59e0b 75%, #fef08a 100%);
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+      transition: width 0.12s ease-out;
+      position: relative;
+    }
+    .splash-footer-small {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 10.5px;
+      color: #94a3b8;
+      font-weight: 700;
+      z-index: 2;
+    }
+    @keyframes splashFloatCrest {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-7px) rotate(2deg); }
+    }
+    @keyframes splashPulseHalo {
+      0%, 100% { transform: scale(0.95); opacity: 0.7; }
+      50% { transform: scale(1.12); opacity: 1; }
+    }
+    @keyframes splashGoldShimmer {
+      0% { background-position: 0% center; }
+      100% { background-position: 200% center; }
+    }
   </style>
 </head>
 <body>
+  <!-- ÉCRAN D'ACCUEIL ANIMÉ AVEC TEXTE DESIGNÉ, BARRE DE PROGRESSION ET PETIT TEXTE EN BAS -->
+  <div id="welcomeSplashScreen" role="dialog" aria-label="شاشة الترحيب تونس تايكون">
+    <div style="height: 8px;"></div>
+    <div class="splash-CenterStage">
+      <div class="splash-crest-wrap">
+        <div class="splash-crest-halo"></div>
+        <svg width="88" height="88" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="27" cy="27" r="24" stroke="url(#goldCrown3D)" stroke-width="3.2" fill="#090d16"/>
+          <circle cx="27" cy="27" r="20" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="2.5 2" fill="none"/>
+          <circle cx="27" cy="27" r="16.5" fill="url(#emeraldVault3D)" stroke="#fde047" stroke-width="1.4"/>
+          <rect x="17" y="31" width="20" height="4.5" rx="2" fill="url(#goldCrown3D)" stroke="#78350f" stroke-width="0.8"/>
+          <rect x="19" y="26.5" width="16" height="4.2" rx="2" fill="url(#goldCrown3D)" stroke="#78350f" stroke-width="0.8"/>
+          <circle cx="27" cy="21" r="7.2" fill="url(#goldCrown3D)" stroke="#78350f" stroke-width="1"/>
+          <text x="27" y="24.2" text-anchor="middle" fill="#78350f" font-family="Tajawal, sans-serif" font-weight="900" font-size="9.5">د.ت</text>
+          <path d="M 18 11.5 L 22.5 6.5 L 27 10.5 L 31.5 6.5 L 36 11.5 Z" fill="url(#goldCrown3D)"/>
+        </svg>
+      </div>
+
+      <h1 class="splash-title-designed">تونس تايكون</h1>
+      <div class="splash-subtitle-designed">✨ إمبراطورية المال والأعمال • من الحومة إلى القمّة ✨</div>
+
+      <div class="splash-progress-box">
+        <div class="splash-progress-header">
+          <span id="splashStatusText">جاري تحضير الشارع والمشاريع...</span>
+          <span id="splashProgressPct" class="num-ltr" style="color: #34d399; font-weight: 900;">0%</span>
+        </div>
+        <div class="splash-progress-track">
+          <div class="splash-progress-fill" id="splashProgressBarFill"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="splash-footer-small">
+      <span style="color: #cbd5e1;">ابنِ ثروتك، طوّر مشاريعك واغزُ أسواق البلاد بحنكة المعلّمية</span>
+      <span style="font-size: 9.5px; color: #64748b;">© EOLabs 2026 • جميع الحقوق محفوظة • النسخة الذهبية</span>
+    </div>
+  </div>
+
   <div id="app">
     <header>
       <div class="header-top-row">
@@ -2389,7 +2561,8 @@
           <button class="icon-pill-btn" id="soundToggleBtn" title="صوت">🔊</button>
           <button class="icon-pill-btn" id="openGuideBtn" title="دليل البداية وكيفاش تلعب" style="border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc;">❓</button>
           <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية" style="display: none;">📜</button>
-          <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات وبروفيل">⚙️</button>
+          <button class="icon-pill-btn" id="openProfileHeaderBtn" title="البروفيل وحساب Google" style="border-color: rgba(52, 211, 153, 0.55); color: #6ee7b7;">👤</button>
+          <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات الإمبراطورية">⚙️</button>
           <button class="icon-pill-btn exit-pill-btn" id="headerExitBtn" title="خروج من اللعبة" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">🚪</button>
         </div>
       </div>
@@ -2482,7 +2655,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <span style="font-weight: 900; color: #fde68a; font-size: 14px;">🌾 بريم الحضور : الرزق المكتوب والبركة</span>
           <button class="upg-buy-btn" id="claimDailyRewardBtn" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border-color: #34d399; padding: 5px 12px;">
-            🤲 اقبض البريم !
+            🎬 إشهار واقبض البريم !
           </button>
         </div>
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 8px;" id="dailyLoginStatusLabel">كل نهار تطلّ فيه على حانوتك، الكاسة تفرح بيك بـ بريم وبهدية من قاع الخابية !</div>
@@ -2801,11 +2974,7 @@
         </div>
       </div>
 
-      <button class="modal-btn" id="tobaccoTipBtn" style="background: linear-gradient(135deg, #be123c 0%, #831843 100%); border-color: #fbbf24; color: #ffffff; padding: 6px; font-weight: 900; width: 100%; font-size: 11px;">
-        🪙 اشري باكي ودبوزة ماء (+2.50 د.ت في الكاسة)
-      </button>
-
-      <button class="modal-btn" id="closeTobaccoModalBtn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 5px; width: 100%; font-size: 11px;">
+      <button class="modal-btn" id="closeTobaccoModalBtn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 6px; width: 100%; font-size: 11px;">
         رجوع للشارع 🏪
       </button>
     </div>
@@ -2834,6 +3003,63 @@
       </div>
 
       <div class="settings-modal-body">
+        <!-- Bloc 0 - البروفيل وحساب Google (Connexion Compte Google conforme RGPD & Google Play) -->
+        <section class="settings-section" id="googleProfileSection" style="border-color: rgba(56, 189, 248, 0.45); background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(2, 132, 199, 0.14) 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div class="settings-sec-title" style="margin: 0; color: #7dd3fc;">👤 البروفيل الشخصي وحساب Google</div>
+            <span id="googleProfileStatusBadge" style="font-size: 9.5px; font-weight: 900; padding: 2px 8px; border-radius: 999px; background: rgba(100, 116, 139, 0.25); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.35);">غير مربوط</span>
+          </div>
+
+          <!-- État Non Connecté -->
+          <div id="googleLoggedOutView" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 10.5px; color: #cbd5e1; line-height: 1.45;">
+              اربط بروفيلك بحساب <b>Google</b> لحفظ هويتك التجارية ومزامنة تقدّم إمبراطوريتك بأمان تام.
+            </div>
+            <button id="googleSignInOpenBtn" type="button" style="display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; padding: 8px 12px; border-radius: 10px; background: #ffffff; color: #0f172a; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 900; border: 1.5px solid #cbd5e1; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.35);">
+              <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              </svg>
+              <span>تسجيل الدخول وربط حساب Google</span>
+            </button>
+
+            <!-- Formulaire rapide et conforme RGPD de liaison Google (sans collecte serveur tiers) -->
+            <div id="googleLinkFormBox" style="display: none; flex-direction: column; gap: 6px; background: rgba(2, 6, 23, 0.75); border: 1px solid rgba(56, 189, 248, 0.45); border-radius: 10px; padding: 9px;">
+              <div style="font-size: 10.5px; font-weight: 800; color: #fde047;">🔐 ربط حساب Google (محمي محلياً 100% وفق RGPD) :</div>
+              <input type="text" id="googleNameInput" class="empire-input" placeholder="الاسم الكامل في Google (مثال: أمين التونسي)" maxlength="40" style="font-size: 11.5px; padding: 6px 8px;" />
+              <input type="email" id="googleEmailInput" class="empire-input" placeholder="بريد Gmail (مثال: amine@gmail.com)" maxlength="64" style="font-size: 11.5px; padding: 6px 8px; direction: ltr; text-align: left;" />
+              <div style="display: flex; gap: 6px;">
+                <button id="googleConfirmLinkBtn" type="button" class="settings-btn-save" style="flex: 1; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #34d399; padding: 6px;">✓ تأكيد ربط الحساب</button>
+                <button id="googleCancelLinkBtn" type="button" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: 800; cursor: pointer;">إلغاء</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- État Connecté -->
+          <div id="googleLoggedInView" style="display: none; flex-direction: column; gap: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(2, 6, 23, 0.65); border: 1px solid rgba(52, 211, 153, 0.45); border-radius: 10px; padding: 8px 10px;">
+              <div style="display: flex; align-items: center; gap: 9px; min-width: 0;">
+                <div id="googleAvatarCircle" style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #4285F4, #34A853); color: #ffffff; font-weight: 950; font-size: 16px; display: flex; align-items: center; justify-content: center; border: 2px solid #fde047; flex-shrink: 0;">G</div>
+                <div style="min-width: 0; text-align: right;">
+                  <div id="googleUserNameDisplay" style="font-size: 12.5px; font-weight: 900; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">معلّم تونس</div>
+                  <div id="googleUserEmailDisplay" style="font-size: 10px; color: #38bdf8; direction: ltr; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">player@gmail.com</div>
+                </div>
+              </div>
+              <span style="font-size: 9.5px; font-weight: 900; color: #34d399; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); padding: 2px 7px; border-radius: 6px; white-space: nowrap;">☁️ مؤمّن ✓</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button id="googleSyncNowBtn" type="button" class="settings-btn-save" style="flex: 1; background: rgba(2, 132, 199, 0.35); border: 1px solid #38bdf8; color: #e0f2fe; font-size: 11px; padding: 6px;">🔄 مزامنة الحفظ الآن</button>
+              <button id="googleDisconnectBtn" type="button" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.45); color: #fca5a5; border-radius: 8px; padding: 6px 10px; font-size: 10.5px; font-weight: 800; cursor: pointer;">🚪 فصل الحساب</button>
+            </div>
+          </div>
+
+          <div style="font-size: 9px; color: #94a3b8; margin-top: 6px; line-height: 1.35;">
+            🛡️ <b>ضمان الخصوصية وحماية المعطيات (RGPD & Google Play) :</b> ربط الحساب اختياري 100%، ولا يتم جمع أو بيع أي بيانات شخصية لخوادم خارجية. يمكنك فصل الحساب وحذف بياناته في أي وقت بضغطة واحدة.
+          </div>
+        </section>
+
         <!-- Bloc 1 - هويّة المشروع (Carte d'identité de l'Empire) -->
         <section class="settings-section">
           <div class="settings-sec-title">👑 هويّة المشروع والامبراطورية</div>
@@ -3063,8 +3289,8 @@
           لعبة <strong>Tounes Tycoon</strong> مطوّرة ومملوكة لـ <strong>© EOLabs 2026</strong>. جميع الحقوق محفوظة.
         </div>
         <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-          <strong style="color: #f8fafc; font-size: 11px;">2. حماية المعطيات (Privacy) :</strong><br>
-          لا نجمع أي بيانات شخصية خارجية. يتم حفظ تقدمك محلياً في ذاكرة هاتفك فقط.
+          <strong style="color: #f8fafc; font-size: 11px;">2. حماية المعطيات وحساب Google (RGPD) :</strong><br>
+          لا نجمع ولا نبيع أي بيانات شخصية خارجية. ربط البروفيل بحساب Google اختياري 100% ويُحفظ محلياً في جهازك مع إمكانية الحذف الفوري.
         </div>
         <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
           <strong style="color: #f8fafc; font-size: 11px;">3. الإعلانات (Google AdMob) :</strong><br>
@@ -3173,14 +3399,57 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=121';
-    import { soundEngine } from './audio.js?v=121';
+    import { TycoonEngine } from './engine.js?v=122';
+    import { soundEngine } from './audio.js?v=122';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=121';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=121';
+    import { AdsService } from './ads_service.js?v=122';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=122';
 
     const adsService = new AdsService();
     adsService.initialize();
+
+    // --- ANIMATION D'ACCUEIL ROYALE AVEC BARRE DE PROGRESSION FLUIDE ---
+    (function initWelcomeSplashScreen() {
+      const splashEl = document.getElementById('welcomeSplashScreen');
+      const fillEl = document.getElementById('splashProgressBarFill');
+      const pctEl = document.getElementById('splashProgressPct');
+      const statusEl = document.getElementById('splashStatusText');
+      if (!splashEl) return;
+
+      const durationMs = 2100;
+      const startAt = performance.now();
+      let dismissed = false;
+
+      const closeSplash = () => {
+        if (dismissed) return;
+        dismissed = true;
+        splashEl.classList.add('splash-hide');
+        setTimeout(() => {
+          if (splashEl && splashEl.parentNode) splashEl.style.display = 'none';
+        }, 580);
+      };
+
+      const stepSplash = (now) => {
+        if (dismissed) return;
+        const elapsed = Math.max(0, now - startAt);
+        const pct = Math.min(100, Math.round((elapsed / durationMs) * 100));
+        if (fillEl) fillEl.style.width = `${pct}%`;
+        if (pctEl) pctEl.innerText = `${pct}%`;
+        if (statusEl) {
+          if (pct < 35) statusEl.innerText = 'جاري تحضير الشارع والمشاريع...';
+          else if (pct < 75) statusEl.innerText = 'تجهيز الخزينة والبنك الوطني...';
+          else if (pct < 100) statusEl.innerText = 'فتح أبواب الحومة التونسية...';
+          else statusEl.innerText = 'مرحبا بيك يا معلّم ! 🚀';
+        }
+        if (elapsed >= durationMs) {
+          closeSplash();
+        } else {
+          requestAnimationFrame(stepSplash);
+        }
+      };
+
+      requestAnimationFrame(stepSplash);
+    })();
 
     // Démarrage doux de la musique d'ambiance tunisienne au 1er clic utilisateur
     let bgmStarted = false;
@@ -3385,7 +3654,9 @@
       };
     }
 
-    eventMiniGameBtn.onclick = () => {
+    eventMiniGameBtn.onclick = async () => {
+      const watched = await adsService.showRewardedBoost('طرح شكبة سريع في القهوة 🃏');
+      if (!watched) return;
       chkobbaSecLeft = 15;
       chkobbaScore = 0;
       minigameScore.innerText = `النقاط : 0 شكبة`;
@@ -3479,7 +3750,8 @@
     if (claimLuckyAdBtn) {
       claimLuckyAdBtn.onclick = async () => {
         if (luckyAdModal) luckyAdModal.classList.remove('active');
-        await adsService.showRewardedBoost();
+        const watched = await adsService.showRewardedBoost('صندوق الحظ وتيربو السرعة ⚡');
+        if (!watched) return;
 
         const clickX = window.innerWidth / 2;
         const clickY = window.innerHeight / 2;
@@ -3686,24 +3958,26 @@
       }, 400);
     }
 
-    // Câblage Vidéo AdMob -> Solde Gratuit
+    // Câblage Vidéo AdMob -> Solde via PUB uniquement
     if (adCashBtn) {
       adCashBtn.onclick = async () => {
-        await adsService.showRewardedBoost();
+        const watched = await adsService.showRewardedBoost('بونيس السيولة الفوري 🎁');
+        if (!watched) return;
         const reward = engine.claimAdCashReward();
         soundEngine.playEventFanfare();
-        showRewardModalUI('🎁', 'صحّة وفرحة ! تفتوفة بلاش زرڤة', 'الكاسة تعمّرت بدعم الإشهار :', `+${formatCurrency(reward)}`);
+        showRewardModalUI('🎁', 'صحّة وفرحة ! بونيس الإشهار', 'الكاسة تعمّرت بدعم الإشهار :', `+${formatCurrency(reward)}`);
         renderDOM();
       };
     }
 
-    // Câblage Vidéo AdMob -> Boost x2 4h
+    // Câblage Vidéo AdMob -> Boost x2 4h (Toute accélération passe obligatoirement par PUB)
     if (adBoostBtn) {
       adBoostBtn.onclick = async () => {
-        await adsService.showRewardedBoost();
+        const watched = await adsService.showRewardedBoost('تسريع الإنتاج x2 لمدّة 4 سوايع 🚀');
+        if (!watched) return;
         engine.addAdBoost(4 * 3600 * 1000);
         soundEngine.playEventFanfare();
-        showRewardModalUI('🚀', 'التيربو شاعل x2 !', 'المداخيل دوبل لمدّة 4 سوايع مريڤلين', 'سرعة x2');
+        showRewardModalUI('🚀', 'التيربو شاعل x2 !', 'المداخيل دوبل لمدّة 4 سوايع مريڤلين بعد الإشهار', 'سرعة x2');
         renderDOM();
       };
     }
@@ -3822,35 +4096,17 @@
           }
         };
 
-        // Squashing avatar au tap
+        // Squashing avatar au tap : lance uniquement le cycle de production (zéro solde gratuit sans cycle)
         const avatarEl = card.querySelector(`#avatar-${biz.id}`);
         const prodBtn = card.querySelector(`#produce-${biz.id}`);
 
         const triggerServe = (clientX, clientY) => {
-          if (biz.level > 0) {
-            const revInstant = engine.getRevenue(biz, Date.now());
-            if (revInstant > 0) {
-              engine.dinars += revInstant;
-              engine.totalDinarsEarned += revInstant;
-              engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + revInstant;
-              if (engine.currentCityId) {
-                if (!engine.cityBalances) engine.cityBalances = {};
-                engine.cityBalances[engine.currentCityId] = engine.dinars;
-              }
-              if (dinarsDisplay) dinarsDisplay.innerHTML = formatCurrency(engine.dinars);
-              if (bizBalanceEl) bizBalanceEl.innerHTML = formatCompactDinars(engine.dinars);
-            }
-          }
           if (engine.startProduction(biz.id)) {
             if (biz.id === 'kahwa') soundEngine.playTeaCup();
             else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
             else soundEngine.playCoin();
 
-            // Particule flottante de gain au point de contact + Fontaine de pièces réaliste
-            spawnFloatText(clientX, clientY, `+${formatCurrencyPlain(rev)}`);
-            if (typeof launchCoinShower === 'function') {
-              launchCoinShower(clientX, clientY, 6);
-            }
+            spawnFloatText(clientX, clientY, `⚡ خدمة جارية...`);
 
             // Animation squash
             avatarEl.classList.add('squashed');
@@ -3975,7 +4231,9 @@
       if (claimBtn) {
         claimBtn.disabled = !status.available;
         claimBtn.style.opacity = status.available ? '1' : '0.5';
-        claimBtn.onclick = () => {
+        claimBtn.onclick = async () => {
+          const watched = await adsService.showRewardedBoost('بريم الحضور اليومي 🌾');
+          if (!watched) return;
           const res = engine.claimDailyReward();
           if (res) {
             soundEngine.playMilestoneFanfare();
@@ -4005,7 +4263,7 @@
               <span style="font-size: 11px; font-weight: 900; color: #34d399;">تمّ ✓</span>
             ` : ch.completed ? `
               <button class="upg-buy-btn" style="background:#10b981; padding: 4px 8px; font-size: 10px;" id="claim-ch-${ch.id}">
-                اقبض 🎁
+                🎬 إشهار واقبض 🎁
               </button>
             ` : `
               <span style="font-size: 10px; color: #fbbf24; font-weight: 800;">+${formatCurrency(ch.rewardDinars, 0)}</span>
@@ -4016,7 +4274,9 @@
 
         const btn = item.querySelector(`#claim-ch-${ch.id}`);
         if (btn) {
-          btn.onclick = () => {
+          btn.onclick = async () => {
+            const watched = await adsService.showRewardedBoost(`جائزة التحدي : ${ch.title} 🎯`);
+            if (!watched) return;
             const claimed = engine.claimChallengeReward(ch.id);
             if (claimed) {
               soundEngine.playEventFanfare();
@@ -4041,7 +4301,9 @@
 
       if (promoteBtn) {
         promoteBtn.style.display = data.isPromoted ? 'block' : 'none';
-        promoteBtn.onclick = () => {
+        promoteBtn.onclick = async () => {
+          const watched = await adsService.showRewardedBoost('منحة الترقية في بطولة تجار تونس 🏆');
+          if (!watched) return;
           const res = engine.promoteLeague();
           if (res.success) {
             soundEngine.playMilestoneFanfare();
@@ -4354,7 +4616,8 @@
     spinWheelBtn.onclick = async () => {
       if (isSpinningWheel) return;
       // Toujours lancer une publicité vidéo récompensée pour tourner la roue
-      await adsService.showRewardedBoost();
+      const watched = await adsService.showRewardedBoost('دوران عجلة الحظ التونسية 🎡');
+      if (!watched) return;
 
       isSpinningWheel = true;
       spinWheelBtn.disabled = true;
@@ -4427,42 +4690,18 @@
         onCollect: (bizId) => {
           const biz = engine.businesses.find(b => b.id === bizId);
           if (biz && biz.level > 0) {
-            const rev = engine.getRevenue(biz, Date.now());
-            if (rev > 0) {
-              engine.dinars += rev;
-              engine.totalDinarsEarned += rev;
-              engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + rev;
-              if (engine.currentCityId) {
-                if (!engine.cityBalances) engine.cityBalances = {};
-                engine.cityBalances[engine.currentCityId] = engine.dinars;
-              }
-              if (dinarsDisplay) dinarsDisplay.innerHTML = formatCurrency(engine.dinars);
-              if (bizBalanceEl) bizBalanceEl.innerHTML = formatCompactDinars(engine.dinars);
+            if (engine.startProduction(biz.id)) {
+              if (biz.id === 'kahwa') soundEngine.playTeaCup();
+              else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
+              else soundEngine.playCoin();
+              quartierEngine.spawnGainBubble(biz.id, `⚡ خدمة...`);
+              renderDOM();
             }
-            engine.startProduction(biz.id);
-            if (biz.id === 'kahwa') soundEngine.playTeaCup();
-            else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
-            else soundEngine.playCoin();
-            quartierEngine.spawnGainBubble(biz.id, `+${formatCurrencyPlain(rev)} 🪙`);
-            renderDOM();
           } else if (biz && biz.level === 0) {
-            // Anti-softlock : travail à la journée / تفتوفة خدمة بالنهار
-            const tapWage = 1.0;
-            engine.dinars += tapWage;
-            engine.totalDinarsEarned += tapWage;
-            engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + tapWage;
-            if (engine.currentCityId) {
-              if (!engine.cityBalances) engine.cityBalances = {};
-              engine.cityBalances[engine.currentCityId] = engine.dinars;
-            }
-            if (dinarsDisplay) dinarsDisplay.innerHTML = formatCurrency(engine.dinars);
-            if (bizBalanceEl) bizBalanceEl.innerHTML = formatCompactDinars(engine.dinars);
-            soundEngine.playCoin();
-            quartierEngine.spawnGainBubble(biz.id, `+1.00 د.ت 🪙`);
-            renderDOM();
+            triggerBalanceAlert('🔑 لازم تشري المشروع قبل باش يبدا يخدم ويدخّل الفلوس !');
           }
         },
-        onHudAction: (action) => {
+        onHudAction: async (action) => {
           soundEngine.playCoin();
           if (action === 'hud_map') {
             switchTab('zones');
@@ -4477,6 +4716,8 @@
           else if (action === 'hud_event' && eventMiniGameBtn) eventMiniGameBtn.click();
           else if (action === 'hud_dilemma' && engine.activeDilemma) {
             const d = engine.activeDilemma;
+            const watched = await adsService.showRewardedBoost(`قرار الحومة : ${d.title}`);
+            if (!watched) return;
             const res = engine.resolveDilemma('A');
             if (res && res.success) {
               soundEngine.playDilemmaSuccess();
@@ -4534,9 +4775,24 @@
     updateWheelBtnState();
 
     // --- GESTION DU PROFIL & PARAMÈTRES DE L'EMPIRE ---
+    const openProfileHeaderBtn = document.getElementById('openProfileHeaderBtn');
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     const settingsModal = document.getElementById('settingsModal');
     const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
+    const googleProfileStatusBadge = document.getElementById('googleProfileStatusBadge');
+    const googleLoggedOutView = document.getElementById('googleLoggedOutView');
+    const googleLoggedInView = document.getElementById('googleLoggedInView');
+    const googleSignInOpenBtn = document.getElementById('googleSignInOpenBtn');
+    const googleLinkFormBox = document.getElementById('googleLinkFormBox');
+    const googleNameInput = document.getElementById('googleNameInput');
+    const googleEmailInput = document.getElementById('googleEmailInput');
+    const googleConfirmLinkBtn = document.getElementById('googleConfirmLinkBtn');
+    const googleCancelLinkBtn = document.getElementById('googleCancelLinkBtn');
+    const googleAvatarCircle = document.getElementById('googleAvatarCircle');
+    const googleUserNameDisplay = document.getElementById('googleUserNameDisplay');
+    const googleUserEmailDisplay = document.getElementById('googleUserEmailDisplay');
+    const googleSyncNowBtn = document.getElementById('googleSyncNowBtn');
+    const googleDisconnectBtn = document.getElementById('googleDisconnectBtn');
     const empireNameInput = document.getElementById('empireNameInput');
     const saveEmpireNameBtn = document.getElementById('saveEmpireNameBtn');
     const profileEmpireLevelBadge = document.getElementById('profileEmpireLevelBadge');
@@ -4558,9 +4814,38 @@
     const hardResetConfirmBtn = document.getElementById('hardResetConfirmBtn');
     const hardResetCancelBtn = document.getElementById('hardResetCancelBtn');
 
+    function renderGoogleProfileSection(gp) {
+      const isConnected = Boolean(gp && gp.connected);
+      if (googleProfileStatusBadge) {
+        googleProfileStatusBadge.innerText = isConnected ? '✓ مربوط بـ Google' : 'غير مربوط';
+        googleProfileStatusBadge.style.background = isConnected ? 'rgba(16, 185, 129, 0.22)' : 'rgba(100, 116, 139, 0.25)';
+        googleProfileStatusBadge.style.color = isConnected ? '#6ee7b7' : '#cbd5e1';
+        googleProfileStatusBadge.style.borderColor = isConnected ? '#10b981' : 'rgba(148, 163, 184, 0.35)';
+      }
+      if (openProfileHeaderBtn) {
+        openProfileHeaderBtn.innerText = isConnected ? '🟢' : '👤';
+        openProfileHeaderBtn.title = isConnected ? `بروفيل Google : ${gp.name}` : 'البروفيل وحساب Google';
+      }
+      if (googleLoggedOutView) googleLoggedOutView.style.display = isConnected ? 'none' : 'flex';
+      if (googleLoggedInView) googleLoggedInView.style.display = isConnected ? 'flex' : 'none';
+      if (googleLinkFormBox) googleLinkFormBox.style.display = 'none';
+
+      if (isConnected) {
+        const cleanName = gp.name || 'معلّم تونس';
+        const cleanEmail = gp.email || 'player@gmail.com';
+        if (googleUserNameDisplay) googleUserNameDisplay.innerText = cleanName;
+        if (googleUserEmailDisplay) googleUserEmailDisplay.innerText = cleanEmail;
+        if (googleAvatarCircle) {
+          const initial = cleanName.trim().charAt(0).toUpperCase() || 'G';
+          googleAvatarCircle.innerText = initial;
+        }
+      }
+    }
+
     function renderSettingsAndProfileUI() {
       if (!settingsModal) return;
       const stats = engine.getProfileStats();
+      renderGoogleProfileSection(stats.googleProfile);
       if (empireNameInput) empireNameInput.value = stats.empireName || 'إمبراطورية تونس للخدمات';
       if (profileEmpireLevelBadge) profileEmpireLevelBadge.innerText = `مستوى الإمبراطورية : ${stats.empireLevel}`;
       if (profilePlayerTitle) profilePlayerTitle.innerText = stats.playerTitle;
@@ -4590,19 +4875,89 @@
       if (hardResetConfirmBox) hardResetConfirmBox.style.display = 'none';
     }
 
-    if (openSettingsBtn) {
-      openSettingsBtn.onclick = () => {
-        renderSettingsAndProfileUI();
+    const openProfileOrSettingsModal = () => {
+      renderSettingsAndProfileUI();
+      settingsModal.scrollTop = 0;
+      const sCard = settingsModal.querySelector('.settings-modal-card');
+      if (sCard) sCard.scrollTop = 0;
+      settingsModal.classList.add('active');
+      requestAnimationFrame(() => {
         settingsModal.scrollTop = 0;
-        const sCard = settingsModal.querySelector('.settings-modal-card');
         if (sCard) sCard.scrollTop = 0;
-        settingsModal.classList.add('active');
-        requestAnimationFrame(() => {
-          settingsModal.scrollTop = 0;
-          if (sCard) sCard.scrollTop = 0;
-        });
+      });
+    };
+
+    if (openSettingsBtn) openSettingsBtn.onclick = openProfileOrSettingsModal;
+    if (openProfileHeaderBtn) openProfileHeaderBtn.onclick = openProfileOrSettingsModal;
+
+    if (googleSignInOpenBtn) {
+      googleSignInOpenBtn.onclick = () => {
+        soundEngine.playCoin();
+        // Si le SDK Google Identity Services natif est injecté par l'hôte, on le déclenche ; sinon formulaire RGPD local sécurisé
+        if (window.google?.accounts?.id?.prompt) {
+          window.google.accounts.id.prompt();
+        }
+        if (googleLinkFormBox) {
+          googleLinkFormBox.style.display = 'flex';
+          if (googleNameInput && !googleNameInput.value) {
+            googleNameInput.value = engine.empireName ? engine.empireName.replace('إمبراطورية ', '') : '';
+          }
+          if (googleNameInput) googleNameInput.focus();
+        }
       };
     }
+
+    if (googleCancelLinkBtn && googleLinkFormBox) {
+      googleCancelLinkBtn.onclick = () => {
+        googleLinkFormBox.style.display = 'none';
+      };
+    }
+
+    if (googleConfirmLinkBtn) {
+      googleConfirmLinkBtn.onclick = () => {
+        const nameVal = (googleNameInput && googleNameInput.value.trim()) || 'معلّم تونس تايكون';
+        const emailVal = (googleEmailInput && googleEmailInput.value.trim()) || 'player.tounes@gmail.com';
+        if (!emailVal.includes('@')) {
+          triggerBalanceAlert('📧 الرجاء إدخال بريد Google صحيح (مثال: name@gmail.com)');
+          return;
+        }
+        const linked = engine.connectGoogleProfile({ name: nameVal, email: emailVal });
+        const serialized = JSON.stringify(engine.exportState());
+        localStorage.setItem('tounes_tycoon_save', serialized);
+        localStorage.setItem(`tounes_tycoon_google_backup_${linked.email}`, serialized);
+        soundEngine.playMilestoneFanfare();
+        renderSettingsAndProfileUI();
+        showFeedbackToast(`✅ تمّ ربط حساب Google (${linked.email}) وحفظ تقدّمك بأمان !`, '👤');
+      };
+    }
+
+    if (googleSyncNowBtn) {
+      googleSyncNowBtn.onclick = () => {
+        if (engine.googleProfile && engine.googleProfile.connected) {
+          engine.googleProfile.lastSyncAt = Date.now();
+          const serialized = JSON.stringify(engine.exportState());
+          localStorage.setItem('tounes_tycoon_save', serialized);
+          localStorage.setItem(`tounes_tycoon_google_backup_${engine.googleProfile.email}`, serialized);
+          soundEngine.playCoin();
+          showFeedbackToast('☁️ تمّت مزامنة وحفظ تقدّم الإمبراطورية مع حساب Google بنجاح ✓', '☁️');
+        }
+      };
+    }
+
+    if (googleDisconnectBtn) {
+      googleDisconnectBtn.onclick = () => {
+        const oldEmail = engine.googleProfile?.email;
+        if (oldEmail) {
+          localStorage.removeItem(`tounes_tycoon_google_backup_${oldEmail}`);
+        }
+        engine.disconnectGoogleProfile();
+        localStorage.setItem('tounes_tycoon_save', JSON.stringify(engine.exportState()));
+        soundEngine.playCoin();
+        renderSettingsAndProfileUI();
+        showFeedbackToast('🔓 تمّ فصل حساب Google وحذف بيانات الربط محلياً (RGPD)', '🔓');
+      };
+    }
+    renderGoogleProfileSection(engine.googleProfile);
 
     if (closeSettingsModalBtn) {
       closeSettingsModalBtn.onclick = () => {
@@ -4721,26 +5076,9 @@
 
     const closeTobaccoModalBtn = document.getElementById('closeTobaccoModalBtn');
     const closeTobaccoModalTopBtn = document.getElementById('closeTobaccoModalTopBtn');
-    const tobaccoTipBtn = document.getElementById('tobaccoTipBtn');
 
     if (closeTobaccoModalBtn) closeTobaccoModalBtn.onclick = () => { soundEngine.playCoin(); closeTobaccoModalUI(); };
     if (closeTobaccoModalTopBtn) closeTobaccoModalTopBtn.onclick = () => { soundEngine.playCoin(); closeTobaccoModalUI(); };
-    if (tobaccoTipBtn) {
-      tobaccoTipBtn.onclick = () => {
-        const bonus = 2.5;
-        engine.dinars += bonus;
-        engine.totalDinarsEarned += bonus;
-        engine.lifetimeDinarsEarned = (engine.lifetimeDinarsEarned || 0) + bonus;
-        if (engine.currentCityId) {
-          if (!engine.cityBalances) engine.cityBalances = {};
-          engine.cityBalances[engine.currentCityId] = engine.dinars;
-        }
-        soundEngine.playCoin();
-        triggerBalanceAlert('🚬 صحة بالشفاء ! خذيت تفتوفة +2.50 د.ت من القمريڨ 🪙');
-        renderDOM();
-        closeTobaccoModalUI();
-      };
-    }
 
     if (balanceHeroBank) balanceHeroBank.onclick = () => { soundEngine.playCoin(); openBankModalUI(); };
     const closeBankModalBtn = document.getElementById('closeBankModalBtn');
@@ -5370,7 +5708,9 @@
         const claimableQuests = engine.checkQuests();
         if (claimableQuests.length > 0 && claimQuestBtn) {
           const topQuest = claimableQuests[0];
-          claimQuestBtn.onclick = () => {
+          claimQuestBtn.onclick = async () => {
+            const watched = await adsService.showRewardedBoost(`مكافأة المهمة : ${topQuest.titleEarned || 'لقب جديد'} 🏆`);
+            if (!watched) return;
             const claimed = engine.claimQuest(topQuest.id);
             if (claimed) {
               soundEngine.playEventFanfare();

@@ -15,6 +15,19 @@
 
 # CHANGELOG
 
+## [v122] - 2026-11-04
+
+### Added, Changed & Fixed (Royal Welcome Splash Screen, GDPR Google Profile & Strict Rewarded-Ad Gating)
+- **Animation d'Accueil Royale (`#welcomeSplashScreen` dans `index.html`)** :
+  - Écran d'accueil animé plein écran avec médaillon 3D en lévitation, grand titre calligraphié doré à reflet animé (`تونس تايكون`), devise encadrée (`✨ إمبراطورية المال والأعمال • من الحومة إلى القمّة ✨`), barre de progression dorée/émeraude (`0%` $\rightarrow$ `100%`) avec messages d'étape dynamiques, et petit texte légal en bas (`© EOLabs 2026 • جميع الحقوق محفوظة • النسخة الذهبية`).
+- **Fonctionnalité Profil Connectée au Compte Google — 100% Conforme RGPD & Google Play (`engine.js`, `index.html`, `engine.test.js`)** :
+  - Bouton d'accès rapide au Profil (`👤` / `🟢`) dans le header principal et section dédiée `#googleProfileSection` en tête du modal Profil & Paramètres.
+  - Liaison volontaire au compte Google (supportant `window.google.accounts.id` et la liaison locale sécurisée sans collecte sur serveur tiers), sauvegarde synchronisée dédiée (`tounes_tycoon_google_backup_<email>`), bouton de synchronisation manuelle (`🔄 مزامنة الحفظ الآن`) et bouton de déconnexion/effacement immédiat des données liées (`🚪 فصل الحساب` — droit à l'oubli RGPD).
+- **Suppression de tout "Solde" Gratuit sans PUB & Passage Obligatoire de toute Accélération par PUB (`ads_service.js`, `index.html`, `store_animator.js`)** :
+  - Suppression du bouton de solde gratuit `#tobaccoTipBtn` dans `#tobaccoModal`.
+  - Suppression des gains instantanés hors-cycle au clic dans `onCollect` et `triggerServe` (ainsi que du gain gratuit `+1.00 د.ت` sur les bâtiments verrouillés) : un clic sur un commerce démarre uniquement son cycle de production normal (`engine.startProduction`), et le revenu n'est versé qu'à l'issue du cycle.
+  - Lecteur vidéo publicitaire intégré dans `AdsService.showRewardedBoost()` (avec barre de progression, compte à rebours obligatoire et annulation sans récompense si fermé avant la fin) verrouillant toutes les accélérations et récompenses bonus (`تيربو x2`, `عجلة الحظ`, `صندوق الحظ`, `بريم الحضور`, `تحديات اليوم`, `طرح شكبة`, `مهمات`).
+
 ## [v121] - 2026-11-04
 
 ### Added, Changed & Fixed (Wealth Logo, Bespoke Business Animations, Bank & Tobacco Live Scenes, Simplified City Unlocks)

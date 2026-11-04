@@ -895,6 +895,14 @@ export class TycoonEngine {
 
     // Profil Joueur & Empire
     this.empireName = 'إمبراطورية تونس للخدمات';
+    this.googleProfile = {
+      connected: false,
+      name: '',
+      email: '',
+      picture: '',
+      linkedAt: null,
+      lastSyncAt: null
+    };
 
     // Statistiques pour les quêtes
     this.manualServesCount = 0;
@@ -2447,6 +2455,39 @@ export class TycoonEngine {
     return true;
   }
 
+  // Connexion & liaison conforme RGPD / Google Play au compte Google (100% volontaire & stockage local sous contrôle utilisateur)
+  connectGoogleProfile(profileData = {}, now = Date.now()) {
+    const cleanName = typeof profileData.name === 'string' && profileData.name.trim().length > 0
+      ? profileData.name.trim().slice(0, 40)
+      : 'معلّم تونس تايكون';
+    const cleanEmail = typeof profileData.email === 'string' && profileData.email.trim().length > 0
+      ? profileData.email.trim().slice(0, 64)
+      : 'player@gmail.com';
+    const cleanPic = typeof profileData.picture === 'string' ? profileData.picture.trim() : '';
+
+    this.googleProfile = {
+      connected: true,
+      name: cleanName,
+      email: cleanEmail,
+      picture: cleanPic,
+      linkedAt: this.googleProfile?.linkedAt || now,
+      lastSyncAt: now
+    };
+    return this.googleProfile;
+  }
+
+  disconnectGoogleProfile() {
+    this.googleProfile = {
+      connected: false,
+      name: '',
+      email: '',
+      picture: '',
+      linkedAt: null,
+      lastSyncAt: null
+    };
+    return true;
+  }
+
   
   getTotalFortune() {
     let sum = (this.dinars || 0) + (this.bankBalance || 0);
@@ -2511,6 +2552,7 @@ export class TycoonEngine {
 
     return {
       empireName: this.empireName || 'إمبراطورية تونس للخدمات',
+      googleProfile: this.googleProfile || { connected: false, name: '', email: '', picture: '', linkedAt: null, lastSyncAt: null },
       playerTitle: this.playerTitle || 'مواطن يلوّج على مشروع',
       empireLevel,
       overallProgressPct,
@@ -2598,6 +2640,7 @@ export class TycoonEngine {
   exportState() {
     return {
       empireName: this.empireName || 'إمبراطورية تونس للخدمات',
+      googleProfile: this.googleProfile || { connected: false, name: '', email: '', picture: '', linkedAt: null, lastSyncAt: null },
       createdAt: this.createdAt || Date.now(),
       totalPlayTimeSeconds: this.totalPlayTimeSeconds || 0,
       dinars: this.dinars,
@@ -2653,6 +2696,16 @@ export class TycoonEngine {
   loadState(state) {
     if (!state) return;
     this.empireName = typeof state.empireName === 'string' && state.empireName.trim().length > 0 ? state.empireName.trim() : this.empireName;
+    if (state.googleProfile && typeof state.googleProfile === 'object') {
+      this.googleProfile = {
+        connected: Boolean(state.googleProfile.connected),
+        name: typeof state.googleProfile.name === 'string' ? state.googleProfile.name : '',
+        email: typeof state.googleProfile.email === 'string' ? state.googleProfile.email : '',
+        picture: typeof state.googleProfile.picture === 'string' ? state.googleProfile.picture : '',
+        linkedAt: state.googleProfile.linkedAt ?? null,
+        lastSyncAt: state.googleProfile.lastSyncAt ?? null
+      };
+    }
     this.createdAt = state.createdAt ?? this.createdAt;
     this.totalPlayTimeSeconds = state.totalPlayTimeSeconds ?? this.totalPlayTimeSeconds;
     this.dinars = state.dinars ?? this.dinars;

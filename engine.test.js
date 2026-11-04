@@ -558,6 +558,26 @@ test('Bank account: deposits, withdrawals and double balance management (souyoul
   assert.equal(engine.withdrawFromBank(9999), false);
 });
 
+test('Google Profile connection, serialization and GDPR disconnect', () => {
+  const engine = new TycoonEngine();
+  assert.equal(engine.googleProfile.connected, false);
+
+  const linked = engine.connectGoogleProfile({ name: 'أمين التونسي', email: 'amine@gmail.com' }, 1700000000000);
+  assert.equal(linked.connected, true);
+  assert.equal(linked.name, 'أمين التونسي');
+  assert.equal(linked.email, 'amine@gmail.com');
+
+  const saved = engine.exportState();
+  const restored = new TycoonEngine(saved);
+  assert.equal(restored.googleProfile.connected, true);
+  assert.equal(restored.googleProfile.email, 'amine@gmail.com');
+
+  restored.disconnectGoogleProfile();
+  assert.equal(restored.googleProfile.connected, false);
+  assert.equal(restored.googleProfile.email, '');
+});
+
+
 
 
 

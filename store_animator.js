@@ -508,14 +508,16 @@ export class CanvasStoreEngine {
       }
     }
 
-    // 2. Tap dans la scène = démarrer / accélérer la production réelle Tycoon
+    // 2. Tap dans la scène = démarrer le cycle de production si à l'arrêt ; toute accélération passe par PUB
     const biz = this.getBiz();
     if (biz && biz.level > 0) {
       const wasRunning = biz.hasManager || biz.isProducing;
-      if (this.onServeClick) {
-        this.onServeClick(this.bizId);
-      } else if (this.engine.startProduction) {
-        this.engine.startProduction(this.bizId);
+      if (!wasRunning) {
+        if (this.onServeClick) {
+          this.onServeClick(this.bizId);
+        } else if (this.engine.startProduction) {
+          this.engine.startProduction(this.bizId);
+        }
       }
       const archetype = this.getBizArchetype(this.bizId);
       if (archetype === 'industrial_belt' && this.conveyorItems.length < 6) {
@@ -527,11 +529,10 @@ export class CanvasStoreEngine {
           speed: 95
         });
       }
-      const rev = this.engine.getRevenue(biz, Date.now());
       const label = !wasRunning
-        ? `⚡ إنتاج: +${this.formatNumber(rev)} د.ت`
-        : `⚡ تيربو! (${Math.round(this.getCycleProgressRatio(biz) * 100)}%)`;
-      this.pushMoneyPuff({ x: clickX, y: clickY - 10, vy: -38, text: label, life: 0.75, maxLife: 0.75 });
+        ? `⚡ انطلق الإنتاج (${Math.round((biz.cycleDurationMs || 1000) / 1000)}s)`
+        : `🎬 للتسريع x2 انزل على زرّ التيربو (إشهار)`;
+      this.pushMoneyPuff({ x: clickX, y: clickY - 10, vy: -38, text: label, life: 0.85, maxLife: 0.85 });
     }
   }
 
@@ -6829,9 +6830,9 @@ export class QuartierAnimator {
       bizId: null
     });
 
-    // Bouton Boost Turbo x2 à côté
+    // Bouton Boost Turbo x2 à côté (uniquement via PUB)
     const boostX = mapBtnX - 74;
-    draw3DOrbIcon(boostX, topY, '🚀', o.adBoostActive ? '#059669' : '#0284c7', o.adBoostActive ? '#6ee7b7' : '#7dd3fc', o.adBoostActive ? 'x2' : '', '#10b981');
+    draw3DOrbIcon(boostX, topY, '🚀', o.adBoostActive ? '#059669' : '#0284c7', o.adBoostActive ? '#6ee7b7' : '#7dd3fc', o.adBoostActive ? 'x2' : '🎬', '#10b981');
     this.interactiveHitboxes.push({
       x: boostX - r - 8,
       y: topY - r - 8,
