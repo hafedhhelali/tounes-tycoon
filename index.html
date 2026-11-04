@@ -1407,7 +1407,8 @@
     #bizDetailModal { padding: 4px 6px; }
     .modal-card.biz-immersive {
       position: relative;
-      display: block;
+      display: flex;
+      flex-direction: column;
       width: 100%;
       max-width: 940px;
       height: 96vh;
@@ -1421,16 +1422,15 @@
       border: 2px solid var(--gold);
       background: #090d16;
     }
-    .biz-scene { position: absolute; inset: 0; z-index: 0; }
+    /* HUD haut / scène / HUD bas empilés : ZÉRO chevauchement sur l'animation */
+    .biz-scene { position: relative; order: 2; flex: 1 1 auto; min-height: 0; z-index: 0; }
     .biz-scene canvas { display: block; width: 100%; height: 100%; cursor: pointer; touch-action: manipulation; }
     .biz-hud-top, .biz-hud-bottom {
-      position: absolute; left: 0; right: 0; z-index: 3;
+      position: relative; flex: 0 0 auto; z-index: 3;
       display: flex; align-items: center; gap: 8px; padding: 6px 10px;
-      pointer-events: none;
     }
-    .biz-hud-top > *, .biz-hud-bottom > * { pointer-events: auto; }
-    .biz-hud-top { top: 0; background: linear-gradient(180deg, rgba(2,6,23,0.88) 0%, rgba(2,6,23,0.55) 70%, rgba(2,6,23,0) 100%); padding-bottom: 14px; }
-    .biz-hud-bottom { bottom: 0; background: linear-gradient(0deg, rgba(2,6,23,0.92) 0%, rgba(2,6,23,0.7) 75%, rgba(2,6,23,0) 100%); padding-top: 14px; }
+    .biz-hud-top { order: 1; background: rgba(2,6,23,0.95); border-bottom: 1px solid rgba(251,191,36,0.25); }
+    .biz-hud-bottom { order: 3; background: rgba(2,6,23,0.96); border-top: 1px solid rgba(251,191,36,0.25); }
     .biz-hud-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 0 1 36%; max-width: 360px; overflow: hidden; }
     .biz-hud-icon { font-size: 24px; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)); }
     .biz-hud-names { min-width: 0; flex: 1; overflow: hidden; }
@@ -2959,7 +2959,7 @@
           <div style="background: rgba(30, 41, 59, 0.7); padding: 5px 4px; border-radius: 6px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
             <div style="font-size: 15px;">🚬</div>
             <div style="font-size: 9.5px; font-weight: 800; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">دخّان ووقيد</div>
-            <div style="font-size: 9.5px; font-weight: 900; color: #34d399;">4.50 د.ت</div>
+            <div style="font-size: 9.5px; font-weight: 900; color: #34d399;">10.00 د.ت</div>
           </div>
           <div style="background: rgba(30, 41, 59, 0.7); padding: 5px 4px; border-radius: 6px; text-align: center; border: 1px solid rgba(255,255,255,0.06);">
             <div style="font-size: 15px;">📰</div>
@@ -3399,11 +3399,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=122';
-    import { soundEngine } from './audio.js?v=122';
+    import { TycoonEngine } from './engine.js?v=123';
+    import { soundEngine } from './audio.js?v=123';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=122';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=122';
+    import { AdsService } from './ads_service.js?v=123';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=123';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -4663,11 +4663,11 @@
           openBizDetailModalUI(bizId);
         },
         onUpgrade: (bizId) => {
-          let biz = engine.businesses.find(b => b.id === bizId);
-          // Si le commerce appartient à la ville actuelle mais n'était pas encore instancié
-          if (!biz && engine.currentCityId) {
-            engine.initCityBusinesses(engine.currentCityId);
-            biz = engine.businesses.find(b => b.id === bizId);
+          // Instanciation garantie du commerce (zéro projet "inachetable" silencieux)
+          const biz = engine.getOrEnsureBusiness(bizId);
+          if (!biz) {
+            triggerBalanceAlert(engine.getBusinessLockDiagnosis(bizId));
+            return;
           }
           if (biz) {
             const oldLevel = biz.level;
@@ -4682,13 +4682,12 @@
               renderDOM();
               updateSynergiesUI();
             } else {
-              const manque = Math.max(0, engine.getCost(biz) - engine.dinars);
-              triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تفتح المشروع ! 💰`);
+              triggerBalanceAlert(engine.getBusinessLockDiagnosis(biz.id));
             }
           }
         },
         onCollect: (bizId) => {
-          const biz = engine.businesses.find(b => b.id === bizId);
+          const biz = engine.getOrEnsureBusiness(bizId);
           if (biz && biz.level > 0) {
             if (engine.startProduction(biz.id)) {
               if (biz.id === 'kahwa') soundEngine.playTeaCup();
@@ -4698,7 +4697,7 @@
               renderDOM();
             }
           } else if (biz && biz.level === 0) {
-            triggerBalanceAlert('🔑 لازم تشري المشروع قبل باش يبدا يخدم ويدخّل الفلوس !');
+            triggerBalanceAlert(engine.getBusinessLockDiagnosis(biz.id));
           }
         },
         onHudAction: async (action) => {
@@ -5324,6 +5323,17 @@
       // 1. Staff Slots
       if (bizDetailStaffList) {
         bizDetailStaffList.innerHTML = '';
+        // Travailleur de base permanent : chaque projet compte au moins 1 employé dès le départ
+        const baseCard = document.createElement('div');
+        baseCard.style.cssText = 'background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 7px; padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;';
+        baseCard.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
+            <span style="font-size: 16px;">👷</span>
+            <div style="font-size: 11px; font-weight: 900; color: #f8fafc; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${(detail.baseWorker && detail.baseWorker.name) || 'عون الخدمة القار'}</div>
+          </div>
+          <span style="font-size: 10.5px; font-weight: 900; color: #34d399; flex-shrink: 0;">يخدم ✓</span>
+        `;
+        bizDetailStaffList.appendChild(baseCard);
         detail.staffSlots.forEach((slot, idx) => {
           const item = document.createElement('div');
           item.style.cssText = `background: ${slot.hired ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.3)'}; border: 1px solid ${slot.hired ? '#10b981' : 'rgba(255,255,255,0.08)'}; border-radius: 7px; padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;`;

@@ -368,6 +368,7 @@ export class CanvasStoreEngine {
     let isSeated = false;
     let needsWaiterService = false;
 
+    let groupSize = 1;
     if (archetype === 'arcade_billiard') {
       activityType = slotIdx < 2 ? 'billiard' : 'console';
       activityDuration = 2.4;
@@ -382,8 +383,9 @@ export class CanvasStoreEngine {
       needsWaiterService = true;
     } else if (archetype === 'agency_desks') {
       activityType = 'ordering_desk';
-      activityDuration = 1.45;
+      activityDuration = 1.55;
       ticketIcon = '📄'; // Partent avec des papiers / contrats / billets !
+      groupSize = 1 + Math.floor(Math.random() * 5); // 1 à 5 personnes par réservation
     } else if (archetype === 'supermarket_checkout') {
       activityType = 'checkout_cart';
       activityDuration = 0.6;
@@ -408,6 +410,7 @@ export class CanvasStoreEngine {
       activityDuration,
       activityTimer: 0,
       steamTimer: 0,
+      groupSize,
       hasCart,
       isSeated,
       needsWaiterService,
@@ -427,10 +430,53 @@ export class CanvasStoreEngine {
     this.customers.push(customer);
   }
 
+  getUnitBasePrice(bizId) {
+    const UNIT_PRICES = {
+      kahwa: 1.8,
+      tobacco_kiosk: 10.0,
+      boucherie: 30.0,
+      croisiere_mer: 100.0,
+      agence_voyages: 500.0,
+      fricasse: 1.2,
+      taxi_collectif: 2.0,
+      kaskrout: 3.5,
+      salon_de_the: 4.5,
+      salle_de_jeux: 5.0,
+      attariya: 6.5,
+      librairie: 6.5,
+      emballage_dattes: 12.0,
+      patisserie: 14.0,
+      produits_laitiers: 16.0,
+      superette: 18.0,
+      usine_conserves: 18.0,
+      fruits_de_mer: 22.0,
+      restaurant: 28.0,
+      vente_vetements: 45.0,
+      supermarche: 65.0,
+      centre_commercial: 75.0,
+      vente_montres: 85.0,
+      showroom_auto: 120.0,
+      promoteur_immobilier: 140.0,
+      hotel: 160.0,
+      tayaran_el_ghzela: 450.0
+    };
+    return UNIT_PRICES[bizId] || 10.0;
+  }
+
   triggerPayment(customer, isProducing) {
     const biz = this.getBiz();
-    const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
-    const gainText = cycleRevenue > 0 ? ('+' + this.formatNumber(cycleRevenue) + ' DT') : '+د.ت';
+    const lvl = biz && biz.level > 0 ? biz.level : 1;
+    // Petit pourcentage par niveau (+1.5% par niveau) pour garder des prix réalistes
+    const levelScale = 1 + (lvl - 1) * 0.015;
+    const baseUnit = this.getUnitBasePrice(this.bizId);
+    const groupSize = (customer && customer.groupSize) ? customer.groupSize : 1;
+    const isPerPersonBiz = (this.bizId === 'croisiere_mer' || this.bizId === 'agence_voyages');
+    const finalPrice = baseUnit * levelScale * (isPerPersonBiz ? groupSize : 1);
+    const formattedPrice = finalPrice < 10 ? finalPrice.toFixed(2) : (finalPrice < 100 ? finalPrice.toFixed(1) : Math.round(finalPrice).toString());
+    const gainText = isPerPersonBiz
+      ? `👥${groupSize} • +${formattedPrice} د.ت`
+      : `+${formattedPrice} د.ت`;
+
     this.registerFlash = 1.0;
     const archetype = this.getBizArchetype(this.bizId);
     if (archetype === 'industrial_belt' || archetype === 'retail_shop' || archetype === 'food_counter') {
@@ -445,15 +491,19 @@ export class CanvasStoreEngine {
       }
     }
 
-    const px = customer ? (customer.x - 4) : 76;
-    const py = customer ? (customer.y - 46) : 104;
+    const px = customer ? (customer.x + 8) : 76;
+    const py = customer ? (customer.y - 44) : 104;
+    // Limiter le nombre de puffs simultanés pour zéro chevauchement de texte
+    if (this.moneyPuffs.length >= 2) {
+      this.moneyPuffs.shift();
+    }
     this.pushMoneyPuff({
       x: px,
       y: py,
-      vy: -36,
-      text: '✨ ' + gainText + ' 🪙',
-      life: 0.95,
-      maxLife: 0.95
+      vy: -28,
+      text: gainText,
+      life: 0.85,
+      maxLife: 0.85
     });
 
     const count = isProducing ? 14 : 8;
@@ -804,339 +854,204 @@ export class CanvasStoreEngine {
     ctx.restore();
   }
 
-  // --- ACCESSOIRES DE FOND RICHES SELON LE MÉTIER ---
+  // --- ACCESSOIRES DE FOND RICHES SELON LE MÉTIER (ZÉRO TEXTE ENCOMBRANT SUR LES MURS) ---
   drawStoreProps(ctx, bizId, now, w, h) {
     ctx.save();
     const timeSec = now / 1000;
 
     if (bizId === 'kahwa') {
       ctx.fillStyle = '#78350f';
-      ctx.fillRect(95, 46, w - 115, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
       ctx.fillStyle = '#b45309';
-      ctx.fillRect(95, 82, w - 115, 6);
-      ctx.font = '16px serif';
-      for (let x = 110; x < w - 30; x += 32) {
-        ctx.fillText('🍵', x, 44);
-        ctx.fillText('☕', x, 80);
+      ctx.fillRect(104, 78, w - 130, 5);
+      ctx.font = '14px serif';
+      for (let x = 114; x < w - 36; x += 34) {
+        ctx.fillText('🍵', x, 45);
+        ctx.fillText('☕', x, 75);
       }
       ctx.fillStyle = '#451a03';
       ctx.beginPath();
-      ctx.arc(58, 50, 15, 0, Math.PI * 2);
+      ctx.arc(54, 48, 12, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 9px sans-serif';
-      ctx.fillText('🕐', 51, 54);
-
-      // Table de Chkobba & Chicha traditionnelle
-      const tableX = w - 86;
-      const tableY = 34;
-      ctx.fillStyle = '#1c1917';
-      ctx.fillRect(tableX, tableY, 74, 46);
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.8;
-      ctx.strokeRect(tableX, tableY, 74, 46);
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 9px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('طرح شكبة 🃏', tableX + 37, tableY + 14);
-      ctx.font = '11px sans-serif';
-      ctx.fillText('♠️♥️ 🍵 شيشة 💨', tableX + 37, tableY + 30);
-      ctx.fillStyle = '#fde047';
-      ctx.font = '8px "Cairo", sans-serif';
-      ctx.fillText('تاي منعنع بالبندق', tableX + 37, tableY + 41);
-      ctx.textAlign = 'left';
-    } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
-      // Étagères d'ingrédients authentiques (baguettes de pain chaud, thon, olives, fromage)
-      ctx.fillStyle = '#854d0e';
-      ctx.fillRect(105, 50, w - 125, 6);
-      ctx.fillStyle = '#a16207';
-      ctx.fillRect(105, 86, w - 125, 6);
-      ctx.font = '16px serif';
-      for (let x = 118; x < w - 25; x += 34) {
-        ctx.fillText('🥖', x, 48);
-        ctx.fillText('🥚', x, 84);
-      }
-
-      // Ardoise menu suspendue au mur du fond (calée haut pour zéro chevauchement avec le caissier)
-      const menuTitle = bizId === 'fricasse' ? 'فريكاسي وبمبلوني' : 'كسكروت عياري';
-      const menuL1 = bizId === 'fricasse' ? 'بمبلوني سخون 🍩' : 'تنّ وزيتون 🫒';
-      const menuL2 = bizId === 'fricasse' ? 'عسل وسكّر ✨' : 'عظام مروبة ✨';
-
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(40, 18, 54, 40);
-      ctx.strokeStyle = '#ca8a04';
       ctx.lineWidth = 1.5;
-      ctx.strokeRect(40, 18, 54, 40);
-      ctx.fillStyle = '#fde047';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(menuTitle, 67, 30);
-      ctx.font = '7.5px sans-serif';
-      ctx.fillStyle = '#38bdf8';
-      ctx.fillText(menuL1, 67, 42);
-      ctx.fillStyle = '#34d399';
-      ctx.fillText(menuL2, 67, 53);
-      ctx.textAlign = 'left';
-
-      // Bocaux et ingrédients nobles (olives, câpres, huile d'olive)
+      ctx.stroke();
+      ctx.font = '10px sans-serif';
+      ctx.fillText('🕐', 48, 52);
+    } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
+      ctx.fillStyle = '#854d0e';
+      ctx.fillRect(105, 50, w - 130, 5);
+      ctx.fillStyle = '#a16207';
+      ctx.fillRect(105, 80, w - 130, 5);
       ctx.font = '14px serif';
-      ctx.fillText('🫒', w - 40, 44);
-      ctx.fillText('🥫', w - 40, 60);
-      ctx.fillText('🥖', w - 40, 76);
+      for (let x = 118; x < w - 34; x += 34) {
+        ctx.fillText('🥖', x, 47);
+        ctx.fillText(bizId === 'fricasse' ? '🍩' : '🫒', x, 77);
+      }
     } else if (bizId === 'patisserie') {
       ctx.fillStyle = '#581c87';
-      ctx.fillRect(105, 50, w - 125, 6);
+      ctx.fillRect(105, 50, w - 130, 5);
       ctx.fillStyle = '#6b21a8';
-      ctx.fillRect(105, 86, w - 125, 6);
-      ctx.font = '16px serif';
-      for (let x = 118; x < w - 25; x += 34) {
-        ctx.fillText('🍯', x, 48);
-        ctx.fillText('🥐', x, 84);
+      ctx.fillRect(105, 80, w - 130, 5);
+      ctx.font = '14px serif';
+      for (let x = 118; x < w - 34; x += 34) {
+        ctx.fillText('🍯', x, 47);
+        ctx.fillText('🥐', x, 77);
       }
       const glow = Math.sin(timeSec * 2) * 2;
-      ctx.strokeStyle = '#eab308';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(68, 18);
-      ctx.lineTo(68, 38);
-      ctx.stroke();
-      ctx.font = '20px serif';
-      ctx.fillText('✨', 57, 50 + glow);
+      ctx.font = '16px serif';
+      ctx.fillText('✨', 54, 48 + glow);
     } else if (bizId === 'attariya') {
-      // Étagères d'épicerie tunisienne authentique garnies de produits variés du quotidien
       ctx.fillStyle = '#78350f';
-      ctx.fillRect(96, 44, w - 116, 5);
-      ctx.fillRect(96, 78, w - 116, 5);
-
-      // Étagère du haut : harissa diari, conserves de thon, café, semoule/couscous, sucre
+      ctx.fillRect(100, 48, w - 126, 5);
+      ctx.fillRect(100, 78, w - 126, 5);
       const topItems = ['🥫', '🌶️', '☕', '🌾', '🧂', '🧀'];
-      let topIdx = 0;
-      for (let x = 104; x < w - 32; x += 28) {
-        ctx.font = '15px serif';
-        ctx.fillText(topItems[topIdx % topItems.length], x, 42);
-        topIdx++;
-      }
-
-      // Étagère du bas : bouteilles d'huile d'olive, packs de lait carton, savon vert Akhdhar, eau minérale
       const botItems = ['🫒', '📦', '🧼', '🧀', '🫒', '📦'];
-      let botIdx = 0;
-      for (let x = 104; x < w - 32; x += 28) {
-        ctx.font = '15px serif';
-        ctx.fillText(botItems[botIdx % botItems.length], x, 76);
-        botIdx++;
+      let idx = 0;
+      for (let x = 110; x < w - 34; x += 30) {
+        ctx.font = '14px serif';
+        ctx.fillText(topItems[idx % topItems.length], x, 45);
+        ctx.fillText(botItems[idx % botItems.length], x, 75);
+        idx++;
       }
-
-      // Coin produits frais / pain baguette
-      ctx.font = '15px serif';
-      ctx.fillText('🥖', 76, 48);
-      ctx.fillText('🥚', 76, 76);
-
-      // Étagère latérale de produits d'épicerie authentiques
-      const slateX = w - 82;
-      const slateY = 24;
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(slateX, slateY + 24, 70, 5);
-      ctx.fillRect(slateX, slateY + 50, 70, 5);
-      ctx.font = '15px serif';
-      ctx.fillText('🫒', slateX + 6, slateY + 20);
-      ctx.fillText('🥫', slateX + 28, slateY + 20);
-      ctx.fillText('🧀', slateX + 50, slateY + 20);
-      ctx.fillText('🧂', slateX + 6, slateY + 46);
-      ctx.fillText('🍯', slateX + 28, slateY + 46);
-      ctx.fillText('☕', slateX + 50, slateY + 46);
-
-      // Bocaux et produits variés
-      ctx.font = '15px serif';
-      ctx.fillText('🫒', slateX - 22, 38);
-      ctx.fillText('🧀', slateX - 22, 60);
-      ctx.fillText('🥫', slateX - 22, 82);
     } else if (bizId === 'usine_conserves') {
       ctx.fillStyle = '#334155';
-      ctx.fillRect(105, 48, w - 125, 6);
-      ctx.fillRect(105, 84, w - 125, 6);
-      ctx.font = '16px serif';
-      for (let x = 118; x < w - 25; x += 32) {
-        ctx.fillText('🥫', x, 46);
-        ctx.fillText('🫒', x, 82);
-      }
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.arc(60, 50, 14, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.font = '12px sans-serif';
-      ctx.fillText('⚙️', 54, 54);
-    } else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier') {
-      const glassW = w - 120;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
-      ctx.fillRect(100, 32, glassW, 60);
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(100, 32, glassW, 60);
-
-      ctx.font = '20px serif';
-      const planeX = 110 + ((timeSec * 30) % (glassW - 30));
-      ctx.fillText('🛫', planeX, 72);
+      ctx.fillRect(105, 48, w - 130, 5);
+      ctx.fillRect(105, 78, w - 130, 5);
       ctx.font = '14px serif';
-      ctx.fillText('☁️', 120, 50);
-      ctx.fillText('☁️', glassW + 50, 48);
-
-      // Écran d'affichage des vols calé avec précision sans débordement
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(8, 38, 76, 38);
+      for (let x = 118; x < w - 34; x += 34) {
+        ctx.fillText('🥫', x, 45);
+        ctx.fillText('🫒', x, 75);
+      }
+    } else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier') {
+      const glassW = w - 130;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+      ctx.fillRect(102, 34, glassW, 52);
       ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(8, 38, 76, 38);
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 8px monospace';
-      ctx.fillText('✈ TUNIS', 12, 49);
-      ctx.fillText('✈ PARIS', 12, 60);
-      ctx.fillText('✈ DUBAI', 12, 71);
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(102, 34, glassW, 52);
+      ctx.font = '18px serif';
+      const planeX = 112 + ((timeSec * 28) % Math.max(40, glassW - 34));
+      ctx.fillText(bizId === 'showroom_auto' ? '🏎️' : (bizId === 'promoteur_immobilier' ? '🏙️' : '🛫'), planeX, 68);
     } else if (bizId === 'fruits_de_mer') {
-      // Poissonnerie / Marché aux poissons avec étalage glacé de poissons frais
       ctx.fillStyle = '#0284c7';
-      ctx.fillRect(100, 48, w - 120, 6);
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const fishItems = ['🐟', '🦐', '🦑', '🦀', '🐟', '🦐'];
       fishItems.forEach((f, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(f, 112 + idx * 32, 46);
-        ctx.fillText(fishItems[(idx + 2) % fishItems.length], 112 + idx * 32, 82);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(f, 114 + idx * 32, 45);
+          ctx.fillText(fishItems[(idx + 2) % fishItems.length], 114 + idx * 32, 75);
+        }
       });
-      // Panneau criée aux poissons
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(40, 20, 54, 40);
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(40, 20, 54, 40);
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('حوت المارشي 🐟', 67, 34);
-      ctx.font = '7.5px sans-serif';
-      ctx.fillStyle = '#67e8f9';
-      ctx.fillText('طازج من البحر', 67, 48);
-      ctx.textAlign = 'left';
     } else if (bizId === 'librairie') {
-      // Bibliothèque & librairie : rangées de livres, cahiers, stylos et romans
       ctx.fillStyle = '#78350f';
-      ctx.fillRect(100, 46, w - 120, 6);
-      ctx.fillRect(100, 82, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const bookItems = ['📚', '📖', '✏️', '📰', '📐', '📚'];
       bookItems.forEach((b, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(b, 112 + idx * 32, 44);
-        ctx.fillText(bookItems[(idx + 1) % bookItems.length], 112 + idx * 32, 80);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(b, 114 + idx * 32, 45);
+          ctx.fillText(bookItems[(idx + 1) % bookItems.length], 114 + idx * 32, 75);
+        }
       });
-      // Tableau d'affichage culturel
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(40, 20, 54, 40);
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(40, 20, 54, 40);
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('ركن المطالعة 📚', 67, 34);
-      ctx.font = '7.5px sans-serif';
-      ctx.fillStyle = '#fde047';
-      ctx.fillText('كتب وأدوات مدرسية', 67, 48);
-      ctx.textAlign = 'left';
     } else if (bizId === 'boucherie') {
-      // Boucherie : crochets de viande, billot de découpe
       ctx.fillStyle = '#991b1b';
-      ctx.fillRect(100, 48, w - 120, 6);
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const meatItems = ['🥩', '🔪', '🍖', '🍗', '🥩', '🍖'];
       meatItems.forEach((m, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(m, 112 + idx * 32, 46);
-        ctx.fillText(meatItems[(idx + 1) % meatItems.length], 112 + idx * 32, 82);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(m, 114 + idx * 32, 45);
+          ctx.fillText(meatItems[(idx + 1) % meatItems.length], 114 + idx * 32, 75);
+        }
       });
     } else if (bizId === 'produits_laitiers') {
-      // Fromagerie / Laiterie : fromages meules, pots de ricotta, bouteilles de lait
       ctx.fillStyle = '#15803d';
-      ctx.fillRect(100, 48, w - 120, 6);
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const dairyItems = ['🧀', '🥛', '🧈', '🍶', '🥣', '🧀'];
       dairyItems.forEach((d, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(d, 112 + idx * 32, 46);
-        ctx.fillText(dairyItems[(idx + 1) % dairyItems.length], 112 + idx * 32, 82);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(d, 114 + idx * 32, 45);
+          ctx.fillText(dairyItems[(idx + 1) % dairyItems.length], 114 + idx * 32, 75);
+        }
       });
     } else if (bizId === 'vente_vetements') {
-      // Boutique de mode : cintres, costumes, robes, chaussures
       ctx.fillStyle = '#a21caf';
-      ctx.fillRect(100, 48, w - 120, 6);
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const clothItems = ['👕', '👗', '🧥', '👖', '👔', '👠'];
       clothItems.forEach((c, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(c, 112 + idx * 32, 46);
-        ctx.fillText(clothItems[(idx + 1) % clothItems.length], 112 + idx * 32, 82);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(c, 114 + idx * 32, 45);
+          ctx.fillText(clothItems[(idx + 1) % clothItems.length], 114 + idx * 32, 75);
+        }
       });
     } else if (bizId === 'vente_montres') {
-      // Horlogerie / Bijouterie : vitrines de montres dorées et bijoux
       ctx.fillStyle = '#312e81';
-      ctx.fillRect(100, 48, w - 120, 6);
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const watchItems = ['⌚', '🕰️', '💎', '✨', '🪙', '⌚'];
       watchItems.forEach((wi, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(wi, 112 + idx * 32, 46);
-        ctx.fillText(watchItems[(idx + 1) % watchItems.length], 112 + idx * 32, 82);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(wi, 114 + idx * 32, 45);
+          ctx.fillText(watchItems[(idx + 1) % watchItems.length], 114 + idx * 32, 75);
+        }
       });
     } else if (bizId === 'salle_de_jeux') {
-      // Gaming Room : manettes, consoles, casques
       ctx.fillStyle = '#27272a';
-      ctx.fillRect(100, 48, w - 120, 6);
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const gameItems = ['🎮', '🕹️', '🎱', '🎧', '🎲', '👾'];
       gameItems.forEach((gi, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(gi, 112 + idx * 32, 46);
-        ctx.fillText(gameItems[(idx + 1) % gameItems.length], 112 + idx * 32, 82);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(gi, 114 + idx * 32, 45);
+          ctx.fillText(gameItems[(idx + 1) % gameItems.length], 114 + idx * 32, 75);
+        }
       });
     } else if (bizId === 'emballage_dattes') {
-      // Station de dattes : caisses de dattes, palmiers, miel de datte
       ctx.fillStyle = '#9a3412';
-      ctx.fillRect(100, 48, w - 120, 6);
-      ctx.fillRect(100, 84, w - 120, 6);
+      ctx.fillRect(104, 48, w - 130, 5);
+      ctx.fillRect(104, 78, w - 130, 5);
       const dateItems = ['🌴', '📦', '🍯', '✨', '🌴', '📦'];
       dateItems.forEach((di, idx) => {
-        ctx.font = '16px serif';
-        ctx.fillText(di, 112 + idx * 32, 46);
-        ctx.fillText(dateItems[(idx + 1) % dateItems.length], 112 + idx * 32, 82);
+        if (114 + idx * 32 < w - 34) {
+          ctx.font = '14px serif';
+          ctx.fillText(di, 114 + idx * 32, 45);
+          ctx.fillText(dateItems[(idx + 1) % dateItems.length], 114 + idx * 32, 75);
+        }
       });
     } else if (bizId === 'croisiere_mer' || bizId === 'agence_voyages' || bizId === 'hotel' || bizId === 'bank_branch') {
-      // Agences & Croisières & Banque : zéro marchandise exposée (uniquement horloge murale exécutive discrète)
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
-      ctx.arc(34, 48, 11, 0, Math.PI * 2);
+      ctx.arc(38, 46, 11, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#38bdf8';
       ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.font = '9px sans-serif';
-      ctx.fillText('🕒', 29, 51);
+      ctx.fillText('🕒', 33, 49);
     } else if (bizId === 'salon_de_the') {
-      // Salon de thé : lustres et tableaux lounge élégants
       ctx.fillStyle = '#831843';
-      ctx.fillRect(104, 48, w - 128, 4);
+      ctx.fillRect(104, 48, w - 130, 4);
       const teaDecor = ['🍹', '☕', '🍰', '🌿', '🍹'];
       teaDecor.forEach((td, idx) => {
-        ctx.font = '13px serif';
-        ctx.fillText(td, 118 + idx * 36, 45);
+        if (118 + idx * 36 < w - 34) {
+          ctx.font = '13px serif';
+          ctx.fillText(td, 118 + idx * 36, 45);
+        }
       });
     } else if (bizId === 'supermarche' || bizId === 'superette') {
-      // Supermarché / Supérette : géré directement avec les rayons et les 3 caisses dans drawCashierCounter
+      // Rayons dessinés dans drawCashierCounter
     } else if (bizId === 'tobacco_kiosk') {
-      // Kiosque de tabac : étagère murale derrière l'employé unique
       ctx.fillStyle = '#831843';
       ctx.fillRect(28, 52, 108, 5);
       ctx.fillRect(28, 76, 108, 5);
@@ -1147,49 +1062,31 @@ export class CanvasStoreEngine {
         ctx.fillText(tobItems[(idx + 1) % tobItems.length], 36 + idx * 24, 73);
       });
     } else if (bizId === 'taxi_collectif') {
-      // Panneau indicateur des lignes de louage et taxi collectif (محطة النقل)
-      const boardW = Math.min(180, w - 120);
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(100, 30, boardW, 64);
+      ctx.fillRect(104, 42, w - 134, 38);
       ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(100, 30, boardW, 64);
-
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('🚖 محطة التاكسي الجماعي واللواج', 100 + boardW / 2, 44);
-
-      ctx.font = 'bold 7.5px monospace';
-      ctx.fillStyle = '#34d399';
-      ctx.fillText('▶ تونس - أريانة [مكتمل]', 100 + boardW / 2, 58);
-      ctx.fillText('▶ حلق الوادي - المرسى [طيران]', 100 + boardW / 2, 70);
-      ctx.fillStyle = '#fde047';
-      ctx.fillText('▶ خط بنزرت السريع [يعبّي]', 100 + boardW / 2, 82);
-      ctx.textAlign = 'left';
-
-      // Horloge ronde de station
-      ctx.fillStyle = '#1e293b';
-      ctx.beginPath();
-      ctx.arc(58, 50, 14, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.font = '11px sans-serif';
-      ctx.fillText('🕒', 52, 54);
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(104, 42, w - 134, 38);
+      const tIcons = ['🚖', '🛣️', '🎫', '🚦', '🚖'];
+      tIcons.forEach((ic, idx) => {
+        if (118 + idx * 34 < w - 38) {
+          ctx.font = '14px serif';
+          ctx.fillText(ic, 118 + idx * 34, 66);
+        }
+      });
     } else {
       ctx.fillStyle = '#334155';
-      ctx.fillRect(100, 56, w - 120, 6);
-      ctx.font = '16px serif';
-      for (let x = 112; x < w - 25; x += 34) {
-        ctx.fillText('📦', x, 52);
+      ctx.fillRect(104, 52, w - 130, 5);
+      ctx.font = '14px serif';
+      for (let x = 116; x < w - 34; x += 34) {
+        ctx.fillText('📦', x, 48);
       }
     }
     ctx.restore();
   }
 
   // --- POSTE DE LA CAISSE / BUREAUX / GUICHETS SELON L'ARCHÉTYPE DU PROJET ---
+  // Chaque projet compte AU MOINS 1 travailleur actif dès le départ + ZÉRO texte encombrant/chevauchant.
   drawCashierCounter(ctx, detail, isBusy, now) {
     const timeSec = now / 1000;
     const currentBiz = this.getBiz();
@@ -1199,35 +1096,33 @@ export class CanvasStoreEngine {
     const cycleRatio = this.getCycleProgressRatio(currentBiz);
 
     // A. CROISIÈRES & AGENCE DE VOYAGES (`agency_desks`) :
-    // "y a rien d'exposé. deux bureaux: manager et son assistant, prennent les commandes des clients."
+    // Zéro marchandise exposée. Deux bureaux (Manager actif dès le début + Assistant quand recruté).
     if (archetype === 'agency_desks') {
       ctx.save();
       const slots = (detail && detail.staffSlots) ? detail.staffSlots : [];
+      const hiredCount = currentBiz ? (currentBiz.hiredManagersCount || (currentBiz.hasManager ? 1 : 0)) : 0;
       const deskConfigs = [
-        { x: 64, y: 126, w: 76, h: 28, title: 'مكتب المدير 💻', slotIdx: 0, slot: slots[0] },
-        { x: 162, y: 126, w: 76, h: 28, title: 'مكتب المساعد 🖥️', slotIdx: 1, slot: slots[1] }
+        { x: 64, y: 126, w: 76, h: 28, icon: '💻', slotIdx: 0, slot: slots[0] },
+        { x: 162, y: 126, w: 76, h: 28, icon: '🖥️', slotIdx: 1, slot: slots[1] }
       ];
 
-      // Panneau mural d'agence (aucune marchandise exposée !)
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      // Décor mural minimaliste sans texte lourd (icônes exécutives)
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
       ctx.beginPath();
-      ctx.roundRect(64, 52, 174, 24, 5);
+      ctx.roundRect(96, 48, 112, 22, 6);
       ctx.fill();
       ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1.2;
+      ctx.lineWidth = 1;
       ctx.stroke();
-      ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
+      ctx.font = '12px serif';
       ctx.textAlign = 'center';
-      const boardTxt = currentBizId === 'croisiere_mer'
-        ? '⚓ إدارة حجز الرحلات البحرية واليخوت 📋'
-        : '✈️ مكتب الحجوزات وتيكيات السفر والعقود 📄';
-      ctx.fillText(boardTxt, 151, 67);
+      ctx.fillText(currentBizId === 'croisiere_mer' ? '⚓   🛥️   🧭' : '✈️   🌍   🎫', 152, 63);
 
       deskConfigs.forEach((d, idx) => {
-        const isDeskActive = (idx === 0 && isBusy) || (d.slot && d.slot.hired);
+        const isWorkerPresent = (idx === 0) || (d.slot && d.slot.hired) || (hiredCount >= 1);
+        const isDeskActive = isWorkerPresent && (isBusy || idx === 0);
 
-        // Fauteuil de direction ergonomique derrière le bureau
+        // Fauteuil de direction derrière le bureau
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
         ctx.roundRect(d.x + 24, d.y - 38, 28, 30, 6);
@@ -1236,26 +1131,18 @@ export class CanvasStoreEngine {
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Manager (Bureau 1) et Assistant (Bureau 2) derrière leurs ordinateurs
-        if (d.slot && d.slot.hired) {
-          this.drawWorker(ctx, d.x + 38, d.y + 4, idx, isBusy, timeSec);
+        // Travailleur présent dès le départ au Bureau 1, et au Bureau 2 dès recrutement
+        if (isWorkerPresent) {
+          this.drawWorker(ctx, d.x + 38, d.y + 4, idx, true, timeSec);
           this.clickZones.push({
             x: d.x + 18,
             y: d.y - 46,
             width: 40,
             height: 48,
             type: 'employee_info',
-            name: d.slot.name,
-            role: d.slot.role
+            name: (d.slot && d.slot.name) ? d.slot.name : (idx === 0 ? 'مكلّف الحجوزات' : 'مساعد الحجوزات'),
+            role: (d.slot && d.slot.role) ? d.slot.role : 'عون قار'
           });
-        } else if (idx === 0) {
-          // Même avant embauche auto, l'agent d'accueil prend la commande quand le joueur lance le cycle
-          this.drawWorker(ctx, d.x + 38, d.y + 4, 0, isBusy, timeSec);
-          if (d.slot) {
-            this.drawHireButton(ctx, d.x + 6, d.y - 54, 64, 34, 'خدّم مدير', 0, 'hire_cashier', d.slot.cost, now);
-          }
-        } else if (d.slot) {
-          this.drawHireButton(ctx, d.x + 6, d.y - 46, 64, 36, 'خدّم مساعد', 1, 'hire_worker', d.slot.cost, now);
         }
 
         // Bureau exécutif en bois noble (hauteur ergonomique 28px)
@@ -1267,47 +1154,42 @@ export class CanvasStoreEngine {
         ctx.beginPath();
         ctx.roundRect(d.x, d.y, d.w, d.h, [5, 5, 3, 3]);
         ctx.fill();
-        ctx.strokeStyle = isDeskActive ? '#38bdf8' : '#fbbf24';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isWorkerPresent ? '#38bdf8' : '#475569';
+        ctx.lineWidth = 1.4;
         ctx.stroke();
 
-        // Plateau supérieur vernis
         ctx.fillStyle = '#fef3c7';
         ctx.fillRect(d.x - 1, d.y - 2, d.w + 2, 3.5);
 
-        // Ordinateur de bureau (Moniteur écran plat + clavier + dossiers papiers 📄)
+        // Ordinateur de bureau + dossiers papiers 📄
         const monX = d.x + 10;
         const monY = d.y - 16;
         ctx.fillStyle = '#090d16';
         ctx.beginPath();
         ctx.roundRect(monX, monY, 24, 15, 2.5);
         ctx.fill();
-        ctx.strokeStyle = isDeskActive ? '#34d399' : '#38bdf8';
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = isWorkerPresent ? '#34d399' : '#64748b';
+        ctx.lineWidth = 1.1;
         ctx.stroke();
-        // Pied du moniteur
         ctx.fillStyle = '#64748b';
         ctx.fillRect(monX + 9, monY + 15, 6, 3);
-        // Écran allumé avec lignes de réservation
-        ctx.fillStyle = isDeskActive ? '#10b981' : '#38bdf8';
+        ctx.fillStyle = isWorkerPresent ? '#10b981' : '#38bdf8';
         ctx.fillRect(monX + 3, monY + 4, 14, 2);
         ctx.fillStyle = '#fde047';
         ctx.fillRect(monX + 3, monY + 8, 18 * (isDeskActive ? Math.max(0.25, cycleRatio) : 0.4), 2);
 
-        // Pile de contrats / billets / papiers officiels sur le bureau
         ctx.font = '10px serif';
         ctx.textAlign = 'center';
         ctx.fillText('📄', d.x + d.w - 16, d.y - 4);
         ctx.fillText('🖨️', d.x + d.w - 28, d.y - 4);
 
-        // Plaque nominative sur la façade du bureau
-        ctx.fillStyle = '#fef08a';
-        ctx.font = 'bold 7.5px "Cairo", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(d.title, d.x + d.w / 2, d.y + 17);
+        // Badge compact d'état du bureau (sans gros texte)
+        ctx.fillStyle = isWorkerPresent ? '#34d399' : '#94a3b8';
+        ctx.font = 'bold 8px sans-serif';
+        ctx.fillText(isWorkerPresent ? `${d.icon} #${idx + 1}` : `🔒 #${idx + 1}`, d.x + d.w / 2, d.y + 17);
 
-        if (isDeskActive) {
-          this.drawRadialGauge(ctx, d.x + d.w - 12, d.y - 22, 6.5, Math.max(0.12, cycleRatio), '#10b981', '✓');
+        if (isWorkerPresent) {
+          this.drawRadialGauge(ctx, d.x + d.w - 12, d.y - 22, 6, Math.max(0.15, cycleRatio), '#10b981', '✓');
         }
       });
 
@@ -1316,15 +1198,14 @@ export class CanvasStoreEngine {
     }
 
     // B. SUPERMARCHÉ & SUPÉRETTE (`supermarket_checkout`) :
-    // "clients avec chariots, passent tous à la caisse. employés sont des caissiers. Projet commence avec une seule caisse, on peut recruter jusqu'à trois."
+    // Commence avec 1 caisse active et son caissier dès le début, jusqu'à 3 caisses avec recrutement.
     if (archetype === 'supermarket_checkout') {
       ctx.save();
       const slots = (detail && detail.staffSlots) ? detail.staffSlots : [];
       const hiredCount = currentBiz ? (currentBiz.hiredManagersCount || (currentBiz.hasManager ? 1 : 0)) : 0;
 
-      // Rayons de supermarché propres et ergonomiques en arrière-plan
       for (let r = 0; r < 2; r++) {
-        const ry = 54 + r * 20;
+        const ry = 50 + r * 20;
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(22, ry, this.width - 62, 4.5);
         ctx.strokeStyle = '#38bdf8';
@@ -1337,7 +1218,6 @@ export class CanvasStoreEngine {
         }
       }
 
-      // 3 Caisses de supermarché ergonomiques (Caisse 1 ouverte dès le début, Caisses 2 et 3 recrutables)
       for (let cIdx = 0; cIdx < 3; cIdx++) {
         const lx = 18 + cIdx * 82;
         const ly = 128;
@@ -1345,43 +1225,32 @@ export class CanvasStoreEngine {
         const lh = 26;
         const slot = slots[cIdx];
         const isHired = slot ? slot.hired : (cIdx < hiredCount);
-        const isLaneOpen = (cIdx === 0) || isHired; // Commence avec 1 seule caisse ouverte !
+        const isLaneOpen = (cIdx === 0) || isHired;
 
-        // Caissier derrière sa caisse
         if (isLaneOpen) {
-          this.drawWorker(ctx, lx + 22, ly + 4, cIdx, isBusy, timeSec);
-          if (slot && isHired) {
-            this.clickZones.push({
-              x: lx + 4,
-              y: ly - 44,
-              width: 36,
-              height: 46,
-              type: 'employee_info',
-              name: slot.name,
-              role: slot.role
-            });
-          } else if (cIdx === 0 && slot && !isHired) {
-            // Bouton compact pour automatiser le Caissier 1
-            this.drawHireButton(ctx, lx + 2, ly - 52, 64, 32, 'كاشير 1', 0, 'hire_cashier', slot.cost, now);
-          }
-        } else if (slot) {
-          // Caisse 2 ou 3 fermée : bouton ergonomique pour recruter le caissier et ouvrir la caisse
-          this.drawHireButton(ctx, lx + 3, ly - 46, 64, 34, `كاشير ${cIdx + 1}`, cIdx, 'hire_worker', slot.cost, now);
+          this.drawWorker(ctx, lx + 22, ly + 4, cIdx, true, timeSec);
+          this.clickZones.push({
+            x: lx + 4,
+            y: ly - 44,
+            width: 36,
+            height: 46,
+            type: 'employee_info',
+            name: (slot && slot.name) ? slot.name : `كاشير ${cIdx + 1}`,
+            role: (slot && slot.role) ? slot.role : 'عون قار'
+          });
         }
 
-        // Meuble de caisse avec tapis roulant et lecteur code-barres
         ctx.fillStyle = isLaneOpen ? '#0f172a' : 'rgba(15, 23, 42, 0.55)';
         ctx.beginPath();
         ctx.roundRect(lx, ly, lw, lh, 5);
         ctx.fill();
-        ctx.strokeStyle = isLaneOpen ? (isBusy ? '#10b981' : '#38bdf8') : '#475569';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isLaneOpen ? '#10b981' : '#475569';
+        ctx.lineWidth = 1.4;
         ctx.stroke();
 
-        // Tapis roulant noir de la caisse
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(lx + 4, ly + 2, lw - 26, 6);
-        if (isLaneOpen && isBusy) {
+        if (isLaneOpen) {
           const scanShift = (timeSec * 28) % 12;
           ctx.strokeStyle = '#34d399';
           ctx.lineWidth = 1;
@@ -1391,17 +1260,15 @@ export class CanvasStoreEngine {
           ctx.stroke();
         }
 
-        // Écran Caisse POS à droite du tapis
         ctx.fillStyle = '#022c22';
         ctx.fillRect(lx + lw - 20, ly - 10, 16, 12);
         ctx.strokeStyle = isLaneOpen ? '#10b981' : '#64748b';
         ctx.strokeRect(lx + lw - 20, ly - 10, 16, 12);
 
-        // Numéro et état de la caisse
-        ctx.fillStyle = isLaneOpen ? '#fef08a' : '#94a3b8';
-        ctx.font = 'bold 7.5px "Cairo", sans-serif';
+        ctx.fillStyle = isLaneOpen ? '#34d399' : '#94a3b8';
+        ctx.font = 'bold 8px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(isLaneOpen ? `🟢 كاسة ${cIdx + 1}` : `🔒 كاسة ${cIdx + 1}`, lx + lw / 2, ly + 19);
+        ctx.fillText(isLaneOpen ? `🟢 #${cIdx + 1}` : `🔒 #${cIdx + 1}`, lx + lw / 2, ly + 18);
       }
 
       ctx.restore();
@@ -1409,7 +1276,7 @@ export class CanvasStoreEngine {
     }
 
     // C. GUICHET DE TABAC (`tobacco_kiosk`) :
-    // "guicher de tabac: IL FAUT ANIMATION. entre, prendre commande, payer, partir. IL FAUT SOIGNER ERGONOMIE. un seul employé."
+    // Un seul employé actif au comptoir dès le départ, ergonomie épurée sans texte encombrant.
     if (archetype === 'tobacco_kiosk') {
       ctx.save();
       const kx = 36;
@@ -1417,10 +1284,8 @@ export class CanvasStoreEngine {
       const kw = 92;
       const kh = 32;
 
-      // Un seul employé derrière le guichet de tabac
       this.drawWorker(ctx, kx + 34, ky + 6, 3, true, timeSec);
 
-      // Comptoir ergonomique du kiosque de tabac
       const kGrad = ctx.createLinearGradient(kx, ky, kx, ky + kh);
       kGrad.addColorStop(0, '#9f1239');
       kGrad.addColorStop(1, '#4c0519');
@@ -1429,16 +1294,14 @@ export class CanvasStoreEngine {
       ctx.roundRect(kx, ky, kw, kh, [6, 6, 3, 3]);
       ctx.fill();
       ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Présentoir journaux, cigarettes & eau fraîche
       ctx.font = '11px serif';
       ctx.fillText('🚬', kx + 10, ky - 4);
       ctx.fillText('📰', kx + 26, ky - 4);
       ctx.fillText('💧', kx + 42, ky - 4);
 
-      // Caisse enregistreuse du kiosque
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
       ctx.roundRect(kx + kw - 28, ky - 14, 22, 16, 3);
@@ -1446,19 +1309,15 @@ export class CanvasStoreEngine {
       ctx.strokeStyle = '#10b981';
       ctx.stroke();
       ctx.fillStyle = '#34d399';
-      ctx.font = 'bold 6.5px monospace';
+      ctx.font = 'bold 7px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('DT', kx + kw - 17, ky - 4);
-
-      ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 8px "Cairo", sans-serif';
-      ctx.fillText('شباك القمريڨ • عون وحيد', kx + kw / 2, ky + 20);
+      ctx.fillText('10 DT', kx + kw - 17, ky - 4);
       ctx.restore();
       return;
     }
 
     // D. BANQUE (`bank_branch`) :
-    // "Banque: ANIMATION ENTREE. Un agent guichet m'accepte pour operation."
+    // Agent guichet qui accepte le joueur pour opération, bulles compactes sans débordement.
     if (archetype === 'bank_branch') {
       ctx.save();
       const bx = 34;
@@ -1466,47 +1325,40 @@ export class CanvasStoreEngine {
       const bw = 104;
       const bh = 38;
 
-      // Porte de coffre-fort blindée dorée au fond de la banque
       ctx.fillStyle = '#1e293b';
       ctx.beginPath();
-      ctx.arc(210, 74, 22, 0, Math.PI * 2);
+      ctx.arc(210, 72, 20, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
-      ctx.fillStyle = '#fef08a';
-      ctx.font = '13px sans-serif';
+      ctx.font = '12px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🏦', 210, 79);
+      ctx.fillText('🏦', 210, 76);
 
-      // Agent de guichet bancaire qui accueille et accepte le joueur
       const isAccepted = this.bankVipClient && this.bankVipClient.state === 'accepted';
       this.drawWorker(ctx, bx + 44, by + 10, 0, true, timeSec);
 
-      // Bulle d'accueil de l'agent du guichet
       ctx.fillStyle = isAccepted ? '#064e3b' : 'rgba(15, 23, 42, 0.92)';
       ctx.beginPath();
-      ctx.roundRect(bx + 6, by - 48, 96, 17, 6);
+      ctx.roundRect(bx + 14, by - 46, 76, 15, 5);
       ctx.fill();
       ctx.strokeStyle = isAccepted ? '#10b981' : '#38bdf8';
-      ctx.lineWidth = 1.2;
+      ctx.lineWidth = 1;
       ctx.stroke();
       ctx.fillStyle = isAccepted ? '#34d399' : '#7dd3fc';
       ctx.font = 'bold 7.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(isAccepted ? '✓ مرحبا! العملية مقبولة' : '👋 تفضّل للشباك البنكي', bx + 54, by - 37);
+      ctx.fillText(isAccepted ? '✓ مقبول' : '👋 تفضّل', bx + 52, by - 36);
 
-      // Vitre blindée du guichet bancaire (Hygiaphone)
       ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
       ctx.fillRect(bx + 6, by - 26, bw - 12, 26);
       ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.4;
       ctx.strokeRect(bx + 6, by - 26, bw - 12, 26);
-      // Ouverture passe-billets au bas de la vitre
       ctx.fillStyle = '#090d16';
       ctx.fillRect(bx + 36, by - 6, 32, 6);
 
-      // Comptoir en marbre bleu & or du guichet bancaire
       const bGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
       bGrad.addColorStop(0, '#0284c7');
       bGrad.addColorStop(0.4, '#0369a1');
@@ -1516,34 +1368,25 @@ export class CanvasStoreEngine {
       ctx.roundRect(bx, by, bw, bh, [6, 6, 3, 3]);
       ctx.fill();
       ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      ctx.fillStyle = '#fef08a';
-      ctx.font = 'bold 8.5px "Cairo", sans-serif';
-      ctx.fillText('شباك العمليات البنكية 💳', bx + bw / 2, by + 22);
-
-      // Dessin du joueur / client VIP qui entre dans la banque et avance vers l'agent du guichet
       if (this.bankVipClient) {
         const vc = this.bankVipClient;
         const walking = vc.state === 'entering';
         const bounce = walking ? Math.abs(Math.sin(vc.walkCycle * 7)) * 2.5 : 0;
         ctx.save();
         ctx.translate(vc.x, vc.y - 6 - bounce);
-        // Ombre
         ctx.fillStyle = 'rgba(0,0,0,0.4)';
         ctx.beginPath();
         ctx.ellipse(0, 10, 11, 3.5, 0, 0, Math.PI * 2);
         ctx.fill();
-        // Costume VIP
         ctx.fillStyle = '#1e3a8a';
         ctx.beginPath();
         ctx.roundRect(-7, -18, 14, 18, 4);
         ctx.fill();
-        // Mallette / Portefeuille doré
         ctx.font = '10px serif';
         ctx.fillText('💼', -12, -3);
-        // Tête & Chéchia
         ctx.fillStyle = '#fcd34d';
         ctx.beginPath();
         ctx.arc(0, -24, 6.5, 0, Math.PI * 2);
@@ -1552,18 +1395,6 @@ export class CanvasStoreEngine {
         ctx.beginPath();
         ctx.arc(0, -26.5, 6.5, Math.PI, 0);
         ctx.fill();
-        // Bulle au-dessus du joueur
-        ctx.fillStyle = '#ecfdf5';
-        ctx.beginPath();
-        ctx.roundRect(-24, -48, 48, 15, 5);
-        ctx.fill();
-        ctx.strokeStyle = '#10b981';
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-        ctx.fillStyle = '#065f46';
-        ctx.font = 'bold 7px "Cairo", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(walking ? '🚶 دخول...' : '💵 إيداع / سحب', 0, -38);
         ctx.restore();
       }
 
@@ -1571,70 +1402,54 @@ export class CanvasStoreEngine {
       return;
     }
 
-    // E. COMPTOIR CAISSE ERGONOMIQUE STANDARD (Hauteur abaissée à 38px pour visibilité optimale !)
+    // E. COMPTOIR CAISSE ERGONOMIQUE STANDARD (Hauteur 36px + Travailleur TOUJOURS présent dès le début !)
     const counterX = 14;
-    const counterY = 116; // abaissé (était 106) pour dégager le buste du caissier et des clients
-    const deskW = 86;
-    const deskH = 38;     // hauteur ergonomique réduite (était 50)
+    const counterY = 118;
+    const deskW = 84;
+    const deskH = 36;
 
     ctx.save();
 
-    // 1. Étagères murales d'arrière-boutique (DESSINÉES EN PREMIER au fond du mur)
+    // 1. Étagères murales d'arrière-boutique
     ctx.save();
-    if (currentBizId === 'taxi_collectif') {
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(counterX, 44, deskW, 34);
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.2;
-      ctx.strokeRect(counterX, 44, deskW, 34);
-      ctx.font = '13px serif';
-      const taxiRack = ['🔑', '🎫', '🚖', '🛣️'];
-      taxiRack.forEach((item, i) => ctx.fillText(item, counterX + 8 + i * 20, 66));
-    } else {
-      const goodsPool = this.orderIcons[currentBizId] || this.orderIcons.default;
-      for (let sIdx = 0; sIdx < 2; sIdx++) {
-        const shelfY = 44 + sIdx * 20;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-        ctx.fillRect(counterX - 2, shelfY + 4, deskW + 4, 3);
-        const shelfGrad = ctx.createLinearGradient(counterX - 2, shelfY, counterX - 2, shelfY + 5);
-        shelfGrad.addColorStop(0, '#92400e');
-        shelfGrad.addColorStop(1, '#451a03');
-        ctx.fillStyle = shelfGrad;
-        ctx.fillRect(counterX - 2, shelfY, deskW + 4, 4.5);
-        ctx.strokeStyle = '#fbbf24';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(counterX - 2, shelfY, deskW + 4, 4.5);
-        ctx.font = '11px serif';
-        for (let gIdx = 0; gIdx < 4; gIdx++) {
-          const g = goodsPool[(sIdx * 2 + gIdx) % goodsPool.length];
-          ctx.fillText(g, counterX + 6 + gIdx * 19, shelfY - 3);
-        }
+    const goodsPool = this.orderIcons[currentBizId] || this.orderIcons.default;
+    for (let sIdx = 0; sIdx < 2; sIdx++) {
+      const shelfY = 46 + sIdx * 20;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.fillRect(counterX - 2, shelfY + 4, deskW + 4, 3);
+      const shelfGrad = ctx.createLinearGradient(counterX - 2, shelfY, counterX - 2, shelfY + 5);
+      shelfGrad.addColorStop(0, '#92400e');
+      shelfGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = shelfGrad;
+      ctx.fillRect(counterX - 2, shelfY, deskW + 4, 4.5);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(counterX - 2, shelfY, deskW + 4, 4.5);
+      ctx.font = '11px serif';
+      for (let gIdx = 0; gIdx < 4; gIdx++) {
+        const g = goodsPool[(sIdx * 2 + gIdx) % goodsPool.length];
+        ctx.fillText(g, counterX + 6 + gIdx * 19, shelfY - 3);
       }
     }
     ctx.restore();
 
-    // 2. Caissier debout derrière le comptoir (buste bien dégagé grâce au comptoir abaissé)
-    const cashierSlot = detail.staffSlots && detail.staffSlots[0];
-    const cashierX = counterX + 8;
+    // 2. Travailleur / Caissier TOUJOURS en poste derrière le comptoir dès le Niveau 1 !
+    const cashierSlot = detail && detail.staffSlots && detail.staffSlots[0];
+    const cashierX = counterX + 10;
     const cashierFootY = 138;
 
-    if (cashierSlot && cashierSlot.hired) {
-      this.drawWorker(ctx, cashierX + 16, cashierFootY, 0, isBusy, timeSec);
+    this.drawWorker(ctx, cashierX + 16, cashierFootY, 0, true, timeSec);
+    this.clickZones.push({
+      x: cashierX,
+      y: cashierFootY - 50,
+      width: 36,
+      height: 50,
+      type: 'employee_info',
+      name: (cashierSlot && cashierSlot.name) ? cashierSlot.name : 'عون الكاسة',
+      role: (cashierSlot && cashierSlot.role) ? cashierSlot.role : 'عون قار'
+    });
 
-      this.clickZones.push({
-        x: cashierX,
-        y: cashierFootY - 50,
-        width: 36,
-        height: 50,
-        type: 'employee_info',
-        name: cashierSlot.name,
-        role: cashierSlot.role
-      });
-    } else {
-      this.drawHireButton(ctx, counterX + 4, counterY - 38, 62, 42, 'خدّم', 0, 'hire_cashier', cashierSlot ? cashierSlot.cost : null, now);
-    }
-
-    // 3. Meuble Comptoir ergonomique au PREMIER PLAN (hauteur 38px)
+    // 3. Meuble Comptoir ergonomique au PREMIER PLAN (sans texte sur la façade)
     const woodGrad = ctx.createLinearGradient(counterX, counterY + 10, counterX, counterY + 10 + deskH);
     if (tier.tier >= 4) {
       woodGrad.addColorStop(0, '#f59e0b');
@@ -1650,28 +1465,14 @@ export class CanvasStoreEngine {
     ctx.roundRect(counterX, counterY + 10, deskW, deskH, [7, 7, 4, 4]);
     ctx.fill();
 
-    // Dessus en marbre poli Kadhel crème
     ctx.fillStyle = '#fef3c7';
     ctx.fillRect(counterX - 2, counterY + 8, deskW + 4, 4);
 
-    if (tier.neon) {
-      ctx.save();
-      ctx.strokeStyle = tier.neon;
-      ctx.shadowColor = tier.neon;
-      ctx.shadowBlur = 6;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(counterX, counterY + 13);
-      ctx.lineTo(counterX + deskW, counterY + 13);
-      ctx.stroke();
-      ctx.restore();
-    }
-
     ctx.strokeStyle = tier.border || '#fbbf24';
-    ctx.lineWidth = 1.6;
+    ctx.lineWidth = 1.5;
     ctx.strokeRect(counterX, counterY + 10, deskW, deskH);
 
-    // 4. Présentoir vitré / Plateau de service à gauche de la caisse
+    // 4. Présentoir vitré à gauche de la caisse
     const trayX = counterX + 6;
     const trayY = counterY - 3;
     ctx.fillStyle = 'rgba(15, 23, 42, 0.84)';
@@ -1682,102 +1483,58 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    if (archetype === 'arcade_billiard') {
-      ctx.font = 'bold 6.5px "Cairo", sans-serif';
-      ctx.fillStyle = '#c084fc';
-      ctx.textAlign = 'center';
-      ctx.fillText('جيتون 🎱', trayX + 16, trayY + 8);
-      ctx.textAlign = 'left';
-    } else if (archetype === 'kahwa_counter' || archetype === 'tea_lounge') {
-      ctx.font = '8.5px serif';
-      ctx.fillText('☕', trayX + 3, trayY + 9);
-      ctx.fillText('🍵', trayX + 12, trayY + 9);
-      ctx.fillText('🍹', trayX + 21, trayY + 9);
-    } else {
-      const stockIcons = this.orderIcons[currentBizId] || this.orderIcons.default;
-      const visibleStock = Math.min(3, Math.max(1, this.counterStock || 1));
-      ctx.font = '9px serif';
-      for (let s = 0; s < visibleStock; s++) {
-        ctx.fillText(stockIcons[s % stockIcons.length], trayX + 3 + s * 9, trayY + 9);
-      }
+    const stockIcons = this.orderIcons[currentBizId] || this.orderIcons.default;
+    const visibleStock = Math.min(3, Math.max(1, this.counterStock || 1));
+    ctx.font = '8.5px serif';
+    for (let s = 0; s < visibleStock; s++) {
+      ctx.fillText(stockIcons[s % stockIcons.length], trayX + 3 + s * 9, trayY + 9);
     }
 
-    // 5. Caisse enregistreuse moderne tunisienne positionnée à DROITE du comptoir
+    // 5. Caisse enregistreuse moderne à droite du comptoir
     const regSpring = (this.registerFlash || 0) * Math.sin(timeSec * 30) * 1.5;
-    const regX = counterX + deskW - 36;
+    const regX = counterX + deskW - 34;
     const regY = counterY - 8 - Math.abs(regSpring);
-    const regW = 32;
-    const regH = 22;
+    const regW = 30;
+    const regH = 20;
 
     if (this.registerFlash > 0) {
       this.registerFlash = Math.max(0, this.registerFlash - 0.04);
     }
 
-    const baseGrad = ctx.createLinearGradient(regX, regY + 12, regX, regY + regH);
-    baseGrad.addColorStop(0, '#1e293b');
-    baseGrad.addColorStop(1, '#020617');
-    ctx.fillStyle = baseGrad;
-    ctx.beginPath();
-    ctx.roundRect(regX, regY + 10, regW, 14, 3);
-    ctx.fill();
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.4;
-    ctx.stroke();
-
-    const screenX = regX + 2;
-    const screenY = regY - 2;
-    const screenW = regW - 4;
-    const screenH = 15;
-
     ctx.fillStyle = '#090d16';
     ctx.beginPath();
-    ctx.roundRect(screenX, screenY, screenW, screenH, 3);
+    ctx.roundRect(regX, regY, regW, regH, 3);
     ctx.fill();
     ctx.strokeStyle = isBusy ? '#10b981' : '#38bdf8';
-    ctx.lineWidth = 1.3;
-    ctx.stroke();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
-    ctx.fillRect(screenX + 2, screenY + 10, screenW - 4, 2.5);
-    ctx.fillStyle = isBusy ? '#10b981' : '#f59e0b';
-    ctx.fillRect(screenX + 2, screenY + 10, (screenW - 4) * (isBusy ? Math.max(0.12, cycleRatio) : 0), 2.5);
-
-    const rawVal = currentBiz ? (this.engine.getRevenue ? (this.engine.getRevenue(currentBiz, now) || 0) : 0) : 0;
-    const dynCash = this.formatNumber(rawVal) + ' DT';
-    ctx.fillStyle = '#34d399';
-    ctx.font = '900 6px monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText(dynCash, screenX + screenW - 2, screenY + 7.5);
-
-    if (currentBiz && currentBiz.level > 0) {
-      const gaugeColor = currentBiz.hasManager ? '#10b981' : (isBusy ? '#fbbf24' : '#38bdf8');
-      this.drawRadialGauge(ctx, regX + regW / 2, regY - 12, 7.5, isBusy ? cycleRatio : 1, gaugeColor, currentBiz.hasManager ? '⚙️' : '⚡');
-    }
-
-    // Tiroir-caisse compact
-    const drawerX = counterX + 12;
-    const drawerY = counterY + 22;
-    const drawerW = deskW - 24;
-    const drawerH = 13;
-    ctx.fillStyle = '#78350f';
-    ctx.beginPath();
-    ctx.roundRect(drawerX, drawerY, drawerW, drawerH, 3);
-    ctx.fill();
-    ctx.strokeStyle = '#fbbf24';
     ctx.lineWidth = 1.2;
     ctx.stroke();
-    ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 7px "Cairo", sans-serif';
+
+    const unitPrice = this.getUnitBasePrice(currentBizId);
+    ctx.fillStyle = '#34d399';
+    ctx.font = 'bold 6.5px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('الكاسة 🪙', drawerX + drawerW / 2, drawerY + 9);
+    ctx.fillText((unitPrice < 10 ? unitPrice.toFixed(1) : Math.round(unitPrice)) + ' DT', regX + regW / 2, regY + 11);
+
+    if (currentBiz && currentBiz.level > 0) {
+      const gaugeColor = currentBiz.hasManager ? '#10b981' : '#fbbf24';
+      this.drawRadialGauge(ctx, regX + regW / 2, regY - 9, 6.5, isBusy ? cycleRatio : 1, gaugeColor, '✓');
+    }
+
+    // Poignée tiroir-caisse sobre (sans texte)
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath();
+    ctx.roundRect(counterX + 14, counterY + 21, deskW - 28, 11, 3);
+    ctx.fill();
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1;
+    ctx.stroke();
     ctx.restore();
   }
 
-  // --- POSTES DE TRAVAIL DES EMPLOYÉS (SERVEUR CAFÉ/SALON DE THÉ, MACHINES, JAUGES RADIALES) ---
+  // --- POSTES DE TRAVAIL DES EMPLOYÉS (ZÉRO GROS BOUTON TEXTE FLOTTANT) ---
   drawWorkstations(ctx, detail, isBusy, now) {
     if (!detail || !detail.staffSlots) return;
     const archetype = this.getBizArchetype(this.bizId);
-    // Déjà géré intégralement dans drawCashierCounter pour ces archétypes :
     if (['agency_desks', 'supermarket_checkout', 'tobacco_kiosk', 'bank_branch'].includes(archetype)) {
       return;
     }
@@ -1789,23 +1546,20 @@ export class CanvasStoreEngine {
     const biz = this.getBiz();
     const baseRatio = this.getCycleProgressRatio(biz);
 
-    // 1. Scène centrale métier (Comptoir Café, Tables Salon de Thé, Billard, Tapis Usine, Vitrine)
+    // 1. Scène centrale métier
     this.drawCentralActionShowcase(ctx, this.bizId, timeSec, isBusy);
 
     // 2. CAS CAFÉ (`kahwa_counter`) & SALON DE THÉ (`tea_lounge`) :
-    // Le serveur (`سرباي`) se déplace dynamiquement pour servir les boissons aux clients !
+    // Serveur (`سرباي`) toujours actif pour servir les boissons aux clients !
     if (archetype === 'kahwa_counter' || archetype === 'tea_lounge') {
       const waiterSlot = detail.staffSlots[1];
       const machineX = 108;
-      // Machine à café / Kanoun à gauche de la zone bar
       this.drawMachineProp(ctx, this.bizId, machineX, baseY + 2, isBusy, timeSec);
 
-      // Serveur mobile (`this.waiter.x`) qui apporte les boissons aux clients (au comptoir ou assis aux tables)
       const wx = this.waiter ? this.waiter.x : 138;
       const wy = archetype === 'tea_lounge' ? 142 : 136;
       this.drawWorker(ctx, wx, wy, 1, true, timeSec);
 
-      // Plateau de boissons porté par le serveur
       ctx.save();
       ctx.fillStyle = '#fbbf24';
       ctx.beginPath();
@@ -1816,9 +1570,7 @@ export class CanvasStoreEngine {
       ctx.fillText(this.waiter ? this.waiter.carryingIcon : '☕', wx + 11, wy - 22);
       ctx.restore();
 
-      if (waiterSlot && !waiterSlot.hired) {
-        this.drawHireButton(ctx, machineX + 2, baseY - 68, 52, 34, 'سرباي', 1, 'hire_worker', waiterSlot.cost, now);
-      } else if (waiterSlot && waiterSlot.hired) {
+      if (waiterSlot) {
         this.clickZones.push({
           x: wx - 16,
           y: wy - 48,
@@ -1832,15 +1584,15 @@ export class CanvasStoreEngine {
       return;
     }
 
-    // 3. Autres commerces : postes d'artisans / ouvriers
+    // 3. Autres commerces : postes d'artisans / ouvriers (sans boutons textes orange encombrants)
     detail.staffSlots.slice(1).forEach((slot, idx) => {
       const stationX = startX + idx * spacing;
       if (stationX > this.width - 42) return;
 
       ctx.save();
+      this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, isBusy, timeSec);
       if (slot.hired) {
         this.drawWorker(ctx, stationX + 22, baseY - 2, idx + 1, isBusy, timeSec);
-        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, isBusy, timeSec);
         this.clickZones.push({
           x: stationX + 4,
           y: baseY - 50,
@@ -1850,11 +1602,8 @@ export class CanvasStoreEngine {
           name: slot.name,
           role: slot.role
         });
-        const workerRatio = isBusy ? ((baseRatio + idx * 0.28) % 1) : 0.15;
-        this.drawRadialGauge(ctx, stationX + 22, baseY - 55, 8, workerRatio, isBusy ? '#10b981' : '#f59e0b', slot.icon || '⚡');
-      } else {
-        this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, isBusy, timeSec);
-        this.drawHireButton(ctx, stationX + 1, baseY - 64, 46, 36, 'خدّم', idx + 1, 'hire_worker', slot.cost, now);
+        const workerRatio = isBusy ? ((baseRatio + idx * 0.28) % 1) : 0.25;
+        this.drawRadialGauge(ctx, stationX + 22, baseY - 52, 6.5, workerRatio, '#10b981', '✓');
       }
       ctx.restore();
     });
@@ -3091,38 +2840,33 @@ export class CanvasStoreEngine {
 
       ctx.restore();
 
-      // Bulle d'activité / commande / réaction + jauge radiale Tycoon
+      // Bulle d'activité / commande / réaction + jauge radiale Tycoon (compacte et sans chevauchement)
       const bubbleX = c.x + 12;
-      const bubbleY = baseFootY - 50 - bounce;
+      const bubbleY = baseFootY - 46 - bounce;
       let bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
+      const isGroupBooking = !c.reaction && c.activityType === 'ordering_desk' && (c.state === 'doing_activity' || c.state === 'paying');
       if (!c.reaction) {
         if (c.state === 'waiting_service') bubbleIcon = '🙋';
+        else if (isGroupBooking) bubbleIcon = `👥${c.groupSize || 1}`;
         else if (c.state === 'doing_activity') {
           if (c.activityType === 'billiard') bubbleIcon = '🎱';
           else if (c.activityType === 'console') bubbleIcon = '🎮';
-          else if (c.activityType === 'ordering_desk') bubbleIcon = '📄';
           else if (c.activityType === 'checkout_cart') bubbleIcon = '🛒';
         }
       }
 
       const isAct = c.state === 'doing_activity';
-      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : (isAct ? '#eff6ff' : 'rgba(255, 255, 255, 0.98)');
+      const bW = isGroupBooking ? 26 : 18;
+      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : (isAct ? '#eff6ff' : 'rgba(255, 255, 255, 0.96)');
       ctx.beginPath();
-      ctx.roundRect(bubbleX - 10, bubbleY - 9, 20, 17, 5);
+      ctx.roundRect(bubbleX - bW / 2, bubbleY - 8, bW, 15, 5);
       ctx.fill();
       ctx.strokeStyle = c.state === 'paying' ? '#10b981' : (isAct ? '#38bdf8' : '#f59e0b');
-      ctx.lineWidth = 1.3;
+      ctx.lineWidth = 1.2;
       ctx.stroke();
 
-      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : (isAct ? '#eff6ff' : '#ffffff');
-      ctx.beginPath();
-      ctx.moveTo(bubbleX - 2.5, bubbleY + 8);
-      ctx.lineTo(bubbleX + 2.5, bubbleY + 8);
-      ctx.lineTo(bubbleX, bubbleY + 12);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.font = '10.5px sans-serif';
+      ctx.fillStyle = isGroupBooking ? '#0f172a' : '#1e293b';
+      ctx.font = isGroupBooking ? 'bold 8px "Cairo", sans-serif' : '9.5px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(bubbleIcon, bubbleX, bubbleY);
@@ -3130,17 +2874,17 @@ export class CanvasStoreEngine {
       if (isAct) {
         const actRatio = Math.min(1, c.activityTimer / Math.max(0.1, c.activityDuration));
         const actColor = c.activityType === 'billiard' || c.activityType === 'console' ? '#a855f7' : (c.activityType === 'drinking' ? '#f59e0b' : '#38bdf8');
-        this.drawRadialGauge(ctx, bubbleX, bubbleY - 18, 6.0, actRatio, actColor, '');
+        this.drawRadialGauge(ctx, bubbleX, bubbleY - 16, 5.2, actRatio, actColor, '');
       } else if (c.state === 'paying') {
         const payRatio = Math.min(1, c.payTimer / Math.max(0.1, c.payDuration));
-        this.drawRadialGauge(ctx, bubbleX, bubbleY - 18, 6.2, payRatio, '#10b981', '🪙');
+        this.drawRadialGauge(ctx, bubbleX, bubbleY - 16, 5.4, payRatio, '#10b981', '🪙');
       }
 
       ctx.restore();
     }
   }
 
-  // --- PARTICULES, ONDES DE TAP & GAIN FLOTTANT ---
+  // --- PARTICULES, ONDES DE TAP & GAIN FLOTTANT COMPACT ---
   drawParticles(ctx) {
     for (const r of this.tapRipples) {
       ctx.save();
@@ -3166,84 +2910,27 @@ export class CanvasStoreEngine {
     for (const m of this.moneyPuffs) {
       ctx.save();
       ctx.globalAlpha = Math.max(0, m.life / m.maxLife);
-      ctx.font = 'bold 12.5px "Cairo", sans-serif';
-      ctx.fillStyle = '#fef08a';
-      ctx.shadowColor = '#000000';
-      ctx.shadowBlur = 4;
+      ctx.font = 'bold 9.5px "Cairo", sans-serif';
+      const tw = ctx.measureText(m.text).width + 10;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.beginPath();
+      ctx.roundRect(m.x - tw / 2, m.y - 10, tw, 15, 6);
+      ctx.fill();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = '#34d399';
       ctx.textAlign = 'center';
-      ctx.fillText(m.text, m.x, m.y);
+      ctx.fillText(m.text, m.x, m.y + 0.5);
       ctx.restore();
     }
   }
 
-  // --- AMBIANCE CRÉATIVE & HUD TYCOON SUR L'ENSEIGNE (PALIER + BARRE DE CYCLE) ---
+  // --- AMBIANCE CRÉATIVE ÉPURÉE (ZÉRO ENSEIGNE GÉANTE EN HAUT DU CANVAS) ---
   drawAmbience(ctx, now, isProducing) {
     const w = this.width;
     const h = this.height;
     const t = now / 1000;
-
-    const signBiz = this.getBiz();
-    if (signBiz) {
-      const tier = this.getStoreTier(signBiz);
-      const cycleRatio = this.getCycleProgressRatio(signBiz);
-      const signW = Math.min(265, Math.max(195, w * 0.58));
-      const sx = (w - signW) / 2;
-      const flicker = 0.88 + 0.12 * Math.sin(t * 7) * Math.sin(t * 3.1);
-      ctx.save();
-      ctx.shadowColor = 'rgba(251, 191, 36, ' + (0.75 * flicker) + ')';
-      ctx.shadowBlur = 12;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-      ctx.strokeStyle = tier.border || ('rgba(251, 191, 36, ' + flicker + ')');
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.roundRect(sx, 20, signW, 31, 14);
-      ctx.fill();
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      ctx.fillStyle = tier.color;
-      ctx.beginPath();
-      ctx.roundRect(sx + 6, 24, 38, 13, 6);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 7.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`★T${tier.tier} L${signBiz.level || 1}`, sx + 25, 33);
-
-      ctx.fillStyle = '#fef08a';
-      const signFullName = (signBiz.icon ? (signBiz.icon + ' ') : '') + signBiz.name;
-      let sFont = 11.5;
-      ctx.font = '900 ' + sFont + 'px "Cairo", sans-serif';
-      const availW = signW - 56;
-      const sWidth = ctx.measureText(signFullName).width;
-      if (sWidth > availW) {
-        sFont = Math.max(8, Math.floor((availW / sWidth) * sFont));
-        ctx.font = '900 ' + sFont + 'px "Cairo", sans-serif';
-      }
-      ctx.textAlign = 'center';
-      ctx.fillText(signFullName, sx + 46 + availW / 2, 35, availW);
-
-      const barX = sx + 14;
-      const barY = 44.5;
-      const barW = signW - 28;
-      const barH = 3.2;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
-      ctx.beginPath();
-      ctx.roundRect(barX, barY, barW, barH, 1.5);
-      ctx.fill();
-
-      const fillRatio = isProducing ? Math.max(0.06, cycleRatio) : 0;
-      if (fillRatio > 0) {
-        const barGrad = ctx.createLinearGradient(barX, barY, barX + barW, barY);
-        barGrad.addColorStop(0, '#10b981');
-        barGrad.addColorStop(1, '#fbbf24');
-        ctx.fillStyle = barGrad;
-        ctx.beginPath();
-        ctx.roundRect(barX, barY, barW * fillRatio, barH, 1.5);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
 
     const count = Math.max(3, Math.floor(w / 130));
     for (let i = 0; i < count; i++) {
@@ -3509,34 +3196,13 @@ export class CanvasStoreEngine {
           }
         }
       } else if (c.state === 'paying') {
-        const hasStaff = biz && (biz.hasManager || (biz.hiredManagersCount && biz.hiredManagersCount > 0));
-        if (hasStaff || isProducing || archetype === 'tobacco_kiosk') {
-          c.payTimer += dt;
-          if (c.payTimer >= c.payDuration) {
-            this.triggerPayment(c, isProducing);
-            c.hasBag = (archetype === 'retail_shop' || archetype === 'food_counter' || archetype === 'industrial_belt');
-            c.state = 'walking_out';
-            c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
-          }
-        } else {
-          c.waitTimer = (c.waitTimer || 0) + dt;
-          if (c.waitTimer > 2.4) {
-            c.hasBag = false;
-            c.ticketIcon = null;
-            c.state = 'walking_out';
-            c.reaction = '😡';
-            this.pushParticle({
-              x: c.x + 10,
-              y: c.y - 30,
-              vx: 0,
-              vy: -16,
-              color: '#ef4444',
-              radius: 3.8,
-              life: 0.6,
-              maxLife: 0.6,
-              isSparkle: false
-            });
-          }
+        // Chaque projet ouvert dispose d'au moins 1 travailleur actif dès le départ : encaissement fluide garanti !
+        c.payTimer += dt;
+        if (c.payTimer >= c.payDuration) {
+          this.triggerPayment(c, isProducing);
+          c.hasBag = (archetype === 'retail_shop' || archetype === 'food_counter' || archetype === 'industrial_belt');
+          c.state = 'walking_out';
+          c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
         }
       } else if (c.state === 'walking_out') {
         c.x += 64 * dt;
@@ -3804,10 +3470,11 @@ export class QuartierAnimator {
       ]
     };
 
-    // Mappings alias villes tunisiennes <-> zones
+    // Mappings alias villes tunisiennes <-> zones (100% alignés avec CITY_BUSINESS_MAP dans engine.js)
     zoneSpecs.tunis = [
       { type: 'house', style: 'medina', name: 'دار بن عاشور', width: 115, height: 118, wallColor: '#fef3c7', doorColor: '#2563eb' },
       { type: 'biz', id: 'kaskrout' },
+      { type: 'biz', id: 'fricasse' },
       { type: 'garden', name: 'حديقة الياسمين والزيتون', width: 95 },
       { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'bizerte', nextZoneLabel: 'بنزرت' },
       { type: 'biz', id: 'kahwa' },
@@ -3819,6 +3486,39 @@ export class QuartierAnimator {
       { type: 'house', style: 'medina', name: 'دار سيدي محرز', width: 115, height: 120, wallColor: '#f8fafc', doorColor: '#0284c7' }
     ];
     zoneSpecs.bab_souika = zoneSpecs.tunis;
+
+    zoneSpecs.sousse = [
+      { type: 'house', style: 'goulette', name: 'قصر الرباط السوسي', width: 130, height: 140, wallColor: '#f8fafc', doorColor: '#0284c7' },
+      { type: 'biz', id: 'salon_de_the' },
+      { type: 'crossroad', streetName: 'كورنيش بوجعفر', width: 130, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
+      { type: 'biz', id: 'hotel' },
+      { type: 'house', style: 'goulette', name: 'دار القنطاوي', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#059669' },
+      { type: 'biz', id: 'restaurant' },
+      { type: 'crossroad', streetName: 'باب بحر سوسة', width: 130, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
+      { type: 'biz', id: 'supermarche' }
+    ];
+
+    zoneSpecs.annaba = [
+      { type: 'house', style: 'goulette', name: 'قصر بونة العتيق', width: 135, height: 145, wallColor: '#f8fafc', doorColor: '#059669' },
+      { type: 'biz', id: 'fruits_de_mer' },
+      { type: 'crossroad', streetName: 'كورنيش عنابة', width: 130, nextZoneId: 'tripoli', nextZoneLabel: 'طرابلس' },
+      { type: 'biz', id: 'supermarche' },
+      { type: 'house', style: 'goulette', name: 'فيلا سرايدي', width: 130, height: 138, wallColor: '#fef3c7', doorColor: '#0284c7' },
+      { type: 'biz', id: 'usine_conserves' },
+      { type: 'crossroad', streetName: 'ساحة الثورة', width: 130, nextZoneId: 'tripoli', nextZoneLabel: 'طرابلس' },
+      { type: 'biz', id: 'agence_voyages' }
+    ];
+
+    zoneSpecs.tripoli = [
+      { type: 'house', style: 'medina', name: 'السرايا الحمراء', width: 140, height: 150, wallColor: '#fef3c7', doorColor: '#b45309' },
+      { type: 'biz', id: 'showroom_auto' },
+      { type: 'crossroad', streetName: 'ميدان الشهداء', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
+      { type: 'biz', id: 'supermarche' },
+      { type: 'house', style: 'medina', name: 'قصر المدينة القديمة', width: 135, height: 142, wallColor: '#fffbeb', doorColor: '#d97706' },
+      { type: 'biz', id: 'promoteur_immobilier' },
+      { type: 'crossroad', streetName: 'قوس ماركوس أوريليوس', width: 135, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
+      { type: 'biz', id: 'hotel' }
+    ];
 
     zoneSpecs.bizerte = [
       { type: 'house', style: 'goulette', name: 'فيلا سيدي سالم الكورنيش', width: 125, height: 130, wallColor: '#f8fafc', doorColor: '#0284c7' },
@@ -4916,7 +4616,9 @@ export class QuartierAnimator {
   }
 
   drawBuilding(ctx, b, x, groundY, timestamp) {
-    const biz = this.engine.businesses.find(item => item.id === b.id);
+    const biz = this.engine.getOrEnsureBusiness
+      ? this.engine.getOrEnsureBusiness(b.id)
+      : this.engine.businesses.find(item => item.id === b.id);
     const isUnlocked = biz && biz.level > 0;
     const isProducing = biz && (biz.isProducing || biz.hasManager || biz.progressMs > 0);
     const maxAllowedH = Math.max(110, groundY - 42);
@@ -5042,36 +4744,49 @@ export class QuartierAnimator {
       ctx.fillText(biz ? biz.name : 'مشروع للبيع', x + b.width / 2, y + 68, b.width - 14);
 
       const unlockCost = biz ? this.engine.getCost(biz) : 0;
-      const canAfford = this.engine.dinars >= unlockCost;
+      const totalLiquid = (this.engine.dinars || 0) + (this.engine.bankBalance || 0);
+      const canAfford = totalLiquid >= unlockCost;
+      const manque = Math.max(0, Math.ceil(unlockCost - totalLiquid));
 
       ctx.fillStyle = canAfford ? '#34d399' : '#f59e0b';
-      ctx.font = '800 9.5px "Cairo", sans-serif';
-      ctx.fillText(unlockCost > 0 ? ('حقّ المحلّ: ' + unlockCost.toLocaleString() + ' د.ت') : 'حاضر للحلّان', x + b.width / 2, y + 84, b.width - 14);
+      ctx.font = '800 9px "Cairo", sans-serif';
+      ctx.fillText(
+        unlockCost > 0
+          ? (canAfford ? ('السعر: ' + unlockCost.toLocaleString() + ' د.ت ✓') : ('🔒 مقفول • ' + unlockCost.toLocaleString() + ' د.ت'))
+          : 'حاضر للحلّان',
+        x + b.width / 2,
+        y + 84,
+        b.width - 12
+      );
 
-      const btnW = Math.min(b.width - 20, 118);
+      const btnW = Math.min(b.width - 14, 122);
       const btnH = 26;
       const btnX = x + (b.width - btnW) / 2;
       const btnY = y + bHeight - 28;
 
-      ctx.fillStyle = canAfford ? '#10b981' : 'rgba(51, 65, 85, 0.9)';
+      ctx.fillStyle = canAfford ? '#10b981' : 'rgba(127, 29, 29, 0.92)';
       ctx.beginPath();
       ctx.roundRect(btnX, btnY, btnW, btnH, 8);
       ctx.fill();
-      ctx.strokeStyle = canAfford ? '#34d399' : '#64748b';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = canAfford ? '#34d399' : '#f87171';
+      ctx.lineWidth = 1.2;
       ctx.stroke();
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 11px "Cairo", sans-serif';
-      ctx.fillText(canAfford ? '🔑 اشري المحلّ' : '🔍 تفاصيل الأصل', btnX + btnW / 2, btnY + 17);
+      ctx.font = '900 9.5px "Cairo", sans-serif';
+      ctx.fillText(
+        canAfford ? '🔑 اشري المحلّ' : ('⚠️ ناقصك ' + manque.toLocaleString() + ' د.ت'),
+        btnX + btnW / 2,
+        btnY + 17,
+        btnW - 8
+      );
 
-      // Clic tactile optimisé : tout le bâtiment verrouillé permet l'achat direct si le joueur a les fonds,
-      // ou ouvre les détails de l'origine si fonds insuffisants
+      // Clic tactile sur tout le bâtiment verrouillé : achète si fonds suffisants, sinon explique pourquoi c'est verrouillé
       this.interactiveHitboxes.push({
         x: x,
-        y: y + 20,
+        y: y,
         w: b.width,
-        h: bHeight - 20,
+        h: bHeight,
         action: 'upgrade',
         bizId: b.id
       });

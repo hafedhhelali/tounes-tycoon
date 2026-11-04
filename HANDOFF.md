@@ -1,11 +1,10 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-11-04T23:16:00.000Z - etat = HEAD de main (v122-welcome-splash-google-profile-and-strict-ad-monetization)
+MAJ: 2026-11-04T23:58:00+01:00 - etat = HEAD de main (v123-fintech-icon-realistic-prices-lock-reasons-clean-interiors)
 
-## État en 3 lignes
-Animation d'Accueil Royale, Profil Connecté Google (RGPD / Google Play) & Monétisation Stricte Zéro-Solde-Sans-PUB (`v122`) :
-1. **Animation d'Accueil (`#welcomeSplashScreen` dans `index.html`)** : Écran d'accueil animé avec blason 3D flottant, titre doré `تونس تايكون` à reflet animé, sous-titre `إمبراطورية المال والأعمال • من الحومة إلى القمّة`, barre de progression fluide (`0%` -> `100%`) avec statuts dynamiques et petit texte légal en bas (`© EOLabs 2026`).
-2. **Profil Connecté Google Conforme RGPD & Google Play (`engine.js`, `index.html`)** : Bouton profil `👤` dans le header + section `#googleProfileSection` avec liaison Google (compatible Google Identity Services + sauvegarde locale dédiée), synchronisation en 1 clic et bouton de déconnexion/suppression immédiate des données (RGPD).
-3. **Politique Stricte PUB (`ads_service.js`, `index.html`, `store_animator.js`)** : Suppression de toutes les options donnant du solde gratuit sans PUB (suppression de `#tobaccoTipBtn`, suppression des gains instantanés hors-cycle dans `onCollect` et `triggerServe`) et passage obligatoire de toute accélération ou bonus (`تيربو x2`, `عجلة الحظ`, `صندوق الحظ`, `بريم`, `تحديات`, `شكبة`) par le lecteur publicitaire `AdsService.showRewardedBoost()`.
+## État en 3 lignes (v123)
+1. Icône appli/APK : logo futuriste finance (bouclier hexagonal or/cyan, barres, flèche haussière) — ZÉRO drapeau (`scripts/gen_icon.ps1`, `res/drawable*`, `mipmap-*`).
+2. Prix réalistes (+1.5%/niveau) : café 1.8, cigarettes 10, yacht 100/pers, voyage 500/pers (👥1..5), viande 30/kg ; 18 villes `zoneSpecs` = `CITY_BUSINESS_MAP` ; achat via dinars+banque ; raison du verrou affichée (`🔒 مقفول • ⚠️ ناقصك X د.ت`).
+3. Intérieurs épurés : HUD empilé (flex, zéro chevauchement), enseigne géante/ardoises/boutons orange supprimés, ≥1 travailleur actif dès L1 (canvas + carte `👷 عون الخدمة القار`).
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).

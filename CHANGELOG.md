@@ -1,3 +1,11 @@
+## [1.23.0] - 2026-11-04
+### Changed
+- Icône appli/APK futuriste finance & business, sans drapeau.
+- Prix réalistes tunisiens (+1.5%/niveau) ; réservations yacht/voyage par personne.
+- Intérieurs épurés (HUD sans chevauchement, zéro gros texte), 1 travailleur minimum dès le départ.
+### Fixed
+- Projets inachetables (Sousse, Annaba, Tripoli, Tunis/fricassé) ; achat avec solde bancaire ; raison du verrouillage affichée.
+
 ## [0.80.0] - 2026-10-24
 ### Added
 - Spécialités régionales adaptées selon la ville (Béja: fromages/laiterie, Tozeur: dattes, Nabeul: poterie, Djerba: artisanat/poterie, Sfax: poissons/fruits de mer).

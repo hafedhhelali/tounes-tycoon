@@ -973,43 +973,78 @@ export class TycoonEngine {
     }
   }
 
+  createBusinessInstance(cfg) {
+    return {
+      id: cfg.id,
+      name: cfg.name,
+      tagline: cfg.tagline,
+      icon: cfg.icon,
+      baseCost: cfg.baseCost,
+      baseRevenue: cfg.baseRevenue,
+      costMultiplier: cfg.costMultiplier,
+      cycleDurationMs: cfg.cycleDurationMs,
+      level: 0,
+      hiredManagersCount: 0,
+      hasManager: false,
+      progressMs: 0,
+      isProducing: false,
+      managers: cfg.managers,
+      isSold: false
+    };
+  }
+
   initCityBusinesses(cityId) {
+    const allowedIds = CITY_BUSINESS_MAP[cityId];
     if (!this.cityBusinesses[cityId]) {
-      const allowedIds = CITY_BUSINESS_MAP[cityId];
       let configs;
       if (allowedIds && Array.isArray(allowedIds)) {
-        // Conserver l'ordre exact configuré pour la ville
         configs = allowedIds
           .map(id => this.BUSINESS_CONFIGS.find(cfg => cfg.id === id))
           .filter(Boolean);
       } else {
-        // Fallback générique
         configs = this.BUSINESS_CONFIGS.filter(cfg => {
           if (cfg.id === 'kaskrout' && cityId !== 'tunis') return false;
           if (cfg.id === 'fruits_de_mer' && !['sfax', 'djerba_holding', 'monastir_mahdia', 'bizerte'].includes(cityId)) return false;
           return true;
         });
       }
-
-      this.cityBusinesses[cityId] = configs.map(cfg => ({
-        id: cfg.id,
-        name: cfg.name,
-        tagline: cfg.tagline,
-        icon: cfg.icon,
-        baseCost: cfg.baseCost,
-        baseRevenue: cfg.baseRevenue,
-        costMultiplier: cfg.costMultiplier,
-        cycleDurationMs: cfg.cycleDurationMs,
-        level: 0,
-        hiredManagersCount: 0,
-        hasManager: false,
-        progressMs: 0,
-        isProducing: false,
-        managers: cfg.managers,
-        isSold: false
-      }));
+      this.cityBusinesses[cityId] = configs.map(cfg => this.createBusinessInstance(cfg));
+    } else if (allowedIds && Array.isArray(allowedIds)) {
+      // Réconcilier les projets manquants d'une sauvegarde antérieure pour garantir que tous les projets de la ville sont achetables
+      const existing = this.cityBusinesses[cityId];
+      for (const id of allowedIds) {
+        if (!existing.some(b => b.id === id)) {
+          const cfg = this.BUSINESS_CONFIGS.find(c => c.id === id);
+          if (cfg) existing.push(this.createBusinessInstance(cfg));
+        }
+      }
     }
     return this.cityBusinesses[cityId];
+  }
+
+  getOrEnsureBusiness(id) {
+    let biz = this.businesses.find(b => b.id === id);
+    if (!biz) {
+      const cfg = this.BUSINESS_CONFIGS.find(c => c.id === id);
+      if (cfg) {
+        biz = this.createBusinessInstance(cfg);
+        this.businesses.push(biz);
+      }
+    }
+    return biz || null;
+  }
+
+  getBusinessLockDiagnosis(id) {
+    const biz = this.getOrEnsureBusiness(id);
+    if (!biz) return 'مشروع غير متوفّر';
+    if (biz.isSold) return '🌳 هذا المشروع تمّ بيعه وتحويله لمنتزه عمومي';
+    const cost = this.getCost(biz);
+    const totalAvailable = (this.dinars || 0) + (this.bankBalance || 0);
+    if (totalAvailable < cost) {
+      const manque = Math.ceil(cost - totalAvailable);
+      return `🔒 مقفول : يلزمك ${Math.ceil(cost).toLocaleString()} د.ت (ناقصك ${manque.toLocaleString()} د.ت)`;
+    }
+    return `🔑 حاضر للفتح (${Math.ceil(cost).toLocaleString()} د.ت)`;
   }
 
   switchCity(cityId) {
@@ -1921,6 +1956,12 @@ export class TycoonEngine {
     return null;
   }
 
+  getUnitPriceScale(level = 1) {
+    const lvl = Math.max(1, Number(level) || 1);
+    // Progression très douce (+1.5% par niveau) pour que les prix restent 100% logiques et réalistes
+    return 1 + (lvl - 1) * 0.015;
+  }
+
   getBusinessDetail(bizId, now = Date.now()) {
     const biz = this.businesses.find(b => b.id === bizId);
     if (!biz) return null;
@@ -1930,148 +1971,161 @@ export class TycoonEngine {
     const cycleSeconds = (biz.cycleDurationMs || 1000) / 1000;
     const dinarsPerSecond = cycleSeconds > 0 ? (revenuePerCycle / cycleSeconds) : 0;
 
-    // Recettes authentiques décomposées selon la nature du commerce tunisien
+    // Prix unitaires tunisiens réalistes basés sur le coût de la vie réel en Tunisie
     const RECIPES_MAP = {
       kaskrout: [
-        { item: 'كسكروت عياري كامل بالتن والعظام', price: 4.5, sharePct: 60 },
-        { item: 'كعيبات كفتة وهريسة عربي', price: 2.0, sharePct: 25 },
-        { item: 'قازوز بوڨا سيدر بارد يردّ الروح', price: 1.5, sharePct: 15 }
+        { item: 'كسكروت عياري بالتنّ والهريسة', price: 3.5, sharePct: 60 },
+        { item: 'صحن كفتاجي وعظام بلدي', price: 4.0, sharePct: 25 },
+        { item: 'قازوز بوڨا بارد', price: 1.5, sharePct: 15 }
       ],
       fricasse: [
         { item: 'كعبة فريكاسي سخونة بالزيتون', price: 1.2, sharePct: 55 },
-        { item: 'كعبة بمبلوني مرشوشة سكر', price: 1.5, sharePct: 35 },
-        { item: 'دبوزة ماء صافية باردة', price: 1.0, sharePct: 10 }
+        { item: 'كعبة بمبلوني مرشوشة سكر', price: 1.2, sharePct: 35 },
+        { item: 'دبوزة ماء باردة', price: 1.0, sharePct: 10 }
       ],
       kahwa: [
-        { item: 'قهوة فيلتري / كابوسين قارحة', price: 1.8, sharePct: 45 },
-        { item: 'كاس تاي منعنع بالبندق', price: 1.5, sharePct: 35 },
-        { item: 'شيشة تفاح ونفّة على الكيف', price: 4.5, sharePct: 20 }
+        { item: 'قهوة فيلتري / إكسبريس', price: 1.8, sharePct: 50 },
+        { item: 'كاس تاي منعنع بالبندق', price: 2.2, sharePct: 30 },
+        { item: 'كابوسين وقازوز', price: 2.0, sharePct: 20 }
       ],
       attariya: [
-        { item: 'قضية النهار (حليب، خبز، حكّة طماطم)', price: 12.0, sharePct: 50 },
-        { item: 'صبّان صولد وتيكيات تليفون', price: 5.0, sharePct: 30 },
-        { item: 'سلعة الصغار والشكلاطة والبيمو', price: 2.5, sharePct: 20 }
+        { item: 'قضية النهار (حليب، خبز، طماطم)', price: 6.5, sharePct: 50 },
+        { item: 'زيت، عظم وهريسة عربي', price: 8.0, sharePct: 30 },
+        { item: 'شكلاطة، بيمو ولمجة الصغار', price: 2.5, sharePct: 20 }
       ],
       fruits_de_mer: [
-        { item: 'صحن قرنيط مفوّر وشوربة حوت', price: 16.5, sharePct: 45 },
-        { item: 'كروفيت مشوي وفواكه بحر فرشك', price: 24.0, sharePct: 35 },
-        { item: 'كعيبة وراطة مشوية بالكمون', price: 18.0, sharePct: 20 }
+        { item: 'وراطة وقاروص فرشك (1 كغ)', price: 22.0, sharePct: 45 },
+        { item: 'كروفات وكلمار بحري (1 كغ)', price: 32.0, sharePct: 35 },
+        { item: 'سردينة وتريليا صيد اليوم (1 كغ)', price: 12.0, sharePct: 20 }
       ],
       patisserie: [
-        { item: 'صحن بقلاوة ومقروض قيرواني بالعسل', price: 18.0, sharePct: 50 },
-        { item: 'كعك ورقة وحلو درع وزرير', price: 14.0, sharePct: 30 },
-        { item: 'خبزة قاطو عيد ميلاد بريستيج', price: 45.0, sharePct: 20 }
+        { item: 'مقروض القيروان الأصيل (1 كغ)', price: 14.0, sharePct: 50 },
+        { item: 'كعك ورقة وزلبية ومخارق (1 كغ)', price: 16.0, sharePct: 30 },
+        { item: 'بقلاوة باللوز والفزدق (1 كغ)', price: 35.0, sharePct: 20 }
       ],
       librairie: [
-        { item: 'كراريس، ستيلوات ومحفظة قراية', price: 25.0, sharePct: 50 },
-        { item: 'كتب، قصص ومجلاّت للمطالعة', price: 18.0, sharePct: 30 },
-        { item: 'جرائد الصباح وفوتوكوبي أوراق', price: 3.5, sharePct: 20 }
+        { item: 'كراريس، ستيلوات وأدوات قراية', price: 6.5, sharePct: 50 },
+        { item: 'كتب، قصص ومجلاّت للمطالعة', price: 12.0, sharePct: 30 },
+        { item: 'جرائد الصباح ونسخ أوراق', price: 2.0, sharePct: 20 }
       ],
       produits_laitiers: [
-        { item: 'جبن باجي وقوتة فرشك', price: 15.0, sharePct: 50 },
-        { item: 'حليب بقر صافي وسمن عربي', price: 8.0, sharePct: 30 },
-        { item: 'لبن ورايب وزبدة عربي', price: 5.0, sharePct: 20 }
+        { item: 'جبن باجي وقوتة فرشك (1 كغ)', price: 16.0, sharePct: 50 },
+        { item: 'حليب بقر صافي وزبدة عربي', price: 6.0, sharePct: 30 },
+        { item: 'لبن ورايب بلدي طازج', price: 3.5, sharePct: 20 }
       ],
       boucherie: [
-        { item: 'لحم علّوش بركوس بلدي (1 كغ)', price: 42.0, sharePct: 50 },
-        { item: 'هبرة بقري بلدي وكبدة علّوش', price: 36.0, sharePct: 30 },
-        { item: 'مرقاز دياري حار بالثوم والنعناع', price: 20.0, sharePct: 20 }
+        { item: 'لحم علّوش وبقري بلدي (1 كغ)', price: 30.0, sharePct: 50 },
+        { item: 'هبرة بقري وكبدة فرشك (1 كغ)', price: 32.0, sharePct: 30 },
+        { item: 'مرقاز دياري حار بالثوم (1 كغ)', price: 25.0, sharePct: 20 }
       ],
       vente_vetements: [
-        { item: 'سوريّة وسروال كلاس ماركة', price: 85.0, sharePct: 50 },
-        { item: 'فريب لوكس بياسات فرز أوّل', price: 35.0, sharePct: 30 },
-        { item: 'صبّاط كلاس وحزام جلد', price: 55.0, sharePct: 20 }
+        { item: 'مريول وسروال جينز', price: 45.0, sharePct: 50 },
+        { item: 'سوريّة وجاكيت كلاس', price: 65.0, sharePct: 30 },
+        { item: 'صبّاط جلدي وحزام', price: 50.0, sharePct: 20 }
       ],
       vente_montres: [
-        { item: 'مونقالة سويسرية أوتوماتيك', price: 320.0, sharePct: 50 },
-        { item: 'صياغة ذهب ومسايس يد', price: 450.0, sharePct: 35 },
-        { item: 'تصليح مونقالات وتبديل بيلات', price: 25.0, sharePct: 15 }
+        { item: 'مونقالة يد كلاسيكية أنيقة', price: 85.0, sharePct: 50 },
+        { item: 'مونقالة رياضية ومجوهرات فضة', price: 65.0, sharePct: 35 },
+        { item: 'تصليح مونقالات وتبديل بيلة', price: 15.0, sharePct: 15 }
       ],
       salle_de_jeux: [
-        { item: 'ساعة بلاي 5 وطرح فيفا سخون', price: 6.0, sharePct: 50 },
-        { item: 'طرح بلياردو مع قازوز بارد', price: 8.0, sharePct: 30 },
-        { item: 'طرح بيبي فوت وتحدّي الشبيبة', price: 4.0, sharePct: 20 }
+        { item: 'طرح بلاي 5 وفيفا (بالساعة)', price: 5.0, sharePct: 50 },
+        { item: 'طرح بلياردو مع صحابك', price: 6.0, sharePct: 30 },
+        { item: 'جيتون بيبي فوت وأركاد', price: 3.0, sharePct: 20 }
       ],
       emballage_dattes: [
-        { item: 'بلاطو دقلة النور عرجون 1 كغ', price: 22.0, sharePct: 50 },
-        { item: 'كونتينار تصدير دقلة فرز أوّل', price: 1500.0, sharePct: 35 },
-        { item: 'ربّ تمر معسّل وحلوى دقلة', price: 12.0, sharePct: 15 }
+        { item: 'صندوق دقلة النور عرجون (1 كغ)', price: 12.0, sharePct: 50 },
+        { item: 'علبة دقلة محشية باللوز', price: 18.0, sharePct: 35 },
+        { item: 'ربّ تمر معسّل طبيعي', price: 10.0, sharePct: 15 }
       ],
       croisiere_mer: [
-        { item: 'تيكي خرجة في شقف القراصنة بالغذاء', price: 65.0, sharePct: 50 },
-        { item: 'كراء يخت VIP لسهرة في البحر', price: 850.0, sharePct: 35 },
-        { item: 'جولة فلوكة وغوص في القنطاوي', price: 40.0, sharePct: 15 }
+        { item: 'حجز جولة يخت (للشخص الواحد)', price: 100.0, sharePct: 55 },
+        { item: 'رحلة بحرية بالغذاء (للشخص)', price: 125.0, sharePct: 30 },
+        { item: 'سهرة يخت VIP (للشخص)', price: 150.0, sharePct: 15 }
       ],
       taxi_collectif: [
-        { item: 'بلاصة تاكسي جماعي خط البلاد', price: 2.5, sharePct: 70 },
-        { item: 'كورسة سبيسيال ومزروبة', price: 15.0, sharePct: 20 },
-        { item: 'نقل قفف وكردونات من المحطة', price: 5.0, sharePct: 10 }
+        { item: 'بلاصة تاكسي جماعي خط البلاد', price: 2.0, sharePct: 70 },
+        { item: 'بلاصة لواج خط سريع', price: 4.5, sharePct: 20 },
+        { item: 'كورسة كاملة بالطلب', price: 15.0, sharePct: 10 }
       ],
       superette: [
-        { item: 'قفّة قضية الدار للأسبوع', price: 65.0, sharePct: 50 },
-        { item: 'ياغورت، أجبان وقازوز بارد', price: 22.0, sharePct: 30 },
-        { item: 'جافيل ومواد تنظيف وصابون', price: 28.0, sharePct: 20 }
+        { item: 'قفّة قضية الدار اليومية', price: 18.0, sharePct: 50 },
+        { item: 'ياغورت، أجبان وقازوز بارد', price: 10.0, sharePct: 30 },
+        { item: 'مواد تنظيف وصابون', price: 12.0, sharePct: 20 }
       ],
       supermarche: [
-        { item: 'شاريو معبّي قضية الشهر والعولة', price: 220.0, sharePct: 55 },
-        { item: 'إلكتروميناجي ومعون الكوجينة', price: 110.0, sharePct: 25 },
-        { item: 'مواد تجميل وبارفانات', price: 45.0, sharePct: 20 }
+        { item: 'شاريو قضية العائلة الأسبوعية', price: 65.0, sharePct: 55 },
+        { item: 'لحوم، أجبان وغلال طازجة', price: 35.0, sharePct: 25 },
+        { item: 'مواد تنظيف وتجهيز الدار', price: 25.0, sharePct: 20 }
       ],
       salon_de_the: [
-        { item: 'كاس كابوسين بريستيج / إكسبريس', price: 3.0, sharePct: 40 },
-        { item: 'موخيتو منعنع وجو فريش', price: 6.5, sharePct: 35 },
-        { item: 'كراب شكلاطة، قوفرات وتشيز كيك', price: 8.0, sharePct: 25 }
+        { item: 'قهوة إكسبريس وتاي بالبندق', price: 4.5, sharePct: 40 },
+        { item: 'موخيتو منعنع وعصير فرشك', price: 6.5, sharePct: 35 },
+        { item: 'كراب شكلاطة وتشيز كيك', price: 8.0, sharePct: 25 }
       ],
       restaurant: [
-        { item: 'صحن مشوي ومصلّي علّوش بالكمّون', price: 38.0, sharePct: 50 },
-        { item: 'صحن كفتاجي وعصبان وتسطيرة', price: 16.0, sharePct: 30 },
-        { item: 'قازوز بوقا سيدر وسلاطة مشوية', price: 8.5, sharePct: 20 }
+        { item: 'وجبة مشوي ومصلّي علّوش كامل', price: 28.0, sharePct: 50 },
+        { item: 'صحن مقرونة بغلّ البحر', price: 22.0, sharePct: 30 },
+        { item: 'سلاطة مشوية، بريك وطاجين', price: 12.0, sharePct: 20 }
       ],
       agence_voyages: [
-        { item: 'تيكي طيارة وفويّاج منظّم', price: 1200.0, sharePct: 50 },
-        { item: 'حجز عمرة VIP قريبة للحرم', price: 3800.0, sharePct: 35 },
-        { item: 'ويكاند في نزل 5 نجوم بالحمامات', price: 450.0, sharePct: 15 }
+        { item: 'رحلة سياحية منظّمة (للشخص)', price: 500.0, sharePct: 55 },
+        { item: 'حجز فويّاج وأوتيل (للشخص)', price: 650.0, sharePct: 30 },
+        { item: 'برنامج عمرة كامل (للشخص)', price: 850.0, sharePct: 15 }
       ],
       hotel: [
-        { item: 'سويت ديلوكس أون كلوزيف عالبحر', price: 420.0, sharePct: 55 },
-        { item: 'سبا وبيسين سخونة ومساج', price: 160.0, sharePct: 25 },
-        { item: 'بوفيه عشاء وسهرية مالوف وعوّادة', price: 85.0, sharePct: 20 }
+        { item: 'ليلة في بيت دبل عالبحر', price: 160.0, sharePct: 55 },
+        { item: 'سويت عائلي مع فطور الصباح', price: 240.0, sharePct: 25 },
+        { item: 'دخول مسبح، سبا وبوفيه', price: 75.0, sharePct: 20 }
       ],
       centre_commercial: [
-        { item: 'كراء حوانت وبوتيكات الماركات', price: 12000.0, sharePct: 45 },
-        { item: 'تيكيات قاعات السينما والألعاب', price: 18.0, sharePct: 30 },
-        { item: 'مداخيل قهاوي ومطاعم المول', price: 35.0, sharePct: 25 }
+        { item: 'قضية بوتيكات المول والماركات', price: 75.0, sharePct: 45 },
+        { item: 'تيكيات قاعات السينما والترفيه', price: 15.0, sharePct: 30 },
+        { item: 'قهاوي ومطاعم المول', price: 25.0, sharePct: 25 }
       ],
       usine_conserves: [
-        { item: 'كونتينار تصدير هريسة عربي لأوروبا', price: 45000.0, sharePct: 50 },
-        { item: 'كردونات حكك طماطم وتنّ بالزيت', price: 28000.0, sharePct: 35 },
-        { item: 'مصبّرات زيتون ومعجون غلال', price: 15000.0, sharePct: 15 }
+        { item: 'علبة هريسة وتنّ بالزيت (1 كغ)', price: 18.0, sharePct: 50 },
+        { item: 'بيدون زيت زيتون بكر (5 لتر)', price: 65.0, sharePct: 35 },
+        { item: 'صندوق مصبّرات غذائية', price: 32.0, sharePct: 15 }
       ],
       showroom_auto: [
-        { item: 'كرهبة 4x4 فاخرة زيرو كم', price: 240000.0, sharePct: 60 },
-        { item: 'كرهبة برلين إيصونص وهيبريد', price: 110000.0, sharePct: 30 },
-        { item: 'كونتراتو فيدونج وصيانة وتأمين', price: 8500.0, sharePct: 10 }
+        { item: 'كراء كرهبة حديثة (باليوم)', price: 120.0, sharePct: 50 },
+        { item: 'فيدونج، تشخيص وصيانة كاملة', price: 180.0, sharePct: 35 },
+        { item: 'عقد تأمين وتسجيل سنوي', price: 320.0, sharePct: 15 }
       ],
       promoteur_immobilier: [
-        { item: 'برطمان S+3 في ريزيدونس بقمرت', price: 680000.0, sharePct: 55 },
-        { item: 'فيلا بالبيسين في الحمامات', price: 1200000.0, sharePct: 35 },
-        { item: 'بيروات ومحلاّت تجارية عالشارع', price: 450000.0, sharePct: 10 }
+        { item: 'كراء برطمان مفروش (بالليلة)', price: 140.0, sharePct: 55 },
+        { item: 'كراء فيلا بالبيسين (باليوم)', price: 320.0, sharePct: 30 },
+        { item: 'عمولة وساطة وعقد كراء', price: 250.0, sharePct: 15 }
       ],
       tayaran_el_ghzela: [
-        { item: 'تيكيات درجة أولى ورجال أعمال', price: 3200.0, sharePct: 45 },
-        { item: 'تيكيات طيارة للرحلات الدولية', price: 750.0, sharePct: 40 },
-        { item: 'شحن سلعة وتصدير جوي سريع', price: 18000.0, sharePct: 15 }
+        { item: 'تذكرة طيارة رحلة دولية (للشخص)', price: 450.0, sharePct: 55 },
+        { item: 'تذكرة درجة أعمال (للشخص)', price: 720.0, sharePct: 30 },
+        { item: 'شحن حقيبة إضافية بالمطار', price: 95.0, sharePct: 15 }
       ]
     };
 
-    const recipeBreakdown = RECIPES_MAP[biz.id] || [
-      { item: 'الخدمة الأساسية للمشروع', price: Math.max(1, Math.round(revenuePerCycle * 0.6)), sharePct: 60 },
-      { item: 'خدمات إضافية ممتازة', price: Math.max(1, Math.round(revenuePerCycle * 0.25)), sharePct: 25 },
-      { item: 'مبيعات جانبية وسريعة', price: Math.max(1, Math.round(revenuePerCycle * 0.15)), sharePct: 15 }
+    const priceScale = this.getUnitPriceScale(biz.level || 1);
+    const rawRecipes = RECIPES_MAP[biz.id] || [
+      { item: 'الخدمة الأساسية للمشروع', price: 10.0, sharePct: 60 },
+      { item: 'خدمات إضافية ممتازة', price: 15.0, sharePct: 25 },
+      { item: 'مبيعات جانبية وسريعة', price: 6.0, sharePct: 15 }
     ];
+    const recipeBreakdown = rawRecipes.map(r => ({
+      ...r,
+      basePrice: r.price,
+      price: +(r.price * priceScale).toFixed(2)
+    }));
 
-    // Postes d'employés et cadres (Staff Slots)
+    // Postes d'employés et cadres (Staff Slots) + travailleur de base toujours présent dès le début
     const hiredCount = biz.hiredManagersCount ?? (biz.hasManager ? 1 : 0);
+    const baseWorker = {
+      role: 'خدّام المحلّ الأساسي',
+      name: 'عون الخدمة القار',
+      icon: '👷',
+      hired: true,
+      bonusDesc: 'حاضر في المحلّ ويخدم الحرفاء من البداية'
+    };
     const staffSlots = (biz.managers || []).map((m, idx) => ({
       role: m.role,
       name: m.name,
@@ -2116,7 +2170,9 @@ export class TycoonEngine {
       revenuePerCycle,
       dinarsPerSecond,
       recipeBreakdown,
+      baseWorker,
       staffSlots,
+      activeWorkersCount: Math.max(1, hiredCount + 1),
       customersPerMinute,
       satisfactionPct,
       crowdLevel
@@ -2197,11 +2253,18 @@ export class TycoonEngine {
   }
 
   buyBusiness(id) {
-    const biz = this.businesses.find(b => b.id === id);
-    if (!biz) return false;
+    const biz = this.getOrEnsureBusiness(id);
+    if (!biz || biz.isSold) return false;
     const cost = this.getCost(biz);
-    if (this.dinars >= cost) {
-      this.dinars -= cost;
+    const totalAvailable = (this.dinars || 0) + (this.bankBalance || 0);
+    if (totalAvailable >= cost) {
+      if (this.dinars >= cost) {
+        this.dinars -= cost;
+      } else {
+        const fromBank = cost - this.dinars;
+        this.dinars = 0;
+        this.bankBalance = Math.max(0, (this.bankBalance || 0) - fromBank);
+      }
       if (this.currentCityId) {
         if (!this.cityBalances) this.cityBalances = {};
         this.cityBalances[this.currentCityId] = this.dinars;
@@ -2220,13 +2283,20 @@ export class TycoonEngine {
   }
 
   hireManager(id) {
-    const biz = this.businesses.find(b => b.id === id);
+    const biz = this.getOrEnsureBusiness(id);
     if (!biz || biz.level === 0) return false;
     const nextMgr = this.getNextManager(biz);
     if (!nextMgr) return false;
 
-    if (this.dinars >= nextMgr.cost) {
-      this.dinars -= nextMgr.cost;
+    const totalAvailable = (this.dinars || 0) + (this.bankBalance || 0);
+    if (totalAvailable >= nextMgr.cost) {
+      if (this.dinars >= nextMgr.cost) {
+        this.dinars -= nextMgr.cost;
+      } else {
+        const fromBank = nextMgr.cost - this.dinars;
+        this.dinars = 0;
+        this.bankBalance = Math.max(0, (this.bankBalance || 0) - fromBank);
+      }
       if (this.currentCityId) {
         if (!this.cityBalances) this.cityBalances = {};
         this.cityBalances[this.currentCityId] = this.dinars;

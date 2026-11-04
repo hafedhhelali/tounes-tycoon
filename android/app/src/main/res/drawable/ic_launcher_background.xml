@@ -4,11 +4,16 @@
     android:height="108dp"
     android:viewportHeight="108"
     android:viewportWidth="108">
-    <!-- Fond Rouge Tunisien Dégradé Profond -->
+    <!-- Fond Futuriste Finance & Business (Obsidienne & Émeraude Cyberpunk) -->
     <path
-        android:fillColor="#E11D48"
+        android:fillColor="#060B16"
         android:pathData="M0,0h108v108h-108z" />
     <path
-        android:fillColor="#BE123C"
+        android:fillColor="#0A192F"
         android:pathData="M0,54h108v54h-108z" />
+    <!-- Grille Financière Holographique Subtile -->
+    <path
+        android:strokeColor="#1E293B"
+        android:strokeWidth="0.6"
+        android:pathData="M0,27 L108,27 M0,54 L108,54 M0,81 L108,81 M27,0 L27,108 M54,0 L54,108 M81,0 L81,108" />
 </vector>
