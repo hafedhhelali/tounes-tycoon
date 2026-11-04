@@ -180,6 +180,43 @@ export class CanvasStoreEngine {
     return this.engine.businesses.find(b => b.id === this.bizId);
   }
 
+  getBizArchetype(bizId = this.bizId) {
+    if (bizId === 'salle_de_jeux') return 'arcade_billiard';
+    if (bizId === 'kahwa' || bizId === 'salon_de_the') return 'kahwa_counter';
+    if (['croisiere_mer', 'agence_voyages', 'hotel', 'taxi_collectif', 'tayaran_el_ghzela', 'showroom_auto', 'promoteur_immobilier'].includes(bizId)) {
+      return 'booking_service';
+    }
+    if (['kaskrout', 'fricasse', 'restaurant'].includes(bizId)) return 'food_counter';
+    if (['usine_conserves', 'emballage_dattes'].includes(bizId)) return 'industrial_belt';
+    return 'retail_shop';
+  }
+
+  getActivitySlotX(archetype, slotIndex) {
+    const rightBound = Math.max(210, this.width - 44);
+    if (archetype === 'kahwa_counter') {
+      // 5 tabourets devant le grand bar à café / salon de thé
+      const span = Math.max(96, rightBound - 114);
+      return 114 + (slotIndex % 5) * (span / 4);
+    }
+    if (archetype === 'arcade_billiard') {
+      // 4 postes : [0,1] autour de la table de billard, [2,3] devant les bornes/consoles
+      const span = Math.max(84, rightBound - 122);
+      return 122 + (slotIndex % 4) * (span / 3);
+    }
+    if (archetype === 'booking_service') {
+      // 3 postes devant le bassin yacht / pupitre de réservation VIP
+      const span = Math.max(70, rightBound - 128);
+      return 128 + (slotIndex % 3) * (span / 2);
+    }
+    if (archetype === 'food_counter') {
+      const span = Math.max(76, rightBound - 120);
+      return 120 + (slotIndex % 4) * (span / 3);
+    }
+    // retail_shop : rayon / vitrine avant passage en caisse
+    const span = Math.max(72, rightBound - 126);
+    return 126 + (slotIndex % 3) * (span / 2);
+  }
+
   getStoreTier(biz) {
     const lvl = biz ? (biz.level || 1) : 1;
     if (lvl >= 100) return { tier: 5, name: 'VIP ملكي', color: '#f43f5e', border: '#fde047', neon: '#38bdf8', carpet: ['#991b1b', '#fbbf24'] };
@@ -244,18 +281,57 @@ export class CanvasStoreEngine {
   }
 
   spawnCustomer() {
-    const activeQueueCount = this.customers.filter(c => c.state !== 'walking_out').length;
-    if (activeQueueCount >= 4) return;
-    const slotX = 96 + activeQueueCount * 26;
+    const archetype = this.getBizArchetype(this.bizId);
+    const maxActive = archetype === 'kahwa_counter' ? 5 : 4;
+    const activeCustomers = this.customers.filter(c => c.state !== 'walking_out');
+    if (activeCustomers.length >= maxActive) return;
+
+    // Trouver un slot de station libre pour éviter toute superposition
+    const usedSlots = new Set(activeCustomers.map(c => c.stationSlot));
+    let slotIdx = 0;
+    for (let s = 0; s < maxActive; s++) {
+      if (!usedSlots.has(s)) {
+        slotIdx = s;
+        break;
+      }
+    }
+    const stationX = this.getActivitySlotX(archetype, slotIdx);
+
+    let activityType = 'browsing';
+    let activityDuration = 1.25;
+    let ticketIcon = null;
+    if (archetype === 'arcade_billiard') {
+      activityType = slotIdx < 2 ? 'billiard' : 'console';
+      activityDuration = 2.4;
+    } else if (archetype === 'kahwa_counter') {
+      activityType = 'drinking';
+      activityDuration = 2.6;
+    } else if (archetype === 'booking_service') {
+      activityType = 'booking';
+      activityDuration = 1.45;
+      ticketIcon = this.bizId === 'croisiere_mer' ? '⚓' : (['showroom_auto', 'hotel', 'promoteur_immobilier'].includes(this.bizId) ? '🔑' : '🎫');
+    } else if (archetype === 'food_counter') {
+      activityType = 'eating';
+      activityDuration = 1.5;
+    }
+
     const customer = {
       id: Math.random(),
       x: this.width - 18,
       y: 154,
-      targetX: slotX,
-      state: 'walking_in', // walking_in, queued, paying, walking_out
-      orderIcon: this.getOrderIcon(),
+      stationSlot: slotIdx,
+      stationX,
+      targetX: stationX,
+      archetype,
+      activityType,
+      activityDuration,
+      activityTimer: 0,
+      steamTimer: 0,
+      state: 'walking_in', // walking_in -> doing_activity -> queued -> paying -> walking_out
+      orderIcon: archetype === 'kahwa_counter' ? (slotIdx % 2 === 0 ? '☕' : '🍵') : this.getOrderIcon(),
+      ticketIcon,
       reaction: null,
-      payDuration: 0.85,
+      payDuration: archetype === 'kahwa_counter' ? 0.55 : 0.8,
       payTimer: 0,
       waitTimer: 0,
       hasBag: false,
@@ -270,7 +346,10 @@ export class CanvasStoreEngine {
     const cycleRevenue = biz ? this.engine.getRevenue(biz, Date.now()) : 0;
     const gainText = cycleRevenue > 0 ? ('+' + this.formatNumber(cycleRevenue) + ' DT') : '+د.ت';
     this.registerFlash = 1.0;
-    this.counterStock = Math.max(0, (this.counterStock || 1) - 1);
+    const archetype = this.getBizArchetype(this.bizId);
+    if (archetype === 'industrial_belt' || archetype === 'retail_shop' || archetype === 'food_counter') {
+      this.counterStock = Math.max(0, (this.counterStock || 1) - 1);
+    }
 
     if (typeof window !== 'undefined' && window.soundEngine) {
       if (window.soundEngine.playWorkSound) {
@@ -352,8 +431,8 @@ export class CanvasStoreEngine {
       } else if (this.engine.startProduction) {
         this.engine.startProduction(this.bizId);
       }
-      // Impulsion Tycoon : spawner immédiatement un produit sur le tapis roulant
-      if (this.conveyorItems.length < 6) {
+      const archetype = this.getBizArchetype(this.bizId);
+      if (archetype === 'industrial_belt' && this.conveyorItems.length < 6) {
         this.conveyorItems.push({
           x: Math.min(this.width - 55, Math.max(125, clickX)),
           y: 135,
@@ -1120,21 +1199,45 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1.8;
     ctx.strokeRect(counterX, counterY + 12, deskW, deskH);
 
-    // 4. Présentoir vitré de stock prêt à vendre (alimenté par le tapis roulant Tycoon)
+    // 4. Présentoir vitré de stock OU Terminal de Réservation / Billetterie selon l'archétype
+    const archetype = this.getBizArchetype(currentBizId);
     const trayX = counterX + 8;
     const trayY = counterY - 2;
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.84)';
     ctx.beginPath();
     ctx.roundRect(trayX, trayY, 34, 13, 3);
     ctx.fill();
     ctx.strokeStyle = isBusy ? '#34d399' : '#fbbf24';
     ctx.lineWidth = 1;
     ctx.stroke();
-    const stockIcons = this.orderIcons[currentBizId] || this.orderIcons.default;
-    const visibleStock = Math.min(3, Math.max(1, this.counterStock || 1));
-    ctx.font = '9.5px serif';
-    for (let s = 0; s < visibleStock; s++) {
-      ctx.fillText(stockIcons[s % stockIcons.length], trayX + 3 + s * 10, trayY + 10);
+
+    if (archetype === 'booking_service') {
+      // Guichet de réservation VIP : billets/contrats/clés dorées (aucune marchandise d'épicerie !)
+      ctx.font = 'bold 6.5px "Cairo", sans-serif';
+      ctx.fillStyle = '#38bdf8';
+      ctx.textAlign = 'center';
+      ctx.fillText('حجز VIP 🎫', trayX + 17, trayY + 9);
+      ctx.textAlign = 'left';
+    } else if (archetype === 'arcade_billiard') {
+      // Distributeur de jetons & pass gaming
+      ctx.font = 'bold 6.5px "Cairo", sans-serif';
+      ctx.fillStyle = '#c084fc';
+      ctx.textAlign = 'center';
+      ctx.fillText('فيش 🎱🎮', trayX + 17, trayY + 9);
+      ctx.textAlign = 'left';
+    } else if (archetype === 'kahwa_counter') {
+      // Plateau en cuivre avec tasses de café et verres de thé chauds
+      ctx.font = '9px serif';
+      ctx.fillText('☕', trayX + 3, trayY + 10);
+      ctx.fillText('🍵', trayX + 13, trayY + 10);
+      ctx.fillText('🫖', trayX + 23, trayY + 10);
+    } else {
+      const stockIcons = this.orderIcons[currentBizId] || this.orderIcons.default;
+      const visibleStock = Math.min(3, Math.max(1, this.counterStock || 1));
+      ctx.font = '9.5px serif';
+      for (let s = 0; s < visibleStock; s++) {
+        ctx.fillText(stockIcons[s % stockIcons.length], trayX + 3 + s * 10, trayY + 10);
+      }
     }
 
     // 5. Caisse enregistreuse moderne tunisienne positionnée à DROITE du comptoir
@@ -1315,60 +1418,312 @@ export class CanvasStoreEngine {
     });
   }
 
-  // --- RAIL DE CONVOYAGE & FLUX PHYSIQUE DE MARCHANDISES TYCOON ---
+  // --- SCÈNE D'ACTIVITÉ CENTRALE SPÉCIFIQUE À CHAQUE MÉTIER TYCOON ---
   drawCentralActionShowcase(ctx, bizId, timeSec, isBusy) {
     ctx.save();
-    const beltLeft = 96;
-    const beltRight = Math.max(175, this.width - 46);
-    const beltW = beltRight - beltLeft;
-    const beltY = 136;
-    const beltH = 7;
+    const archetype = this.getBizArchetype(bizId);
+    const leftX = 104;
+    const rightX = Math.max(210, this.width - 38);
+    const zoneW = rightX - leftX;
 
-    // 1. Structure métallique 2.5D du tapis roulant de livraison
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-    ctx.beginPath();
-    ctx.roundRect(beltLeft, beltY, beltW, beltH, 3);
-    ctx.fill();
-    ctx.strokeStyle = isBusy ? '#38bdf8' : '#475569';
-    ctx.lineWidth = 1.1;
-    ctx.stroke();
+    // 1. SALLE DE JEUX & BILLARD : Grande Table de Billard 2.5D animée + Bornes Console/PS5
+    if (archetype === 'arcade_billiard') {
+      const poolX = leftX + 6;
+      const poolY = 129;
+      const poolW = Math.min(106, zoneW * 0.56);
+      const poolH = 22;
 
-    // Chevrons lumineux défilant vers le comptoir de gauche
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(beltLeft + 2, beltY + 1, beltW - 4, beltH - 2, 2);
-    ctx.clip();
-    const shift = isBusy ? ((timeSec * 42) % 14) : 0;
-    ctx.strokeStyle = isBusy ? 'rgba(52, 211, 153, 0.65)' : 'rgba(148, 163, 184, 0.25)';
-    ctx.lineWidth = 1.4;
-    for (let rx = beltLeft - 10; rx < beltRight + 14; rx += 14) {
-      const cx = rx - shift;
+      // Pieds massifs en acajou
+      ctx.fillStyle = '#271206';
+      ctx.fillRect(poolX + 6, poolY + poolH - 2, 7, 10);
+      ctx.fillRect(poolX + poolW - 13, poolY + poolH - 2, 7, 10);
+
+      // Cadre en bois d'acajou vernis & coins en laiton doré
+      ctx.fillStyle = '#7c2d12';
       ctx.beginPath();
-      ctx.moveTo(cx + 4, beltY + 1.5);
-      ctx.lineTo(cx, beltY + beltH / 2);
-      ctx.lineTo(cx + 4, beltY + beltH - 1.5);
+      ctx.roundRect(poolX, poolY, poolW, poolH, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
       ctx.stroke();
-    }
-    ctx.restore();
 
-    // 2. Produits/Colis glissant physiquement des postes de travail vers le comptoir
-    for (const item of this.conveyorItems) {
-      ctx.save();
-      // Plateau doré sous le produit
-      ctx.fillStyle = '#0f172a';
+      // Tapis de feutre vert émeraude de compétition
+      const feltGrad = ctx.createLinearGradient(poolX, poolY, poolX + poolW, poolY + poolH);
+      feltGrad.addColorStop(0, '#059669');
+      feltGrad.addColorStop(0.5, '#10b981');
+      feltGrad.addColorStop(1, '#047857');
+      ctx.fillStyle = feltGrad;
+      ctx.fillRect(poolX + 4, poolY + 3, poolW - 8, poolH - 6);
+
+      // 6 Poches de billard en cuir noir
+      ctx.fillStyle = '#090d16';
+      const pockets = [
+        [poolX + 4, poolY + 3], [poolX + poolW / 2, poolY + 2.5], [poolX + poolW - 4, poolY + 3],
+        [poolX + 4, poolY + poolH - 3], [poolX + poolW / 2, poolY + poolH - 2.5], [poolX + poolW - 4, poolY + poolH - 3]
+      ];
+      for (const [px, py] of pockets) {
+        ctx.beginPath();
+        ctx.arc(px, py, 2.3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Billes de billard roulantes en temps réel sur le tapis vert
+      const balls = [
+        { color: '#ffffff', speedX: 2.8, speedY: 1.9, phase: 0 },
+        { color: '#ef4444', speedX: 2.1, speedY: 2.5, phase: 1.4 },
+        { color: '#facc15', speedX: 1.7, speedY: 2.2, phase: 2.8 },
+        { color: '#3b82f6', speedX: 2.4, speedY: 1.5, phase: 4.1 },
+        { color: '#111827', speedX: 1.9, speedY: 2.7, phase: 5.2 }
+      ];
+      const innerW = (poolW - 18) / 2;
+      const innerH = (poolH - 11) / 2;
+      const centerPoolX = poolX + poolW / 2;
+      const centerPoolY = poolY + poolH / 2;
+      balls.forEach(b => {
+        const bx = centerPoolX + Math.sin(timeSec * b.speedX + b.phase) * innerW;
+        const by = centerPoolY + Math.cos(timeSec * b.speedY + b.phase) * innerH;
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.arc(bx, by, 2.1, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Station Console PS5 / Borne Arcade Néon à droite du billard
+      const consoleX = poolX + poolW + 14;
+      if (consoleX + 44 < this.width - 24) {
+        ctx.fillStyle = '#09090b';
+        ctx.beginPath();
+        ctx.roundRect(consoleX, 120, 48, 28, 4);
+        ctx.fill();
+        ctx.strokeStyle = Math.floor(timeSec * 5) % 2 === 0 ? '#a855f7' : '#06b6d4';
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+
+        // Écran Gaming LED animé
+        const scrGrad = ctx.createLinearGradient(consoleX + 4, 123, consoleX + 44, 138);
+        scrGrad.addColorStop(0, '#1e1b4b');
+        scrGrad.addColorStop(0.5, '#3b0764');
+        scrGrad.addColorStop(1, '#083344');
+        ctx.fillStyle = scrGrad;
+        ctx.fillRect(consoleX + 4, 123, 40, 15);
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚽🎮🏎️', consoleX + 24, 134);
+      }
+      ctx.restore();
+      return;
+    }
+
+    // 2. 9AHWA CHAABEYYA & SALON DE THÉ : Grand Comptoir & Tables Conviviales (jusqu'à 5 clients simultanés qui boivent !)
+    if (archetype === 'kahwa_counter') {
+      const barY = 136;
+      const barW = Math.max(100, zoneW - 6);
+
+      // Comptoir de dégustation / terrasse intérieure en bois sculpté & cuivre martelé
+      const barGrad = ctx.createLinearGradient(leftX, barY, leftX, barY + 14);
+      barGrad.addColorStop(0, '#b45309');
+      barGrad.addColorStop(0.4, '#78350f');
+      barGrad.addColorStop(1, '#451a03');
+      ctx.fillStyle = barGrad;
       ctx.beginPath();
-      ctx.ellipse(item.x, beltY - 1, 8, 3, 0, 0, Math.PI * 2);
+      ctx.roundRect(leftX, barY, barW, 13, 4);
       ctx.fill();
       ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.3;
       ctx.stroke();
 
-      // Produit fabriqué
-      const bob = Math.sin(timeSec * 12 + item.x * 0.1) * 1.2;
-      ctx.font = '12.5px serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(item.icon, item.x, beltY - 4 + bob);
+      // 5 Tabourets tunisiens & Tasses fumantes / Verres de thé à la menthe alignés pour 5 clients
+      for (let s = 0; s < 5; s++) {
+        const sx = this.getActivitySlotX('kahwa_counter', s) + 12;
+        // Tabouret en fer forgé et cuir rouge
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(sx - 1.5, barY + 12, 3, 9);
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.ellipse(sx, barY + 12, 6.5, 2.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+
+        // Sous-tasse dorée sur le comptoir
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.ellipse(sx, barY + 3, 4.5, 1.8, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
+      return;
+    }
+
+    // 3. YACHTS / CROISIÈRES / VOYAGES / HÔTEL / AUTO : Bassin & Maquette de Yacht / Podium de Réservation VIP (Zéro marchandise à acheter !)
+    if (archetype === 'booking_service') {
+      const podX = leftX + 10;
+      const podY = 131;
+      const podW = Math.max(92, zoneW - 20);
+      const podH = 19;
+
+      // Bassin marin lumineux (Croisière) ou Podium de Réservation de Luxe
+      const isSea = bizId === 'croisiere_mer';
+      const podGrad = ctx.createLinearGradient(podX, podY, podX + podW, podY + podH);
+      if (isSea) {
+        podGrad.addColorStop(0, '#0369a1');
+        podGrad.addColorStop(0.5, '#0ea5e9');
+        podGrad.addColorStop(1, '#0284c7');
+      } else {
+        podGrad.addColorStop(0, '#0f172a');
+        podGrad.addColorStop(0.5, '#1e293b');
+        podGrad.addColorStop(1, '#090d16');
+      }
+      ctx.fillStyle = podGrad;
+      ctx.beginPath();
+      ctx.roundRect(podX, podY, podW, podH, 6);
+      ctx.fill();
+      ctx.strokeStyle = isSea ? '#38bdf8' : '#fbbf24';
+      ctx.lineWidth = 1.6;
+      ctx.stroke();
+
+      if (isSea) {
+        // Vaguelettes animées + Maquette de Yacht de Luxe naviguant sur le bassin de réservation
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1;
+        for (let wx = podX + 8; wx < podX + podW - 12; wx += 18) {
+          const wy = podY + 11 + Math.sin(timeSec * 4 + wx * 0.1) * 1.5;
+          ctx.beginPath();
+          ctx.moveTo(wx, wy);
+          ctx.lineTo(wx + 9, wy);
+          ctx.stroke();
+        }
+        const yachtX = podX + podW * 0.5 + Math.sin(timeSec * 1.6) * (podW * 0.22);
+        const yachtBob = Math.sin(timeSec * 4) * 1.2;
+        ctx.save();
+        ctx.translate(yachtX, podY + 7 + yachtBob);
+        // Coque blanche profilée du Yacht
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(-16, 0);
+        ctx.lineTo(16, 0);
+        ctx.lineTo(11, 5);
+        ctx.lineTo(-13, 5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Cabine vitrée panoramique du Yacht
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.moveTo(-8, 0);
+        ctx.lineTo(-4, -5);
+        ctx.lineTo(7, -5);
+        ctx.lineTo(10, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      } else {
+        // Podium Holographique / Maquette VIP (Avion, Voiture, Hôtel, Immobilier, Taxi)
+        const showcaseIcon = bizId === 'showroom_auto' ? '🏎️' : (bizId === 'taxi_collectif' ? '🚖' : (bizId === 'promoteur_immobilier' ? '🏢' : (bizId === 'hotel' ? '🛎️' : '✈️')));
+        ctx.font = '14px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(showcaseIcon, podX + podW / 2, podY + 13 + Math.sin(timeSec * 3) * 1.5);
+        ctx.font = 'bold 7px "Cairo", sans-serif';
+        ctx.fillStyle = '#fef08a';
+        ctx.fillText('مكتب الحجوزات والعقود 📋', podX + podW / 2, podY - 3);
+      }
+
+      // Potelets dorés & cordon de velours rouge VIP devant le podium
+      ctx.fillStyle = '#fbbf24';
+      for (let px = podX + 6; px <= podX + podW - 6; px += (podW - 12) / 2) {
+        ctx.fillRect(px - 1, podY + 10, 2.5, 11);
+        ctx.beginPath();
+        ctx.arc(px, podY + 10, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(podX + 6, podY + 13);
+      ctx.quadraticCurveTo(podX + podW * 0.25, podY + 18, podX + podW * 0.5, podY + 13);
+      ctx.quadraticCurveTo(podX + podW * 0.75, podY + 18, podX + podW - 6, podY + 13);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
+    // 4. USINES & CONDITIONNEMENT (Conserverie, Dattes) : Rail de convoyage motorisé 2.5D
+    if (archetype === 'industrial_belt') {
+      const beltLeft = 96;
+      const beltRight = Math.max(175, this.width - 46);
+      const beltW = beltRight - beltLeft;
+      const beltY = 136;
+      const beltH = 7;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.beginPath();
+      ctx.roundRect(beltLeft, beltY, beltW, beltH, 3);
+      ctx.fill();
+      ctx.strokeStyle = isBusy ? '#38bdf8' : '#475569';
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(beltLeft + 2, beltY + 1, beltW - 4, beltH - 2, 2);
+      ctx.clip();
+      const shift = isBusy ? ((timeSec * 42) % 14) : 0;
+      ctx.strokeStyle = isBusy ? 'rgba(52, 211, 153, 0.65)' : 'rgba(148, 163, 184, 0.25)';
+      ctx.lineWidth = 1.4;
+      for (let rx = beltLeft - 10; rx < beltRight + 14; rx += 14) {
+        const cx = rx - shift;
+        ctx.beginPath();
+        ctx.moveTo(cx + 4, beltY + 1.5);
+        ctx.lineTo(cx, beltY + beltH / 2);
+        ctx.lineTo(cx + 4, beltY + beltH - 1.5);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      for (const item of this.conveyorItems) {
+        ctx.save();
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.ellipse(item.x, beltY - 1, 8, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        const bob = Math.sin(timeSec * 12 + item.x * 0.1) * 1.2;
+        ctx.font = '12.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(item.icon, item.x, beltY - 4 + bob);
+        ctx.restore();
+      }
+      ctx.restore();
+      return;
+    }
+
+    // 5. RESTAURATION & BOUTIQUES (`food_counter` & `retail_shop`) : Vitrine / Comptoir d'Exposition éclairé
+    const displayX = leftX + 6;
+    const displayY = 133;
+    const displayW = Math.max(92, zoneW - 14);
+    ctx.fillStyle = archetype === 'food_counter' ? 'rgba(124, 45, 18, 0.85)' : 'rgba(15, 23, 42, 0.82)';
+    ctx.beginPath();
+    ctx.roundRect(displayX, displayY, displayW, 14, 4);
+    ctx.fill();
+    ctx.strokeStyle = archetype === 'food_counter' ? '#f97316' : '#fbbf24';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    const icons = this.orderIcons[bizId] || this.orderIcons.default;
+    const itemCount = Math.min(5, Math.max(3, Math.floor(displayW / 28)));
+    ctx.font = '11px serif';
+    ctx.textAlign = 'center';
+    for (let i = 0; i < itemCount; i++) {
+      const ix = displayX + (displayW / (itemCount + 1)) * (i + 1);
+      const bob = isBusy ? Math.sin(timeSec * 5 + i) * 1.2 : 0;
+      ctx.fillText(icons[i % icons.length], ix, displayY + 10 + bob);
     }
 
     ctx.restore();
@@ -2113,7 +2468,7 @@ export class CanvasStoreEngine {
     return '' + Math.round(n);
   }
 
-  // --- CLIENTS VIVANTS AVEC FILE D'ATTENTE TYCOON, JAUGE DE SERVICE & CABAS DE SORTIE ---
+  // --- CLIENTS VIVANTS AVEC ACTIONS MÉTIER (BILLARD, CAFÉ, RÉSERVATION YACHT), FILE D'ATTENTE & SORTIE ---
   drawCustomers(ctx) {
     const styles = [
       { robe: '#1e3a8a', coat: '#2563eb', skin: '#fcd34d', hat: 'chechia' },
@@ -2129,13 +2484,13 @@ export class CanvasStoreEngine {
       ctx.ellipse(c.x + 12, c.y + 4, 11, 3.5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      const isWalking = c.state === 'walking_in' || c.state === 'walking_out';
+      const isWalking = c.state === 'walking_in' || c.state === 'walking_out' || (c.state === 'queued' && Math.abs(c.x - c.targetX) > 1.5);
       const bounce = isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 2.8 : 0;
-      const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.05 : 0;
+      const isBilliard = c.state === 'doing_activity' && c.activityType === 'billiard';
+      const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.05 : (isBilliard ? -0.14 : 0);
 
       ctx.save();
       ctx.translate(c.x + 12, c.y - 6 - bounce);
-      // En sortant vers la porte de droite, le client se tourne vers la droite
       if (c.state === 'walking_out') {
         ctx.scale(-1, 1);
       }
@@ -2164,40 +2519,122 @@ export class CanvasStoreEngine {
       ctx.fillStyle = st.robe;
       ctx.fillRect(-2, -18, 4, 18);
 
-      // Bras
+      // Bras & Actions Métier Spécifiques (Billard, Console, Café, Réservation Yacht, Dégustation)
       ctx.strokeStyle = st.coat;
       ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      ctx.moveTo(-5, -14);
-      ctx.lineTo(-8, -4);
-      ctx.moveTo(5, -14);
-      ctx.lineTo(8, -4);
-      ctx.stroke();
-
-      // Cabas de shopping Tycoon vectoriel + produit emporté lors du départ
-      if (c.state === 'walking_out' && c.hasBag) {
+      if (c.state === 'doing_activity' && c.activityType === 'billiard') {
+        // Joueur de billard : bras en position de visée + queue de billard animée en va-et-vient !
+        const cueStroke = Math.sin(c.walkCycle * 11) * 4.5;
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-10, -8);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(4 + cueStroke * 0.5, -7);
+        ctx.stroke();
+        // Queue de billard en bois noble & embout bleu craie
         ctx.save();
-        // Anse du cabas
-        ctx.strokeStyle = '#fef08a';
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = '#fde68a';
+        ctx.lineWidth = 1.6;
         ctx.beginPath();
-        ctx.arc(-8, -4, 3, Math.PI, 0);
+        ctx.moveTo(6 + cueStroke, -6);
+        ctx.lineTo(-18 + cueStroke, -11);
         ctx.stroke();
-        // Corps du sac de shopping
-        ctx.fillStyle = '#f59e0b';
+        ctx.fillStyle = '#38bdf8';
         ctx.beginPath();
-        ctx.roundRect(-12, -4, 8, 9, 1.5);
+        ctx.arc(-18 + cueStroke, -11, 1.3, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#78350f';
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-        // Produit qui dépasse du sac
-        if (c.orderIcon) {
-          ctx.font = '8.5px serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(c.orderIcon, -8, -4);
-        }
         ctx.restore();
+      } else if (c.state === 'doing_activity' && c.activityType === 'console') {
+        // Joueur sur Console PS5 / Arcade : mains agitées tenant la manette
+        const padVib = Math.sin(c.walkCycle * 18) * 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-7, -9 + padVib);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(-2, -9 - padVib);
+        ctx.stroke();
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎮', -5, -7 + padVib);
+      } else if (c.state === 'doing_activity' && c.activityType === 'drinking') {
+        // Client 9ahwa Chaabeyya : lève sa tasse de café / verre de thé à la menthe pour boire par gorgées !
+        const sip = Math.max(0, Math.sin(c.activityTimer * 3.8 + seed));
+        const cupY = -9 - sip * 11;
+        const cupX = -8 + sip * 3;
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(cupX, cupY);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(7, -5);
+        ctx.stroke();
+        ctx.font = '9.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(c.orderIcon || '☕', cupX - 1, cupY + 2);
+      } else if (c.state === 'doing_activity' && c.activityType === 'eating') {
+        // Client Kaskrout / Fricassé / Restaurant : dégustation chaude
+        const bite = Math.max(0, Math.sin(c.activityTimer * 4.2 + seed));
+        const foodY = -8 - bite * 10;
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-7, foodY);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(7, -5);
+        ctx.stroke();
+        ctx.font = '9.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(c.orderIcon || '🥪', -8, foodY + 2);
+      } else if (c.state === 'doing_activity' && c.activityType === 'booking') {
+        // Client Croisière Yacht / Voyages / Showroom : examine la brochure / maquette VIP
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-9, -11);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(7, -5);
+        ctx.stroke();
+        ctx.font = '8.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('📋', -10, -9);
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-8, -4);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(8, -4);
+        ctx.stroke();
+      }
+
+      // Accessoire tenu à la sortie selon la nature exacte du métier :
+      // - Boutiques / Alimentation / Usines : Cabas avec l'article acheté
+      // - Yachts / Voyages / Hôtel / Auto : Billet de réservation / Clé VIP (ZÉRO sac d'épicerie !)
+      // - Salle de jeux / 9ahwa : Mains libres après avoir joué ou bu son café !
+      if (c.state === 'walking_out') {
+        if (c.hasBag) {
+          ctx.save();
+          ctx.strokeStyle = '#fef08a';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.arc(-8, -4, 3, Math.PI, 0);
+          ctx.stroke();
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.roundRect(-12, -4, 8, 9, 1.5);
+          ctx.fill();
+          ctx.strokeStyle = '#78350f';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          if (c.orderIcon) {
+            ctx.font = '8.5px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(c.orderIcon, -8, -4);
+          }
+          ctx.restore();
+        } else if (c.ticketIcon) {
+          ctx.save();
+          ctx.font = '9.5px serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(c.ticketIcon, -9, -3);
+          ctx.restore();
+        }
       }
 
       // Tête & Visage
@@ -2243,20 +2680,26 @@ export class CanvasStoreEngine {
 
       ctx.restore();
 
-      // Bulle de commande / réaction + jauge de service Tycoon au-dessus de la tête
+      // Bulle d'activité / commande / réaction + jauge radiale Tycoon au-dessus de la tête
       const bubbleX = c.x + 12;
       const bubbleY = c.y - 52 - bounce;
-      const bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
+      let bubbleIcon = c.reaction ? c.reaction : c.orderIcon;
+      if (!c.reaction && c.state === 'doing_activity') {
+        if (c.activityType === 'billiard') bubbleIcon = '🎱';
+        else if (c.activityType === 'console') bubbleIcon = '🎮';
+        else if (c.activityType === 'booking') bubbleIcon = c.ticketIcon || '🎫';
+      }
 
-      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : 'rgba(255, 255, 255, 0.98)';
+      const isAct = c.state === 'doing_activity';
+      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : (isAct ? '#eff6ff' : 'rgba(255, 255, 255, 0.98)');
       ctx.beginPath();
       ctx.roundRect(bubbleX - 10, bubbleY - 9, 20, 17, 5);
       ctx.fill();
-      ctx.strokeStyle = c.state === 'paying' ? '#10b981' : '#f59e0b';
+      ctx.strokeStyle = c.state === 'paying' ? '#10b981' : (isAct ? '#38bdf8' : '#f59e0b');
       ctx.lineWidth = 1.3;
       ctx.stroke();
 
-      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : '#ffffff';
+      ctx.fillStyle = c.state === 'paying' ? '#ecfdf5' : (isAct ? '#eff6ff' : '#ffffff');
       ctx.beginPath();
       ctx.moveTo(bubbleX - 2.5, bubbleY + 8);
       ctx.lineTo(bubbleX + 2.5, bubbleY + 8);
@@ -2269,8 +2712,13 @@ export class CanvasStoreEngine {
       ctx.textBaseline = 'middle';
       ctx.fillText(bubbleIcon, bubbleX, bubbleY);
 
-      // Jauge radiale d'encaissement pendant que le client est servi au comptoir
-      if (c.state === 'paying') {
+      // Jauge radiale d'activité en cours (partie de billard/console, dégustation café, réservation croisière)
+      if (isAct) {
+        const actRatio = Math.min(1, c.activityTimer / Math.max(0.1, c.activityDuration));
+        const actColor = c.activityType === 'billiard' || c.activityType === 'console' ? '#a855f7' : (c.activityType === 'drinking' ? '#f59e0b' : '#38bdf8');
+        this.drawRadialGauge(ctx, bubbleX, bubbleY - 19, 6.2, actRatio, actColor, '');
+      } else if (c.state === 'paying') {
+        // Jauge radiale d'encaissement au comptoir
         const payRatio = Math.min(1, c.payTimer / Math.max(0.1, c.payDuration));
         this.drawRadialGauge(ctx, bubbleX, bubbleY - 19, 6.5, payRatio, '#10b981', '🪙');
       }
@@ -2482,45 +2930,54 @@ export class CanvasStoreEngine {
       this.triggerPayment(payingCust || null, true);
     }
 
-    // 1. Flux de production physique sur le tapis roulant (Supply Chain Tycoon)
-    if (isProducing) {
-      this.conveyorTimer += dt;
-      if (this.conveyorTimer >= 0.95 && this.conveyorItems.length < 6) {
-        this.conveyorTimer = 0;
-        const hiredCount = biz ? Math.max(1, biz.hiredManagersCount || 1) : 1;
-        const sourceIdx = Math.floor(Math.random() * Math.min(3, hiredCount));
-        const spawnX = Math.min(this.width - 52, 134 + sourceIdx * 64);
-        this.conveyorItems.push({
-          x: spawnX,
-          y: 135,
-          targetX: 92,
-          icon: this.getOrderIcon(),
-          speed: 58 + Math.min(35, (biz.level || 1) * 0.4)
-        });
+    // 1. Flux de production physique sur le tapis roulant (UNIQUEMENT pour les usines `industrial_belt`)
+    const archetype = this.getBizArchetype(this.bizId);
+    if (archetype === 'industrial_belt') {
+      if (isProducing) {
+        this.conveyorTimer += dt;
+        if (this.conveyorTimer >= 0.95 && this.conveyorItems.length < 6) {
+          this.conveyorTimer = 0;
+          const hiredCount = biz ? Math.max(1, biz.hiredManagersCount || 1) : 1;
+          const sourceIdx = Math.floor(Math.random() * Math.min(3, hiredCount));
+          const spawnX = Math.min(this.width - 52, 134 + sourceIdx * 64);
+          this.conveyorItems.push({
+            x: spawnX,
+            y: 135,
+            targetX: 92,
+            icon: this.getOrderIcon(),
+            speed: 58 + Math.min(35, (biz.level || 1) * 0.4)
+          });
+        }
       }
-    }
-    for (let i = this.conveyorItems.length - 1; i >= 0; i--) {
-      const item = this.conveyorItems[i];
-      item.x -= item.speed * dt;
-      if (item.x <= item.targetX) {
-        this.counterStock = Math.min(4, (this.counterStock || 0) + 1);
-        this.conveyorItems.splice(i, 1);
+      for (let i = this.conveyorItems.length - 1; i >= 0; i--) {
+        const item = this.conveyorItems[i];
+        item.x -= item.speed * dt;
+        if (item.x <= item.targetX) {
+          this.counterStock = Math.min(4, (this.counterStock || 0) + 1);
+          this.conveyorItems.splice(i, 1);
+        }
       }
+    } else if (this.conveyorItems.length > 0) {
+      this.conveyorItems.length = 0;
     }
 
-    // 2. Spawner de clients (file d'attente structurée sans collision)
+    // 2. Spawner de clients (jusqu'à 5 simultanés au comptoir dans 9ahwa Chaabeyya, 4 ailleurs)
+    const maxActive = archetype === 'kahwa_counter' ? 5 : 4;
+    const maxTotal = maxActive + 2;
     this.spawnTimer += dt;
-    const spawnThreshold = isProducing ? 2.2 : 4.2;
+    const spawnThreshold = isProducing ? (archetype === 'kahwa_counter' ? 1.55 : 2.1) : 3.8;
     const activeInStore = this.customers.filter(c => c.state !== 'walking_out').length;
-    if (this.spawnTimer > spawnThreshold && activeInStore < 4 && this.customers.length < 6) {
+    if (this.spawnTimer > spawnThreshold && activeInStore < maxActive && this.customers.length < maxTotal) {
       this.spawnCustomer();
       this.spawnTimer = 0;
     }
 
-    // 3. Mise à jour des slots de file d'attente (Queue Slots : 96, 122, 148, 174)
-    const queueList = this.customers.filter(c => c.state !== 'walking_out');
-    queueList.forEach((c, qIdx) => {
-      c.targetX = 96 + qIdx * 26;
+    // 3. File d'attente à la caisse (uniquement pour les clients qui ont terminé leur activité : billard, café, réservation, choix)
+    const cashierQueue = this.customers
+      .filter(c => c.state === 'queued' || c.state === 'paying')
+      .sort((a, b) => a.x - b.x);
+    cashierQueue.forEach((c, qIdx) => {
+      c.targetX = 94 + qIdx * 22;
       c.queueIndex = qIdx;
     });
 
@@ -2528,17 +2985,49 @@ export class CanvasStoreEngine {
       const c = this.customers[i];
       c.walkCycle += dt;
 
-      if (c.state === 'walking_in' || c.state === 'queued') {
-        const speed = isProducing ? 64 : 46;
-        if (c.x > c.targetX + 1) {
+      if (c.state === 'walking_in') {
+        // Le client entre et marche jusqu'à sa station métier (Table de billard, Comptoir 9ahwa, Bassin Yacht, Vitrine)
+        const speed = isProducing ? 66 : 48;
+        if (c.x > c.stationX + 1) {
+          c.x = Math.max(c.stationX, c.x - speed * dt);
+        } else {
+          c.x = c.stationX;
+          c.state = 'doing_activity';
+          c.activityTimer = 0;
+        }
+      } else if (c.state === 'doing_activity') {
+        c.activityTimer += dt;
+        // Vapeur chaude au-dessus de la tasse de café / verre de thé à la menthe pendant que le client boit
+        if (c.activityType === 'drinking') {
+          c.steamTimer = (c.steamTimer || 0) + dt;
+          if (c.steamTimer >= 0.75) {
+            c.steamTimer = 0;
+            this.pushParticle({
+              x: c.x + 6,
+              y: c.y - 24,
+              vx: Math.random() * 4 - 2,
+              vy: -16 - Math.random() * 8,
+              color: 'rgba(255, 255, 255, 0.45)',
+              radius: 1.8,
+              life: 0.65,
+              maxLife: 0.65,
+              isSparkle: false
+            });
+          }
+        }
+        if (c.activityTimer >= c.activityDuration) {
+          c.state = 'queued';
+        }
+      } else if (c.state === 'queued') {
+        const speed = isProducing ? 64 : 48;
+        if (c.x > c.targetX + 1.5) {
           c.x = Math.max(c.targetX, c.x - speed * dt);
-          c.state = 'walking_in';
+        } else if (c.x < c.targetX - 1.5) {
+          c.x = Math.min(c.targetX, c.x + speed * dt);
         } else {
           c.x = c.targetX;
           if (c.queueIndex === 0) {
             c.state = 'paying';
-          } else {
-            c.state = 'queued';
           }
         }
       } else if (c.state === 'paying') {
@@ -2547,7 +3036,8 @@ export class CanvasStoreEngine {
           c.payTimer += dt;
           if (c.payTimer >= c.payDuration) {
             this.triggerPayment(c, isProducing);
-            c.hasBag = true;
+            // Uniquement un sac pour les boutiques/alimentation/usines ! Jamais de sac pour Billard, 9ahwa ou Croisière Yacht !
+            c.hasBag = (archetype === 'retail_shop' || archetype === 'food_counter' || archetype === 'industrial_belt');
             c.state = 'walking_out';
             c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
           }
@@ -2555,6 +3045,7 @@ export class CanvasStoreEngine {
           c.waitTimer = (c.waitTimer || 0) + dt;
           if (c.waitTimer > 2.4) {
             c.hasBag = false;
+            c.ticketIcon = null;
             c.state = 'walking_out';
             c.reaction = '😡';
             this.pushParticle({
@@ -2571,7 +3062,6 @@ export class CanvasStoreEngine {
           }
         }
       } else if (c.state === 'walking_out') {
-        // Le client servi repart avec son sac vers la porte d'entrée à droite (sans traverser le comptoir !)
         c.x += 62 * dt;
         if (Math.abs(c.x - (this.width - 28)) < 8) {
           this.doorSwing = 1.0;

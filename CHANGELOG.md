@@ -15,6 +15,23 @@
 
 # CHANGELOG
 
+## [v119] - 2026-11-04
+
+### Added & Enhanced (Archetype-Driven Tycoon Customer Gameplay)
+- **Comportements Clients & Mobilier Interactif 100% Adaptés au Métier (`getBizArchetype`)** :
+  - **Salle de Jeux & Billard (`salle_de_jeux` -> `'arcade_billiard'`)** :
+    - Grande Table de Billard 2.5D en acajou et tapis vert émeraude avec 6 poches et 5 billes roulantes en temps réel + station Console PS5 / Écran Gaming LED.
+    - Les clients entrent pour **JOUER** d'abord (animation de visée avec queue de billard en va-et-vient ou manette `🎮` vibrante en main + jauge radiale de partie), puis passent à la caisse payer et repartent les mains libres (sans cabas d'épicerie).
+  - **9ahwa Chaabeyya & Salon de Thé (`kahwa`, `salon_de_the` -> `'kahwa_counter'`)** :
+    - Grand comptoir de dégustation en bois sculpté et cuivre avec **5 tabourets et sous-tasses alignés** permettant d'accueillir **jusqu'à 5 clients simultanément**.
+    - Les clients s'installent, **boivent leur café/thé à la menthe par gorgées animées** (bras levant la tasse `☕`/`🍵` vers la bouche + volutes de vapeur blanche), paient au comptoir et sortent.
+  - **Yachts & Croisières, Voyages, Hôtels, Showroom Auto, Immobilier, Aviation (`croisiere_mer`, etc. -> `'booking_service'`)** :
+    - **Aucune marchandise ni tapis roulant** : bassin marin lumineux avec **Maquette de Yacht de Luxe** naviguant sur les vaguelettes (ou podium VIP avec cordon de velours rouge et potelets dorés).
+    - Les clients entrent, consultent l'offre (`📋`), **réservent leur croisière/contrat** au guichet `حجز VIP 🎫` et repartent avec leur billet/clé (`⚓`/`🎫`/`🔑`) sans aucun sac d'achat.
+  - **Restauration Chaude (`kaskrout`, `fricasse`, `restaurant` -> `'food_counter'`)** : Dégustation chaude au comptoir vitré puis encaissement.
+  - **Usines (`usine_conserves`, `emballage_dattes` -> `'industrial_belt'`)** : Conservent exclusivement le tapis roulant industriel motorisé 2.5D.
+  - **Boutiques & Commerces (`attariya`, `patisserie`, `boucherie`, `fruits_de_mer`, etc. -> `'retail_shop'`)** : Choix devant la vitrine d'exposition, passage en caisse et départ avec cabas de shopping.
+
 ## [v118] - 2026-11-04
 
 ### Added, Refactored & Cleaned (True Tycoon Interior Engine)
