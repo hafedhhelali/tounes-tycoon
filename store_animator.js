@@ -228,11 +228,11 @@ export class CanvasStoreEngine {
     if (bizId === 'supermarche' || bizId === 'superette') return 'supermarket_checkout';
     if (bizId === 'salle_de_jeux') return 'arcade_billiard';
     if (bizId === 'kahwa') return 'kahwa_counter';
-    if (bizId === 'salon_de_the') return 'tea_lounge';
+    if (bizId === 'salon_de_the' || bizId === 'restaurant') return 'tea_lounge';
     if (['croisiere_mer', 'agence_voyages', 'hotel', 'tayaran_el_ghzela', 'showroom_auto', 'promoteur_immobilier'].includes(bizId)) {
       return 'agency_desks';
     }
-    if (['kaskrout', 'fricasse', 'restaurant'].includes(bizId)) return 'food_counter';
+    if (['kaskrout', 'fricasse'].includes(bizId)) return 'food_counter';
     if (['usine_conserves', 'emballage_dattes'].includes(bizId)) return 'industrial_belt';
     return 'retail_shop';
   }
@@ -245,9 +245,9 @@ export class CanvasStoreEngine {
       return 114 + (slotIndex % 5) * (span / 4);
     }
     if (archetype === 'tea_lounge') {
-      // 3 tables de salon de thé avec fauteuils où les clients s'assoient
-      const span = Math.max(82, rightBound - 124);
-      return 124 + (slotIndex % 3) * (span / 2);
+      // 5 tables pour salon de thé et restaurant avec chaises/fauteuils où les clients s'assoient
+      const span = Math.max(116, rightBound - 116);
+      return 116 + (slotIndex % 5) * (span / 4);
     }
     if (archetype === 'agency_desks') {
       // 2 bureaux : Bureau 1 (Manager) et Bureau 2 (Assistant) avec ordinateurs
@@ -256,20 +256,22 @@ export class CanvasStoreEngine {
       return (slotIndex % 2 === 0) ? desk1X : desk2X;
     }
     if (archetype === 'supermarket_checkout') {
-      // Jusqu'à 3 caisses de supermarché (commence avec 1 caisse active, recrutable jusqu'à 3)
+      // Magasin général: jusqu'à 3 caisses. Supérette: max 2 caisses
       const biz = this.getBiz();
-      const openLanes = Math.min(3, Math.max(1, biz ? (biz.hiredManagersCount || 1) : 1));
+      const isSuperette = (biz ? biz.id : this.bizId) === 'superette';
+      const maxLanes = isSuperette ? 2 : 3;
+      const openLanes = Math.min(maxLanes, Math.max(1, biz ? (biz.hiredManagersCount || 1) : 1));
       const laneIdx = slotIndex % openLanes;
-      return 48 + laneIdx * 78;
+      return 48 + laneIdx * (isSuperette ? 88 : 74);
     }
     if (archetype === 'tobacco_kiosk') {
       // Guichet de tabac : 1 seul employé, file ergonomique devant le guichet
       return 134 + (slotIndex % 3) * 24;
     }
     if (archetype === 'arcade_billiard') {
-      // 4 postes : [0,1] autour de la table de billard, [2,3] devant les bornes/consoles
-      const span = Math.max(84, rightBound - 122);
-      return 122 + (slotIndex % 4) * (span / 3);
+      // 5 postes : [0,1] autour de la table de billard, [2,3,4] devant les consoles avec écrans
+      const span = Math.max(88, rightBound - 120);
+      return 120 + (slotIndex % 5) * (span / 4);
     }
     if (archetype === 'food_counter') {
       const span = Math.max(76, rightBound - 120);
@@ -346,7 +348,7 @@ export class CanvasStoreEngine {
   spawnCustomer() {
     const archetype = this.getBizArchetype(this.bizId);
     if (archetype === 'bank_branch') return;
-    const maxActive = archetype === 'kahwa_counter' ? 5 : (archetype === 'tea_lounge' || archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
+    const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
     const activeCustomers = this.customers.filter(c => c.state !== 'walking_out');
     if (activeCustomers.length >= maxActive) return;
 
@@ -377,8 +379,8 @@ export class CanvasStoreEngine {
       activityDuration = 2.1;
       needsWaiterService = true;
     } else if (archetype === 'tea_lounge') {
-      activityType = 'drinking';
-      activityDuration = 2.2;
+      activityType = this.bizId === 'restaurant' ? 'eating' : 'drinking';
+      activityDuration = this.bizId === 'restaurant' ? 2.5 : 2.2;
       isSeated = true;
       needsWaiterService = true;
     } else if (archetype === 'agency_desks') {
@@ -417,7 +419,13 @@ export class CanvasStoreEngine {
       servedByWaiter: !needsWaiterService,
       waitServiceTimer: 0,
       state: 'walking_in',
-      orderIcon: archetype === 'kahwa_counter' ? (slotIdx % 2 === 0 ? '☕' : '🍵') : (archetype === 'tea_lounge' ? (slotIdx % 2 === 0 ? '🍹' : '☕') : this.getOrderIcon()),
+      orderIcon: archetype === 'kahwa_counter'
+        ? (slotIdx % 2 === 0 ? '☕' : '🍵')
+        : (archetype === 'tea_lounge'
+            ? (this.bizId === 'restaurant'
+                ? ['🍲', '🍛', '🍗', '🥩', '🥘', '🥗'][slotIdx % 6]
+                : ['🍹', '🍸', '☕', '🍰', '🧋'][slotIdx % 5])
+            : this.getOrderIcon()),
       ticketIcon,
       reaction: null,
       payDuration: (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'tobacco_kiosk') ? 0.55 : 0.75,
@@ -854,20 +862,214 @@ export class CanvasStoreEngine {
     ctx.restore();
   }
 
-  // --- ACCESSOIRES DE FOND RICHES SELON LE MÉTIER (ZÉRO TEXTE ENCOMBRANT SUR LES MURS) ---
+  // --- ACCESSOIRES DE FOND RICHES SELON LE MÉTIER (DÉCOR HAUT DE GAMME SANS ÉTAGÈRES MOCHES) ---
   drawStoreProps(ctx, bizId, now, w, h) {
     ctx.save();
     const timeSec = now / 1000;
 
-    if (bizId === 'kahwa') {
+    // 1. SALON DE THÉ : Décor lounge luxueux, ZÉRO étagères, grands lustres dorés, miroir baroque, plantes vertes
+    if (bizId === 'salon_de_the') {
+      // Lustres en cristal et laiton suspendus
+      for (const lx of [145, Math.min(w - 65, 265)]) {
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(lx, 0);
+        ctx.lineTo(lx, 24);
+        ctx.stroke();
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(lx, 26, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = '11px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✨', lx, 30);
+        const glow = ctx.createRadialGradient(lx, 28, 2, lx, 28, 34);
+        glow.addColorStop(0, 'rgba(253, 224, 71, 0.22)');
+        glow.addColorStop(1, 'rgba(253, 224, 71, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(lx, 28, 34, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Grand miroir baroque doré sur le mur
+      const mx = (w - 70) / 2 + 50;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.beginPath();
+      ctx.roundRect(mx - 30, 32, 60, 42, 14);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(mx - 26, 36, 52, 34);
+      ctx.font = '12px serif';
+      ctx.fillStyle = '#fde047';
+      ctx.textAlign = 'center';
+      ctx.fillText('🪞', mx, 57);
+
+      // Belles plantes d'intérieur en pot doré
+      ctx.font = '15px serif';
+      ctx.fillText('🪴', w - 40, 78);
+      ctx.fillText('🌿', 108, 78);
+    }
+
+    // 2. RESTAURANT : Ambiance gastronomique feutrée, suspensions cuivre martelé, tableaux culinaires, faïences peintes
+    else if (bizId === 'restaurant') {
+      // Suspensions lumineuses chaleureuses
+      for (const rx of [140, Math.min(w - 70, 255)]) {
+        ctx.strokeStyle = '#b45309';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(rx, 0);
+        ctx.lineTo(rx, 22);
+        ctx.stroke();
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.arc(rx, 24, 6.5, Math.PI, 0, true);
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        const rGlow = ctx.createRadialGradient(rx, 26, 1, rx, 26, 28);
+        rGlow.addColorStop(0, 'rgba(251, 191, 36, 0.22)');
+        rGlow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+        ctx.fillStyle = rGlow;
+        ctx.beginPath();
+        ctx.arc(rx, 26, 28, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Cadre gastronomique central en bois noble
+      const frameX = (w - 70) / 2 + 50;
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(frameX - 28, 34, 56, 38);
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(frameX - 28, 34, 56, 38);
+      ctx.font = '13px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🍲', frameX - 11, 57);
+      ctx.fillText('🥘', frameX + 11, 57);
+
+      // Assiettes décoratives en zellige aux murs
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.arc(106, 52, 8.5, 0, Math.PI * 2);
+      ctx.arc(w - 42, 52, 8.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      // Olivier d'ornement en pot
+      ctx.font = '15px serif';
+      ctx.fillText('🪴', w - 42, 80);
+    }
+
+    // 3. PÂTISSERIE : Niche centrale élégante avec moulures dorées, pièces montées d'apparat
+    else if (bizId === 'patisserie') {
+      const px = (w - 70) / 2 + 50;
+      ctx.fillStyle = 'rgba(76, 29, 149, 0.25)';
+      ctx.beginPath();
+      ctx.roundRect(px - 44, 30, 88, 52, 8);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+
+      // Pièces montées et gâteaux de cérémonie au mur
+      ctx.font = '16px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🎂', px, 54);
+      ctx.font = '12px serif';
+      ctx.fillText('🧁', px - 24, 66);
+      ctx.fillText('🍓', px + 24, 66);
+
+      // Appliques murales dorées
+      for (const lx of [108, w - 42]) {
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '11px serif';
+        ctx.fillText('✨', lx, 46);
+        ctx.fillText('🍯', lx, 72);
+      }
+    }
+
+    // 4. LIBRAIRIE : Bibliothèque d'acajou majestueuse, volumes reliés cuir et or, globe et lampe banquier
+    else if (bizId === 'librairie') {
+      const libW = w - 130;
+      const libX = 104;
+      ctx.fillStyle = '#271206';
+      ctx.fillRect(libX, 30, libW, 58);
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(libX, 30, libW, 58);
+
+      // Corniche supérieure sculptée
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(libX - 2, 28, libW + 4, 4.5);
+
+      // Rayon intermédiaire en chêne
       ctx.fillStyle = '#78350f';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillStyle = '#b45309';
-      ctx.fillRect(104, 78, w - 130, 5);
+      ctx.fillRect(libX, 58, libW, 3.5);
+
+      // Livres rangés serrés aux reliures riches
+      const bookColors = ['#991b1b', '#1e3a8a', '#14532d', '#78350f', '#581c87', '#b45309', '#0f766e', '#831843'];
+      let bIdx = 0;
+      for (let bx = libX + 6; bx < libX + libW - 30; bx += 7) {
+        ctx.fillStyle = bookColors[bIdx % bookColors.length];
+        const bh = 17 + (bIdx % 3) * 3;
+        ctx.fillRect(bx, 58 - bh, 5.5, bh);
+        bIdx++;
+      }
+      for (let bx = libX + 6; bx < libX + libW - 14; bx += 7) {
+        ctx.fillStyle = bookColors[(bIdx + 2) % bookColors.length];
+        const bh = 18 + (bIdx % 4) * 2;
+        ctx.fillRect(bx, 88 - bh, 5.5, bh);
+        bIdx++;
+      }
+
+      ctx.font = '12px serif';
+      ctx.fillText('🌍', libX + libW - 22, 50);
+      ctx.fillText('📖', libX + libW - 10, 52);
+    }
+
+    // 5. SALLE DE JEUX : Esports Arena avec néon RGB dynamique, écusson gamer et ambiance sombre
+    else if (bizId === 'salle_de_jeux') {
+      ctx.save();
+      const rgbShift = Math.sin(timeSec * 3);
+      ctx.strokeStyle = rgbShift > 0 ? '#06b6d4' : '#d946ef';
+      ctx.shadowColor = rgbShift > 0 ? '#06b6d4' : '#d946ef';
+      ctx.shadowBlur = 8;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(104, 32);
+      ctx.lineTo(w - 36, 32);
+      ctx.stroke();
+      ctx.restore();
+
+      const gx = (w - 70) / 2 + 50;
+      ctx.fillStyle = '#18181b';
+      ctx.beginPath();
+      ctx.roundRect(gx - 26, 38, 52, 34, 5);
+      ctx.fill();
+      ctx.strokeStyle = '#a855f7';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
       ctx.font = '14px serif';
-      for (let x = 114; x < w - 36; x += 34) {
-        ctx.fillText('🍵', x, 45);
-        ctx.fillText('☕', x, 75);
+      ctx.textAlign = 'center';
+      ctx.fillText('⚡', gx, 60);
+    }
+
+    // 6. CAFÉ POPULAIRE : Horloge murale, carrelage et Kanoun
+    else if (bizId === 'kahwa') {
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(104, 48, w - 130, 4);
+      ctx.font = '13px serif';
+      for (let x = 114; x < w - 36; x += 36) {
+        ctx.fillText('🍵', x, 44);
       }
       ctx.fillStyle = '#451a03';
       ctx.beginPath();
@@ -878,158 +1080,78 @@ export class CanvasStoreEngine {
       ctx.stroke();
       ctx.font = '10px sans-serif';
       ctx.fillText('🕐', 48, 52);
-    } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
+    }
+
+    // 7. KASKROUT / FRICASSÉ : Pain chaud et ardoise traditionnelle
+    else if (bizId === 'kaskrout' || bizId === 'fricasse') {
       ctx.fillStyle = '#854d0e';
-      ctx.fillRect(105, 50, w - 130, 5);
-      ctx.fillStyle = '#a16207';
-      ctx.fillRect(105, 80, w - 130, 5);
-      ctx.font = '14px serif';
-      for (let x = 118; x < w - 34; x += 34) {
-        ctx.fillText('🥖', x, 47);
-        ctx.fillText(bizId === 'fricasse' ? '🍩' : '🫒', x, 77);
+      ctx.fillRect(105, 52, w - 130, 4);
+      ctx.font = '13px serif';
+      for (let x = 118; x < w - 34; x += 36) {
+        ctx.fillText('🥖', x, 48);
+        ctx.fillText(bizId === 'fricasse' ? '🍩' : '🫒', x, 78);
       }
-    } else if (bizId === 'patisserie') {
-      ctx.fillStyle = '#581c87';
-      ctx.fillRect(105, 50, w - 130, 5);
-      ctx.fillStyle = '#6b21a8';
-      ctx.fillRect(105, 80, w - 130, 5);
-      ctx.font = '14px serif';
-      for (let x = 118; x < w - 34; x += 34) {
-        ctx.fillText('🍯', x, 47);
-        ctx.fillText('🥐', x, 77);
-      }
-      const glow = Math.sin(timeSec * 2) * 2;
-      ctx.font = '16px serif';
-      ctx.fillText('✨', 54, 48 + glow);
-    } else if (bizId === 'attariya') {
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(100, 48, w - 126, 5);
-      ctx.fillRect(100, 78, w - 126, 5);
-      const topItems = ['🥫', '🌶️', '☕', '🌾', '🧂', '🧀'];
-      const botItems = ['🫒', '📦', '🧼', '🧀', '🫒', '📦'];
-      let idx = 0;
-      for (let x = 110; x < w - 34; x += 30) {
-        ctx.font = '14px serif';
-        ctx.fillText(topItems[idx % topItems.length], x, 45);
-        ctx.fillText(botItems[idx % botItems.length], x, 75);
-        idx++;
-      }
-    } else if (bizId === 'usine_conserves') {
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(105, 48, w - 130, 5);
-      ctx.fillRect(105, 78, w - 130, 5);
-      ctx.font = '14px serif';
-      for (let x = 118; x < w - 34; x += 34) {
-        ctx.fillText('🥫', x, 45);
-        ctx.fillText('🫒', x, 75);
-      }
-    } else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier') {
-      const glassW = w - 130;
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-      ctx.fillRect(102, 34, glassW, 52);
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1.2;
-      ctx.strokeRect(102, 34, glassW, 52);
-      ctx.font = '18px serif';
-      const planeX = 112 + ((timeSec * 28) % Math.max(40, glassW - 34));
-      ctx.fillText(bizId === 'showroom_auto' ? '🏎️' : (bizId === 'promoteur_immobilier' ? '🏙️' : '🛫'), planeX, 68);
-    } else if (bizId === 'fruits_de_mer') {
-      ctx.fillStyle = '#0284c7';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const fishItems = ['🐟', '🦐', '🦑', '🦀', '🐟', '🦐'];
-      fishItems.forEach((f, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(f, 114 + idx * 32, 45);
-          ctx.fillText(fishItems[(idx + 2) % fishItems.length], 114 + idx * 32, 75);
-        }
-      });
-    } else if (bizId === 'librairie') {
-      ctx.fillStyle = '#78350f';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const bookItems = ['📚', '📖', '✏️', '📰', '📐', '📚'];
-      bookItems.forEach((b, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(b, 114 + idx * 32, 45);
-          ctx.fillText(bookItems[(idx + 1) % bookItems.length], 114 + idx * 32, 75);
-        }
-      });
-    } else if (bizId === 'boucherie') {
-      ctx.fillStyle = '#991b1b';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const meatItems = ['🥩', '🔪', '🍖', '🍗', '🥩', '🍖'];
+    }
+
+    // 8. BOUCHERIE : Faïence blanche bouchère, tringle inox avec crochets et viande
+    else if (bizId === 'boucherie') {
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(104, 42, w - 130, 42);
+      ctx.strokeStyle = '#991b1b';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(104, 42, w - 130, 42);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillRect(106, 50, w - 134, 3);
+      const meatItems = ['🥩', '🔪', '🍖', '🍗'];
       meatItems.forEach((m, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(m, 114 + idx * 32, 45);
-          ctx.fillText(meatItems[(idx + 1) % meatItems.length], 114 + idx * 32, 75);
+        if (118 + idx * 36 < w - 38) {
+          ctx.font = '13px serif';
+          ctx.fillText(m, 118 + idx * 36, 74);
         }
       });
-    } else if (bizId === 'produits_laitiers') {
+    }
+
+    // 9. POISSONNERIE (FRUITS DE MER) : Mosaïque marine et étalage glacé
+    else if (bizId === 'fruits_de_mer') {
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(104, 46, w - 130, 4);
+      const fishItems = ['🐟', '🦐', '🦑', '🦀'];
+      fishItems.forEach((f, idx) => {
+        if (114 + idx * 34 < w - 34) {
+          ctx.font = '13px serif';
+          ctx.fillText(f, 114 + idx * 34, 44);
+        }
+      });
+    }
+
+    // 10. PRODUITS LAITIERS : Vitrine réfrigérée et meules de fromage
+    else if (bizId === 'produits_laitiers') {
       ctx.fillStyle = '#15803d';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const dairyItems = ['🧀', '🥛', '🧈', '🍶', '🥣', '🧀'];
+      ctx.fillRect(104, 46, w - 130, 4);
+      const dairyItems = ['🧀', '🥛', '🧈', '🍶'];
       dairyItems.forEach((d, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(d, 114 + idx * 32, 45);
-          ctx.fillText(dairyItems[(idx + 1) % dairyItems.length], 114 + idx * 32, 75);
+        if (114 + idx * 34 < w - 34) {
+          ctx.font = '13px serif';
+          ctx.fillText(d, 114 + idx * 34, 44);
         }
       });
-    } else if (bizId === 'vente_vetements') {
-      ctx.fillStyle = '#a21caf';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const clothItems = ['👕', '👗', '🧥', '👖', '👔', '👠'];
-      clothItems.forEach((c, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(c, 114 + idx * 32, 45);
-          ctx.fillText(clothItems[(idx + 1) % clothItems.length], 114 + idx * 32, 75);
+    }
+
+    // 11. BOUTIQUE DE MODE & HORLOGERIE
+    else if (bizId === 'vente_vetements' || bizId === 'vente_montres') {
+      ctx.fillStyle = bizId === 'vente_vetements' ? '#a21caf' : '#312e81';
+      ctx.fillRect(104, 46, w - 130, 4);
+      const luxItems = bizId === 'vente_vetements' ? ['👕', '👗', '🧥', '👖'] : ['⌚', '🕰️', '💎', '✨'];
+      luxItems.forEach((c, idx) => {
+        if (114 + idx * 34 < w - 34) {
+          ctx.font = '13px serif';
+          ctx.fillText(c, 114 + idx * 34, 44);
         }
       });
-    } else if (bizId === 'vente_montres') {
-      ctx.fillStyle = '#312e81';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const watchItems = ['⌚', '🕰️', '💎', '✨', '🪙', '⌚'];
-      watchItems.forEach((wi, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(wi, 114 + idx * 32, 45);
-          ctx.fillText(watchItems[(idx + 1) % watchItems.length], 114 + idx * 32, 75);
-        }
-      });
-    } else if (bizId === 'salle_de_jeux') {
-      ctx.fillStyle = '#27272a';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const gameItems = ['🎮', '🕹️', '🎱', '🎧', '🎲', '👾'];
-      gameItems.forEach((gi, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(gi, 114 + idx * 32, 45);
-          ctx.fillText(gameItems[(idx + 1) % gameItems.length], 114 + idx * 32, 75);
-        }
-      });
-    } else if (bizId === 'emballage_dattes') {
-      ctx.fillStyle = '#9a3412';
-      ctx.fillRect(104, 48, w - 130, 5);
-      ctx.fillRect(104, 78, w - 130, 5);
-      const dateItems = ['🌴', '📦', '🍯', '✨', '🌴', '📦'];
-      dateItems.forEach((di, idx) => {
-        if (114 + idx * 32 < w - 34) {
-          ctx.font = '14px serif';
-          ctx.fillText(di, 114 + idx * 32, 45);
-          ctx.fillText(dateItems[(idx + 1) % dateItems.length], 114 + idx * 32, 75);
-        }
-      });
-    } else if (bizId === 'croisiere_mer' || bizId === 'agence_voyages' || bizId === 'hotel' || bizId === 'bank_branch') {
+    }
+
+    // 12. AGENCES & CROISIÈRES & BANQUE : Horloge de direction discrète
+    else if (bizId === 'croisiere_mer' || bizId === 'agence_voyages' || bizId === 'hotel' || bizId === 'bank_branch') {
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
       ctx.arc(38, 46, 11, 0, Math.PI * 2);
@@ -1039,46 +1161,30 @@ export class CanvasStoreEngine {
       ctx.stroke();
       ctx.font = '9px sans-serif';
       ctx.fillText('🕒', 33, 49);
-    } else if (bizId === 'salon_de_the') {
+    }
+
+    // 13. SUPERMARCHÉ & SUPÉRETTE : Gérés intégralement dans drawCashierCounter
+    else if (bizId === 'supermarche' || bizId === 'superette') {
+      // Décor géré dans drawCashierCounter
+    }
+
+    // 14. TABAC : Kiosque compact
+    else if (bizId === 'tobacco_kiosk') {
       ctx.fillStyle = '#831843';
-      ctx.fillRect(104, 48, w - 130, 4);
-      const teaDecor = ['🍹', '☕', '🍰', '🌿', '🍹'];
-      teaDecor.forEach((td, idx) => {
-        if (118 + idx * 36 < w - 34) {
-          ctx.font = '13px serif';
-          ctx.fillText(td, 118 + idx * 36, 45);
-        }
-      });
-    } else if (bizId === 'supermarche' || bizId === 'superette') {
-      // Rayons dessinés dans drawCashierCounter
-    } else if (bizId === 'tobacco_kiosk') {
-      ctx.fillStyle = '#831843';
-      ctx.fillRect(28, 52, 108, 5);
-      ctx.fillRect(28, 76, 108, 5);
+      ctx.fillRect(28, 52, 108, 4);
       const tobItems = ['🚬', '📰', '💧', '🎟️'];
       tobItems.forEach((ti, idx) => {
-        ctx.font = '13px serif';
+        ctx.font = '12px serif';
         ctx.fillText(ti, 36 + idx * 24, 49);
-        ctx.fillText(tobItems[(idx + 1) % tobItems.length], 36 + idx * 24, 73);
       });
-    } else if (bizId === 'taxi_collectif') {
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(104, 42, w - 134, 38);
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 1.2;
-      ctx.strokeRect(104, 42, w - 134, 38);
-      const tIcons = ['🚖', '🛣️', '🎫', '🚦', '🚖'];
-      tIcons.forEach((ic, idx) => {
-        if (118 + idx * 34 < w - 38) {
-          ctx.font = '14px serif';
-          ctx.fillText(ic, 118 + idx * 34, 66);
-        }
-      });
-    } else {
+    }
+
+    // 15. DÉFAUT ÉPURÉ
+    else {
       ctx.fillStyle = '#334155';
-      ctx.fillRect(104, 52, w - 130, 5);
-      ctx.font = '14px serif';
-      for (let x = 116; x < w - 34; x += 34) {
+      ctx.fillRect(104, 52, w - 130, 4);
+      ctx.font = '13px serif';
+      for (let x = 116; x < w - 34; x += 36) {
         ctx.fillText('📦', x, 48);
       }
     }
@@ -1198,31 +1304,74 @@ export class CanvasStoreEngine {
     }
 
     // B. SUPERMARCHÉ & SUPÉRETTE (`supermarket_checkout`) :
-    // Commence avec 1 caisse active et son caissier dès le début, jusqu'à 3 caisses avec recrutement.
+    // Supermarché : 3 caisses max, rayons d'hypermarché en arrière-plan, ZÉRO numéro sur les caisses.
+    // Supérette : 2 caisses max, rayonnage moderne de proximité avec produits diversifiés.
     if (archetype === 'supermarket_checkout') {
       ctx.save();
       const slots = (detail && detail.staffSlots) ? detail.staffSlots : [];
       const hiredCount = currentBiz ? (currentBiz.hiredManagersCount || (currentBiz.hasManager ? 1 : 0)) : 0;
+      const isSuperette = currentBizId === 'superette';
+      const maxLanes = isSuperette ? 2 : 3;
 
-      for (let r = 0; r < 2; r++) {
-        const ry = 50 + r * 20;
+      // Rayons d'arrière-plan propres et réalistes
+      if (isSuperette) {
+        // Supérette : 2 gondoles modernes avec produits très diversifiés et panier de fruits
+        const ry1 = 48;
+        const ry2 = 68;
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(22, ry, this.width - 62, 4.5);
-        ctx.strokeStyle = '#38bdf8';
+        ctx.fillRect(24, ry1, this.width - 56, 4);
+        ctx.fillRect(24, ry2, this.width - 56, 4);
+        ctx.strokeStyle = '#f59e0b';
         ctx.lineWidth = 0.8;
-        ctx.strokeRect(22, ry, this.width - 62, 4.5);
-        const items = ['🧃', '🧀', '🥖', '🥛', '🥫', '🧼', '🍫', '🫒'];
+        ctx.strokeRect(24, ry1, this.width - 56, 4);
+        ctx.strokeRect(24, ry2, this.width - 56, 4);
+
+        const supRow1 = ['🧃', '🥤', '💧', '🥛', '🧀', '🧋', '🧃', '🥤', '💧', '🥛'];
+        const supRow2 = ['🍫', '🍪', '🥖', '🥫', '🍿', '🥐', '🍯', '🍫', '🍪', '🥫'];
         ctx.font = '11px serif';
-        for (let ix = 32; ix < this.width - 48; ix += 28) {
-          ctx.fillText(items[((ix / 28) | 0 + r * 3) % items.length], ix, ry - 2);
+        for (let ix = 32, i = 0; ix < this.width - 48; ix += 26, i++) {
+          ctx.fillText(supRow1[i % supRow1.length], ix, ry1 - 2);
+          ctx.fillText(supRow2[i % supRow2.length], ix, ry2 - 2);
         }
+        ctx.font = '13px serif';
+        ctx.fillText('🍊', 10, ry1 - 1);
+        ctx.fillText('🍌', 10, ry2 - 1);
+      } else {
+        // Magasin Général / Supermarché : 3 grands linéaires d'hypermarché avec têtes de gondole et catégories
+        const shelfItems = [
+          ['🥤', '🧃', '💧', '🧋', '🥤', '🧃', '💧', '🧋'],
+          ['🥫', '🫒', '🧂', '🥫', '🥫', '🫒', '🧂', '🥫'],
+          ['🧀', '🥛', '🧈', '🥣', '🧀', '🥛', '🧈', '🥣']
+        ];
+        for (let r = 0; r < 3; r++) {
+          const ry = 42 + r * 18;
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(20, ry, this.width - 50, 4);
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 0.7;
+          ctx.strokeRect(20, ry, this.width - 50, 4);
+
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+          ctx.fillRect(20, ry + 3, this.width - 50, 1.5);
+
+          const rowItems = shelfItems[r];
+          ctx.font = '10px serif';
+          for (let ix = 28, i = 0; ix < this.width - 48; ix += 24, i++) {
+            ctx.fillText(rowItems[i % rowItems.length], ix, ry - 2);
+          }
+        }
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.fillRect(30, 24, this.width - 70, 2);
       }
 
-      for (let cIdx = 0; cIdx < 3; cIdx++) {
-        const lx = 18 + cIdx * 82;
+      // Caisses ergonomiques (2 pour supérette, 3 pour supermarché)
+      const laneSpacing = isSuperette ? 88 : 74;
+      const lw = isSuperette ? 76 : 68;
+      const lh = 26;
+
+      for (let cIdx = 0; cIdx < maxLanes; cIdx++) {
+        const lx = 18 + cIdx * laneSpacing;
         const ly = 128;
-        const lw = 70;
-        const lh = 26;
         const slot = slots[cIdx];
         const isHired = slot ? slot.hired : (cIdx < hiredCount);
         const isLaneOpen = (cIdx === 0) || isHired;
@@ -1235,7 +1384,7 @@ export class CanvasStoreEngine {
             width: 36,
             height: 46,
             type: 'employee_info',
-            name: (slot && slot.name) ? slot.name : `كاشير ${cIdx + 1}`,
+            name: (slot && slot.name) ? slot.name : `كاشير`,
             role: (slot && slot.role) ? slot.role : 'عون قار'
           });
         }
@@ -1265,10 +1414,16 @@ export class CanvasStoreEngine {
         ctx.strokeStyle = isLaneOpen ? '#10b981' : '#64748b';
         ctx.strokeRect(lx + lw - 20, ly - 10, 16, 12);
 
-        ctx.fillStyle = isLaneOpen ? '#34d399' : '#94a3b8';
-        ctx.font = 'bold 8px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(isLaneOpen ? `🟢 #${cIdx + 1}` : `🔒 #${cIdx + 1}`, lx + lw / 2, ly + 18);
+        // ZÉRO numéro de caisse ! Indicateur LED discret
+        ctx.fillStyle = isLaneOpen ? '#10b981' : '#475569';
+        ctx.beginPath();
+        ctx.arc(lx + lw / 2, ly + 18, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        if (isLaneOpen) {
+          ctx.strokeStyle = '#34d399';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
       }
 
       ctx.restore();
@@ -1410,26 +1565,94 @@ export class CanvasStoreEngine {
 
     ctx.save();
 
-    // 1. Étagères murales d'arrière-boutique
+    // 1. Décor mural d'arrière-boutique spécifique et élégant (ZÉRO étagères moches génériques)
     ctx.save();
-    const goodsPool = this.orderIcons[currentBizId] || this.orderIcons.default;
-    for (let sIdx = 0; sIdx < 2; sIdx++) {
-      const shelfY = 46 + sIdx * 20;
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-      ctx.fillRect(counterX - 2, shelfY + 4, deskW + 4, 3);
-      const shelfGrad = ctx.createLinearGradient(counterX - 2, shelfY, counterX - 2, shelfY + 5);
-      shelfGrad.addColorStop(0, '#92400e');
-      shelfGrad.addColorStop(1, '#451a03');
-      ctx.fillStyle = shelfGrad;
-      ctx.fillRect(counterX - 2, shelfY, deskW + 4, 4.5);
+    if (currentBizId === 'patisserie') {
+      ctx.fillStyle = '#381630';
+      ctx.beginPath();
+      ctx.roundRect(counterX + 4, 46, deskW - 8, 36, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.font = '14px serif';
+      ctx.fillText('🎂', counterX + 16, 70);
+      ctx.fillText('✨', counterX + deskW - 32, 70);
+    } else if (currentBizId === 'librairie') {
+      ctx.fillStyle = '#271206';
+      ctx.beginPath();
+      ctx.roundRect(counterX, 46, deskW, 38, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.font = '13px serif';
+      ctx.fillText('📕', counterX + 8, 64);
+      ctx.fillText('📗', counterX + 26, 64);
+      ctx.fillText('📘', counterX + 44, 64);
+      ctx.fillText('📙', counterX + 62, 64);
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(counterX + 4, 76, deskW - 8, 2);
+    } else if (currentBizId === 'boucherie') {
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(counterX, 48, deskW, 34);
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.strokeRect(counterX, 48, deskW, 34);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillRect(counterX + 4, 56, deskW - 8, 3);
+      ctx.font = '13px serif';
+      ctx.fillText('🥩', counterX + 14, 76);
+      ctx.fillText('🍗', counterX + 48, 76);
+    } else if (currentBizId === 'salon_de_the' || currentBizId === 'restaurant') {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+      ctx.beginPath();
+      ctx.ellipse(counterX + deskW / 2, 64, 26, 18, 0, 0, Math.PI * 2);
+      ctx.fill();
       ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.font = '13px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(currentBizId === 'restaurant' ? '🍷' : '☕', counterX + deskW / 2, 68);
+    } else if (currentBizId === 'salle_de_jeux') {
+      ctx.fillStyle = '#09090b';
+      ctx.beginPath();
+      ctx.roundRect(counterX + 6, 48, deskW - 12, 34, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#a855f7';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.font = '15px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🎮', counterX + deskW / 2, 70);
+    } else if (currentBizId === 'attariya') {
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(counterX, 52, deskW, 32);
+      ctx.strokeStyle = '#b45309';
+      ctx.strokeRect(counterX, 52, deskW, 32);
+      ctx.font = '12px serif';
+      ctx.fillText('🫒', counterX + 8, 72);
+      ctx.fillText('🧂', counterX + 32, 72);
+      ctx.fillText('🍯', counterX + 56, 72);
+    } else if (currentBizId === 'kaskrout' || currentBizId === 'fricasse') {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(counterX, 50, deskW, 34);
+      ctx.font = '13px serif';
+      ctx.fillText('🥖', counterX + 12, 72);
+      ctx.fillText('🥚', counterX + 36, 72);
+      ctx.fillText('🫒', counterX + 60, 72);
+    } else {
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.roundRect(counterX + 6, 50, deskW - 12, 30, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#64748b';
       ctx.lineWidth = 1;
-      ctx.strokeRect(counterX - 2, shelfY, deskW + 4, 4.5);
-      ctx.font = '11px serif';
-      for (let gIdx = 0; gIdx < 4; gIdx++) {
-        const g = goodsPool[(sIdx * 2 + gIdx) % goodsPool.length];
-        ctx.fillText(g, counterX + 6 + gIdx * 19, shelfY - 3);
-      }
+      ctx.stroke();
+      const defIcons = this.orderIcons[currentBizId] || this.orderIcons.default;
+      ctx.font = '12px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(defIcons[0] || '✨', counterX + deskW / 2, 70);
     }
     ctx.restore();
 
@@ -1449,28 +1672,66 @@ export class CanvasStoreEngine {
       role: (cashierSlot && cashierSlot.role) ? cashierSlot.role : 'عون قار'
     });
 
-    // 3. Meuble Comptoir ergonomique au PREMIER PLAN (sans texte sur la façade)
-    const woodGrad = ctx.createLinearGradient(counterX, counterY + 10, counterX, counterY + 10 + deskH);
-    if (tier.tier >= 4) {
-      woodGrad.addColorStop(0, '#f59e0b');
-      woodGrad.addColorStop(0.35, '#b45309');
-      woodGrad.addColorStop(1, '#451a03');
+    // 3. Meuble Comptoir ou Vitrine bombée de Pâtisserie au PREMIER PLAN
+    if (currentBizId === 'patisserie') {
+      // Vitrine réfrigérée de boulangerie/pâtisserie en bas avec étalages gourmands
+      const vitW = deskW + 8;
+      const vitH = deskH + 2;
+      const vitX = counterX - 2;
+      const vitY = counterY + 6;
+
+      ctx.fillStyle = '#2e1029';
+      ctx.beginPath();
+      ctx.roundRect(vitX, vitY, vitW, vitH, [6, 6, 3, 3]);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(240, 249, 255, 0.18)';
+      ctx.fillRect(vitX + 3, vitY + 3, vitW - 6, vitH - 8);
+
+      // Étage 1 : Gâteaux fins & tartes
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(vitX + 4, vitY + 12, vitW - 8, 1);
+      ctx.font = '8px serif';
+      ctx.textAlign = 'center';
+      const cakes = ['🍰', '🧁', '🍓', '🍫'];
+      for (let ci = 0; ci < cakes.length; ci++) {
+        ctx.fillText(cakes[ci], vitX + 10 + ci * 18, vitY + 10);
+      }
+
+      // Étage 2 : Croissants & Baklawa dorée
+      const pastries = ['🥐', '🍯', '🥯', '🍩'];
+      for (let pi = 0; pi < pastries.length; pi++) {
+        ctx.fillText(pastries[pi], vitX + 10 + pi * 18, vitY + 23);
+      }
+
+      ctx.fillStyle = '#fef3c7';
+      ctx.fillRect(vitX - 1, vitY - 1, vitW + 2, 3);
     } else {
-      woodGrad.addColorStop(0, '#d97706');
-      woodGrad.addColorStop(0.3, '#b45309');
-      woodGrad.addColorStop(1, '#78350f');
+      const woodGrad = ctx.createLinearGradient(counterX, counterY + 10, counterX, counterY + 10 + deskH);
+      if (tier.tier >= 4) {
+        woodGrad.addColorStop(0, '#f59e0b');
+        woodGrad.addColorStop(0.35, '#b45309');
+        woodGrad.addColorStop(1, '#451a03');
+      } else {
+        woodGrad.addColorStop(0, '#d97706');
+        woodGrad.addColorStop(0.3, '#b45309');
+        woodGrad.addColorStop(1, '#78350f');
+      }
+      ctx.fillStyle = woodGrad;
+      ctx.beginPath();
+      ctx.roundRect(counterX, counterY + 10, deskW, deskH, [7, 7, 4, 4]);
+      ctx.fill();
+
+      ctx.fillStyle = '#fef3c7';
+      ctx.fillRect(counterX - 2, counterY + 8, deskW + 4, 4);
+
+      ctx.strokeStyle = tier.border || '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(counterX, counterY + 10, deskW, deskH);
     }
-    ctx.fillStyle = woodGrad;
-    ctx.beginPath();
-    ctx.roundRect(counterX, counterY + 10, deskW, deskH, [7, 7, 4, 4]);
-    ctx.fill();
-
-    ctx.fillStyle = '#fef3c7';
-    ctx.fillRect(counterX - 2, counterY + 8, deskW + 4, 4);
-
-    ctx.strokeStyle = tier.border || '#fbbf24';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(counterX, counterY + 10, deskW, deskH);
 
     // 4. Présentoir vitré à gauche de la caisse
     const trayX = counterX + 6;
@@ -1617,11 +1878,11 @@ export class CanvasStoreEngine {
     const rightX = Math.max(210, this.width - 38);
     const zoneW = rightX - leftX;
 
-    // 1. SALLE DE JEUX & BILLARD : Grande Table de Billard 2.5D animée + Bornes Console/PS5
+    // 1. SALLE DE JEUX & BILLARD : Grande Table de Billard 2.5D animée + Bornes Console AVEC VRAIS ÉCRANS DÉDIÉS
     if (archetype === 'arcade_billiard') {
-      const poolX = leftX + 6;
+      const poolX = leftX + 4;
       const poolY = 129;
-      const poolW = Math.min(106, zoneW * 0.56);
+      const poolW = Math.min(94, zoneW * 0.44);
       const poolH = 22;
 
       ctx.fillStyle = '#271206';
@@ -1674,26 +1935,52 @@ export class CanvasStoreEngine {
         ctx.fill();
       });
 
-      const consoleX = poolX + poolW + 14;
-      if (consoleX + 44 < this.width - 24) {
+      // DISPOSITION DES CONSOLES AVEC GRANDS ÉCRANS 16:9 DÉDIÉS
+      const startConsoleX = poolX + poolW + 10;
+      const availableW = (this.width - 24) - startConsoleX;
+      const numStations = availableW > 92 ? 2 : 1;
+      const stW = Math.min(50, (availableW - 8) / numStations);
+
+      const gameScreens = [
+        { icon: '⚽', bg: '#14532d', glow: '#22c55e' },
+        { icon: '🏎️', bg: '#7f1d1d', glow: '#ef4444' }
+      ];
+
+      for (let s = 0; s < numStations; s++) {
+        const csX = startConsoleX + s * (stW + 6);
+        const scrW = stW - 4;
+        const scrH = 22;
+        const scrY = 114;
+
+        // Écran 16:9 fixé au mur avec halo néon gaming
+        ctx.save();
         ctx.fillStyle = '#09090b';
         ctx.beginPath();
-        ctx.roundRect(consoleX, 120, 48, 28, 4);
+        ctx.roundRect(csX, scrY, scrW, scrH, 3);
         ctx.fill();
-        ctx.strokeStyle = Math.floor(timeSec * 5) % 2 === 0 ? '#a855f7' : '#06b6d4';
-        ctx.lineWidth = 1.6;
+        ctx.strokeStyle = gameScreens[s % 2].glow;
+        ctx.lineWidth = 1.4;
         ctx.stroke();
 
-        const scrGrad = ctx.createLinearGradient(consoleX + 4, 123, consoleX + 44, 138);
-        scrGrad.addColorStop(0, '#1e1b4b');
-        scrGrad.addColorStop(0.5, '#3b0764');
-        scrGrad.addColorStop(1, '#083344');
-        ctx.fillStyle = scrGrad;
-        ctx.fillRect(consoleX + 4, 123, 40, 15);
-        ctx.font = '9px sans-serif';
+        // Affichage dynamique du jeu sur l'écran
+        ctx.fillStyle = gameScreens[s % 2].bg;
+        ctx.fillRect(csX + 2, scrY + 2, scrW - 4, scrH - 4);
+        ctx.font = '10px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('⚽🎮🏎️', consoleX + 24, 134);
+        const bob = Math.sin(timeSec * 8 + s) * 1.5;
+        ctx.fillText(gameScreens[s % 2].icon, csX + scrW / 2, scrY + scrH / 2 + 3.5 + bob);
+
+        // Support écran et meuble console bas
+        ctx.fillStyle = '#27272a';
+        ctx.fillRect(csX + scrW / 2 - 2, scrY + scrH, 4, 6);
+        ctx.fillRect(csX + 4, scrY + scrH + 6, scrW - 8, 8);
+
+        // Diode lumineuse console sous l'écran
+        ctx.fillStyle = s % 2 === 0 ? '#38bdf8' : '#a855f7';
+        ctx.fillRect(csX + scrW / 2 - 6, scrY + scrH + 9, 12, 1.8);
+        ctx.restore();
       }
+
       ctx.restore();
       return;
     }
@@ -1736,31 +2023,45 @@ export class CanvasStoreEngine {
       return;
     }
 
-    // 3. SALON DE THÉ (`tea_lounge`) : 3 Tables basses rondes avec fauteuils où les clients sont ASSIS
+    // 3. SALON DE THÉ & RESTAURANT (`tea_lounge`) : 5 TABLES où les clients sont ASSIS (boissons ou plats selon métier)
     if (archetype === 'tea_lounge') {
-      for (let tIdx = 0; tIdx < 3; tIdx++) {
+      const isResto = bizId === 'restaurant';
+      for (let tIdx = 0; tIdx < 5; tIdx++) {
         const tx = this.getActivitySlotX('tea_lounge', tIdx) + 12;
         const ty = 145;
 
-        // Fauteuil lounge confortable derrière la table
-        ctx.fillStyle = '#831843';
+        // Fauteuil lounge velours ou chaise de restaurant en bois noble
+        ctx.fillStyle = isResto ? '#451a03' : '#831843';
         ctx.beginPath();
-        ctx.roundRect(tx - 11, ty - 16, 22, 16, 5);
+        ctx.roundRect(tx - 11, ty - 16, 22, 16, isResto ? 3 : 5);
         ctx.fill();
-        ctx.strokeStyle = '#f472b6';
+        ctx.strokeStyle = isResto ? '#b45309' : '#f472b6';
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Pied et plateau de table ronde en marbre blanc
-        ctx.fillStyle = '#fbbf24';
+        // Pied de table
+        ctx.fillStyle = isResto ? '#78350f' : '#fbbf24';
         ctx.fillRect(tx - 1.5, ty, 3, 9);
-        ctx.fillStyle = '#f8fafc';
+
+        // Plateau de table
+        ctx.fillStyle = isResto ? '#fef3c7' : '#f8fafc';
         ctx.beginPath();
-        ctx.ellipse(tx, ty, 13, 4.5, 0, 0, Math.PI * 2);
+        if (isResto) {
+          // Table de restaurant avec nappe blanche/dorée
+          ctx.roundRect(tx - 13, ty - 2, 26, 6, 2);
+        } else {
+          // Table ronde marbre salon de thé
+          ctx.ellipse(tx, ty, 12, 4.5, 0, 0, Math.PI * 2);
+        }
         ctx.fill();
-        ctx.strokeStyle = '#fbbf24';
+        ctx.strokeStyle = isResto ? '#d97706' : '#fbbf24';
         ctx.lineWidth = 1.2;
         ctx.stroke();
+
+        // Décor sur table : bougie ou petite fleur
+        ctx.font = '8px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(isResto ? '🕯️' : '🌸', tx, ty - 2);
       }
       ctx.restore();
       return;
@@ -1849,7 +2150,7 @@ export class CanvasStoreEngine {
     ctx.save();
 
     // 1. TRADITIONAL FOOD / LABLABI / KASKROUT : marmite fumante, découpe de baguette, louche en mouvement
-    if (bizId === 'kaskrout' || bizId === 'fricasse' || bizId === 'restaurant') {
+    if (bizId === 'kaskrout' || bizId === 'fricasse') {
       ctx.fillStyle = '#334155';
       ctx.fillRect(x + 4, y - 20, 36, 20);
       ctx.strokeStyle = '#64748b';
@@ -1907,8 +2208,63 @@ export class CanvasStoreEngine {
       ctx.fillRect(x + 4, y - 8, 10, 3);
     }
 
-    // 2. CAFÉ ARBI : Zazoua en cuivre sur كانون فخار مع جمر مشتعل ورغوة التاي وجدول صب التاي المنعنع
-    else if (bizId === 'kahwa' || bizId === 'salon_de_the') {
+    // 1B. RESTAURANT : Passe-plats inox du chef avec cloche dorée fumante et tajine chaud
+    else if (bizId === 'restaurant') {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x + 2, y - 18, 40, 18);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + 2, y - 18, 40, 18);
+
+      // Cloche dorée de service gastronomique
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(x + 16, y - 18, 8, Math.PI, 0);
+      ctx.fill();
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.arc(x + 16, y - 26, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Tajine tunisien chaud fumant
+      ctx.font = '11px serif';
+      ctx.fillText('🍲', x + 25, y - 16);
+      if (isBusy) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        ctx.beginPath();
+        ctx.arc(x + 28, y - 24 - (timeSec * 8 % 6), 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // 2. SALON DE THÉ : Machine expresso italienne chromée & shaker cocktail moderne
+    else if (bizId === 'salon_de_the') {
+      ctx.fillStyle = '#334155';
+      ctx.beginPath();
+      ctx.roundRect(x + 4, y - 24, 34, 24, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Finition inox chromé
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(x + 8, y - 20, 26, 6);
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(x + 12, y - 12, 4, 3);
+      ctx.fillRect(x + 24, y - 12, 4, 3);
+
+      // Tasse et verre cocktail
+      ctx.font = '9.5px serif';
+      ctx.fillText('🍹', x + 10, y - 4);
+      ctx.fillText('☕', x + 24, y - 4);
+    }
+
+    // 2B. CAFÉ ARBI : Zazoua en cuivre sur كانون فخار مع جمر مشتعل ورغوة التاي وجدول صب التاي المنعنع
+    else if (bizId === 'kahwa') {
       ctx.fillStyle = '#9a3412';
       ctx.beginPath();
       ctx.moveTo(x + 8, y - 1);
@@ -3084,10 +3440,10 @@ export class CanvasStoreEngine {
 
     // 2. Spawner de clients
     if (archetype !== 'bank_branch') {
-      const maxActive = archetype === 'kahwa_counter' ? 5 : (archetype === 'tea_lounge' || archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
+      const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
       const maxTotal = maxActive + 2;
       this.spawnTimer += dt;
-      const spawnThreshold = isProducing ? (archetype === 'kahwa_counter' || archetype === 'tobacco_kiosk' ? 1.45 : 1.95) : 3.6;
+      const spawnThreshold = isProducing ? (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'tobacco_kiosk' ? 1.45 : 1.95) : 3.6;
       const activeInStore = this.customers.filter(c => c.state !== 'walking_out').length;
       if (this.spawnTimer > spawnThreshold && activeInStore < maxActive && this.customers.length < maxTotal) {
         this.spawnCustomer();
@@ -3095,12 +3451,12 @@ export class CanvasStoreEngine {
       }
     }
 
-    // 2.b Animation du Serveur (`سرباي`) qui amène les boissons aux clients (Café & Salon de thé)
+    // 2.b Animation du Serveur (`سرباي`) qui amène les boissons ou plats aux clients (Café, Salon de thé & Restaurant)
     if ((archetype === 'kahwa_counter' || archetype === 'tea_lounge') && this.waiter) {
       const waitingCust = this.customers.find(c => c.state === 'waiting_service');
       if (waitingCust) {
         this.waiter.targetX = waitingCust.x + 6;
-        this.waiter.carryingIcon = waitingCust.orderIcon || (archetype === 'tea_lounge' ? '🍹' : '☕');
+        this.waiter.carryingIcon = waitingCust.orderIcon || (this.bizId === 'restaurant' ? '🍲' : (archetype === 'tea_lounge' ? '🍹' : '☕'));
         const wSpeed = 96;
         if (Math.abs(this.waiter.x - this.waiter.targetX) > 2) {
           this.waiter.x += Math.sign(this.waiter.targetX - this.waiter.x) * wSpeed * dt;

@@ -1,3 +1,12 @@
+## [1.24.0] - 2026-11-05
+### Added & Improved
+- **Salon de thé & Restaurant** : 5 tables assises dédiées avec nappes et bougies ; suppression totale des étagères génériques au profit d'une déco d'ambiance haut de gamme (lustres cristal, miroir baroque doré, plantes d'intérieur, assiettes zellige). Au restaurant, service dynamique de plats chauds tunisiens (`🍲`, `🍛`, `🍗`, `🥩`, `🥘`, `🥗`) apportés par le serveur aux clients attablés.
+- **Magasin Général (supermarché)** : Suppression des étagères génériques et des numéros sur les caisses (remplacés par des indicateurs LED discrets `✓`) ; ajout de 3 grands linéaires/rayons d'hypermarché en arrière-plan avec catégories (Épicerie, Boissons, Frais).
+- **Supérette** : Configuration calibrée à 2 caisses maximum, diversification des produits (fruits frais, boissons, snacks, produits laitiers) et gondoles de proximité soignées.
+- **Pâtisserie** : Élimination des étagères murales brutes, ajout d'une grande vitrine réfrigérée bombée de boulangerie/pâtisserie en bas avec étalages de gâteaux fins et viennoiseries/baklawa dorée.
+- **Salle de jeux** : Table de billard + postes consoles avec de grands écrans 16:9 montés au mur affichant des scènes de jeux animées et rétroéclairage ambilight néon RGB.
+- **Librairie & autres métiers** : Remplacement des étagères brutes par une majestueuse bibliothèque en acajou avec volumes reliés cuir/or, globe terrestre et lampe banquier ; suppression des étagères moches sur l'ensemble des commerces au profit de décors muraux épurés et contextuels.
+
 ## [1.23.0] - 2026-11-04
 ### Changed
 - Icône appli/APK futuriste finance & business, sans drapeau.
