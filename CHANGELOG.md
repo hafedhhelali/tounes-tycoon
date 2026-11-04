@@ -15,6 +15,21 @@
 
 # CHANGELOG
 
+## [v121] - 2026-11-04
+
+### Added, Changed & Fixed (Wealth Logo, Bespoke Business Animations, Bank & Tobacco Live Scenes, Simplified City Unlocks)
+- **Logo de l'Application Inspiré Argent & Fortune — Sans Drapeau (`index.html`)** :
+  - Nouveau blason vectoriel 3D `.brand-logo-mark` inspiré de l'argent et de la richesse (couronne dorée, médaillon coffre émeraude, lingots d'or empilés et pièce centrale `د.ت`), sans aucun drapeau, croissant ni étoile rouge.
+- **Animations Intérieures 2.5D Sur-Mesure par Type de Projet (`store_animator.js`, `engine.js`, `index.html`)** :
+  - **Café (`kahwa` -> `'kahwa_counter'`)** : Comptoir abaissé et proportionné (`deskH = 38`, `barY = 141`), serveur mobile actif (`سرباي`) qui apporte et sert la boisson au client au comptoir (`☕`/`🍵`), puis le client se déplace jusqu'à la caisse (`الكاسة`), paye et sort.
+  - **Salon de Thé (`salon_de_the` -> `'tea_lounge'`)** : 3 tables de salon avec fauteuils où les clients s'assoient (`isSeated = true`) ; le serveur mobile (`سرباي`) leur apporte les boissons sur plateau (`🍹`/`☕`), puis les clients se lèvent, passent à la caisse (`الكاسة`) pour payer et sortent.
+  - **Croisières (`croisiere_mer`) & Agence de Voyage (`agence_voyages` -> `'agency_desks'`)** : Aucune marchandise exposée au milieu ; deux bureaux exécutifs (`مكتب المدير 💻` et `مكتب المساعد 🖥️`) équipés d'ordinateurs ; les clients entrent, passent commande aux bureaux, payent et repartent avec leurs contrats/papiers (`📄`) en main.
+  - **Magasin Général / Supermarché (`supermarche`, `superette` -> `'supermarket_checkout'`)** : Clients poussant des chariots de supermarché (`🛒`) remplis d'articles et passant tous par la caisse ; les employés sont des caissiers (`كاشير الكاسة 1..3`) ; le projet démarre avec 1 seule caisse active et permet de recruter jusqu'à 3 caissiers avec tapis roulants et terminaux POS ergonomiques.
+  - **Guichet de Tabac (`tobaccoModal` -> `'tobacco_kiosk'`)** : Scène Canvas 60 FPS intégrée avec un seul employé (`عون وحيد`) ; les clients entrent, commandent (`🚬`/`📰`/`💧`), payent à la caisse et repartent ; ergonomie compacte 3 colonnes sans débordement.
+  - **Banque (`bankModal` -> `'bank_branch'`)** : Scène Canvas 60 FPS d'entrée à la banque où le client franchit l'entrée sur tapis rouge jusqu'au guichet blindé (`شباك العمليات البنكية 💳`) et l'agent de guichet (`عون الشباك`) l'accueille et valide son opération (`✓ مرحبا! العملية مقبولة`).
+- **Simplification des Critères d'Accès aux Nouvelles Villes (`engine.js`, `engine.test.js`)** :
+  - Allègement des prérequis sur les 18 villes (Bizerte : niv 5, Béja : niv 10, Le Kef : 60k DT seuls, Sousse : 150k DT + 1 projet niv 15 sans Prestige requis, Monastir : 2 managers, Kairouan : 1 projet niv 20, Sfax : 1 projet niv 25 sans Prestige requis, Gafsa : 4.5M DT seuls, Tozeur : 1 projet niv 30, Djerba : Prestige 3 sans titre Légende requis).
+
 ## [v120] - 2026-11-04
 
 ### Changed & Fixed (Authentic Tunisian Darja Overhaul & Zero-Overflow UI Ergonomics)

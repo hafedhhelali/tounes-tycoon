@@ -321,20 +321,20 @@ test('Tunisian 14 cities progression: listing, retrieval and initial state', () 
   assert.equal(nonExistent, null);
 });
 
-test('City unlock criteria: Bizerte (2,500 DT + 1 biz L10)', () => {
+test('City unlock criteria: Bizerte (2,500 DT + 1 biz L5)', () => {
   const engine = new TycoonEngine();
 
   // Critère non rempli au départ
   assert.equal(engine.checkCityUnlockCriteria('bizerte'), false);
   assert.equal(engine.unlockCity('bizerte'), false);
 
-  // Assez d'argent mais pas de biz L10
+  // Assez d'argent mais pas de biz L5
   engine.dinars = 3000;
   assert.equal(engine.checkCityUnlockCriteria('bizerte'), false);
   assert.equal(engine.unlockCity('bizerte'), false);
 
-  // Niveau 10 atteint sur un commerce
-  engine.businesses[0].level = 10;
+  // Niveau 5 atteint sur un commerce
+  engine.businesses[0].level = 5;
   assert.equal(engine.checkCityUnlockCriteria('bizerte'), true);
 
   // Déblocage réussi : prélèvement de 2,500 DT et passage à Bizerte
@@ -366,39 +366,37 @@ test('City unlock criteria: Nabeul/Hammamet (8,000 DT + 1 manager)', () => {
   assert.equal(engine.currentCityId, 'nabeul_hammamet');
 });
 
-test('City unlock criteria: Béja (22,000 DT + 2 biz L20)', () => {
+test('City unlock criteria: Béja (22,000 DT + 1 biz L10)', () => {
   const engine = new TycoonEngine();
   engine.dinars = 30000;
-  engine.businesses[0].level = 20;
-  assert.equal(engine.unlockCity('beja'), false); // seulement 1 biz L20
+  engine.businesses[0].level = 5;
+  assert.equal(engine.unlockCity('beja'), false);
 
-  engine.businesses[1].level = 20;
+  engine.businesses[0].level = 10;
   assert.equal(engine.checkCityUnlockCriteria('beja'), true);
   assert.equal(engine.unlockCity('beja'), true);
   assert.equal(engine.dinars, 8000); // 30000 - 22000 = 8000
   assert.equal(engine.currentCityId, 'beja');
 });
 
-test('City unlock criteria: Le Kef (60,000 DT + 50k total dinars)', () => {
+test('City unlock criteria: Le Kef (60,000 DT)', () => {
   const engine = new TycoonEngine();
-  engine.dinars = 70000;
-  engine.lifetimeDinarsEarned = 10000;
-  engine.totalDinarsEarned = 10000;
+  engine.dinars = 50000;
   assert.equal(engine.unlockCity('le_kef'), false);
 
-  engine.lifetimeDinarsEarned = 60000;
+  engine.dinars = 70000;
   assert.equal(engine.checkCityUnlockCriteria('le_kef'), true);
   assert.equal(engine.unlockCity('le_kef'), true);
   assert.equal(engine.dinars, 10000);
   assert.equal(engine.currentCityId, 'le_kef');
 });
 
-test('City unlock criteria: Sousse (150,000 DT + Prestige 1)', () => {
+test('City unlock criteria: Sousse (150,000 DT + 1 biz L15)', () => {
   const engine = new TycoonEngine();
   engine.dinars = 200000;
   assert.equal(engine.unlockCity('sousse'), false);
 
-  engine.prestigeLevel = 1;
+  engine.businesses[0].level = 15;
   assert.equal(engine.checkCityUnlockCriteria('sousse'), true);
   assert.equal(engine.unlockCity('sousse'), true);
   assert.equal(engine.dinars, 50000);
@@ -408,69 +406,58 @@ test('City unlock criteria: Sousse (150,000 DT + Prestige 1)', () => {
 test('City unlock criteria: Monastir/Mahdia, Kairouan, Sfax, Gafsa, Tozeur, Gabes, Médenine', () => {
   const engine = new TycoonEngine();
 
-  // Monastir (350k + 5 managers)
+  // Monastir (350k + 2 managers)
   engine.dinars = 400000;
-  for (let i = 0; i < Math.min(5, engine.businesses.length); i++) {
-    engine.businesses[i].hasManager = true;
-    engine.businesses[i].hiredManagersCount = 1;
-  }
-  // S'il y a d'autres villes débloquées ou commerces
   const allBiz = Object.values(engine.cityBusinesses).flat();
-  let assigned = 0;
-  for (const b of allBiz) {
-    b.hasManager = true;
-    b.hiredManagersCount = 1;
-    assigned++;
-    if (assigned >= 5) break;
+  for (let i = 0; i < Math.min(2, allBiz.length); i++) {
+    allBiz[i].hasManager = true;
+    allBiz[i].hiredManagersCount = 1;
   }
   assert.equal(engine.unlockCity('monastir_mahdia'), true);
 
-  // Kairouan (800k + 4 biz L35)
+  // Kairouan (800k + 1 biz L20)
   engine.dinars = 900000;
-  for (let i = 0; i < 4; i++) {
-    engine.businesses[i].level = 35;
-  }
+  engine.businesses[0].level = 20;
   assert.equal(engine.unlockCity('kairouan'), true);
 
-  // Sfax (2,000,000 DT + Prestige 2)
+  // Sfax (2,000,000 DT + 1 biz L25)
   engine.dinars = 2500000;
-  engine.prestigeLevel = 2;
+  engine.businesses[0].level = 25;
   assert.equal(engine.unlockCity('sfax'), true);
 
   // Gafsa (4,500,000 DT)
   engine.dinars = 5000000;
   assert.equal(engine.unlockCity('gafsa'), true);
 
-  // Tozeur (10,000,000 DT + 1 biz L100)
+  // Tozeur (10,000,000 DT + 1 biz L30)
   engine.dinars = 11000000;
-  engine.businesses[0].level = 100;
+  engine.businesses[0].level = 30;
   assert.equal(engine.unlockCity('tozeur'), true);
 
-  // Gabès (25,000,000 DT + 10 managers)
+  // Gabès (25,000,000 DT + 3 managers)
   engine.dinars = 26000000;
   const currentEmpireBiz = Object.values(engine.cityBusinesses).flat();
-  for (let i = 0; i < Math.min(10, currentEmpireBiz.length); i++) {
+  for (let i = 0; i < Math.min(3, currentEmpireBiz.length); i++) {
     currentEmpireBiz[i].hasManager = true;
     currentEmpireBiz[i].hiredManagersCount = 1;
   }
   assert.equal(engine.unlockCity('gabes'), true);
 
-  // Médenine (60,000,000 DT + Prestige 3)
+  // Médenine (60,000,000 DT + Prestige 1)
   engine.dinars = 70000000;
-  engine.prestigeLevel = 3;
+  engine.prestigeLevel = 1;
   assert.equal(engine.unlockCity('medenine_zarzis'), true);
 });
 
-test('Djerba / Holding National: Legend title requirement + Holding Status x5 multiplier', () => {
+test('Djerba / Holding National: Prestige 3 requirement + Holding Status x5 multiplier', () => {
   const engine = new TycoonEngine();
   engine.dinars = 200000000;
-  engine.prestigeLevel = 5;
+  engine.prestigeLevel = 1;
   assert.equal(engine.unlockCity('djerba_holding'), false);
 
-  // Atteinte du titre Légende (Prestige 10)
-  engine.prestigeLevel = 10;
+  // Atteinte du Prestige 3
+  engine.prestigeLevel = 3;
   engine.updatePlayerPrestigeTitle();
-  assert.equal(engine.playerTitle, 'إمبراطور تونس الكبير');
   assert.equal(engine.checkCityUnlockCriteria('djerba_holding'), true);
 
   const unlocked = engine.unlockCity('djerba_holding');

@@ -1,14 +1,14 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-11-04T17:28:00.000Z - etat = HEAD de main (v120-authentic-tunisian-darja-and-zero-overflow-ergonomics)
+MAJ: 2026-11-04T21:57:00.000Z - etat = HEAD de main (v121-wealth-logo-bespoke-business-animations-and-city-unlocks)
 
 ## État en 3 lignes
-Révision Linguistique Darja Tunisienne 100% Authentique & Ergonomie Zéro-Débordement (`v120`) :
-1. **Darja Tounsia Pure (`engine.js`, `index.html`, `store_animator.js`)** : Suppression intégrale des expressions machrékines/syriennes (`مطعم ابو علي الشامي` -> `مطعم المصلّي والمشوي`, `الحناء الجبسية` -> `الحنّة القابسية`, `الحوت الشامي` -> `الحوت الأزرق`, `قرصة كستناء` -> `طرشية بندق ولوز`), administratives Fusha (`بيع مشتقات الحليب...` -> `حليب وأجبان باجة`, `جزارة وبيع اللحوم...` -> `جزّار اللحم البلدي`, `سجائر` -> `دخّان وطني`, `دوريات الشرطة` -> `دوريات الحاكم`, `فيش` -> `جيتون`, `مطماطة الشمال` -> `مطمورة الشمال`) et des parenthèses françaises (`(Showroom Auto)`, `(Croisières en mer)`).
-2. **Ergonomie Canvas 2D & CSS Zéro-Coupure / Zéro-Débordement** : Suppression des `.slice(0, 8)` et `.slice(0, 48)` qui coupaient les mots arabes sur la carte (`drawCaravanAnimation`, `drawSelectedCityOverlay`) au profit d'un auto-dimensionnement dynamique (`measureText` + `maxWidth`), bornage anti-collision entre `bonusDesc` et le bouton d'action de la carte, et durcissement CSS (`overflow-wrap: break-word`, `max-width`) sur les cartes et toasts.
-3. **Intégrité des Tests** : 68/68 tests unitaires au vert (`npm test`).
+Logo Argent 3D sans drapeau, Animations Métiers Tycoon sur-mesure (Café, Salon de Thé, Croisières/Agence, Supermarché 3 Caisses, Tabac, Banque) & Critères d'Accès Villes Simplifiés (`v121`) :
+1. **Logo & Animations Intérieures par Métier (`index.html`, `store_animator.js`)** : Logo 3D inspiré argent/lingots/pièce `د.ت` sans drapeau ; `kahwa` (comptoir abaissé ergonomique `deskH=38`, serveur actif `سرباي` qui sert au comptoir puis client paye à la caisse `الكاسة`) ; `salon_de_the` (clients assis aux tables `isSeated`, serveur apporte les boissons sur plateau puis clients payent à la caisse) ; `croisiere_mer` & `agence_voyages` (zéro marchandise exposée, 2 bureaux Manager + Assistant avec ordinateurs `🖥️`, clients repartent avec leurs contrats/papiers `📄`) ; `supermarche` & `superette` (clients avec chariots `🛒` passant tous à la caisse, démarre avec 1 caisse et recrutable jusqu'à 3 caissiers `كاسة 1..3`) ; `tobaccoModal` (animation live 1 seul employé `عون وحيد`) ; `bankModal` (animation live d'entrée client reçu par l'agent guichet `عون الشباك`).
+2. **Critères d'Accès Villes Simplifiés (`engine.js`, `engine.test.js`)** : Simplification des conditions de déblocage des 18 villes (1 seul critère simple en plus du prix ou prix seul, suppression des paliers bloquants multiples).
+3. **Intégrité & Clean Architecture** : 68/68 tests unitaires au vert (`npm test`), arrêt propre des moteurs Canvas (`stop()`) à la fermeture des modales.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs : `engine.js`, `store_animator.js`, `index.html`, `www/*`.
+- Modifs : `engine.js`, `engine.test.js`, `store_animator.js`, `index.html`, `www/*`.
 - Suite de tests : 68/68 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

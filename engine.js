@@ -193,8 +193,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.12,
     cycleDurationMs: 25000, // 25.0s
     managers: [
-      { name: 'الرايس مراد', role: 'قبطان اليخوت والخرجات', avatar: '⚓', cost: 320000.0 },
-      { name: 'سي مكرم البحري', role: 'مدير الحجوزات والرحلات', avatar: '🧭', cost: 950000.0 }
+      { name: 'سي مكرم البحري', role: 'مدير مكتب الحجوزات', avatar: '💻', cost: 320000.0 },
+      { name: 'أمين المساعد', role: 'مساعد المدير والعقود', avatar: '🖥️', cost: 950000.0 }
     ],
   },
   {
@@ -220,22 +220,24 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.12,
     cycleDurationMs: 30000, // 30.0s
     managers: [
-      { name: 'منير الكاشير', role: 'كاشير الكاسة', avatar: '💳', cost: 600000.0 },
-      { name: 'سي رضا', role: 'شاف الرّفوف', avatar: '👔', cost: 1500000.0 }
+      { name: 'منير الكاشير', role: 'كاشير الكاسة 1', avatar: '💳', cost: 500000.0 },
+      { name: 'سليم الكاشير', role: 'كاشير الكاسة 2', avatar: '🧾', cost: 1100000.0 },
+      { name: 'أمل الكاشيرة', role: 'كاشيرة الكاسة 3', avatar: '🛒', cost: 2200000.0 }
     ],
   },
   {
     id: 'supermarche',
     name: 'المغازة العامّة',
-    tagline: 'بروموسيونات وقضية الشهر بالكردونة، العز والحطة',
+    tagline: 'بروموسيونات وقضية الشهر بالشاريو، 3 كاسات تخدم بالوقت',
     icon: '🏢',
     baseCost: 900000.0,
     baseRevenue: 15000.0,
     costMultiplier: 1.13,
     cycleDurationMs: 45000, // 45.0s
     managers: [
-      { name: 'طارق الشاف', role: 'كابو المبيعات', avatar: '📋', cost: 3500000.0 },
-      { name: 'كريم الشريف', role: 'معلّم التوزيع', avatar: '💼', cost: 9000000.0 }
+      { name: 'طارق الكاشير', role: 'كاشير الكاسة 1', avatar: '💳', cost: 2800000.0 },
+      { name: 'سيرين الكاشيرة', role: 'كاشيرة الكاسة 2', avatar: '🧾', cost: 5800000.0 },
+      { name: 'كريم الكاشير', role: 'كاشير الكاسة 3', avatar: '🛒', cost: 11000000.0 }
     ],
   },
   {
@@ -248,8 +250,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.14,
     cycleDurationMs: 60000, // 60.0s
     managers: [
-      { name: 'وسيم الكابتن', role: 'شاف الصالة', avatar: '🤵', cost: 20000000.0 },
-      { name: 'رامي الباريستا', role: 'معلّم الباريستا', avatar: '🍸', cost: 50000000.0 }
+      { name: 'وسيم الكابتن', role: 'كاشير الصالة', avatar: '💳', cost: 20000000.0 },
+      { name: 'رامي السرباي', role: 'سرباي الطواول', avatar: '🤵', cost: 50000000.0 }
     ],
   },
   {
@@ -276,8 +278,8 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.14,
     cycleDurationMs: 120000, // 120.0s
     managers: [
-      { name: 'أنيس التيكي', role: 'شاف الحجوزات', avatar: '🎫', cost: 600000000.0 },
-      { name: 'سي منير الباترون', role: 'مولى الوكالة', avatar: '🧳', cost: 1500000000.0 }
+      { name: 'سي منير المدير', role: 'مدير الوكالة بالحاسوب', avatar: '💻', cost: 600000000.0 },
+      { name: 'أنيس المساعد', role: 'مساعد الحجوزات والتيكيات', avatar: '🖥️', cost: 1500000000.0 }
     ],
   },
   {
@@ -639,10 +641,10 @@ export const TUNISIAN_CITIES = [
     icon: '⛵',
     tagline: 'قنال بنزرت، الحوت المشوي، الكورنيش العتيق وحركة الميناء',
     costDinars: 2500,
-    criteriaDesc: '2,500 د.ت + مشروع واحد مستوى 10',
+    criteriaDesc: '2,500 د.ت + مشروع مستوى 5',
     minPrestige: 0,
     reqDinars: 2500,
-    reqBizLevel: { count: 1, minLevel: 10 },
+    reqBizLevel: { count: 1, minLevel: 5 },
     bonusDesc: 'مشاريع بنزرت والميناء (+25%)',
     themeClass: 'zone-bizerte'
   },
@@ -652,7 +654,7 @@ export const TUNISIAN_CITIES = [
     icon: '🏖️',
     tagline: 'الفخار، ياسمين الحمامات، زهر نابل والنزل السياحية الفاخرة',
     costDinars: 8000,
-    criteriaDesc: '8,000 د.ت + 1 معلّم / مدير مسيّر',
+    criteriaDesc: '8,000 د.ت + 1 معلّم مسيّر',
     minPrestige: 0,
     reqDinars: 8000,
     reqManagers: 1,
@@ -665,10 +667,10 @@ export const TUNISIAN_CITIES = [
     icon: '🧀',
     tagline: 'مطمورة الشمال، قمح وسمن، مخارق وزلابية وجبن باجة المعتّق',
     costDinars: 22000,
-    criteriaDesc: '22,000 د.ت + مشروعين مستوى 20',
+    criteriaDesc: '22,000 د.ت + مشروع مستوى 10',
     minPrestige: 0,
     reqDinars: 22000,
-    reqBizLevel: { count: 2, minLevel: 20 },
+    reqBizLevel: { count: 1, minLevel: 10 },
     bonusDesc: 'الخيرات والمخبوزات الباجية (+30%)',
     themeClass: 'zone-beja'
   },
@@ -678,10 +680,9 @@ export const TUNISIAN_CITIES = [
     icon: '🏰',
     tagline: 'القصبة العالية، سيدي بومخلوف، برنوس الجبل والتجارة العريقة',
     costDinars: 60000,
-    criteriaDesc: '60,000 د.ت + كسب 50 ألف دينار جملي',
+    criteriaDesc: '60,000 د.ت',
     minPrestige: 0,
     reqDinars: 60000,
-    reqTotalDinars: 50000,
     bonusDesc: 'مشاريع الجبل والقصبة (+35%)',
     themeClass: 'zone-le-kef'
   },
@@ -691,9 +692,10 @@ export const TUNISIAN_CITIES = [
     icon: '💎',
     tagline: 'بوجعفر، القنطاوي، التجارة البحرية وصالونات الشاي العصرية',
     costDinars: 150000,
-    criteriaDesc: '150,000 د.ت + برستيج 1',
-    minPrestige: 1,
+    criteriaDesc: '150,000 د.ت + مشروع مستوى 15',
+    minPrestige: 0,
     reqDinars: 150000,
+    reqBizLevel: { count: 1, minLevel: 15 },
     bonusDesc: 'صالونات سوسة والمطاعم الفاخرة (+35%)',
     themeClass: 'zone-sousse'
   },
@@ -703,10 +705,10 @@ export const TUNISIAN_CITIES = [
     icon: '⚓',
     tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الأزرق والسرغوس',
     costDinars: 350000,
-    criteriaDesc: '350,000 د.ت + 5 معلّمين مسيّرين',
+    criteriaDesc: '350,000 د.ت + معلّمين اثنين',
     minPrestige: 0,
     reqDinars: 350000,
-    reqManagers: 5,
+    reqManagers: 2,
     bonusDesc: 'مشاريع الساحل والنزل الكبرى (+40%)',
     themeClass: 'zone-monastir'
   },
@@ -716,10 +718,10 @@ export const TUNISIAN_CITIES = [
     icon: '🕌',
     tagline: 'فسقية الأغالبة، مقروض القيروان والزرابي الصوفية الفاخرة',
     costDinars: 800000,
-    criteriaDesc: '800,000 د.ت + 4 مشاريع مستوى 35',
+    criteriaDesc: '800,000 د.ت + مشروع مستوى 20',
     minPrestige: 0,
     reqDinars: 800000,
-    reqBizLevel: { count: 4, minLevel: 35 },
+    reqBizLevel: { count: 1, minLevel: 20 },
     bonusDesc: 'حلويات القيروان والحرف التقليدية (+40%)',
     themeClass: 'zone-kairouan'
   },
@@ -729,10 +731,10 @@ export const TUNISIAN_CITIES = [
     icon: '🏛️',
     tagline: 'عاصمة سفيطلة الرومانية، المعابد الثلاثة، الكابيتول التاريخي وزيت الزيتون العريق',
     costDinars: 600000,
-    criteriaDesc: '600,000 د.ت + مشروع واحد مستوى 30',
+    criteriaDesc: '600,000 د.ت + مشروع مستوى 15',
     minPrestige: 0,
     reqDinars: 600000,
-    reqBizLevel: { count: 1, minLevel: 30 },
+    reqBizLevel: { count: 1, minLevel: 15 },
     bonusDesc: 'الآثار والتجارة الفلاحية الرومانية (+40%)',
     themeClass: 'zone-sbeitla'
   },
@@ -742,8 +744,8 @@ export const TUNISIAN_CITIES = [
     icon: '🇩🇿',
     tagline: 'بونة الجزائرية، الميناء التجاري العريق، الفولاذ وسوق التبادل الحدودي المغاربي',
     costDinars: 80000000,
-    criteriaDesc: '80,000,000 د.ت + فتح الكاف وباجة',
-    minPrestige: 3,
+    criteriaDesc: '80,000,000 د.ت + برستيج 1',
+    minPrestige: 1,
     reqDinars: 80000000,
     bonusDesc: 'التجارة المغاربية والاستيراد والتصدير مع الجزائر (x2.5)',
     themeClass: 'zone-annaba'
@@ -754,8 +756,8 @@ export const TUNISIAN_CITIES = [
     icon: '🇱🇾',
     tagline: 'عروس البحر، باب البحر، أسواق الذهب والتجارة والعبور الدولي المغاربي',
     costDinars: 120000000,
-    criteriaDesc: '120,000,000 د.ت + فتح مدنين',
-    minPrestige: 5,
+    criteriaDesc: '120,000,000 د.ت + برستيج 2',
+    minPrestige: 2,
     reqDinars: 120000000,
     bonusDesc: 'التجارة والعبور الدولي مع ليبيا الشقيقة (x3)',
     themeClass: 'zone-tripoli'
@@ -766,9 +768,10 @@ export const TUNISIAN_CITIES = [
     icon: '🏭',
     tagline: 'باب الديوان، الزيتونة المباركة، الصناعات الكبرى والخدمة الحارة',
     costDinars: 2000000,
-    criteriaDesc: '2,000,000 د.ت + برستيج 2',
-    minPrestige: 2,
+    criteriaDesc: '2,000,000 د.ت + مشروع مستوى 25',
+    minPrestige: 0,
     reqDinars: 2000000,
+    reqBizLevel: { count: 1, minLevel: 25 },
     bonusDesc: 'الصناعات الصفاقسية والتجارة الكبرى (+50%)',
     themeClass: 'zone-sfax'
   },
@@ -790,10 +793,10 @@ export const TUNISIAN_CITIES = [
     icon: '🌴',
     tagline: 'دقلة النور، الشبيكة وتامغزة، والواحات الصحراوية العالمية',
     costDinars: 10000000,
-    criteriaDesc: '10,000,000 د.ت + مشروع واحد مستوى 100',
+    criteriaDesc: '10,000,000 د.ت + مشروع مستوى 30',
     minPrestige: 0,
     reqDinars: 10000000,
-    reqBizLevel: { count: 1, minLevel: 100 },
+    reqBizLevel: { count: 1, minLevel: 30 },
     bonusDesc: 'سياحة الصحراء ووكالات الأسفار (+60%)',
     themeClass: 'zone-tozeur'
   },
@@ -803,10 +806,10 @@ export const TUNISIAN_CITIES = [
     icon: '🌊',
     tagline: 'الحنّة القابسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
     costDinars: 25000000,
-    criteriaDesc: '25,000,000 د.ت + 10 معلّمين مسيّرين',
+    criteriaDesc: '25,000,000 د.ت + 3 معلّمين مسيّرين',
     minPrestige: 0,
     reqDinars: 25000000,
-    reqManagers: 10,
+    reqManagers: 3,
     bonusDesc: 'سوق قابس والمجمعات الصناعية (+75%)',
     themeClass: 'zone-gabes'
   },
@@ -816,10 +819,10 @@ export const TUNISIAN_CITIES = [
     icon: '🏰',
     tagline: 'قصور تطاوين الصحراوية، الديناصورات وقرماسة، عاصمة الجنوب الأشم',
     costDinars: 45000000,
-    criteriaDesc: '45,000,000 د.ت + 6 معلّمين مسيّرين',
+    criteriaDesc: '45,000,000 د.ت + 3 معلّمين مسيّرين',
     minPrestige: 0,
     reqDinars: 45000000,
-    reqManagers: 6,
+    reqManagers: 3,
     bonusDesc: 'سياحة القصور وتجارة تطاوين (+80%)',
     themeClass: 'zone-tataouine'
   },
@@ -829,8 +832,8 @@ export const TUNISIAN_CITIES = [
     icon: '🏺',
     tagline: 'قصور مدنين، بحر جرجيس والزيتون الروماني العريق',
     costDinars: 60000000,
-    criteriaDesc: '60,000,000 د.ت + برستيج 3',
-    minPrestige: 3,
+    criteriaDesc: '60,000,000 د.ت + برستيج 1',
+    minPrestige: 1,
     reqDinars: 60000000,
     bonusDesc: 'الموانئ والتجارة المغاربية الجنوبية (x2)',
     themeClass: 'zone-medenine'
@@ -841,10 +844,9 @@ export const TUNISIAN_CITIES = [
     icon: '👑',
     tagline: 'جزيرة الأحلام ومقر الهولدينغ التونسي الوطني الدولي الشامل',
     costDinars: 150000000,
-    criteriaDesc: '150,000,000 د.ت + لقب الأسطورة (برستيج 10)',
-    minPrestige: 10,
+    criteriaDesc: '150,000,000 د.ت + برستيج 3',
+    minPrestige: 3,
     reqDinars: 150000000,
-    reqLegendTitle: true,
     bonusDesc: 'مضاعف الهولدينغ الوطني الشامل لجميع المداخيل (x5) !',
     holdingMultiplier: 5.0,
     themeClass: 'zone-djerba'
