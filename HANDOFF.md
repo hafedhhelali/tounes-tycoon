@@ -1,14 +1,14 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-11-04T17:08:00.000Z - etat = HEAD de main (v119-archetype-customer-gameplay-billiard-kahwa-yachts)
+MAJ: 2026-11-04T17:28:00.000Z - etat = HEAD de main (v120-authentic-tunisian-darja-and-zero-overflow-ergonomics)
 
 ## État en 3 lignes
-Machine à États Client & Scènes Intérieures par Archétype Métier (`getBizArchetype` v119) :
-1. `salle_de_jeux` (`arcade_billiard`) : Les clients entrent pour JOUER sur une grande Table de Billard 2.5D animée (billes roulantes + queue de billard en mouvement) ou sur console PS5 (`🎮`/`🎱`), ont une jauge de partie en cours, puis passent payer à la caisse et repartent les mains libres (`hasBag = false`).
-2. `kahwa` / `salon_de_the` (`kahwa_counter`) : Jusqu'à 5 clients simultanés alignés sur les tabourets du comptoir (`maxActive = 5`), lèvent leur tasse de café/thé à la menthe pour boire par gorgées fumantes (`☕`/`🍵`), paient et sortent sans sac.
-3. `croisiere_mer` / `agence_voyages` / `hotel` / `showroom_auto` / `tayaran_el_ghzela` / `promoteur_immobilier` / `taxi_collectif` (`booking_service`) : Zéro marchandise ni tapis roulant ! Bassin lumineux avec Maquette de Yacht naviguant + cordon VIP rouge/or ; les clients consultent, réservent leur croisière/contrat au guichet VIP (`حجز VIP 🎫`) et repartent avec leur billet/clé (`⚓`/`🎫`/`🔑`) sans aucun sac d'épicerie.
+Révision Linguistique Darja Tunisienne 100% Authentique & Ergonomie Zéro-Débordement (`v120`) :
+1. **Darja Tounsia Pure (`engine.js`, `index.html`, `store_animator.js`)** : Suppression intégrale des expressions machrékines/syriennes (`مطعم ابو علي الشامي` -> `مطعم المصلّي والمشوي`, `الحناء الجبسية` -> `الحنّة القابسية`, `الحوت الشامي` -> `الحوت الأزرق`, `قرصة كستناء` -> `طرشية بندق ولوز`), administratives Fusha (`بيع مشتقات الحليب...` -> `حليب وأجبان باجة`, `جزارة وبيع اللحوم...` -> `جزّار اللحم البلدي`, `سجائر` -> `دخّان وطني`, `دوريات الشرطة` -> `دوريات الحاكم`, `فيش` -> `جيتون`, `مطماطة الشمال` -> `مطمورة الشمال`) et des parenthèses françaises (`(Showroom Auto)`, `(Croisières en mer)`).
+2. **Ergonomie Canvas 2D & CSS Zéro-Coupure / Zéro-Débordement** : Suppression des `.slice(0, 8)` et `.slice(0, 48)` qui coupaient les mots arabes sur la carte (`drawCaravanAnimation`, `drawSelectedCityOverlay`) au profit d'un auto-dimensionnement dynamique (`measureText` + `maxWidth`), bornage anti-collision entre `bonusDesc` et le bouton d'action de la carte, et durcissement CSS (`overflow-wrap: break-word`, `max-width`) sur les cartes et toasts.
+3. **Intégrité des Tests** : 68/68 tests unitaires au vert (`npm test`).
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs : `store_animator.js`, `index.html`, `www/*`.
+- Modifs : `engine.js`, `store_animator.js`, `index.html`, `www/*`.
 - Suite de tests : 68/68 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

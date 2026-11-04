@@ -1223,7 +1223,7 @@ export class CanvasStoreEngine {
       ctx.font = 'bold 6.5px "Cairo", sans-serif';
       ctx.fillStyle = '#c084fc';
       ctx.textAlign = 'center';
-      ctx.fillText('فيش 🎱🎮', trayX + 17, trayY + 9);
+      ctx.fillText('جيتون 🎱🎮', trayX + 17, trayY + 9);
       ctx.textAlign = 'left';
     } else if (archetype === 'kahwa_counter') {
       // Plateau en cuivre avec tasses de café et verres de thé chauds
@@ -2810,7 +2810,7 @@ export class CanvasStoreEngine {
         ctx.font = '900 ' + sFont + 'px "Cairo", sans-serif';
       }
       ctx.textAlign = 'center';
-      ctx.fillText(signFullName, sx + 46 + availW / 2, 35);
+      ctx.fillText(signFullName, sx + 46 + availW / 2, 35, availW);
 
       // Barre de progression Tycoon du cycle en temps réel au bas de l'enseigne
       const barX = sx + 14;
@@ -3213,7 +3213,7 @@ export class QuartierAnimator {
         canopy: ['#0284c7', '#38bdf8', '#0f766e'],
         decor: 'fish',
         signColor: '#0284c7',
-        signText: 'مارشي فواكه البحر والسمك 🦐'
+        signText: 'مارشي الحوت وفواكه البحر 🦐'
       },
         patisserie: { id: 'patisserie', width: 165, height: 138, style: 'patisserie_dorée', color: '#fbbf24', roofColor: '#d97706' },
       produits_laitiers: { id: 'produits_laitiers', width: 160, height: 132, style: 'fromagerie_beja', color: '#fef08a', roofColor: '#16a34a' },
@@ -3746,7 +3746,7 @@ export class QuartierAnimator {
       beja: 'قمح وسمن ومخارق وزلابية وجبن باجة المعتّق',
       le_kef: 'القصبة العالية وسيدي بومخلوف وبرنوس الجبل',
       sousse: 'جوهرة الساحل وبوجعفر ومشاريع القنطاوي الراقية',
-      monastir_mahdia: 'رباط المنستير وسقيفة المهدية الكحلة والحوت الشامي',
+      monastir_mahdia: 'رباط المنستير وسقيفة المهدية الكحلة والحوت الأزرق',
       kairouan: 'عاصمة الأغالبة ومقروض القيروان والزرابي الفاخرة',
       sfax: 'عاصمة الجنوب والصناعات الكبرى وباب الديوان العريق',
       gafsa: 'الحوض المنجمي والبركة الرومانية وواحات الجنوب',
@@ -4562,14 +4562,14 @@ export class QuartierAnimator {
 
       ctx.fillStyle = '#f8fafc';
       ctx.font = '900 11.5px "Cairo", sans-serif';
-      ctx.fillText(biz ? biz.name : 'مشروع للبيع', x + b.width / 2, y + 68);
+      ctx.fillText(biz ? biz.name : 'مشروع للبيع', x + b.width / 2, y + 68, b.width - 14);
 
       const unlockCost = biz ? this.engine.getCost(biz) : 0;
       const canAfford = this.engine.dinars >= unlockCost;
 
       ctx.fillStyle = canAfford ? '#34d399' : '#f59e0b';
       ctx.font = '800 9.5px "Cairo", sans-serif';
-      ctx.fillText(unlockCost > 0 ? ('ثمن الأصل: ' + unlockCost.toLocaleString() + ' د.ت') : 'جاهز للفتح', x + b.width / 2, y + 84);
+      ctx.fillText(unlockCost > 0 ? ('حقّ المحلّ: ' + unlockCost.toLocaleString() + ' د.ت') : 'حاضر للحلّان', x + b.width / 2, y + 84, b.width - 14);
 
       const btnW = Math.min(b.width - 20, 118);
       const btnH = 26;
@@ -4906,7 +4906,7 @@ export class QuartierAnimator {
       fontSize = Math.max(8, Math.floor((signW - 12) / textWidth * fontSize));
       ctx.font = '900 ' + fontSize + 'px "Cairo", sans-serif';
     }
-    ctx.fillText(fullName, signX + signW / 2, signY + 16);
+    ctx.fillText(fullName, signX + signW / 2, signY + 16, signW - 8);
 
     // --- PORTE TRADITIONNELLE ÉLÉGANTE ET BIEN PROPORTIONNÉE ---
     const doorW = Math.min(36, b.width * 0.32);
@@ -7656,19 +7656,22 @@ export class TunisiaMapEngine {
     // 4. Bulle d'ambiance de voyage animée au-dessus du convoi
     const bubbleY = curY - 26;
     const kmPct = Math.min(100, Math.round(progress * 100));
+    const cleanCityName = (this.caravan.targetCity.name || '').split(' (')[0];
+    const caravanTxt = `في الثنيّة لـ ${cleanCityName} (${kmPct}%)`;
+    ctx.font = '900 9.5px "Cairo", sans-serif';
+    const bubbleW = Math.max(92, Math.min(160, Math.ceil(ctx.measureText(caravanTxt).width + 18)));
     ctx.shadowBlur = 6;
     ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
     ctx.strokeStyle = '#fbbf24';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.roundRect(curX - 44, bubbleY - 10, 88, 20, 6);
+    ctx.roundRect(curX - bubbleW / 2, bubbleY - 10, bubbleW, 20, 6);
     ctx.fill();
     ctx.stroke();
 
     ctx.fillStyle = '#fef08a';
-    ctx.font = '900 9.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`في الطريق إلى ${this.caravan.targetCity.name.slice(0, 8)} (${kmPct}%)`, curX, bubbleY + 3);
+    ctx.fillText(caravanTxt, curX, bubbleY + 3, bubbleW - 10);
 
     ctx.restore();
 
@@ -7760,19 +7763,19 @@ export class TunisiaMapEngine {
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 13.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`🎉 مرحباً بك في ${city.name} ! 🇹🇳`, city.x, bannerY + 20);
+    ctx.fillText(`🎉 مرحبا بيك في ${city.name} ! 🇹🇳`, city.x, bannerY + 20, bannerW - 16);
 
     ctx.fillStyle = isNewCity ? '#34d399' : '#38bdf8';
     ctx.font = '900 11px "Cairo", sans-serif';
     if (isNewCity) {
-      ctx.fillText(`⭐ ارتقيت إلى المستوى ${curLvl} في الإمبراطورية !`, city.x, bannerY + 35);
+      ctx.fillText(`⭐ طلعت للمستوى ${curLvl} في الإمبراطورية !`, city.x, bannerY + 35, bannerW - 16);
     } else {
-      ctx.fillText(`🚗 رحلة موفقة عبر شبكة الطرقات السريعة`, city.x, bannerY + 35);
+      ctx.fillText(`🚗 وصلت بالسلامة عبر الأوتوروت`, city.x, bannerY + 35, bannerW - 16);
     }
 
     ctx.fillStyle = '#94a3b8';
     ctx.font = '700 9.5px "Cairo", sans-serif';
-    ctx.fillText(isNewCity ? 'شوارع ومشاريع جديدة جاهزة للاستثمار' : 'استأنف أعمالك ومشاريعك في المدينة', city.x, bannerY + 47);
+    ctx.fillText(isNewCity ? 'حوانت ومشاريع جديدة تستنّى فيك' : 'كمّل خدمتك وتجارتك في البلاد', city.x, bannerY + 47, bannerW - 16);
 
     ctx.restore();
 
@@ -7830,22 +7833,38 @@ export class TunisiaMapEngine {
     ctx.textAlign = 'right';
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 13px "Cairo", sans-serif';
-    ctx.fillText(`${c.fullName} (محطّة ${cityIndex})`, cardX + cardW - 40, cardY + 22);
+    ctx.fillText(`${c.fullName} (محطّة ${cityIndex})`, cardX + cardW - 40, cardY + 22, cardW - 54);
 
+    // Tagline complète sans coupure de mot (.slice supprimé) + auto-scale ergonomique
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '700 9.5px "Cairo", sans-serif';
-    ctx.fillText(c.tagline.slice(0, 48), cardX + cardW - 12, cardY + 38);
-
-    // Boni de production
-    ctx.fillStyle = '#38bdf8';
-    ctx.font = '800 10px "Cairo", sans-serif';
-    ctx.fillText('🎁 ' + c.bonusDesc, cardX + cardW - 12, cardY + 54);
+    const maxTaglineW = cardW - 24;
+    let tagFont = 9.5;
+    ctx.font = `700 ${tagFont}px "Cairo", sans-serif`;
+    const tagMeasured = ctx.measureText(c.tagline).width;
+    if (tagMeasured > maxTaglineW) {
+      tagFont = Math.max(7.5, Math.floor((maxTaglineW / tagMeasured) * tagFont * 10) / 10);
+      ctx.font = `700 ${tagFont}px "Cairo", sans-serif`;
+    }
+    ctx.fillText(c.tagline, cardX + cardW - 12, cardY + 38, maxTaglineW);
 
     // Bouton d'action à gauche
     const btnW = 105;
     const btnH = 30;
     const btnX = cardX + 12;
     const btnY = cardY + 46;
+
+    // Boni de production (borné à droite du bouton d'action pour éviter toute collision)
+    ctx.fillStyle = '#38bdf8';
+    const bonusTxt = '🎁 ' + c.bonusDesc;
+    const maxBonusW = Math.max(110, cardW - btnW - 32);
+    let bonusFont = 10;
+    ctx.font = `800 ${bonusFont}px "Cairo", sans-serif`;
+    const bonusMeasured = ctx.measureText(bonusTxt).width;
+    if (bonusMeasured > maxBonusW) {
+      bonusFont = Math.max(7.5, Math.floor((maxBonusW / bonusMeasured) * bonusFont * 10) / 10);
+      ctx.font = `800 ${bonusFont}px "Cairo", sans-serif`;
+    }
+    ctx.fillText(bonusTxt, cardX + cardW - 12, cardY + 58, maxBonusW);
 
     const canUnlock = this.canUnlockCity(c);
     if (isActive) {
@@ -7924,7 +7943,7 @@ export class TunisiaMapEngine {
         rFont = Math.max(7.5, Math.floor((reasonBoxW - 14) / mW * rFont * 10) / 10);
         ctx.font = `900 ${rFont}px "Cairo", sans-serif`;
       }
-      ctx.fillText(fullReason, cardX + cardW / 2, reasonBoxY + 15);
+      ctx.fillText(fullReason, cardX + cardW / 2, reasonBoxY + 15, reasonBoxW - 10);
     }
 
     ctx.restore();

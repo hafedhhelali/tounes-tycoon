@@ -15,6 +15,24 @@
 
 # CHANGELOG
 
+## [v120] - 2026-11-04
+
+### Changed & Fixed (Authentic Tunisian Darja Overhaul & Zero-Overflow UI Ergonomics)
+- **Révision Linguistique 100% Darja Tunisienne Authentique (`engine.js`, `index.html`, `store_animator.js`)** :
+  - **Élimination des textes machrékins / syriens / égyptiens et erreurs culturelles** :
+    - `مطعم ابو علي الشامي` & `شاورما سوري ومقبلات شامية` $\rightarrow$ **`مطعم المصلّي والمشوي`** (`مصلّي علّوش، كفتاجي سخون ومشوي على الكانون يردّ الروح !`, `صحن كفتاجي وعصبان وتسطيرة`, `المعلّم مبروك الكبابجي`).
+    - `باجة : مطماطة الشمال` $\rightarrow$ **`مطمورة الشمال`** (grenier à blé historique).
+    - `قابس : الحناء الجبسية` $\rightarrow$ **`الحنّة القابسية`**.
+    - `المنستير : الحوت الشامي الأزرق` $\rightarrow$ **`الحوت الأزرق والسرغوس`**.
+    - `ماء زهر وقرصة كستناء` $\rightarrow$ **`ماء زهر وطرشية بندق ولوز`** ; `كرني الكريدي المورود` $\rightarrow$ **`كرني الكريدي الوردي`** ; `بوڨاع سيدر` $\rightarrow$ **`بوڨا سيدر`**.
+  - **Remplacement du Fusha administratif & suppression des parenthèses en français** :
+    - Noms de projets concis et 100% tunisiens (max 16–24 caractères) : `مارشي الحوت وفواكه البحر`, `حليب وأجبان باجة` (قوتة ورايب وسمن عربي), `جزّار اللحم البلدي` (هبرة بقري وعلّوش بركوس), `مكتبة وورّاقة الحومة`, `بوتيك الحوايج والفريب`, `مونقالات وصياغة فاخرة`, `صالة بلياردو وبلاي` (`جيتون 🎱🎮`), `تكييف وتصدير دقلة النور`, `رحلات بحرية ويخوت`, `صالون دي تاي البحيرة`, `وكالة أسفار قرطاج`, `المول والمركّب التجاري`, `شوروم كراهب فاخرة`, `شركة البنيان والعقارات`.
+    - Modales & Toasts en Darja naturelle : `قمريڨ • كشك الدخّان والوقيد والجرائد` (`دخّان وطني ووقيد`), `دوريات الحاكم مأمّنة حوانتك والشارع الكلّ`, `همزة باهية طاحتلك !`, `إيه، عاود من الصفر 🔥`, `مرحبا بيك في ...`.
+- **Ergonomie UI & Zéro-Débordement / Zéro-Coupure (`store_animator.js`, `index.html`)** :
+  - Suppression des `.slice(0, 8)` et `.slice(0, 48)` sur les textes arabes dans `drawCaravanAnimation` et `drawSelectedCityOverlay` (qui tronquaient les mots au milieu) au profit d'un calcul `ctx.measureText` avec auto-ajustement de police et `maxWidth` natif Canvas 2D.
+  - Protection anti-collision dans la carte de ville sélectionnée (`maxBonusW = cardW - btnW - 32`) pour que le bonus `🎁` ne chevauche jamais le bouton d'action à gauche.
+  - Contrainte `maxWidth` explicite sur toutes les enseignes de bâtiments (`drawBuilding`, `drawAmbience`, `drawArrivalEffect`) et durcissement CSS (`overflow-wrap: break-word`, `max-width: calc(100vw - 24px)`) sur `.toast-box` et `.btn-manager`.
+
 ## [v119] - 2026-11-04
 
 ### Added & Enhanced (Archetype-Driven Tycoon Customer Gameplay)

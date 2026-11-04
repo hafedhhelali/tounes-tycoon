@@ -59,16 +59,16 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'fruits_de_mer',
-    name: 'مارشي فواكه البحر والسمك الطازج',
-    tagline: 'قرنيط، كروفيت شايح، حوت مشوي وسردينة ذهبية من أعماق البحر المتوسط !',
+    name: 'مارشي الحوت وفواكه البحر',
+    tagline: 'قرنيط، كروفيت فرشك، حوت مشوي وسردينة بنزرتية من البحر للكانون !',
     icon: '🦐',
     baseCost: 18000.0,
     baseRevenue: 750.0,
     costMultiplier: 1.10,
     cycleDurationMs: 12000,
     managers: [
-      { name: 'الشاف عمار البحري', role: 'ريس المارشي والمطعم', avatar: '👨‍🍳', cost: 75000.0 },
-      { name: 'المعلم كمال الصياد', role: 'قبطان الشباك والقرنيط', avatar: '🎣', cost: 220000.0 }
+      { name: 'الشاف عمار البحري', role: 'ريّس المارشي والقليان', avatar: '👨‍🍳', cost: 75000.0 },
+      { name: 'المعلّم كمال الصيّاد', role: 'رايس الفلوكة والقرنيط', avatar: '🎣', cost: 220000.0 }
     ],
   },
   {
@@ -87,114 +87,114 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'produits_laitiers',
-    name: 'بيع مشتقات الحليب والأجبان التقليدية',
-    tagline: 'جبن باجي مالح، ريكوتا طازجة، لبن حليب طازج وسمن بلدي يفوح',
+    name: 'حليب وأجبان باجة',
+    tagline: 'جبن باجي، قوتة ورايب، حليب فرشك وسمن عربي يفحفح',
     icon: '🧀',
     baseCost: 200.0,
     baseRevenue: 18.0,
     costMultiplier: 1.09,
     cycleDurationMs: 2800, // 2.8s
     managers: [
-      { name: 'عمّ عثمان الجبّان', role: 'خبير صناعة الجبن والتخمير', avatar: '🧀', cost: 900.0 },
-      { name: 'مدام حسيبة', role: 'مسؤولة الجودة والتوزيع', avatar: '👩‍🌾', cost: 3000.0 }
+      { name: 'عمّ عثمان الجبّان', role: 'معلّم الجبن والقوتة', avatar: '🧀', cost: 900.0 },
+      { name: 'مدام حسيبة', role: 'مسؤولة السلعة والتوزيع', avatar: '👩‍🌾', cost: 3000.0 }
     ],
   },
   {
     id: 'boucherie',
-    name: 'جزارة وبيع اللحوم الحمراء الفاخرة',
-    tagline: 'علوش بركوس معلوف بالزعتر والإكليل، وكبدة وبقري بلدي مسمن',
+    name: 'جزّار اللحم البلدي',
+    tagline: 'علّوش بركوس راعي في الجبل، هبرة بقري بلدي ومرقاز دياري',
     icon: '🥩',
     baseCost: 1500.0,
     baseRevenue: 95.0,
     costMultiplier: 1.10,
     cycleDurationMs: 6000, // 6.0s
     managers: [
-      { name: 'المعلّم الهادي الجزّار', role: 'كابو القصابين والسلخ', avatar: '🔪', cost: 6500.0 },
-      { name: 'صلاح الساطور', role: 'فنان الفصالة والوزن', avatar: '🥩', cost: 20000.0 }
+      { name: 'المعلّم الهادي الجزّار', role: 'معلّم القصّابة والساطور', avatar: '🔪', cost: 6500.0 },
+      { name: 'صلاح الساطور', role: 'صنايعي التقصيص والميزان', avatar: '🥩', cost: 20000.0 }
     ],
   },
   {
     id: 'librairie',
-    name: 'مكتبة وأدوات مدرسية وروايات',
-    tagline: 'كراريس، أقلام باركر، روايات عالمية وجرائد الصباح مع قهوة رايقة',
+    name: 'مكتبة وورّاقة الحومة',
+    tagline: 'كراريس، ستيلوات، كتب ومجلاّت وجرائد الصباح مع قهوة رايقة',
     icon: '📚',
     baseCost: 400.0,
     baseRevenue: 30.0,
     costMultiplier: 1.09,
     cycleDurationMs: 3500, // 3.5s
     managers: [
-      { name: 'سي البشير الكتبي', role: 'حافظ الكتب والورّاق', avatar: '📖', cost: 1600.0 },
-      { name: 'أستاذ منير', role: 'مسؤول المراجع والمطالعة', avatar: '👓', cost: 5000.0 }
+      { name: 'سي البشير الكتبي', role: 'مولى المكتبة والورّاق', avatar: '📖', cost: 1600.0 },
+      { name: 'أستاذ منير', role: 'مسؤول الكتب والمطالعة', avatar: '👓', cost: 5000.0 }
     ],
   },
   {
     id: 'vente_vetements',
-    name: 'محل ملابس وفريب شيك',
-    tagline: 'شياكة وأناقة، ماركات عالمية وفريب دي لوكس، لبسة على الموضة',
+    name: 'بوتيك الحوايج والفريب',
+    tagline: 'حطة وشياكة، ماركات وفريب لوكس فرز أوّل، لبسة على الموضة',
     icon: '👕',
     baseCost: 2500.0,
     baseRevenue: 130.0,
     costMultiplier: 1.10,
     cycleDurationMs: 7000, // 7.0s
     managers: [
-      { name: 'مدام سامية الستيليست', role: 'مسؤولة الموضة والأناقة', avatar: '👗', cost: 10000.0 },
-      { name: 'معلّم كريم الفصّال', role: 'خبير القياسات والموديلات', avatar: '👔', cost: 30000.0 }
+      { name: 'مدام سامية الستيليست', role: 'مسؤولة الموضة واللبسة', avatar: '👗', cost: 10000.0 },
+      { name: 'معلّم كريم الفصّال', role: 'صنايعي القياسات والموديلات', avatar: '👔', cost: 30000.0 }
     ],
   },
   {
     id: 'vente_montres',
-    name: 'محل ساعات فاخرة ومجوهرات',
-    tagline: 'ساعات سويسرية، عقارب ذهب وماركات عالمية، أناقة وضبط للوقت',
+    name: 'مونقالات وصياغة فاخرة',
+    tagline: 'مونقالات سويسرية، ذهب وصياغة متقونة، حطة وميزان بالثانية',
     icon: '⌚',
     baseCost: 3500.0,
     baseRevenue: 175.0,
     costMultiplier: 1.10,
     cycleDurationMs: 8000, // 8.0s
     managers: [
-      { name: 'سي أنيس الميقاني', role: 'صنائعي الساعات الدقيقة', avatar: '⌚', cost: 14000.0 },
-      { name: 'مدام ليلى', role: 'خبيرة المجوهرات والماركات', avatar: '💎', cost: 42000.0 }
+      { name: 'سي أنيس الساعاتي', role: 'صنايعي المونقالات', avatar: '⌚', cost: 14000.0 },
+      { name: 'مدام ليلى الصايغية', role: 'خبيرة الصياغة والماركات', avatar: '💎', cost: 42000.0 }
     ],
   },
   {
     id: 'salle_de_jeux',
-    name: 'قاعة ألعاب فيديو وبلياردو',
-    tagline: 'بلايستيشن 5، بلياردو وطاولات بيبي فوت، جو الشباب والمنافسة السخونة !',
+    name: 'صالة بلياردو وبلاي',
+    tagline: 'بلاي 5، طواول بلياردو وبيبي فوت، جوّ الشبيبة وطروح سخونة !',
     icon: '🎮',
     baseCost: 12000.0,
     baseRevenue: 520.0,
     costMultiplier: 1.11,
     cycleDurationMs: 10000, // 10.0s
     managers: [
-      { name: 'وليد الغيمر', role: 'مسؤول الصالة والبطولات', avatar: '🎧', cost: 50000.0 },
-      { name: 'حمادي التقني', role: 'خبير الصيانة والشبكات', avatar: '🕹️', cost: 140000.0 }
+      { name: 'وليد البلاي', role: 'مولى الصالة والتورنوايات', avatar: '🎧', cost: 50000.0 },
+      { name: 'حمادي التكنيسيان', role: 'معلّم الصيانة والريزو', avatar: '🕹️', cost: 140000.0 }
     ],
   },
   {
     id: 'emballage_dattes',
-    name: 'وحدة تعليب وتصدير دقلة النور',
-    tagline: 'عرجون الذهب التونسي، فرز وتعليب وتصدير لأرقى أسواق العالم',
+    name: 'تكييف وتصدير دقلة النور',
+    tagline: 'عرجون الذهب التونسي، فرز وتكييف وتصدير لأكبر أسواق العالم',
     icon: '🌴',
     baseCost: 50000.0,
     baseRevenue: 1800.0,
     costMultiplier: 1.12,
     cycleDurationMs: 20000, // 20.0s
     managers: [
-      { name: 'الحاج بلقاسم الجريدي', role: 'خبير جودة الدقلة والعرجون', avatar: '🌴', cost: 200000.0 },
-      { name: 'المهندس فاروق التصديري', role: 'مدير الشحن واللوجستيك', avatar: '🚢', cost: 600000.0 }
+      { name: 'الحاج بلقاسم الجريدي', role: 'معلّم فرز الدقلة والعرجون', avatar: '🌴', cost: 200000.0 },
+      { name: 'المهندس فاروق', role: 'مدير التصدير والبابورات', avatar: '🚢', cost: 600000.0 }
     ],
   },
   {
     id: 'croisiere_mer',
-    name: 'رحلات بحرية ويخوت (Croisières en mer)',
-    tagline: 'جولات باليخت في عرض البحر، قوارب القراصنة، سباحة وغطس وسهرات بحرية',
+    name: 'رحلات بحرية ويخوت',
+    tagline: 'خرجات باليخت في عرض البحر، شقف القراصنة، عومان وجوّ صيفي',
     icon: '⛵',
     baseCost: 80000.0,
     baseRevenue: 2400.0,
     costMultiplier: 1.12,
     cycleDurationMs: 25000, // 25.0s
     managers: [
-      { name: 'القبطان مراد الريس', role: 'ربان اليخوت والرحلات', avatar: '⚓', cost: 320000.0 },
-      { name: 'سي مكرم المنظم', role: 'مدير الرحلات البحرية', avatar: '🧭', cost: 950000.0 }
+      { name: 'الرايس مراد', role: 'قبطان اليخوت والخرجات', avatar: '⚓', cost: 320000.0 },
+      { name: 'سي مكرم البحري', role: 'مدير الحجوزات والرحلات', avatar: '🧭', cost: 950000.0 }
     ],
   },
   {
@@ -240,8 +240,8 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'salon_de_the',
-    name: 'صالون شاي البحيرة',
-    tagline: 'موخيتو منعنع ودلال على البحر وقعدة رجال أعمال',
+    name: 'صالون دي تاي البحيرة',
+    tagline: 'موخيتو منعنع، كابوسين وكراب على البحر وقعدة رجال أعمال',
     icon: '🍹',
     baseCost: 5500000.0,
     baseRevenue: 55000.0,
@@ -249,27 +249,27 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 60000, // 60.0s
     managers: [
       { name: 'وسيم الكابتن', role: 'شاف الصالة', avatar: '🤵', cost: 20000000.0 },
-      { name: 'رامي الباريستا', role: 'باريستا الكوكتيل', avatar: '🍸', cost: 50000000.0 }
+      { name: 'رامي الباريستا', role: 'معلّم الباريستا', avatar: '🍸', cost: 50000000.0 }
     ],
   },
   {
     id: 'restaurant',
-    name: 'مطعم ابو علي الشامي',
-    tagline: 'شاورما على أصولها ومشوي ومقبلات شامية، على كيف كيفك !',
+    name: 'مطعم المصلّي والمشوي',
+    tagline: 'مصلّي علّوش، كفتاجي سخون ومشوي على الكانون يردّ الروح !',
     icon: '🥘',
     baseCost: 32000000.0,
     baseRevenue: 220000.0,
     costMultiplier: 1.14,
     cycleDurationMs: 90000, // 90.0s
     managers: [
-      { name: 'المعلم مبروك', role: 'صنايعي الشواية', avatar: '🔥', cost: 110000000.0 },
+      { name: 'المعلّم مبروك', role: 'معلّم الشواية والكانون', avatar: '🔥', cost: 110000000.0 },
       { name: 'الشاف فتحي', role: 'معلّم الكوجينة', avatar: '👨‍🍳', cost: 280000000.0 }
     ],
   },
   {
     id: 'agence_voyages',
-    name: 'وكالة اسفار اللقلق',
-    tagline: 'فويّاجات وعمرات وتيكيات طيارة، حوّس وتفرّه في العالم',
+    name: 'وكالة أسفار قرطاج',
+    tagline: 'فويّاجات وعمرات وتيكيات طيارة، حوّس وتفرهد في العالم',
     icon: '✈️',
     baseCost: 180000000.0,
     baseRevenue: 850000.0,
@@ -277,7 +277,7 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 120000, // 120.0s
     managers: [
       { name: 'أنيس التيكي', role: 'شاف الحجوزات', avatar: '🎫', cost: 600000000.0 },
-      { name: 'سي منير اللقلاق', role: 'الباترون', avatar: '🧳', cost: 1500000000.0 }
+      { name: 'سي منير الباترون', role: 'مولى الوكالة', avatar: '🧳', cost: 1500000000.0 }
     ],
   },
   {
@@ -290,13 +290,13 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.15,
     cycleDurationMs: 150000, // 150.0s
     managers: [
-      { name: 'مدام سيرين', role: 'مسؤولة الاستقبال', avatar: '👩‍💼', cost: 3000000000.0 },
-      { name: 'ميسيو برهان', role: 'مدير النزل', avatar: '🎩', cost: 8000000000.0 }
+      { name: 'مدام سيرين', role: 'شافة الريسبسيون', avatar: '👩‍💼', cost: 3000000000.0 },
+      { name: 'سي برهان المدير', role: 'مدير النزل', avatar: '🎩', cost: 8000000000.0 }
     ],
   },
   {
     id: 'centre_commercial',
-    name: 'المول والمركّب التجاري الكبير',
+    name: 'المول والمركّب التجاري',
     tagline: 'إسكالاتور وماركات ودور سينما، الدنيا تغلي والفلوس تصبّ',
     icon: '🛍️',
     baseCost: 4500000.0,
@@ -305,8 +305,8 @@ export const BUSINESS_CONFIGS = [
     cycleDurationMs: 150000, // 150.0s
     managers: [
       { name: 'المهندس مراد', role: 'كابو الصيانة', avatar: '👷', cost: 15000000.0 },
-      { name: 'مدام نادية', role: 'مديرة الماركات', avatar: '👠', cost: 35000000.0 },
-      { name: 'سي خليل بن عمار', role: 'الباترون وصاحب المول', avatar: '👑', cost: 80000000.0 }
+      { name: 'مدام نادية', role: 'مديرة البوتيكات', avatar: '👠', cost: 35000000.0 },
+      { name: 'سي خليل بن عمار', role: 'الباترون ومولى المول', avatar: '👑', cost: 80000000.0 }
     ],
   },
   {
@@ -321,27 +321,27 @@ export const BUSINESS_CONFIGS = [
     managers: [
       { name: 'المهندس حمادي', role: 'شاف الإنتاج', avatar: '🏭', cost: 50000000.0 },
       { name: 'سي عبد السلام', role: 'شاف التصدير', avatar: '🚢', cost: 120000000.0 },
-      { name: 'الحاج بلقاسم', role: 'مالك المصانع', avatar: '💼', cost: 250000000.0 }
+      { name: 'الحاج بلقاسم', role: 'مولى المعامل', avatar: '💼', cost: 250000000.0 }
     ],
   },
   {
     id: 'showroom_auto',
-    name: 'قصر السيارات الفاخرة (Showroom Auto)',
-    tagline: 'كراهب زيرو كم آخر عيطة ومحركات تفور، شياكة أصحاب الملاين',
+    name: 'شوروم كراهب فاخرة',
+    tagline: 'كراهب زيرو كم آخر عيطة وموتورات تفور، شياكة أصحاب الملاين',
     icon: '🏎️',
     baseCost: 45000000.0,
     baseRevenue: 320000.0,
     costMultiplier: 1.14,
     cycleDurationMs: 210000, // 210.0s
     managers: [
-      { name: 'ياسين كوميرسيال', role: 'مستشار السيارات', avatar: '🏎️', cost: 150000000.0 },
-      { name: 'مدام مريم الوكيل', role: 'مديرة المبيعات', avatar: '💎', cost: 350000000.0 },
-      { name: 'سي طارق قطوس', role: 'الباترون', avatar: '👑', cost: 800000000.0 }
+      { name: 'ياسين كوميرسيال', role: 'كوميرسيال الكراهب', avatar: '🏎️', cost: 150000000.0 },
+      { name: 'مدام مريم', role: 'مديرة المبيعات', avatar: '💎', cost: 350000000.0 },
+      { name: 'سي طارق الدياري', role: 'الباترون وكيل الدار', avatar: '👑', cost: 800000000.0 }
     ],
   },
   {
     id: 'promoteur_immobilier',
-    name: 'الشركة العقارية اللجّ الازرق',
+    name: 'شركة البنيان والعقارات',
     tagline: 'عمارات وفيلات فاخرة في قمرت والحمامات، والتراب يجيب الذهب',
     icon: '🏗️',
     baseCost: 120000000.0,
@@ -349,9 +349,9 @@ export const BUSINESS_CONFIGS = [
     costMultiplier: 1.14,
     cycleDurationMs: 240000, // 240.0s
     managers: [
-      { name: 'سي لطفي المهندس', role: 'مهندس البناء', avatar: '👷', cost: 400000000.0 },
-      { name: 'مدام وفاء السمسارة', role: 'مستشارة العقار', avatar: '🏘️', cost: 900000000.0 },
-      { name: 'الحاج بوبكر', role: 'الباترون وصاحب الرزيدونسات', avatar: '🏢', cost: 2000000000.0 }
+      { name: 'سي لطفي المهندس', role: 'مهندس المرمة والبنيان', avatar: '👷', cost: 400000000.0 },
+      { name: 'مدام وفاء', role: 'خبيرة البيع والعقار', avatar: '🏘️', cost: 900000000.0 },
+      { name: 'الحاج بوبكر', role: 'الباترون مولى الريزيدونسات', avatar: '🏢', cost: 2000000000.0 }
     ],
   },
   {
@@ -375,7 +375,7 @@ export const TUNISIAN_EVENTS = [
   {
     id: 'chheli',
     title: '☀️ شهيلي يكوّي 48°C والدنيا تغلي !',
-    description: 'القهاوي معبّية بالملاين، الشقف البارد يطير طيران والعطش واكل العباد !',
+    description: 'القهاوي معبّية بالملاين، الڨازوز والماء البارد يطيرو طيران والعطش واكل العباد !',
     durationMs: 30000,
     multipliers: { kahwa: 2.0, salon_de_the: 2.5 }
   },
@@ -496,7 +496,7 @@ export const TUNISIAN_COMBOS = [
   {
     id: 'combo_nacer_sahriya',
     name: 'شارع النصر سهرية',
-    tagline: 'شاورما أبو علي مع قعدة رايقة في صالون الشاي، جوّ العاصمة',
+    tagline: 'عشوية ومشوي في المصلّي مع قعدة رايقة في صالون دي تاي، جوّ العاصمة',
     icon: '🥘🍹',
     businessIds: ['restaurant', 'salon_de_the'],
     multiplier: 2.2,
@@ -565,7 +565,7 @@ export const LEAGUE_TIERS = [
       { name: 'سي مروان قرطاج', avatar: '🏛️', baseDps: 5000000 },
       { name: 'فوزي بنزين الطيران', avatar: '🛫', baseDps: 15000000 },
       { name: 'ليلى غولد القابضة', avatar: '💎', baseDps: 45000000 },
-      { name: 'المعلم مبروك الشامي', avatar: '👑', baseDps: 120000000 },
+      { name: 'المعلّم مبروك الكبابجي', avatar: '👑', baseDps: 120000000 },
       { name: 'البارون الأزرق سيدي بوسعيد', avatar: '🏰', baseDps: 350000000 }
     ],
     promotionReward: { dinars: 100000000, prestige: 500 }
@@ -663,7 +663,7 @@ export const TUNISIAN_CITIES = [
     id: 'beja',
     name: 'باجة',
     icon: '🧀',
-    tagline: 'مطماطة الشمال، قمح وسمن، مخارق وزلابية وجبن باجة المعتّق',
+    tagline: 'مطمورة الشمال، قمح وسمن، مخارق وزلابية وجبن باجة المعتّق',
     costDinars: 22000,
     criteriaDesc: '22,000 د.ت + مشروعين مستوى 20',
     minPrestige: 0,
@@ -701,7 +701,7 @@ export const TUNISIAN_CITIES = [
     id: 'monastir_mahdia',
     name: 'المنستير',
     icon: '⚓',
-    tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الشامي الأزرق',
+    tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الأزرق والسرغوس',
     costDinars: 350000,
     criteriaDesc: '350,000 د.ت + 5 معلّمين مسيّرين',
     minPrestige: 0,
@@ -801,7 +801,7 @@ export const TUNISIAN_CITIES = [
     id: 'gabes',
     name: 'قابس',
     icon: '🌊',
-    tagline: 'الحناء الجبسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
+    tagline: 'الحنّة القابسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
     costDinars: 25000000,
     criteriaDesc: '25,000,000 د.ت + 10 معلّمين مسيّرين',
     minPrestige: 0,
@@ -1249,7 +1249,7 @@ export class TycoonEngine {
       {
         id: 'upg_zahr_direct',
         businessId: 'kahwa',
-        name: 'ماء زهر وقرصة كستناء',
+        name: 'ماء زهر وطرشية بندق ولوز',
         tagline: 'قعدة تروّق البال وتخلّي الطواول ما تفرغش',
         cost: 800.0,
         multiplier: 2.2,
@@ -1258,7 +1258,7 @@ export class TycoonEngine {
       {
         id: 'upg_carnet_credit',
         businessId: 'attariya',
-        name: 'كرني الكريدي المورود',
+        name: 'كرني الكريدي الوردي',
         tagline: 'الحومة كاملة تقيّد عندك والثقة عمياء',
         cost: 4000.0,
         multiplier: 2.0,
@@ -1267,8 +1267,8 @@ export class TycoonEngine {
       {
         id: 'upg_neon_led',
         businessId: 'patisserie',
-        name: 'بندار نيون وإضاءة سهرات',
-        tagline: 'المحل يشعل في الليل، الكل يوقف يشري حلو ودردشة',
+        name: 'بندار نيون وإضاءة سهريات',
+        tagline: 'الحانوت يشعل في الليل، الكل يوقف يشري حلو ويتفرهد',
         cost: 25000.0,
         multiplier: 2.2,
         icon: '💡'
@@ -1925,122 +1925,132 @@ export class TycoonEngine {
       kaskrout: [
         { item: 'كسكروت عياري كامل بالتن والعظام', price: 4.5, sharePct: 60 },
         { item: 'كعيبات كفتة وهريسة عربي', price: 2.0, sharePct: 25 },
-        { item: 'مشروب غازي بوڨاع سيدر بارد', price: 1.5, sharePct: 15 }
+        { item: 'قازوز بوڨا سيدر بارد يردّ الروح', price: 1.5, sharePct: 15 }
       ],
       fricasse: [
         { item: 'كعبة فريكاسي سخونة بالزيتون', price: 1.2, sharePct: 55 },
         { item: 'كعبة بمبلوني مرشوشة سكر', price: 1.5, sharePct: 35 },
-        { item: 'دبوزة ماء صافية معدنية', price: 1.0, sharePct: 10 }
+        { item: 'دبوزة ماء صافية باردة', price: 1.0, sharePct: 10 }
       ],
       kahwa: [
-        { item: 'قهوة فيلتري / إكسبريس قارحة', price: 1.8, sharePct: 45 },
+        { item: 'قهوة فيلتري / كابوسين قارحة', price: 1.8, sharePct: 45 },
         { item: 'كاس تاي منعنع بالبندق', price: 1.5, sharePct: 35 },
-        { item: 'شيشة تفاح عادية وسريعة', price: 4.5, sharePct: 20 }
+        { item: 'شيشة تفاح ونفّة على الكيف', price: 4.5, sharePct: 20 }
       ],
       attariya: [
-        { item: 'قضية اليوم (حليب، خبز، طماطم، سميد)', price: 12.0, sharePct: 50 },
-        { item: 'صبّان صولد وتيكيات هواتف', price: 5.0, sharePct: 30 },
+        { item: 'قضية النهار (حليب، خبز، حكّة طماطم)', price: 12.0, sharePct: 50 },
+        { item: 'صبّان صولد وتيكيات تليفون', price: 5.0, sharePct: 30 },
         { item: 'سلعة الصغار والشكلاطة والبيمو', price: 2.5, sharePct: 20 }
       ],
       fruits_de_mer: [
-        { item: 'صحن قرنيط مفوّر وشوربة بحر', price: 16.5, sharePct: 45 },
-        { item: 'كروفيت مشوي وغلال البحر طازجة', price: 24.0, sharePct: 35 },
-        { item: 'حوتة وراطة مشوية بالكمون', price: 18.0, sharePct: 20 }
+        { item: 'صحن قرنيط مفوّر وشوربة حوت', price: 16.5, sharePct: 45 },
+        { item: 'كروفيت مشوي وفواكه بحر فرشك', price: 24.0, sharePct: 35 },
+        { item: 'كعيبة وراطة مشوية بالكمون', price: 18.0, sharePct: 20 }
       ],
       patisserie: [
         { item: 'صحن بقلاوة ومقروض قيرواني بالعسل', price: 18.0, sharePct: 50 },
-        { item: 'قرون غزال وحلو درع وزرير', price: 14.0, sharePct: 30 },
-        { item: 'تورتة عيد ميلاد بريستيج', price: 45.0, sharePct: 20 }
+        { item: 'كعك ورقة وحلو درع وزرير', price: 14.0, sharePct: 30 },
+        { item: 'خبزة قاطو عيد ميلاد بريستيج', price: 45.0, sharePct: 20 }
       ],
       librairie: [
-        { item: 'أدوات مدرسية وكراريس ومحافظ', price: 25.0, sharePct: 50 },
-        { item: 'روايات وقصص وكتب فكرية', price: 18.0, sharePct: 30 },
-        { item: 'جرائد يومية وطباعة وثائق', price: 3.5, sharePct: 20 }
+        { item: 'كراريس، ستيلوات ومحفظة قراية', price: 25.0, sharePct: 50 },
+        { item: 'كتب، قصص ومجلاّت للمطالعة', price: 18.0, sharePct: 30 },
+        { item: 'جرائد الصباح وفوتوكوبي أوراق', price: 3.5, sharePct: 20 }
       ],
       produits_laitiers: [
-        { item: 'جبن باجي وريكوتا طازجة', price: 15.0, sharePct: 50 },
-        { item: 'حليب بقر طازج وسمن بلدي', price: 8.0, sharePct: 30 },
-        { item: 'لبن حامض وزبدة بلدية', price: 5.0, sharePct: 20 }
+        { item: 'جبن باجي وقوتة فرشك', price: 15.0, sharePct: 50 },
+        { item: 'حليب بقر صافي وسمن عربي', price: 8.0, sharePct: 30 },
+        { item: 'لبن ورايب وزبدة عربي', price: 5.0, sharePct: 20 }
       ],
       boucherie: [
-        { item: 'لحم علوش بركوس بلدي (1 كغ)', price: 42.0, sharePct: 50 },
-        { item: 'لحم بقري مسمن وكبدة طازجة', price: 36.0, sharePct: 30 },
-        { item: 'مرقاز دياري وشحم فاوح', price: 20.0, sharePct: 20 }
+        { item: 'لحم علّوش بركوس بلدي (1 كغ)', price: 42.0, sharePct: 50 },
+        { item: 'هبرة بقري بلدي وكبدة علّوش', price: 36.0, sharePct: 30 },
+        { item: 'مرقاز دياري حار بالثوم والنعناع', price: 20.0, sharePct: 20 }
       ],
       vente_vetements: [
-        { item: 'قميص وسروال كلاس ماركة عالمية', price: 85.0, sharePct: 50 },
-        { item: 'فريب شيك بياسات نادرة', price: 35.0, sharePct: 30 },
-        { item: 'أحذية وإكسسوارات أنيقة', price: 55.0, sharePct: 20 }
+        { item: 'سوريّة وسروال كلاس ماركة', price: 85.0, sharePct: 50 },
+        { item: 'فريب لوكس بياسات فرز أوّل', price: 35.0, sharePct: 30 },
+        { item: 'صبّاط كلاس وحزام جلد', price: 55.0, sharePct: 20 }
+      ],
+      vente_montres: [
+        { item: 'مونقالة سويسرية أوتوماتيك', price: 320.0, sharePct: 50 },
+        { item: 'صياغة ذهب ومسايس يد', price: 450.0, sharePct: 35 },
+        { item: 'تصليح مونقالات وتبديل بيلات', price: 25.0, sharePct: 15 }
       ],
       salle_de_jeux: [
-        { item: 'ساعة بلايستيشن 5 وماتش فيفا', price: 6.0, sharePct: 50 },
-        { item: 'طرح بلياردو ومشروبات منعشة', price: 8.0, sharePct: 30 },
-        { item: 'بطولات بيبي فوت وتحديات شبابية', price: 4.0, sharePct: 20 }
+        { item: 'ساعة بلاي 5 وطرح فيفا سخون', price: 6.0, sharePct: 50 },
+        { item: 'طرح بلياردو مع قازوز بارد', price: 8.0, sharePct: 30 },
+        { item: 'طرح بيبي فوت وتحدّي الشبيبة', price: 4.0, sharePct: 20 }
       ],
       emballage_dattes: [
-        { item: 'صندوق دقلة النور الفاخرة عرجون 1 كغ', price: 22.0, sharePct: 50 },
-        { item: 'شحنة تصدير تمور بيو معلبة', price: 1500.0, sharePct: 35 },
-        { item: 'ربّ التمر وعسل الواحات المركز', price: 12.0, sharePct: 15 }
+        { item: 'بلاطو دقلة النور عرجون 1 كغ', price: 22.0, sharePct: 50 },
+        { item: 'كونتينار تصدير دقلة فرز أوّل', price: 1500.0, sharePct: 35 },
+        { item: 'ربّ تمر معسّل وحلوى دقلة', price: 12.0, sharePct: 15 }
+      ],
+      croisiere_mer: [
+        { item: 'تيكي خرجة في شقف القراصنة بالغذاء', price: 65.0, sharePct: 50 },
+        { item: 'كراء يخت VIP لسهرة في البحر', price: 850.0, sharePct: 35 },
+        { item: 'جولة فلوكة وغوص في القنطاوي', price: 40.0, sharePct: 15 }
       ],
       taxi_collectif: [
-        { item: 'توصيلة ركاب سنتر فيل خط سريع', price: 2.5, sharePct: 70 },
-        { item: 'كورسة خاصة ومستعجلة', price: 15.0, sharePct: 20 },
-        { item: 'نقل كردونات وقضية من المحطة', price: 5.0, sharePct: 10 }
+        { item: 'بلاصة تاكسي جماعي خط البلاد', price: 2.5, sharePct: 70 },
+        { item: 'كورسة سبيسيال ومزروبة', price: 15.0, sharePct: 20 },
+        { item: 'نقل قفف وكردونات من المحطة', price: 5.0, sharePct: 10 }
       ],
       superette: [
-        { item: 'سلة قضية العائلة الأسبوعية', price: 65.0, sharePct: 50 },
-        { item: 'ياغورت وأجبان ومشروبات', price: 22.0, sharePct: 30 },
-        { item: 'مواد تنظيف وغسيل', price: 28.0, sharePct: 20 }
+        { item: 'قفّة قضية الدار للأسبوع', price: 65.0, sharePct: 50 },
+        { item: 'ياغورت، أجبان وقازوز بارد', price: 22.0, sharePct: 30 },
+        { item: 'جافيل ومواد تنظيف وصابون', price: 28.0, sharePct: 20 }
       ],
       supermarche: [
-        { item: 'شاريو كامل لحم وخضار ومؤونة الشهر', price: 220.0, sharePct: 55 },
-        { item: 'إلكتروميناجي وأواني المطبخ', price: 110.0, sharePct: 25 },
+        { item: 'شاريو معبّي قضية الشهر والعولة', price: 220.0, sharePct: 55 },
+        { item: 'إلكتروميناجي ومعون الكوجينة', price: 110.0, sharePct: 25 },
         { item: 'مواد تجميل وبارفانات', price: 45.0, sharePct: 20 }
       ],
       salon_de_the: [
-        { item: 'كأس قهوة كابوسين بريستيج / إكسبريس', price: 3.0, sharePct: 40 },
-        { item: 'موخيتو فريش وتشكيلة عصائر', price: 6.5, sharePct: 35 },
-        { item: 'تشيز كيك وميلك شيك شوكولا', price: 8.0, sharePct: 25 }
+        { item: 'كاس كابوسين بريستيج / إكسبريس', price: 3.0, sharePct: 40 },
+        { item: 'موخيتو منعنع وجو فريش', price: 6.5, sharePct: 35 },
+        { item: 'كراب شكلاطة، قوفرات وتشيز كيك', price: 8.0, sharePct: 25 }
       ],
       restaurant: [
-        { item: 'صحن مشاوي مشكل على الفحم', price: 38.0, sharePct: 50 },
-        { item: 'شاورما سوري ومقبلات شامية', price: 16.0, sharePct: 30 },
-        { item: 'عصائر طبيعية وحلويات شامية', price: 8.5, sharePct: 20 }
+        { item: 'صحن مشوي ومصلّي علّوش بالكمّون', price: 38.0, sharePct: 50 },
+        { item: 'صحن كفتاجي وعصبان وتسطيرة', price: 16.0, sharePct: 30 },
+        { item: 'قازوز بوقا سيدر وسلاطة مشوية', price: 8.5, sharePct: 20 }
       ],
       agence_voyages: [
-        { item: 'تذكرة طيران وفويّاج منظم', price: 1200.0, sharePct: 50 },
-        { item: 'باكج عمرة VIP فنادق الحرم', price: 3800.0, sharePct: 35 },
-        { item: 'حجوزات نزل سياحية وسهرات', price: 450.0, sharePct: 15 }
+        { item: 'تيكي طيارة وفويّاج منظّم', price: 1200.0, sharePct: 50 },
+        { item: 'حجز عمرة VIP قريبة للحرم', price: 3800.0, sharePct: 35 },
+        { item: 'ويكاند في نزل 5 نجوم بالحمامات', price: 450.0, sharePct: 15 }
       ],
       hotel: [
-        { item: 'إقامة جناح ديلوكس شامل كلياً', price: 420.0, sharePct: 55 },
-        { item: 'خدمات السبا والبيسين والمساج', price: 160.0, sharePct: 25 },
-        { item: 'بوفيه عشاء وسهرة سياحية', price: 85.0, sharePct: 20 }
+        { item: 'سويت ديلوكس أون كلوزيف عالبحر', price: 420.0, sharePct: 55 },
+        { item: 'سبا وبيسين سخونة ومساج', price: 160.0, sharePct: 25 },
+        { item: 'بوفيه عشاء وسهرية مالوف وعوّادة', price: 85.0, sharePct: 20 }
       ],
       centre_commercial: [
-        { item: 'إيجار محلات الماركات العالمية', price: 12000.0, sharePct: 45 },
-        { item: 'تذاكر قاعات السينما الفاخرة', price: 18.0, sharePct: 30 },
-        { item: 'إيرادات ساحة المطاعم والـFood Court', price: 35.0, sharePct: 25 }
+        { item: 'كراء حوانت وبوتيكات الماركات', price: 12000.0, sharePct: 45 },
+        { item: 'تيكيات قاعات السينما والألعاب', price: 18.0, sharePct: 30 },
+        { item: 'مداخيل قهاوي ومطاعم المول', price: 35.0, sharePct: 25 }
       ],
       usine_conserves: [
-        { item: 'حاوية تصدير هريسة عربي لأوروبا', price: 45000.0, sharePct: 50 },
-        { item: 'دفعة علب طماطم وتنّ وطني', price: 28000.0, sharePct: 35 },
-        { item: 'مربى وزيوت طبيعية معلبة', price: 15000.0, sharePct: 15 }
+        { item: 'كونتينار تصدير هريسة عربي لأوروبا', price: 45000.0, sharePct: 50 },
+        { item: 'كردونات حكك طماطم وتنّ بالزيت', price: 28000.0, sharePct: 35 },
+        { item: 'مصبّرات زيتون ومعجون غلال', price: 15000.0, sharePct: 15 }
       ],
       showroom_auto: [
-        { item: 'سيارة دفع رباعي فارهة زيرو كم', price: 240000.0, sharePct: 60 },
-        { item: 'سيارة برلين هجينة للمدينة', price: 110000.0, sharePct: 30 },
-        { item: 'عقود صيانة وتأمين ذهبي', price: 8500.0, sharePct: 10 }
+        { item: 'كرهبة 4x4 فاخرة زيرو كم', price: 240000.0, sharePct: 60 },
+        { item: 'كرهبة برلين إيصونص وهيبريد', price: 110000.0, sharePct: 30 },
+        { item: 'كونتراتو فيدونج وصيانة وتأمين', price: 8500.0, sharePct: 10 }
       ],
       promoteur_immobilier: [
-        { item: 'شقة فاخرة بريزيدنس قمرت مطلة عالبحر', price: 680000.0, sharePct: 55 },
-        { item: 'فيلا مستقلة بالحمامات مع مسبح', price: 1200000.0, sharePct: 35 },
-        { item: 'مكاتب ومقرات إدارية كبرى', price: 450000.0, sharePct: 10 }
+        { item: 'برطمان S+3 في ريزيدونس بقمرت', price: 680000.0, sharePct: 55 },
+        { item: 'فيلا بالبيسين في الحمامات', price: 1200000.0, sharePct: 35 },
+        { item: 'بيروات ومحلاّت تجارية عالشارع', price: 450000.0, sharePct: 10 }
       ],
       tayaran_el_ghzela: [
-        { item: 'تذاكر الدرجة الأولى ورجال الأعمال', price: 3200.0, sharePct: 45 },
-        { item: 'تذاكر الدرجة الاقتصادية للرحلات الدولية', price: 750.0, sharePct: 40 },
-        { item: 'شحن بضائع جوي سريع (Cargo)', price: 18000.0, sharePct: 15 }
+        { item: 'تيكيات درجة أولى ورجال أعمال', price: 3200.0, sharePct: 45 },
+        { item: 'تيكيات طيارة للرحلات الدولية', price: 750.0, sharePct: 40 },
+        { item: 'شحن سلعة وتصدير جوي سريع', price: 18000.0, sharePct: 15 }
       ]
     };
 

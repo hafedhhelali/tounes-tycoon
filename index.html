@@ -764,6 +764,10 @@
       grid-column: span 2;
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
       padding: 8px 6px;
+      white-space: normal;
+      overflow-wrap: break-word;
+      text-align: center;
+      line-height: 1.3;
     }
 
     /* TOAST DE NOTIFICATION (DANGER / INFO / SUCCESS) */
@@ -775,10 +779,10 @@
       background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
       border: 1px solid #ef4444;
       color: #fef2f2;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 14px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(239, 68, 68, 0.4);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -788,6 +792,10 @@
       pointer-events: none;
       direction: rtl;
       text-align: right;
+      max-width: calc(100vw - 24px);
+      width: max-content;
+      overflow-wrap: break-word;
+      line-height: 1.35;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .toast-box.toast-success {
@@ -2506,16 +2514,16 @@
     <div class="wheel-badge-ready" id="wheelBadgeReady">بلاش !</div>
   </div>
 
-  <!-- FLOATING LUCKY DROP (تفتوفة في الكياس / صندوق الحظ) -->
+  <!-- FLOATING LUCKY DROP (همزة في الكياس / صندوق الحظ) -->
   <div id="luckyDropEl" class="lucky-drop-floating" style="display: none !important;">
     <span id="luckyDropIcon">🎁</span>
-    <span class="lucky-drop-sub">تفتوفة !</span>
+    <span class="lucky-drop-sub">همزة !</span>
   </div>
 
   <!-- TOAST NOTIFICATION (ALERTES & ARRIVÉE EN VILLE) -->
   <div class="toast-box" id="errorToast">
     <span id="toastIcon" style="font-size: 20px;">⚠️</span>
-    <span id="toastMsg">الكاسة فارغة ! سربّي بيديك ولا دبّر تفتوفة 💰</span>
+    <span id="toastMsg">الكاسة فارغة ! سربّي الحرفاء ولا دبّر همزة 💰</span>
   </div>
 
   <!-- MINI-GAME INTERACTIF "طرح شكبة سريع" (Défi Réflexe & Calcul Populaire — ZÉRO SCROLL) -->
@@ -2719,20 +2727,20 @@
       <!-- Statut de sécurité -->
       <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #2563eb; border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; width: 100%;">
         <div>
-          <div style="font-size: 11.5px; font-weight: 800; color: #93c5fd;">مستوى الأمان في الحي:</div>
-          <div style="font-size: 9.5px; color: #94a3b8;">الدوريات متواصلة على مدار الساعة 24/7</div>
+          <div style="font-size: 11.5px; font-weight: 800; color: #93c5fd;">الأمان في الحومة والبلاد:</div>
+          <div style="font-size: 9.5px; color: #94a3b8;">دوريات الحاكم تدور ليل ونهار 24/7</div>
         </div>
         <div style="background: #1e3a8a; border: 1px solid #60a5fa; color: #67e8f9; font-weight: 900; font-size: 11px; padding: 3px 8px; border-radius: 6px;">
-          🛡️ 100% مؤمّن
+          🛡️ 100% رايض
         </div>
       </div>
 
       <div style="background: rgba(30, 41, 59, 0.5); border-radius: 8px; padding: 8px; font-size: 10.5px; color: #cbd5e1; line-height: 1.5; width: 100%;">
-        🚨 دوريات الشرطة تؤمّن كل مشاريعك ضد أي مشاكل، ومصاريف الحراسة مدرجة ضمن الأداءات الدورية الرسمية.
+        🚨 دوريات الحاكم مأمّنة حوانتك والشارع الكلّ، ومصاريف العسّة داخلة في الأداءات.
       </div>
 
       <button class="modal-btn" id="policePatrolBoostBtn" style="background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%); border-color: #60a5fa; color: #ffffff; padding: 6px; font-weight: 900; width: 100%; font-size: 11.5px;">
-        🚓 تسيير دورية تفقد فورية
+        🚓 خرج دورية حاكم توّا
       </button>
 
       <button class="modal-btn" id="closePoliceModalBtn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 6px; width: 100%; font-size: 11px;">
@@ -2748,8 +2756,8 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="modal-icon-glow" style="font-size: 24px;">🚬</div>
           <div>
-            <div class="modal-title" style="font-size: 15px; color: #fda4af; line-height: 1.2;">قمريڨ • مكتب التبغ والوقيد والصحف</div>
-            <div class="modal-subtitle" style="font-size: 10px; color: #94a3b8; line-height: 1.2;">سجائر وطنية، جرائد الصباح ودبابز ماء باردة</div>
+            <div class="modal-title" style="font-size: 15px; color: #fda4af; line-height: 1.2;">قمريڨ • كشك الدخّان والوقيد والجرائد</div>
+            <div class="modal-subtitle" style="font-size: 10px; color: #94a3b8; line-height: 1.2;">دخّان وطني، جرائد الصباح ودبابز ماء باردة</div>
           </div>
         </div>
         <button id="closeTobaccoModalTopBtn" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 2px 6px;">✕</button>
@@ -2758,15 +2766,15 @@
       <!-- Rayonnage intérieur du Kiosque -->
       <div style="background: rgba(15, 23, 42, 0.85); border: 1.5px solid #f43f5e; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; width: 100%;">
         <div style="font-size: 11.5px; font-weight: 900; color: #fde047; border-bottom: 1px solid rgba(251, 191, 36, 0.25); padding-bottom: 4px;">
-          🏪 سلعة القمريڨ المتوفرة للحرفاء :
+          🏪 سلعة القمريڨ الحاضرة للحرفاء :
         </div>
         
         <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(30, 41, 59, 0.6); padding: 6px 8px; border-radius: 6px;">
           <div style="display: flex; align-items: center; gap: 6px;">
             <span style="font-size: 18px;">🚬</span>
             <div>
-              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">سجائر وتبغ وطني (20 مارص، كريستال)</div>
-              <div style="font-size: 9px; color: #94a3b8;">توزيع رسمي مرخّص مع علب الوقيد</div>
+              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">دخّان وطني ووقيد (20 مارص، كريستال)</div>
+              <div style="font-size: 9px; color: #94a3b8;">بيعة بالرخصة مع صناديق الوقيد</div>
             </div>
           </div>
           <span style="font-size: 11px; font-weight: 900; color: #34d399;">4.500 د.ت</span>
@@ -2776,8 +2784,8 @@
           <div style="display: flex; align-items: center; gap: 6px;">
             <span style="font-size: 18px;">📰</span>
             <div>
-              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">جرائد يومية ومجلات أسبوعية</div>
-              <div style="font-size: 9px; color: #94a3b8;">أخبار الصباح والصحافة التونسية</div>
+              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">جرائد الصباح ومجلاّت تونسية</div>
+              <div style="font-size: 9px; color: #94a3b8;">أخبار البلاد والرياضة مع القهوة</div>
             </div>
           </div>
           <span style="font-size: 11px; font-weight: 900; color: #34d399;">1.200 د.ت</span>
@@ -2787,8 +2795,8 @@
           <div style="display: flex; align-items: center; gap: 6px;">
             <span style="font-size: 18px;">💧</span>
             <div>
-              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">دبوزة ماء معدنية باردة (صافية / حياة)</div>
-              <div style="font-size: 9px; color: #94a3b8;">ماء عذب ومثلجات سريعة للعطاشى</div>
+              <div style="font-size: 11px; font-weight: 800; color: #f8fafc;">دبوزة ماء باردة كلاص (صافية / مليتي)</div>
+              <div style="font-size: 9px; color: #94a3b8;">ماء بارد يردّ الروح في القايلة</div>
             </div>
           </div>
           <span style="font-size: 11px; font-weight: 900; color: #34d399;">0.800 د.ت</span>
@@ -2796,7 +2804,7 @@
       </div>
 
       <button class="modal-btn" id="tobaccoTipBtn" style="background: linear-gradient(135deg, #be123c 0%, #831843 100%); border-color: #fbbf24; color: #ffffff; padding: 6px; font-weight: 900; width: 100%; font-size: 11.5px;">
-        🪙 شراء باكي وقضية سريعة (+تفتوفة كاسة)
+        🪙 اشري باكي ودبوزة ماء (+2.50 د.ت في الكاسة)
       </button>
 
       <button class="modal-btn" id="closeTobaccoModalBtn" style="background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #cbd5e1; padding: 6px; width: 100%; font-size: 11px;">
@@ -2958,19 +2966,19 @@
 
         <!-- Bloc 4 - منطقة الخطر والإفلاس (Zone Rouge / Reset) -->
         <section class="settings-section danger-zone">
-          <div class="settings-sec-title danger">⚠️ منطقة الخطر</div>
-          <div class="danger-desc">في حال رغبت في إعادة بناء إمبراطوريتك بالكامل من الصفر ومسح كل البيانات المحلية.</div>
-          <button class="danger-reset-btn" id="hardResetInitBtn">⚠️ إعلان إفلاس المشروع والبدء من الصفر</button>
+          <div class="settings-sec-title danger">⚠️ ردّ بالك (منطقة الخطر)</div>
+          <div class="danger-desc">كان تحبّ تعاود تبني مشاريعك من الصفر وتفسخ التسجيل القديم الكلّ.</div>
+          <button class="danger-reset-btn" id="hardResetInitBtn">⚠️ عاود من الصفر وفسّخ الحساب</button>
 
           <!-- Sous-modale / confirmation à 2 étapes -->
           <div class="danger-confirm-box" id="hardResetConfirmBox" style="display: none;">
             <div class="danger-confirm-alert">
-              🚨 <strong>هل أنت متأكد تماماً ؟</strong><br>
-              الفلوس، المشاريع والترقيات الكل باش ترجع للصفر ولا يمكن التراجع !
+              🚨 <strong>متأكّد بالحقّ ؟</strong><br>
+              الفلوس، المشاريع والترقيات الكل باش ترجع للصفر وما تنجّمش ترجّعهم !
             </div>
             <div class="danger-confirm-actions">
-              <button class="danger-confirm-execute-btn" id="hardResetConfirmBtn">نعم، أعلن الإفلاس وابدأ من جديد 🔥</button>
-              <button class="danger-cancel-btn" id="hardResetCancelBtn">إلغاء والتراجع 🛡️</button>
+              <button class="danger-confirm-execute-btn" id="hardResetConfirmBtn">إيه، عاود من الصفر 🔥</button>
+              <button class="danger-cancel-btn" id="hardResetCancelBtn">لا، ارجع للتجارة 🛡️</button>
             </div>
           </div>
         </section>
@@ -3139,7 +3147,7 @@
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 4px;">
         <button class="modal-btn" id="confirmExitAppBtn" style="background: #dc2626; border-color: #ef4444; padding: 8px; font-size: 13px;">
-          نعم، اخرج
+          إيه، اخرج
         </button>
         <button class="modal-btn" id="cancelExitAppBtn" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); color: #f8fafc; padding: 8px; font-size: 13px;">
           كمّل العب 🎮
@@ -3152,8 +3160,8 @@
   <div class="modal-overlay" id="luckyAdModal">
     <div class="modal-card" style="max-width: 380px; border-color: #f59e0b; padding: 12px 16px; gap: 6px;">
       <div class="modal-icon-glow" style="font-size: 34px;" id="luckyAdEmoji">🎁</div>
-      <div class="modal-title" id="luckyAdTitle" style="font-size: 17px;">تفتوفة الحومة طاحت !</div>
-      <div class="modal-subtitle" id="luckyAdSub" style="font-size: 11px;">تفرّج في فيديو واربح البونيس كامل</div>
+      <div class="modal-title" id="luckyAdTitle" style="font-size: 17px;">همزة باهية طاحتلك !</div>
+      <div class="modal-subtitle" id="luckyAdSub" style="font-size: 11px;">تفرّج في فيديو قصير واربح البونيس الكلّ</div>
       <div class="modal-reward-badge" id="luckyAdAmount" style="font-size: 19px; padding: 4px 16px;">+15.00 د.ت</div>
       <div style="display: flex; gap: 8px; width: 100%; align-items: center;">
         <button class="modal-btn" id="claimLuckyAdBtn" style="flex: 1; background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); padding: 8px;">
@@ -3167,11 +3175,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=119';
-    import { soundEngine } from './audio.js?v=119';
+    import { TycoonEngine } from './engine.js?v=120';
+    import { soundEngine } from './audio.js?v=120';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=119';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=119';
+    import { AdsService } from './ads_service.js?v=120';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=120';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -4166,10 +4174,10 @@
             soundEngine.playEventFanfare();
             const newLvl = engine.getPlayerLevel ? engine.getPlayerLevel() : (engine.playerLevel || 1);
             if (isNewCity) {
-              showRewardModalUI('⭐', `ارتقيت للمستوى ${newLvl} !`, `مبروك ! بفتح ${city.name} كبرت إمبراطوريتك ودخلت مرحلة جديدة من الأرباح 🇹🇳`, '🚀 واصل التوسّع');
-              showFeedbackToast(`🎉 أهلاً بك في ${city.name} ! ارتقيت للمستوى ${newLvl} 🇹🇳`, '🎉');
+              showRewardModalUI('⭐', `طلعت للمستوى ${newLvl} !`, `مبروك ! بحلّان ${city.name} كبرت مشاريعك ودخلت في المربوح الكبير 🇹🇳`, '🚀 كمّل التوسّع');
+              showFeedbackToast(`🎉 مرحبا بيك في ${city.name} ! طلعت للمستوى ${newLvl} 🇹🇳`, '🎉');
             } else {
-              showFeedbackToast(`🚗 وصلت بالسلامة إلى ${city.name} 🇹🇳`, '🚗');
+              showFeedbackToast(`🚗 وصلت بالسلامة لـ ${city.name} 🇹🇳`, '🚗');
             }
             // Basculer immédiatement vers l'onglet rue avec animation de transition
             switchTab('businesses');
