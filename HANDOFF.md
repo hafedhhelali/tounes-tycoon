@@ -1,13 +1,13 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-11-05T10:43:00+01:00 - etat = HEAD de main (v129-monument-square-clock-fountain-garden-all-cities-zero-feet-seafood-crates-recruitment-fix)
+MAJ: 2026-11-05T11:08:00+01:00 - etat = HEAD de main (v130-kaskrout-seller-customer-flow-lowered-cart-monument-square-fix)
 
-## État en 3 lignes (v129)
-1. Square / Jardin public & Tour de l'Horloge / Fontaine animée (`monument_square`) : inséré dans chaque ville tunisienne avec pelouse, fleurs de jasmin, banc avec chat assoupi, lampadaire, tour en pierre dorée avec horloge temps réel, et fontaine jaillissante avec vœu interactif.
-2. Commerçants et comptoirs : zéro pieds visibles sous les comptoirs dans toutes les boutiques, caisses de poissons frais avec glace et poissonnier ambulant actif au marché de fruits de mer.
-3. Recrutement & Popup employés : harmonisation totale `engine.js` / `index.html` / `store_animator.js`, suppression du faux employé doublon, bouton de recrutement restreint strictement au prochain slot éligible.
+## État en 3 lignes (v130)
+1. Kaskrout Ayari : brouette abaissée à proportion humaine, suppression du bouton visite inutile, marchand الشاف عياري au tablier et chéchia préparant les sandwichs derrière son stand.
+2. Interaction passagers de rue : piéton qui s'arrête devant la brouette, commande avec bulle, préparation au couteau, paiement 3.5 DT avec pièces flottantes, et départ avec le sandwich en main.
+3. Monument Square (Horloge/Statue, Fontaine animée et Jardin fleuri) : bug de dispatch résolu dans `buildZoneLayout`, présent et visible dans toutes les villes tunisiennes.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs : `engine.js`, `store_animator.js`, `index.html`, `CHANGELOG.md`, `HANDOFF.md`, `www/*`.
+- Modifs : `store_animator.js`, `index.html`, `CHANGELOG.md`, `HANDOFF.md`, `www/*`.
 - Suite de tests : 70/70 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

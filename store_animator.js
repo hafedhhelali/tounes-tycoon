@@ -4519,7 +4519,7 @@ export class QuartierAnimator {
     }
 
     this.bizTemplates = {
-      kaskrout: { id: 'kaskrout', width: 155, height: 120, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
+      kaskrout: { id: 'kaskrout', width: 140, height: 75, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
       fricasse: { id: 'fricasse', width: 155, height: 122, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
       kahwa: { id: 'kahwa', width: 170, height: 132, style: 'cafe_terrasse', color: '#eab308', roofColor: '#1e3a8a' },
       attariya: { id: 'attariya', width: 155, height: 128, style: 'attariya_shop', color: '#10b981', roofColor: '#047857' },
@@ -4597,7 +4597,7 @@ export class QuartierAnimator {
       bab_souika: [
         { type: 'house', style: 'medina', name: 'دار بن عاشور', width: 115, height: 118, wallColor: '#fef3c7', doorColor: '#2563eb' },
         { type: 'biz', id: 'kaskrout' },
-        { type: 'garden', name: 'حديقة الياسمين والزيتون', width: 95 },
+        { type: 'monument_square', name: 'ساحة الساعة والنافورة والحديقة', width: 165 },
         { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'la_goulette', nextZoneLabel: 'بنزرت' },
         { type: 'biz', id: 'fricasse' },
         { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
@@ -4655,7 +4655,7 @@ export class QuartierAnimator {
       { type: 'house', style: 'medina', name: 'دار بن عاشور', width: 115, height: 118, wallColor: '#fef3c7', doorColor: '#2563eb' },
       { type: 'biz', id: 'kaskrout' },
       { type: 'biz', id: 'fricasse' },
-      { type: 'garden', name: 'حديقة الياسمين والزيتون', width: 95 },
+      { type: 'monument_square', name: 'ساحة الساعة والنافورة والحديقة', width: 165 },
       { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'bizerte', nextZoneLabel: 'بنزرت' },
       { type: 'biz', id: 'kahwa' },
       { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
@@ -4962,10 +4962,14 @@ export class QuartierAnimator {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
         curX += item.width + 24;
-      } else if (item.type === 'garden' || item.type === 'service_station' || item.type === 'bank_branch' || item.type === 'police_station' || item.type === 'tobacco_kiosk') {
+      } else if (item.type === 'garden' || item.type === 'monument_square' || item.type === 'service_station' || item.type === 'bank_branch' || item.type === 'police_station' || item.type === 'tobacco_kiosk') {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
         curX += item.width + 24;
+      } else {
+        const entry = { ...item, x: curX };
+        this.streetLayout.push(entry);
+        curX += (item.width || 120) + 24;
       }
     });
 
@@ -5473,6 +5477,88 @@ export class QuartierAnimator {
       if (c.x < 20) { c.x = 20; c.dir = 1; }
       if (c.x > this.worldWidth - 20) { c.x = this.worldWidth - 20; c.dir = -1; }
     });
+
+    // Animation vivante du client qui commande et paye à la brouette Kaskrout Ayari
+    const kaskroutItem = (this.streetLayout || []).find(it => it.id === 'kaskrout');
+    if (kaskroutItem) {
+      if (!this.kaskroutOrder) {
+        this.kaskroutOrder = {
+          state: 'idle',
+          timer: 1.5,
+          customerX: kItem => kItem.x + 125,
+          currentCustomerX: kaskroutItem.x + 125,
+          customerSpeed: 42,
+          customerWalkCycle: 0,
+          customerBubble: null,
+          sellerBubble: null,
+          carriedSandwich: false
+        };
+      }
+      const ko = this.kaskroutOrder;
+      const standStopX = kaskroutItem.x + kaskroutItem.width - 10;
+
+      if (ko.state === 'idle') {
+        ko.timer -= dt;
+        if (ko.timer <= 0) {
+          ko.state = 'approaching';
+          ko.currentCustomerX = standStopX + 75;
+          ko.carriedSandwich = false;
+          ko.customerBubble = null;
+          ko.sellerBubble = null;
+        }
+      } else if (ko.state === 'approaching') {
+        const dist = standStopX - ko.currentCustomerX;
+        if (Math.abs(dist) > 2) {
+          ko.customerWalkCycle += dt * 8;
+          ko.currentCustomerX += Math.sign(dist) * ko.customerSpeed * dt;
+        } else {
+          ko.currentCustomerX = standStopX;
+          ko.state = 'ordering';
+          ko.timer = 1.6;
+          ko.customerBubble = '🥖 كسكروت عياري حار عيشك !';
+        }
+      } else if (ko.state === 'ordering') {
+        ko.timer -= dt;
+        if (ko.timer <= 0) {
+          ko.state = 'preparing';
+          ko.timer = 1.7;
+          ko.customerBubble = '😋';
+          ko.sellerBubble = 'حاضر يا باهي ! 🔥';
+        }
+      } else if (ko.state === 'preparing') {
+        ko.timer -= dt;
+        if (ko.timer <= 0) {
+          ko.state = 'paying';
+          ko.timer = 1.5;
+          ko.customerBubble = '🪙 3.5 DT';
+          ko.sellerBubble = '🥖 تفضّل كسكروتك !';
+          ko.carriedSandwich = true;
+          this.floatingCoins.push({
+            x: kaskroutItem.x + 55,
+            y: this.height - 120,
+            text: '+3.5 DT',
+            alpha: 1.0,
+            vy: -24
+          });
+        }
+      } else if (ko.state === 'paying') {
+        ko.timer -= dt;
+        if (ko.timer <= 0) {
+          ko.state = 'leaving';
+          ko.customerBubble = 'صحّة لينا ! بنّة عالمية 👌';
+          ko.sellerBubble = null;
+        }
+      } else if (ko.state === 'leaving') {
+        ko.customerWalkCycle += dt * 8;
+        ko.currentCustomerX -= ko.customerSpeed * dt;
+        if (ko.currentCustomerX < standStopX - 85) {
+          ko.state = 'idle';
+          ko.timer = 3.0 + Math.random() * 3.5;
+          ko.customerBubble = null;
+          ko.carriedSandwich = false;
+        }
+      }
+    }
 
     if (Math.random() < dt * 10) {
       this.smokePuffs.push({
@@ -6099,58 +6185,171 @@ export class QuartierAnimator {
       return;
     }
 
-    // Cas 2A : نصبة كسكروت عياري (Brouette / Charrette ambulante traditionnelle avec parasol et roues)
+    // Cas 2A : نصبة كسكروت عياري (Brouette abaissée, vendeur authentique et client qui commande, paye et repart)
     if (b.id === 'kaskrout') {
-      const cartW = b.width;
-      const cartH = bHeight;
+      const cartW = 126;
       const cartX = x;
-      const cartY = y + 10;
-
-      // 1. Roues en bois cerclées de fer (2 grandes roues de brouette)
-      const wheelR = 15;
-      const wheelY = groundY - 14;
-      const wheelX1 = cartX + 26;
-      const wheelX2 = cartX + cartW - 26;
+      const timeSec = (timestamp || performance.now()) / 1000;
+      const ko = this.kaskroutOrder || { state: 'idle' };
 
       ctx.save();
-      for (const wx of [wheelX1, wheelX2]) {
-        // Ombre de roue
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+
+      // 1. LE VENDEUR DE KASKROUT AYARI (الشاف عياري) - Positionné fièrement DERRIÈRE la brouette
+      const sellerX = cartX + 42;
+      const sellerY = groundY - 2;
+      const isPreparing = ko.state === 'preparing';
+      const isPaying = ko.state === 'paying';
+
+      // Ombre du vendeur au sol
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.beginPath();
+      ctx.ellipse(sellerX, groundY - 1, 9, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Buste et bras du chef
+      ctx.save();
+      ctx.translate(sellerX, sellerY - 22);
+
+      // Tablier blanc de chef tunisien
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.roundRect(-8, -10, 16, 20, 2);
+      ctx.fill();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Col rouge vif
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.moveTo(-3, -10);
+      ctx.lineTo(0, -6);
+      ctx.lineTo(3, -10);
+      ctx.fill();
+
+      // Tête et visage expressif
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(0, -17, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Moustache tunisienne soignée
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(-4, -14, 8, 2);
+
+      // Chéchia rouge tunisienne emblématique (الشاشية التونسية)
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.roundRect(-6, -24, 12, 6, [3, 3, 0, 0]);
+      ctx.fill();
+      // Gland noir de la chéchia (الكبوس)
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(4, -22, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Yeux
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(-3, -18, 1.5, 1.5);
+      ctx.fillRect(1.5, -18, 1.5, 1.5);
+
+      // Bras et gestuelle dynamique
+      const cutBob = isPreparing ? Math.sin(timeSec * 16) * 3 : 0;
+      if (isPreparing) {
+        // Couteau de chef tranchant la baguette
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.ellipse(wx, groundY - 2, wheelR * 0.9, 3, 0, 0, Math.PI * 2);
+        ctx.moveTo(6, -6 + cutBob);
+        ctx.lineTo(13, -2 + cutBob);
+        ctx.stroke();
+        // Baguette tenue en main
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.roundRect(-10, -5 - cutBob, 8, 4, 2);
+        ctx.fill();
+      } else if (isPaying) {
+        // Mains tendues avec le kaskrout enveloppé
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(4, -8, 12, 6, 2);
+        ctx.fill();
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(6, -7, 8, 4);
+      } else {
+        // Bras au repos sur le comptoir
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(-9, -4, 4, 8);
+        ctx.fillRect(5, -4, 4, 8);
+      }
+      ctx.restore();
+
+      // Bulle de dialogue du vendeur
+      if (ko.sellerBubble) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.beginPath();
+        ctx.roundRect(sellerX - 32, groundY - 58, 64, 15, 4);
+        ctx.fill();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 7.5px "Cairo", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(ko.sellerBubble, sellerX, groundY - 48);
+        ctx.restore();
+      }
+
+      // 2. LA BROUETTE TRADITIONNELLE ABAISSÉE (نصبة العياري)
+      const wheelR = 10;
+      const wheelY = groundY - 10;
+      const wheelX1 = cartX + 22;
+      const wheelX2 = cartX + cartW - 24;
+
+      // Roues en bois cerclées d'acier (posées sur le sol)
+      for (const wx of [wheelX1, wheelX2]) {
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.beginPath();
+        ctx.ellipse(wx, groundY - 1, wheelR * 0.9, 2.5, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Jante en bois d'olivier
         ctx.strokeStyle = '#78350f';
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 2.5;
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
         ctx.arc(wx, wheelY, wheelR, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        // Rayons de la roue
         ctx.strokeStyle = '#f59e0b';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.2;
         for (let sp = 0; sp < 6; sp++) {
-          const spAngle = (sp * Math.PI / 3) + (timestamp * 0.001);
+          const spAngle = (sp * Math.PI / 3) + (timestamp * 0.0005);
           ctx.beginPath();
           ctx.moveTo(wx, wheelY);
           ctx.lineTo(wx + Math.cos(spAngle) * wheelR, wheelY + Math.sin(spAngle) * wheelR);
           ctx.stroke();
         }
-        // Moyeu central
         ctx.fillStyle = '#fbbf24';
         ctx.beginPath();
-        ctx.arc(wx, wheelY, 3.5, 0, Math.PI * 2);
+        ctx.arc(wx, wheelY, 2.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // 2. Châssis & caisse de la brouette en bois authentique (عربة متنقلة)
+      // Béquille de stabilisation de la brouette
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cartX + 6, groundY - 26);
+      ctx.lineTo(cartX + 2, groundY - 1);
+      ctx.stroke();
+
+      // Caisse en bois de la brouette (châssis compact abaissé)
       const boxW = cartW - 14;
-      const boxH = 46;
+      const boxH = 22;
       const boxX = cartX + 7;
-      const boxY = wheelY - boxH + 6;
+      const boxY = groundY - 30;
 
       const woodGrad = ctx.createLinearGradient(boxX, boxY, boxX, boxY + boxH);
       woodGrad.addColorStop(0, '#f59e0b');
@@ -6158,71 +6357,71 @@ export class QuartierAnimator {
       woodGrad.addColorStop(1, '#92400e');
       ctx.fillStyle = woodGrad;
       ctx.beginPath();
-      ctx.roundRect(boxX, boxY, boxW, boxH, [6, 6, 2, 2]);
+      ctx.roundRect(boxX, boxY, boxW, boxH, [4, 4, 2, 2]);
       ctx.fill();
       ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Poignées de la brouette en bois (Bras de traction)
+      // Poignée / Bras de traction en bois de la brouette
       ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 3;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(boxX, boxY + 18);
-      ctx.lineTo(boxX - 16, boxY + 12);
+      ctx.moveTo(boxX, boxY + 10);
+      ctx.lineTo(boxX - 12, boxY + 6);
       ctx.stroke();
 
-      // Panneau de la نصبة
+      // Enseigne calligraphiée peinte sur la caisse
       ctx.fillStyle = '#1e293b';
-      ctx.fillRect(boxX + 16, boxY + 12, boxW - 32, 22);
+      ctx.fillRect(boxX + 12, boxY + 4, boxW - 24, 14);
       ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.2;
-      ctx.strokeRect(boxX + 16, boxY + 12, boxW - 32, 22);
+      ctx.lineWidth = 1;
+      ctx.strokeRect(boxX + 12, boxY + 4, boxW - 24, 14);
       ctx.fillStyle = '#fef08a';
-      ctx.font = '900 10.5px "Cairo", sans-serif';
+      ctx.font = '900 8px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🥖 كسكروت عياري 🥚', boxX + boxW / 2, boxY + 26);
+      ctx.fillText('🥖 كسكروت عياري 🥚', boxX + boxW / 2, boxY + 14);
 
-      // 3. Vitrine en verre transparent exposant les œufs durs, le thon et les baguettes
+      // Vitrine transparente basse sur la caisse
       const glassW = boxW - 10;
-      const glassH = 28;
+      const glassH = 13;
       const glassX = boxX + 5;
       const glassY = boxY - glassH;
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
       ctx.fillRect(glassX, glassY, glassW, glassH);
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1;
       ctx.strokeRect(glassX, glassY, glassW, glassH);
 
-      // Ingrédients visibles sous la vitrine
-      ctx.font = '13px serif';
+      // Ingrédients délicieux visibles : œufs durs, baguettes croustillantes, piments rouges
+      ctx.font = '9px serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🥚 🥚 🥚', glassX + glassW * 0.25, glassY + 18);
-      ctx.fillText('🥖 🥖', glassX + glassW * 0.55, glassY + 18);
-      ctx.fillText('🥫 🌶️', glassX + glassW * 0.85, glassY + 18);
+      ctx.fillText('🥚🥚', glassX + glassW * 0.22, glassY + 9.5);
+      ctx.fillText('🥖🥖', glassX + glassW * 0.52, glassY + 9.5);
+      ctx.fillText('🌶️🥫', glassX + glassW * 0.82, glassY + 9.5);
 
-      // 4. Grand Parasol bicolore rouge et blanc au-dessus de la brouette (مظلة النصبة)
+      // Parasol bicolore rouge et blanc abaissé (مظلة النصبة)
       const poleX = cartX + cartW / 2;
       ctx.strokeStyle = '#64748b';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
       ctx.moveTo(poleX, glassY);
-      ctx.lineTo(poleX, y - 8);
+      ctx.lineTo(poleX, groundY - 60);
       ctx.stroke();
 
-      const umbrellaY = y - 8;
-      const umbrellaW = cartW * 0.88;
+      const umbrellaY = groundY - 60;
+      const umbrellaW = cartW * 0.84;
       const uLeft = poleX - umbrellaW / 2;
       const uRight = poleX + umbrellaW / 2;
 
-      // Toile du parasol courbée
+      // Toile du parasol rouge
       ctx.beginPath();
-      ctx.moveTo(uLeft, umbrellaY + 12);
-      ctx.quadraticCurveTo(poleX, umbrellaY - 14, uRight, umbrellaY + 12);
+      ctx.moveTo(uLeft, umbrellaY + 9);
+      ctx.quadraticCurveTo(poleX, umbrellaY - 11, uRight, umbrellaY + 9);
       ctx.closePath();
-      ctx.fillStyle = '#dc2626'; // Rouge vif
+      ctx.fillStyle = '#dc2626';
       ctx.fill();
 
       // Rayures blanches du parasol
@@ -6231,51 +6430,92 @@ export class QuartierAnimator {
         const sx1 = uLeft + (umbrellaW / 6) * s;
         const sx2 = sx1 + (umbrellaW / 6);
         ctx.beginPath();
-        ctx.moveTo(sx1, umbrellaY + 10);
-        ctx.lineTo(poleX, umbrellaY - 12);
-        ctx.lineTo(sx2, umbrellaY + 10);
+        ctx.moveTo(sx1, umbrellaY + 8);
+        ctx.lineTo(poleX, umbrellaY - 10);
+        ctx.lineTo(sx2, umbrellaY + 8);
         ctx.closePath();
         ctx.fill();
       }
 
-      // Indicateur discret et élégant de visite au-dessus du comptoir
-      const enterW = 46;
-      const enterH = 16;
-      const enterX = cartX + (cartW - enterW) / 2;
-      const enterY = boxY - 20;
+      // 3. LE PASSAGER SUR RUE QUI S'ARRÊTE, COMMANDE, PAYE ET S'EN VA
+      if (ko.currentCustomerX) {
+        const custScreenX = ko.currentCustomerX;
+        const custY = groundY + 1;
+        const walkBob = Math.sin(ko.customerWalkCycle || 0) * 2;
 
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
-      ctx.beginPath();
-      ctx.roundRect(enterX, enterY, enterW, enterH, 4);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
+        // Ombre du client
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(custScreenX, groundY + 1, 9, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
 
-      ctx.fillStyle = '#f8fafc';
-      ctx.font = '800 8.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('زيارة 🏪', cartX + cartW / 2, enterY + 11.5);
+        ctx.save();
+        ctx.translate(custScreenX, custY + walkBob);
 
+        // Pantalon
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(-4, -12, 3.5, 11);
+        ctx.fillRect(0.5, -12, 3.5, 11);
+
+        // Veste / Chemise
+        ctx.fillStyle = '#0284c7';
+        ctx.beginPath();
+        ctx.roundRect(-6, -23, 12, 12, 2);
+        ctx.fill();
+
+        // Tête
+        ctx.fillStyle = '#fcd34d';
+        ctx.beginPath();
+        ctx.arc(0, -28, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cheveux / Casquette
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(0, -30, 5, Math.PI, 0);
+        ctx.fill();
+
+        // Si le client a récupéré son kaskrout : il le tient fièrement en main !
+        if (ko.carriedSandwich) {
+          ctx.fillStyle = '#d97706';
+          ctx.font = '11px serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('🥖', -9, -15);
+        } else if (ko.state === 'paying') {
+          // Main tendue avec dinars
+          ctx.font = '9px sans-serif';
+          ctx.fillText('🪙', -8, -15);
+        }
+
+        ctx.restore();
+
+        // Bulle de dialogue du client
+        if (ko.customerBubble) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.beginPath();
+          ctx.roundRect(custScreenX - 38, groundY - 44, 76, 14, 4);
+          ctx.fill();
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 7px "Cairo", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(ko.customerBubble, custScreenX, groundY - 35);
+          ctx.restore();
+        }
+      }
+
+      // Hitbox interactive pour collecter la recette en cliquant sur la brouette (AUCUN bouton visiter inutile)
       this.interactiveHitboxes.push({
         x: cartX,
-        y: y,
+        y: groundY - 65,
         w: cartW,
-        h: bHeight,
+        h: 68,
         action: 'collect',
         bizId: b.id
       });
-      // Si le commerce n'est pas encore acheté (level 0), interdire la visite intérieure
-      if (b.level > 0) {
-        this.interactiveHitboxes.push({
-          x: enterX,
-          y: enterY,
-          w: enterW,
-          h: enterH,
-          action: 'inspect',
-          bizId: b.id
-        });
-      }
 
       ctx.restore();
       return;

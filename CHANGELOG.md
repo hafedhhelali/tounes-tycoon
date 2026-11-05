@@ -1,3 +1,18 @@
+## [1.29.0] - 2026-11-05
+### Added & Improved
+- **Brouette Kaskrout Ayari (`kaskrout`) - Refonte complète & Human scale** :
+  - **Brouette abaissée à hauteur humaine réaliste** : Structure redimensionnée (hauteur 75px au lieu de 120px perchée trop haut) : caisse en bois patiné d'olivier à hauteur de hanche (`groundY - 30`), roues cerclées d'acier posées directement au sol (`wheelR = 10`), vitrine basse d'ingrédients frais (`🥚`, `🥖`, `🌶️`, `🥫`), mât inox et parasol rouge et blanc d'ombrage rabaissé harmonieusement.
+  - **Suppression du bouton visite inutile** : Élimination du bouton superflu `زيارة 🏪` et de l'action inspect. Le tap direct sur la brouette collecte immédiatement les recettes (`collect`).
+  - **Marchand de Kaskrout (الشاف عياري)** : Vendeur positionné fièrement derrière sa brouette avec tablier blanc, col rouge, chéchia tunisienne traditionnelle (`الشاشية`) et moustache. Gestuelle animée : découpe énergique de la baguette au couteau (`🔪🥖`), garniture d'œufs durs et de harissa, et service à deux mains vers le client.
+  - **Animation vivante de rue (Passager qui s'arrête, commande, paye et repart)** :
+    - Un piéton s'approche et s'arrête devant la brouette avec bulle de commande : `"🥖 كسكروت عياري حار عيشك !"`.
+    - Le chef répond `"حاضر يا باهي ! 🔥"` et prépare activement le sandwich.
+    - Échange : le chef tend le sandwich, le client tend les dinars (`🪙 3.5 DT`) avec pop de dinars flottants (`+3.5 DT`).
+    - Le client repart sur le trottoir son kaskrout en main (`🥖`), bulle satisfaite : `"صحّة لينا ! بنّة عالمية 👌"`.
+- **Correction affichage Square, Statue/Horloge et Fontaine (`monument_square`)** :
+  - Résolution du bug de filtrage dans `buildZoneLayout` : `monument_square` est désormais compilé et inséré sans faille dans `streetLayout` de toutes les villes.
+  - Remplacement direct des anciens jardins statiques par la `ساحة الساعة والنافورة والحديقة` complète dans Tunis / Bab Souika et toutes les villes.
+
 ## [1.28.0] - 2026-11-05
 ### Added & Improved
 - **Square / Jardin Public & Tour de l'Horloge / Fontaine Animée dans TOUTES les villes (`monument_square`)** :
