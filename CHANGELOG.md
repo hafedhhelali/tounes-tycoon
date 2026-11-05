@@ -1,3 +1,15 @@
+## [1.26.0] - 2026-11-05
+### Added & Improved
+- **Épicerie (`attariya`)** : Étagères murales d'épicerie garnies de produits tunisiens diversifiés (`🥫`, `🍅`, `🫒`, `🍯`, `🥛`, `🧀`, `🍞`, `☕`), personnel positionné fièrement derrière le comptoir, disparition du bloc au-dessus de la caisse remplacé par un calendrier mural éphéméride tunisien traditionnel (`📅 5 NOV` / `خميس`), balance en laiton (`⚖️`) sur la table.
+- **Suppression des icônes sur la tête des clients** : Dans toutes les boutiques, élimination complète de la bulle d'icône flottante au-dessus de la tête des clients pour un rendu fluide et naturel.
+- **Amélioration de la caisse et du comptoir** : Caisse enregistreuse POS moderne (clavier rétroéclairé, scanner code-barres avec laser rouge `🔴`, fente à ticket `🧾`, écran vert avec prix dynamique), table de comptoir avec tablette supérieure soignée, finitions acajou et double poignée dorée.
+- **Boutique de vêtements (`vente_vetements`)** : Étagères avec piles de vêtements pliés (`👕`, `👖`, `👗`), étendoir/portant chromé roulant avec cintres et vestes (`🧥`, `👔`), mannequins de vitrine en plastique beige sur socle chromé avec robe élégante, sacs shopping sur le comptoir.
+- **Supérette (`superette`)** : Rayonnage modernisé avec 3 gondoles de supermarché à liserés de prix, produits alimentaires, boissons fraîches, snacks et paniers de fruits frais.
+- **Banque (`bank_branch`)** : Guichet bancaire sécurisé ultra-réaliste avec vitre blindée, hygiaphone en laiton (`🎤`), passe-documents inox, compteuse de billets (`💵`), tapis rouge d'honneur menant au guichet, et client VIP à mallette diplomatique.
+- **Guichet de tabac (`tobacco_kiosk`)** : Suppression des textes encombrants et du bouton retour superflu dans le modal, armoire murale garnie de paquets de cigarettes multicolores (`🚭 قمريڨ تونس`), comptoir avec journaux, briquets et caisse actualisée.
+- **Salle de jeux (`salle_de_jeux`)** : Table de billard totalement dégagée (zéro écran qui la masque), espace repensé avec 3 postes consoles distincts (FIFA `⚽`, Course auto `🏎️`, Combat `🥊`) sur grands écrans 16:9 montés au mur avec meubles gaming et diodes néon.
+- **Vente de dattes (`emballage_dattes`)** : Étagères en bois noble garnies de cagettes et coffrets de dattes Deglet Nour Tozeur dorées (`🌴`, `📦`, `🍯`), panonceau officiel Tozeur, coffret dégustation sur le comptoir.
+
 ## [1.25.0] - 2026-11-05
 ### Added & Fixed
 - **Caisses enregistreuses dynamiques** : Le prix affiché sur les caisses (comptoir standard, écrans POS supermarché/supérette, guichet de tabac, écrans croisière/voyage) évolue désormais en temps réel avec le niveau du commerce (+1.5%/niveau) au lieu de rester figé sur le prix de base.

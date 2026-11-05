@@ -1,10 +1,10 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-11-05T01:20:00+01:00 - etat = HEAD de main (v125-dynamic-cashier-prices-inline-hire-buttons-dismiss-outside)
+MAJ: 2026-11-05T01:48:00+01:00 - etat = HEAD de main (v126-epicerie-calendar-clothing-superette-bank-tobacco-billiard-dates)
 
-## État en 3 lignes (v125)
-1. Caisses dynamiques : le prix affiché sur les caisses (comptoir, écrans POS supermarché, tabac, agences) s'actualise en temps réel à chaque montée de niveau (+1.5%/niveau) au lieu de rester figé sur le prix de base.
-2. Recrutement direct : bouton clair et élégant (`➕ انتداب` / `➕ خدّم`) avec coût formaté (`DT`) placé exactement au niveau de la place libre (caisses vacantes, bureaux assistants, postes artisans).
-3. Fermeture au clic extérieur : disparition instantanée du tiroir employés (`الخدّامة`) et menu (`اللائحة`) au tap extérieur, fermeture fiable de toutes les modales au clic hors de `.modal-card`.
+## État en 3 lignes (v126)
+1. Épicerie & Dattes : étagères murales riches et diversifiées, personnel derrière le comptoir, calendrier mural tunisien traditionnel au-dessus de la caisse, caisses de dattes Deglet Nour Tozeur dorées.
+2. Zéro icône sur la tête des clients : suppression des bulles flottantes dans toutes les boutiques, comptoir de caisse et caisse enregistreuse POS ultra-améliorés (scanner laser, clavier, tiroir doré).
+3. Boutique vêtements, Banque, Tabac & Salle de jeux : mannequins plastique + étendoir portant dans la boutique, guichet blindé réaliste + tapis rouge à la banque, modal tabac épuré, billard dégagé + 3 consoles gaming (FIFA, Course, Combat).
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
