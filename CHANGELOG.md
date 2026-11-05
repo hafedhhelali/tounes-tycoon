@@ -1,3 +1,22 @@
+## [1.28.0] - 2026-11-05
+### Added & Improved
+- **Square / Jardin Public & Tour de l'Horloge / Fontaine Animée dans TOUTES les villes (`monument_square`)** :
+  - **Monument Square garanti dans chaque ville** : Insertion automatique et garantie dans toutes les villes tunisiennes (Tunis, Bab Souika, La Goulette, Lac 2, Hammamet, Sousse, Monastir, Mahdia, Bizerte, Nabeul, Kairouan, Sbeitla, Sfax, Gabes, Gafsa, Tozeur, Béja, Le Kef, Tataouine, Médenine, Djerba, Annaba, Tripoli).
+  - **Square / Jardin Public arboré** : Esplanade dallée en marbre et pierre taillée, calades décoratives, parterres de pelouse verte soignée (`#15803d`), buissons de jasmins odorants (`🌸`, `🌿`), banc public tunisien en fer forgé avec petit chat de la médina assoupi (`🐱`), lampadaire traditionnel en fer forgé à lanterne dorée chaleureuse (`💡`).
+  - **Tour de l'Horloge monumentale & Statue** : Socle à degrés en pierre dorée de Chemtou, fût élancé avec motifs géométriques et arcades mauresques en relief, chambre haute à grand cadran d'horloge lumineux avec aiguilles tournantes en temps réel (heures & minutes synchronisées sur l'horloge système), toit pyramidal en tuiles vernissées vertes tunisiennes surmonté d'une flèche dorée et d'un croissant étincelant (`🌙`).
+  - **Fontaine municipale d'eau vive jaillissante** : Grand bassin en marbre mouluré à miroir d'eau turquoise et ondes concentriques animées, double vasque sur pied sculpté, jet d'eau vertical jaillissant à hauteur variable (`Math.sin(timeSec * 5)`), cascades d'eau latérales paraboliques, débordements et gouttelettes étincelantes au soleil.
+  - **Interaction tactile / Vœu dans la fontaine** : Taper sur la fontaine permet de faire un vœu de prospérité avec tintement de pièces (`soundEngine.playCoin`) et toast de bénédiction tunisien (`🪙 رميت دينار في النافورة وتمنيت البركة والتوفيق ! ✨`).
+- **Comptoirs et commerçants sans pieds visibles (Toutes les boutiques)** :
+  - Zéro pieds ou chaussures visibles sous les tables et comptoirs dans tous les commerces (`showLegs = false` par défaut dans `drawWorker`).
+  - Seuls les employés qui se déplacent activement à pied dans la boutique (garçon de café, poissonnier ambulant) affichent leurs jambes et chaussures.
+- **Vente de fruits de mer (`fruits_de_mer`)** :
+  - Caisses de marée en bois de pêcheur avec rebords, garnies de glace pilée étincelante et de produits frais (dorades `🐟`, crevettes royales & citrons `🦐🍋`, poulpes `🦑`, crabes `🦀`, étiquettes ardoise de prix à la craie).
+  - Assistant poissonnier ambulant avec machine à états (`moving_to_crate` -> `picking` penché sur la caisse -> `moving_to_counter` avec plateau en main -> `giving_order` au client).
+- **Correction des bugs de recrutement et du popup employés (Tous commerces & Toutes villes)** :
+  - Harmonisation rigoureuse de `hiredCount` et `managers.length` entre `engine.js`, `index.html` et `store_animator.js`.
+  - Élimination de la fausse carte doublon statique `عون الخدمة القار` qui faussait le popup du café et de tous les commerces.
+  - Seul le PROCHAIN poste de travail recrutable affiche le bouton `drawHireButton` (`خدّم`) avec coût exact. Les postes ultérieurs non débloqués affichent `مغلق 🔒` sans bouton d'embauche intempestif.
+
 ## [1.27.0] - 2026-11-05
 ### Added & Improved
 - **Café Populaire (`kahwa` / `kahwa_counter`)** :

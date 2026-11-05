@@ -1,13 +1,13 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-11-05T10:05:00+01:00 - etat = HEAD de main (v128-cafe-cigarettes-chicha-table-depth-rain-weather-street)
+MAJ: 2026-11-05T10:43:00+01:00 - etat = HEAD de main (v129-monument-square-clock-fountain-garden-all-cities-zero-feet-seafood-crates-recruitment-fix)
 
-## État en 3 lignes (v128)
-1. Café populaire : clients assis au comptoir interagissant et discutant avec animation gestuelle + clients allumant une cigarette avec braise ardente incandescente et volutes de fumée montantes.
-2. Salon de thé & Restaurant : correction 2.5D du masquage de la table (fauteuil en fond -> client assis -> plateau de table et plats/théière au premier plan) + chicha tunisienne majestueuse (vase verre tulipe, tige laiton, charbon ardent, marrach tenu en main, bouffées de fumée blanche).
-3. Rue animée sous la pluie : cycle météo averse/soleil, flaques d'eau sur l'asphalte avec ondes de pluie, éclaboussures d'eau au passage des véhicules, piétons avec parapluie ouvert ou se mettant à courir vite sans parapluie.
+## État en 3 lignes (v129)
+1. Square / Jardin public & Tour de l'Horloge / Fontaine animée (`monument_square`) : inséré dans chaque ville tunisienne avec pelouse, fleurs de jasmin, banc avec chat assoupi, lampadaire, tour en pierre dorée avec horloge temps réel, et fontaine jaillissante avec vœu interactif.
+2. Commerçants et comptoirs : zéro pieds visibles sous les comptoirs dans toutes les boutiques, caisses de poissons frais avec glace et poissonnier ambulant actif au marché de fruits de mer.
+3. Recrutement & Popup employés : harmonisation totale `engine.js` / `index.html` / `store_animator.js`, suppression du faux employé doublon, bouton de recrutement restreint strictement au prochain slot éligible.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs : `store_animator.js`, `index.html`, `CHANGELOG.md`, `HANDOFF.md`, `www/*`.
+- Modifs : `engine.js`, `store_animator.js`, `index.html`, `CHANGELOG.md`, `HANDOFF.md`, `www/*`.
 - Suite de tests : 70/70 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

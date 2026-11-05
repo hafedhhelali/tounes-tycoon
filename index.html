@@ -3370,11 +3370,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=126';
-    import { soundEngine } from './audio.js?v=126';
+    import { TycoonEngine } from './engine.js?v=129';
+    import { soundEngine } from './audio.js?v=129';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=126';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=128';
+    import { AdsService } from './ads_service.js?v=129';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=129';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -5298,23 +5298,14 @@
         };
       }
 
-      // 1. Staff Slots
+      // 1. Staff Slots (Équipe et Encadrement réels du projet)
       if (bizDetailStaffList) {
         bizDetailStaffList.innerHTML = '';
-        // Travailleur de base permanent : chaque projet compte au moins 1 employé dès le départ
-        const baseCard = document.createElement('div');
-        baseCard.style.cssText = 'background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 7px; padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;';
-        baseCard.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 6px; min-width: 0;">
-            <span style="font-size: 16px;">👷</span>
-            <div style="font-size: 11px; font-weight: 900; color: #f8fafc; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${(detail.baseWorker && detail.baseWorker.name) || 'عون الخدمة القار'}</div>
-          </div>
-          <span style="font-size: 10.5px; font-weight: 900; color: #34d399; flex-shrink: 0;">يخدم ✓</span>
-        `;
-        bizDetailStaffList.appendChild(baseCard);
+        const currentHiredCount = detail.hiredCount ?? 0;
         detail.staffSlots.forEach((slot, idx) => {
           const item = document.createElement('div');
-          item.style.cssText = `background: ${slot.hired ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.3)'}; border: 1px solid ${slot.hired ? '#10b981' : 'rgba(255,255,255,0.08)'}; border-radius: 7px; padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;`;
+          const isNextToHire = !slot.hired && (idx === currentHiredCount);
+          item.style.cssText = `background: ${slot.hired ? 'rgba(16, 185, 129, 0.15)' : (isNextToHire ? 'rgba(56, 189, 248, 0.12)' : 'rgba(0,0,0,0.3)')}; border: 1px solid ${slot.hired ? '#10b981' : (isNextToHire ? '#38bdf8' : 'rgba(255,255,255,0.08)')}; border-radius: 7px; padding: 4px 8px; display: flex; align-items: center; justify-content: space-between;`;
           item.innerHTML = `
             <div style="display: flex; align-items: center; gap: 6px;">
               <span style="font-size: 16px;">${slot.icon}</span>
@@ -5326,9 +5317,11 @@
             <div>
               ${slot.hired ? `
                 <span style="font-size: 10.5px; font-weight: 900; color: #34d399;">يخدم ✓</span>
-              ` : `
+              ` : (isNextToHire ? `
                 <button class="upg-buy-btn" style="padding: 3px 7px; font-size: 9.5px;" id="hire-slot-${currentDetailBizId}-${idx}">خدّم : ${formatCurrency(slot.cost, 0)}</button>
-              `}
+              ` : `
+                <span style="font-size: 9.5px; color: #94a3b8; font-weight: 700;">مغلق 🔒</span>
+              `)}
             </div>
           `;
           bizDetailStaffList.appendChild(item);
@@ -5348,6 +5341,13 @@
             };
           }
         });
+
+        if (detail.staffSlots.length > 0 && currentHiredCount >= detail.staffSlots.length) {
+          const allDoneNotice = document.createElement('div');
+          allDoneNotice.style.cssText = 'text-align: center; color: #10b981; font-size: 10px; font-weight: 900; padding: 3px 0 1px;';
+          allDoneNotice.innerHTML = 'كافة إطارات المحلّ في الخدمة ! 👏';
+          bizDetailStaffList.appendChild(allDoneNotice);
+        }
       }
 
       // 2. Recipe Breakdown

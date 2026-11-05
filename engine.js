@@ -2117,15 +2117,9 @@ export class TycoonEngine {
       price: +(r.price * priceScale).toFixed(2)
     }));
 
-    // Postes d'employés et cadres (Staff Slots) + travailleur de base toujours présent dès le début
-    const hiredCount = biz.hiredManagersCount ?? (biz.hasManager ? 1 : 0);
-    const baseWorker = {
-      role: 'خدّام المحلّ الأساسي',
-      name: 'عون الخدمة القار',
-      icon: '👷',
-      hired: true,
-      bonusDesc: 'حاضر في المحلّ ويخدم الحرفاء من البداية'
-    };
+    // Postes d'employés et cadres (Staff Slots) authentiques
+    const maxManagers = (biz.managers || []).length;
+    const hiredCount = Math.min(maxManagers, biz.hiredManagersCount ?? (biz.hasManager ? 1 : 0));
     const staffSlots = (biz.managers || []).map((m, idx) => ({
       role: m.role,
       name: m.name,
@@ -2170,9 +2164,12 @@ export class TycoonEngine {
       revenuePerCycle,
       dinarsPerSecond,
       recipeBreakdown,
-      baseWorker,
       staffSlots,
-      activeWorkersCount: Math.max(1, hiredCount + 1),
+      hiredCount,
+      maxManagers,
+      canHireMore: hiredCount < maxManagers,
+      nextCost: (hiredCount < maxManagers) ? (biz.managers[hiredCount] ? biz.managers[hiredCount].cost : null) : null,
+      activeWorkersCount: Math.max(1, hiredCount),
       customersPerMinute,
       satisfactionPct,
       crowdLevel
@@ -2277,8 +2274,9 @@ export class TycoonEngine {
 
   getNextManager(biz) {
     if (!biz || !Array.isArray(biz.managers)) return null;
-    const count = biz.hiredManagersCount ?? (biz.hasManager ? biz.managers.length : 0);
-    if (count >= biz.managers.length) return null;
+    const maxManagers = biz.managers.length;
+    const count = Math.min(maxManagers, biz.hiredManagersCount ?? (biz.hasManager ? 1 : 0));
+    if (count >= maxManagers) return null;
     return biz.managers[count];
   }
 

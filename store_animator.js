@@ -1443,10 +1443,17 @@ export class CanvasStoreEngine {
           ctx.textAlign = 'center';
           ctx.fillText(this.formatEvolvedPrice(evolvedPrice) + ' DT', monX + 12, monY + 11);
           this.drawRadialGauge(ctx, d.x + d.w - 12, d.y - 22, 6, Math.max(0.15, cycleRatio), '#10b981', '✓');
-        } else {
-          // Place libre : bouton d'intedab clair au niveau du bureau libre
-          const hireCost = d.slot ? d.slot.cost : (currentBiz ? (currentBiz.basePrice || 1000) * 2 : null);
-          this.drawHireButton(ctx, d.x + 6, d.y - 42, d.w - 12, 34, 'مساعد', idx, 'hire_worker', hireCost, now);
+        } else if (d.slot && !d.slot.hired) {
+          // Place libre UNIQUEMENT si un manager réel est prévu pour ce poste
+          const isNext = (idx === hiredCount);
+          if (isNext) {
+            this.drawHireButton(ctx, d.x + 6, d.y - 42, d.w - 12, 34, 'مساعد', idx, 'hire_worker', d.slot.cost, now);
+          } else {
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 7.5px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('مغلق 🔒', d.x + d.w / 2, d.y - 12);
+          }
         }
 
         // Badge compact d'état du bureau
@@ -1583,20 +1590,32 @@ export class CanvasStoreEngine {
           ctx.font = 'bold 5.5px monospace';
           ctx.textAlign = 'center';
           ctx.fillText(this.formatEvolvedPrice(evolvedUnit) + ' DT', lx + lw - 13, ly - 2);
-        } else {
+        } else if (slot && !slot.hired) {
           // Place libre : silhouette fantôme + bouton d'intedab au niveau de la caisse vide
-          ctx.save();
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-          ctx.beginPath();
-          ctx.roundRect(lx + 4, ly - 46, lw - 8, 44, 6);
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-          ctx.setLineDash([3, 3]);
-          ctx.strokeRect(lx + 4, ly - 46, lw - 8, 44);
-          ctx.restore();
+          const isNext = (cIdx === hiredCount);
+          if (isNext) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.beginPath();
+            ctx.roundRect(lx + 4, ly - 46, lw - 8, 44, 6);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.setLineDash([3, 3]);
+            ctx.strokeRect(lx + 4, ly - 46, lw - 8, 44);
+            ctx.restore();
 
-          const hireCost = slot ? slot.cost : (currentBiz ? (currentBiz.basePrice || 1000) * (cIdx + 1) * 2 : null);
-          this.drawHireButton(ctx, lx + 2, ly - 42, lw - 4, 34, 'كاشير', cIdx, 'hire_cashier', hireCost, now);
+            this.drawHireButton(ctx, lx + 2, ly - 42, lw - 4, 34, 'كاشير', cIdx, 'hire_cashier', slot.cost, now);
+          } else {
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 7.5px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('مغلقة 🔒', lx + lw / 2, ly - 12);
+          }
+        } else {
+          ctx.fillStyle = '#64748b';
+          ctx.font = 'bold 7.5px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('مغلقة 🔒', lx + lw / 2, ly - 12);
         }
 
         // Indicateur LED discret
@@ -2222,7 +2241,7 @@ export class CanvasStoreEngine {
 
       const wx = this.waiter ? this.waiter.x : 138;
       const wy = archetype === 'tea_lounge' ? 142 : 136;
-      this.drawWorker(ctx, wx, wy, 1, true, timeSec);
+      this.drawWorker(ctx, wx, wy, 1, true, timeSec, true);
 
       ctx.save();
       ctx.fillStyle = '#fbbf24';
@@ -2248,15 +2267,124 @@ export class CanvasStoreEngine {
       return;
     }
 
-    // 3. Autres commerces : postes d'artisans / ouvriers
+    // 2.B CAS POISSONNERIE / MARCHÉ DE FRUITS DE MER (`fruits_de_mer`) :
+    // Caisses garnies de poissons frais et fruits de mer + Assistant ambulant qui bouge et donne les commandes
+    if (this.bizId === 'fruits_de_mer') {
+      const crateY = baseY - 2;
+      const crateConfigs = [
+        { x: 132, item: '🐟', label: '18 DT', color: '#0284c7' },
+        { x: 168, item: '🦐', label: '32 DT', color: '#ea580c' },
+        { x: 204, item: '🦑', label: '24 DT', color: '#0369a1' },
+        { x: 240, item: '🦀', label: '15 DT', color: '#b91c1c' }
+      ];
+
+      // Étal en inox sur tréteaux marins
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(128, crateY + 12, 150, 4);
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(132, crateY + 16, 4, 10);
+      ctx.fillRect(270, crateY + 16, 4, 10);
+
+      crateConfigs.forEach(c => {
+        // Caisse de marée en bois de pêcheur avec rebords
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.roundRect(c.x, crateY - 5, 33, 18, 2);
+        ctx.fill();
+        ctx.strokeStyle = c.color;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Lit de glace pilée étincelante
+        ctx.fillStyle = '#e0f2fe';
+        ctx.fillRect(c.x + 2, crateY - 3, 29, 8);
+
+        // Poissons et fruits de mer frais
+        ctx.font = '11.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(c.item, c.x + 11, crateY + 4);
+        ctx.font = '9px serif';
+        ctx.fillText(c.item === '🦐' ? '🍋' : c.item, c.x + 23, crateY + 4);
+
+        // Étiquette ardoise prix à la craie
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(c.x + 4, crateY + 7, 25, 6);
+        ctx.fillStyle = '#fef08a';
+        ctx.font = 'bold 5.5px monospace';
+        ctx.fillText(c.label, c.x + 16.5, crateY + 12);
+      });
+
+      // Assistant poissonnier qui bouge entre les caisses et donne les commandes
+      if (!this.fishmonger) {
+        this.fishmonger = {
+          x: 140,
+          y: 138,
+          targetX: 168,
+          crateIdx: 0,
+          state: 'moving_to_crate',
+          timer: 1.2,
+          heldItem: '🐟',
+          walkCycle: 0
+        };
+      }
+
+      const fm = this.fishmonger;
+      const isGiving = fm.state === 'giving_order';
+      const isPicking = fm.state === 'picking';
+
+      ctx.save();
+      if (isPicking) {
+        ctx.save();
+        ctx.translate(fm.x, fm.y);
+        ctx.rotate(-0.12);
+        this.drawWorker(ctx, 0, 0, 2, true, timeSec, true);
+        ctx.restore();
+      } else {
+        this.drawWorker(ctx, fm.x, fm.y, 2, true, timeSec, true);
+      }
+
+      // Plateau ou sachet de poissons frais en main
+      if (fm.state === 'moving_to_counter' || isGiving) {
+        ctx.save();
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.roundRect(fm.x - 14, fm.y - 18, 14, 7, 1.5);
+        ctx.fill();
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.font = '10px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(fm.heldItem || '🐟', fm.x - 7, fm.y - 12);
+        if (isGiving) {
+          ctx.font = '8.5px serif';
+          ctx.fillText('✨', fm.x - 16, fm.y - 20);
+        }
+        ctx.restore();
+      }
+      ctx.restore();
+
+      this.clickZones.push({
+        x: fm.x - 16,
+        y: fm.y - 48,
+        width: 32,
+        height: 50,
+        type: 'employee_info',
+        name: 'عون مارشي الحوت',
+        role: 'موزّع وفارز الأسماك'
+      });
+      return;
+    }
+
+    // 3. Autres commerces : postes d'artisans / ouvriers (Tables DEVANT les commerçants, zéro pieds visibles)
     detail.staffSlots.slice(1).forEach((slot, idx) => {
       const stationX = startX + idx * spacing;
       if (stationX > this.width - 42) return;
 
       ctx.save();
-      this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, isBusy, timeSec);
+      // Le travailleur est dessiné EN ARRIÈRE-PLAN de sa table de travail, sans pieds sous la table
       if (slot.hired) {
-        this.drawWorker(ctx, stationX + 22, baseY - 2, idx + 1, isBusy, timeSec);
+        this.drawWorker(ctx, stationX + 22, baseY - 2, idx + 1, isBusy, timeSec, false);
         this.clickZones.push({
           x: stationX + 4,
           y: baseY - 50,
@@ -2269,17 +2397,28 @@ export class CanvasStoreEngine {
         const workerRatio = isBusy ? ((baseRatio + idx * 0.28) % 1) : 0.25;
         this.drawRadialGauge(ctx, stationX + 22, baseY - 52, 6.5, workerRatio, '#10b981', '✓');
       } else {
-        // Place libre : silhouette fantôme + bouton d'intedab au niveau du poste vide
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.beginPath();
-        ctx.roundRect(stationX + 4, baseY - 46, 44, 46, 6);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-        ctx.setLineDash([3, 3]);
-        ctx.strokeRect(stationX + 4, baseY - 46, 44, 46);
-        ctx.setLineDash([]);
-        this.drawHireButton(ctx, stationX + 2, baseY - 42, 48, 34, 'عون', idx + 1, 'hire_worker', slot.cost, now);
+        // Place libre : silhouette fantôme + bouton d'intedab au niveau du poste vide UNIQUEMENT pour le prochain recrutable
+        const isNext = (idx + 1 === detail.hiredCount);
+        if (isNext) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+          ctx.beginPath();
+          ctx.roundRect(stationX + 4, baseY - 46, 44, 46, 6);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+          ctx.setLineDash([3, 3]);
+          ctx.strokeRect(stationX + 4, baseY - 46, 44, 46);
+          ctx.setLineDash([]);
+          this.drawHireButton(ctx, stationX + 2, baseY - 42, 48, 34, 'عون', idx + 1, 'hire_worker', slot.cost, now);
+        } else {
+          ctx.fillStyle = '#64748b';
+          ctx.font = 'bold 7.5px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('مغلق 🔒', stationX + 26, baseY - 12);
+        }
       }
+
+      // La machine / table de travail est dessinée AU PREMIER PLAN DEVANT le commerçant
+      this.drawMachineProp(ctx, this.bizId, stationX, baseY + 4, isBusy, timeSec);
       ctx.restore();
     });
   }
@@ -3092,7 +3231,7 @@ export class CanvasStoreEngine {
   }
 
   // --- PERSONNAGE VECTORIEL ULTRA-RÉALISTE : employé animé ---
-  drawWorker(ctx, x, footY, seed, isBusy, timeSec) {
+  drawWorker(ctx, x, footY, seed, isBusy, timeSec, showLegs = false) {
     const palettes = [
       { coat: '#1e3a8a', pants: '#1e293b', skin: '#fcd34d', skinShadow: '#f59e0b', apron: '#f8fafc', shoes: '#0f172a' },
       { coat: '#065f46', pants: '#0f172a', skin: '#f59e0b', skinShadow: '#d97706', apron: '#fef3c7', shoes: '#1e293b' },
@@ -3106,30 +3245,33 @@ export class CanvasStoreEngine {
     ctx.save();
     ctx.translate(x, footY);
 
-    // 1. Ombre douce diffuse réaliste au sol
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    ctx.beginPath();
-    ctx.ellipse(0, 1, 13, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // Zéro pieds visibles sous les tables : uniquement pour les employés qui se déplacent à pied dans la boutique !
+    if (showLegs) {
+      // 1. Ombre douce diffuse réaliste au sol
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.beginPath();
+      ctx.ellipse(0, 1, 13, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-    // 2. Chaussures tunisiennes détaillées
-    ctx.fillStyle = pal.shoes;
-    ctx.beginPath();
-    ctx.roundRect(-8, -4, 7, 4.5, [2, 3, 2, 2]);
-    ctx.roundRect(1, -4, 7, 4.5, [2, 3, 2, 2]);
-    ctx.fill();
+      // 2. Chaussures tunisiennes détaillées
+      ctx.fillStyle = pal.shoes;
+      ctx.beginPath();
+      ctx.roundRect(-8, -4, 7, 4.5, [2, 3, 2, 2]);
+      ctx.roundRect(1, -4, 7, 4.5, [2, 3, 2, 2]);
+      ctx.fill();
 
-    // Semelles contrastées
-    ctx.fillStyle = '#334155';
-    ctx.fillRect(-8, -0.5, 7, 1);
-    ctx.fillRect(1, -0.5, 7, 1);
+      // Semelles contrastées
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(-8, -0.5, 7, 1);
+      ctx.fillRect(1, -0.5, 7, 1);
 
-    // 3. Pantalon avec pliure anatomique
-    ctx.fillStyle = pal.pants;
-    ctx.beginPath();
-    ctx.roundRect(-7, -15, 6, 12, 1);
-    ctx.roundRect(1, -15, 6, 12, 1);
-    ctx.fill();
+      // 3. Pantalon avec pliure anatomique
+      ctx.fillStyle = pal.pants;
+      ctx.beginPath();
+      ctx.roundRect(-7, -15, 6, 12, 1);
+      ctx.roundRect(1, -15, 6, 12, 1);
+      ctx.fill();
+    }
 
     ctx.translate(0, bob);
 
@@ -4085,6 +4227,61 @@ export class CanvasStoreEngine {
       }
     }
 
+    // 2.c Animation de l'Assistant Poissonnier (`fruits_de_mer`) qui bouge entre les caisses et donne les commandes
+    if (this.bizId === 'fruits_de_mer') {
+      if (!this.fishmonger) {
+        this.fishmonger = {
+          x: 140,
+          y: 138,
+          targetX: 168,
+          crateIdx: 0,
+          state: 'moving_to_crate',
+          timer: 1.2,
+          heldItem: '🐟',
+          walkCycle: 0
+        };
+      }
+      const fm = this.fishmonger;
+      const crateXPositions = [148, 184, 220, 256];
+      const crateFish = ['🐟', '🦐', '🦑', '🦀'];
+
+      if (fm.state === 'moving_to_crate') {
+        const target = crateXPositions[fm.crateIdx % crateXPositions.length];
+        const dist = target - fm.x;
+        if (Math.abs(dist) > 2) {
+          fm.walkCycle += dt * 8;
+          fm.x += Math.sign(dist) * 65 * dt;
+        } else {
+          fm.x = target;
+          fm.state = 'picking';
+          fm.timer = 1.0;
+        }
+      } else if (fm.state === 'picking') {
+        fm.timer -= dt;
+        if (fm.timer <= 0) {
+          fm.heldItem = crateFish[fm.crateIdx % crateFish.length];
+          fm.state = 'moving_to_counter';
+        }
+      } else if (fm.state === 'moving_to_counter') {
+        const counterTarget = 106;
+        const dist = counterTarget - fm.x;
+        if (Math.abs(dist) > 2) {
+          fm.walkCycle += dt * 8;
+          fm.x += Math.sign(dist) * 72 * dt;
+        } else {
+          fm.x = counterTarget;
+          fm.state = 'giving_order';
+          fm.timer = 1.3;
+        }
+      } else if (fm.state === 'giving_order') {
+        fm.timer -= dt;
+        if (fm.timer <= 0) {
+          fm.crateIdx = (fm.crateIdx + 1) % crateXPositions.length;
+          fm.state = 'moving_to_crate';
+        }
+      }
+    }
+
     // 3. File d'attente à la caisse (pour les commerces avec caisse à gauche)
     const directPayAtStation = ['agency_desks', 'supermarket_checkout', 'tobacco_kiosk'].includes(archetype);
     if (!directPayAtStation) {
@@ -4686,34 +4883,42 @@ export class QuartierAnimator {
 
     let rawItems = zoneSpecs[zoneId] || zoneSpecs.bab_souika;
 
-    // Insertion automatique et garantie d'une Banque, d'un Poste de Police et d'un Guichet de Tabac dans chaque ville
+    // Insertion automatique et garantie d'une Banque, d'un Monument Square (Horloge/Statue + Fontaine + Jardin), d'un Poste de Police et d'un Guichet de Tabac dans chaque ville
     const hasBank = rawItems.some(it => it.type === 'bank_branch');
+    const hasMonument = rawItems.some(it => it.type === 'monument_square');
     const hasPolice = rawItems.some(it => it.type === 'police_station');
     const hasTobacco = rawItems.some(it => it.type === 'tobacco_kiosk');
-    if (!hasBank || !hasPolice || !hasTobacco) {
+    if (!hasBank || !hasMonument || !hasPolice || !hasTobacco) {
       const augmented = [];
       let bankInserted = hasBank;
-      let policeInserted = hasPolice;
+      let monumentInserted = hasMonument;
       let tobaccoInserted = hasTobacco;
+      let policeInserted = hasPolice;
       rawItems.forEach((it, idx) => {
         augmented.push(it);
-        // Insérer la banque après le 1er ou 2ème élément
+        // Insérer la banque après le 1er élément
         if (!bankInserted && idx === 1) {
           augmented.push({ type: 'bank_branch', width: 135 });
           bankInserted = true;
         }
-        // Insérer le guichet de tabac (قمريڨ ومكتب التبغ والوقيد) après le 3ème élément
-        if (!tobaccoInserted && idx === 3) {
+        // Insérer la ساحة الساعة والنافورة والحديقة (Monument Square) après le 2ème élément
+        if (!monumentInserted && idx === 2) {
+          augmented.push({ type: 'monument_square', width: 155, name: 'ساحة الساعة والنافورة' });
+          monumentInserted = true;
+        }
+        // Insérer le guichet de tabac (قمريڨ ومكتب التبغ والوقيد) après le 4ème élément
+        if (!tobaccoInserted && idx === 4) {
           augmented.push({ type: 'tobacco_kiosk', width: 125 });
           tobaccoInserted = true;
         }
-        // Insérer le poste de police après le 5ème élément
-        if (!policeInserted && idx === 5) {
+        // Insérer le poste de police après le 6ème élément
+        if (!policeInserted && idx === 6) {
           augmented.push({ type: 'police_station', width: 135 });
           policeInserted = true;
         }
       });
       if (!bankInserted) augmented.push({ type: 'bank_branch', width: 135 });
+      if (!monumentInserted) augmented.push({ type: 'monument_square', width: 155, name: 'ساحة الساعة والنافورة' });
       if (!tobaccoInserted) augmented.push({ type: 'tobacco_kiosk', width: 125 });
       if (!policeInserted) augmented.push({ type: 'police_station', width: 135 });
       rawItems = augmented;
@@ -5064,6 +5269,13 @@ export class QuartierAnimator {
     } else if (action === 'open_tobacco') {
       // Action par défaut : petit pourboire / تفتوفة سريعة من القمريڨ
       if (this.onHudAction) this.onHudAction('hud_tobacco');
+    } else if (action === 'fountain_wish') {
+      if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playCoin) {
+        window.soundEngine.playCoin();
+      }
+      if (typeof window !== 'undefined' && window.showFeedbackToast) {
+        window.showFeedbackToast('🪙 رميت دينار في النافورة وتمنيت البركة والتوفيق ! ✨', '⛲');
+      }
     } else if (action.startsWith('hud_') && this.onHudAction) {
       this.onHudAction(action);
     }
@@ -5425,6 +5637,8 @@ export class QuartierAnimator {
           this.drawCrossroad(ctx, item, screenX, groundY, h, timestamp);
         } else if (item.type === 'garden') {
           this.drawGarden(ctx, item, screenX, groundY, timestamp);
+        } else if (item.type === 'monument_square') {
+          this.drawMonumentSquare(ctx, item, screenX, groundY, timestamp);
         } else if (item.type === 'service_station') {
           this.drawServiceStation(ctx, item, screenX, groundY, timestamp);
         } else if (item.type === 'bank_branch') {
@@ -6590,6 +6804,312 @@ export class QuartierAnimator {
       ctx.arc(fx, groundY - 8, 3.5, 0, Math.PI * 2);
       ctx.fill();
     });
+    ctx.restore();
+  }
+
+  // --- SQUARE / JARDIN PUBLIC AVEC TOUR DE L'HORLOGE / STATUE ET FONTAINE D'EAU VIVE ANIMÉE ---
+  drawMonumentSquare(ctx, mItem, x, groundY, timestamp) {
+    const w = mItem.width || 155;
+    const timeSec = (timestamp || performance.now()) / 1000;
+    ctx.save();
+
+    // 1. ESPLANADE & SQUARE PUBLIC (JARDIN)
+    // Pavage en marbre clair et bordures en pierre taillée
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillRect(x, groundY - 6, w, 10);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(x, groundY - 8, w, 2);
+
+    // Dalles décoratives en calades
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 1;
+    for (let px = x + 10; px < x + w; px += 20) {
+      ctx.beginPath();
+      ctx.moveTo(px, groundY - 8);
+      ctx.lineTo(px, groundY + 4);
+      ctx.stroke();
+    }
+
+    // Parterres de pelouse verte taillée
+    ctx.fillStyle = '#15803d';
+    ctx.beginPath();
+    ctx.roundRect(x + 4, groundY - 14, 26, 7, [3, 3, 0, 0]);
+    ctx.roundRect(x + w - 30, groundY - 14, 26, 7, [3, 3, 0, 0]);
+    ctx.fill();
+
+    // Buissons de jasmin & fleurs tunisiennes
+    const gardenFlowers = [
+      { fx: x + 8, color: '#fbcfe8' },
+      { fx: x + 17, color: '#ffffff' },
+      { fx: x + 25, color: '#fef08a' },
+      { fx: x + w - 26, color: '#ffffff' },
+      { fx: x + w - 18, color: '#fbcfe8' },
+      { fx: x + w - 10, color: '#fef08a' }
+    ];
+    gardenFlowers.forEach(f => {
+      ctx.fillStyle = f.color;
+      ctx.beginPath();
+      ctx.arc(f.fx, groundY - 14, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Banc public en fer forgé et bois tunisien
+    const benchX = x + 6;
+    const benchY = groundY - 16;
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(benchX, benchY, 22, 3); // Assise
+    ctx.fillRect(benchX, benchY - 5, 22, 2.5); // Dossier
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(benchX + 2, benchY + 3, 2, 6); // Pieds
+    ctx.fillRect(benchX + 18, benchY + 3, 2, 6);
+    // Petit chat de la médina qui se prélasse sur le banc
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🐱', benchX + 11, benchY - 1);
+
+    // Lampadaire classique en fer forgé
+    const lampX = x + w - 16;
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(lampX - 1.5, groundY - 48, 3, 42); // Mât
+    // Lanterne octogonale chaleureuse
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(lampX, groundY - 48, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(251, 191, 36, 0.25)';
+    ctx.beginPath();
+    ctx.arc(lampX, groundY - 48, 9, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 2. TOUR DE L'HORLOGE & STATUE MONUMENTALE
+    const towerX = x + 38;
+    const towerW = 28;
+    const towerBaseY = groundY - 8;
+
+    // Socle à degrés en pierre de Chemtou
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath();
+    ctx.roundRect(towerX - 4, towerBaseY - 12, towerW + 8, 12, [2, 2, 0, 0]);
+    ctx.fill();
+    ctx.fillStyle = '#92400e';
+    ctx.fillRect(towerX - 2, towerBaseY - 18, towerW + 4, 6);
+
+    // Fût de la tour (pierres dorées et motifs zelliges)
+    ctx.fillStyle = '#fef3c7';
+    ctx.fillRect(towerX, towerBaseY - 68, towerW, 50);
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(towerX, towerBaseY - 68, towerW, 50);
+
+    // Lignes géométriques décoratives
+    ctx.strokeStyle = 'rgba(217, 119, 6, 0.4)';
+    for (let ty = towerBaseY - 64; ty < towerBaseY - 24; ty += 8) {
+      ctx.beginPath();
+      ctx.moveTo(towerX + 2, ty);
+      ctx.lineTo(towerX + towerW - 2, ty);
+      ctx.stroke();
+    }
+
+    // Arcades mauresques en relief
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.arc(towerX + towerW / 2, towerBaseY - 32, 5, Math.PI, 0);
+    ctx.fill();
+    ctx.fillRect(towerX + towerW / 2 - 5, towerBaseY - 32, 10, 10);
+
+    // Couronnement de la tour : chambre de l'horloge
+    const clockRoomY = towerBaseY - 84;
+    ctx.fillStyle = '#b45309';
+    ctx.fillRect(towerX - 2, clockRoomY, towerW + 4, 16);
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(towerX - 2, clockRoomY, towerW + 4, 16);
+
+    // Grand Cadran de l'Horloge lumineux
+    const clockCenterX = towerX + towerW / 2;
+    const clockCenterY = clockRoomY + 8;
+    const clockRadius = 7.5;
+    ctx.fillStyle = '#fffbeb';
+    ctx.beginPath();
+    ctx.arc(clockCenterX, clockCenterY, clockRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // Index des points cardinaux
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(clockCenterX - 0.5, clockCenterY - clockRadius + 1, 1, 2);
+    ctx.fillRect(clockCenterX - 0.5, clockCenterY + clockRadius - 3, 1, 2);
+    ctx.fillRect(clockCenterX - clockRadius + 1, clockCenterY - 0.5, 2, 1);
+    ctx.fillRect(clockCenterX + clockRadius - 3, clockCenterY - 0.5, 2, 1);
+
+    // Aiguilles de l'horloge animées en temps réel
+    const realDate = new Date();
+    const hours = realDate.getHours() % 12 + realDate.getMinutes() / 60;
+    const minutes = realDate.getMinutes() + realDate.getSeconds() / 60;
+    const hourAngle = (hours / 12) * Math.PI * 2 - Math.PI / 2;
+    const minAngle = (minutes / 60) * Math.PI * 2 - Math.PI / 2;
+
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1;
+    // Aiguille des heures
+    ctx.beginPath();
+    ctx.moveTo(clockCenterX, clockCenterY);
+    ctx.lineTo(clockCenterX + Math.cos(hourAngle) * 3.8, clockCenterY + Math.sin(hourAngle) * 3.8);
+    ctx.stroke();
+    // Aiguille des minutes
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(clockCenterX, clockCenterY);
+    ctx.lineTo(clockCenterX + Math.cos(minAngle) * 5.2, clockCenterY + Math.sin(minAngle) * 5.2);
+    ctx.stroke();
+
+    // Toit pyramidal en tuiles vernissées vertes tunisiennes
+    ctx.fillStyle = '#047857';
+    ctx.beginPath();
+    ctx.moveTo(towerX - 3, clockRoomY);
+    ctx.lineTo(clockCenterX, clockRoomY - 13);
+    ctx.lineTo(towerX + towerW + 3, clockRoomY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Flèche dorée sommée d'une statue / croissant étincelant
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(clockCenterX, clockRoomY - 13);
+    ctx.lineTo(clockCenterX, clockRoomY - 21);
+    ctx.stroke();
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🌙', clockCenterX, clockRoomY - 20);
+
+    // 3. FONTAINE D'EAU VIVE JAILLISSANTE ANIMÉE
+    const fX = x + 98;
+    const fW = 46;
+    const fCenterY = groundY - 6;
+
+    // Grand bassin en marbre avec rebord mouluré
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath();
+    ctx.ellipse(fX + fW / 2, fCenterY, fW / 2 + 2, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.ellipse(fX + fW / 2, fCenterY, fW / 2, 7.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Miroir d'eau turquoise
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.ellipse(fX + fW / 2, fCenterY, fW / 2 - 3, 5.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ondulations concentriques à la surface de l'eau
+    const waveRadius = 4 + (Math.sin(timeSec * 3) + 1) * 6;
+    ctx.strokeStyle = 'rgba(224, 242, 254, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(fX + fW / 2, fCenterY, Math.min(fW / 2 - 4, waveRadius), Math.min(4.5, waveRadius * 0.35), 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Colonne centrale de la fontaine
+    const colX = fX + fW / 2;
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(colX - 4, fCenterY - 16, 8, 16);
+    // Vasque intermédiaire
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.ellipse(colX, fCenterY - 16, 12, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Vasque supérieure
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(colX - 2.5, fCenterY - 26, 5, 10);
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.ellipse(colX, fCenterY - 26, 7, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Jet d'eau vertical jaillissant animé (physique d'eau vivante)
+    const jetHeight = 18 + Math.sin(timeSec * 5) * 3;
+    const jetTopY = fCenterY - 26 - jetHeight;
+
+    // Gerbe principale jaillissante
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(colX, fCenterY - 26);
+    ctx.lineTo(colX, jetTopY);
+    ctx.stroke();
+
+    // Cascades paraboliques retombantes
+    ctx.strokeStyle = 'rgba(186, 230, 253, 0.7)';
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    ctx.moveTo(colX, jetTopY + 2);
+    ctx.quadraticCurveTo(colX - 10, jetTopY + 8, colX - 14, fCenterY - 16);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(colX, jetTopY + 2);
+    ctx.quadraticCurveTo(colX + 10, jetTopY + 8, colX + 14, fCenterY - 16);
+    ctx.stroke();
+
+    // Débordements de la vasque vers le grand bassin
+    ctx.strokeStyle = 'rgba(125, 211, 252, 0.6)';
+    ctx.beginPath();
+    ctx.moveTo(colX - 10, fCenterY - 15);
+    ctx.quadraticCurveTo(colX - 16, fCenterY - 6, colX - 15, fCenterY - 1);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(colX + 10, fCenterY - 15);
+    ctx.quadraticCurveTo(colX + 16, fCenterY - 6, colX + 15, fCenterY - 1);
+    ctx.stroke();
+
+    // Gouttelettes et embruns étincelants au soleil
+    const drops = [
+      { dx: -3, dy: -4, speed: 7 },
+      { dx: 4, dy: -2, speed: 8 },
+      { dx: -7, dy: 6, speed: 6 },
+      { dx: 8, dy: 7, speed: 9 },
+      { dx: 0, dy: -6, speed: 10 }
+    ];
+    drops.forEach(d => {
+      const dropY = jetTopY + ((timeSec * d.speed * 4) % 24);
+      const dropX = colX + d.dx * ((dropY - jetTopY) / 14);
+      if (dropY < fCenterY - 2) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(dropX, dropY, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
+    // Écusson / Inscription sous l'esplanade
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 7px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('⛲ ساحة الساعة والنافورة', x + w / 2, groundY + 12);
+
+    // Hitbox interactive pour faire un vœu dans la fontaine
+    this.interactiveHitboxes.push({
+      x: fX,
+      y: fCenterY - 36,
+      w: fW,
+      h: 46,
+      action: 'fountain_wish',
+      bizId: null
+    });
+
     ctx.restore();
   }
 
