@@ -465,19 +465,21 @@
     .biz-title {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       direction: rtl;
       text-align: right;
-      gap: 8px;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     .biz-title-name {
       font-weight: 900;
-      font-size: 15px;
+      font-size: 14.5px;
       color: #f8fafc;
       letter-spacing: -0.2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.25;
+      flex: 1 1 auto;
     }
     .biz-ar {
       font-size: 11.5px;
@@ -3060,7 +3062,7 @@
               <div class="stat-icon">🏪</div>
               <div class="stat-info">
                 <span class="stat-label">المشاريع المحلولة</span>
-                <strong class="stat-value" id="statUnlockedBiz">0/17</strong>
+                <strong class="stat-value" id="statUnlockedBiz">0/21</strong>
               </div>
             </div>
             <div class="settings-stat-card">
@@ -3369,11 +3371,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=132';
-    import { soundEngine } from './audio.js?v=132';
+    import { TycoonEngine } from './engine.js?v=133';
+    import { soundEngine } from './audio.js?v=133';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=132';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=132';
+    import { AdsService } from './ads_service.js?v=133';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=133';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -4019,7 +4021,14 @@
               if (nextMgr) {
                 return `
                   <button class="btn-game btn-manager" id="mgr-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
-                    ${nextMgr.avatar} خدّم (${nextMgr.name} - ${nextMgr.role}) : ${formatCurrency(nextMgr.cost, 0)} ${total > 1 ? `[${hired + 1}/${total}]` : ''}
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 6px;">
+                      <span style="font-size: 12.5px; font-weight: 800; white-space: nowrap;">${nextMgr.avatar} انتداب ${nextMgr.name}</span>
+                      <span style="font-size: 11px; font-weight: 900; background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 6px; white-space: nowrap;">${formatCurrency(nextMgr.cost, 0)}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 2px; font-size: 9.5px; opacity: 0.9;">
+                      <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 75%;">${nextMgr.role}</span>
+                      ${total > 1 ? `<span class="num-ltr" style="font-weight: 700; font-size: 9px;">[${hired + 1}/${total}]</span>` : ''}
+                    </div>
                   </button>
                 `;
               } else {
@@ -4107,7 +4116,10 @@
         const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
         if (mgrBtn) {
           mgrBtn.onclick = (e) => {
-            if (e) e.stopPropagation();
+            if (e) {
+              if (typeof e.preventDefault === 'function') e.preventDefault();
+              if (typeof e.stopPropagation === 'function') e.stopPropagation();
+            }
             const nextMgr = engine.getNextManager(biz);
             const hired = engine.hireManager(biz.id);
             if (hired) {
@@ -4673,6 +4685,15 @@
         },
         onHudAction: async (action) => {
           soundEngine.playCoin();
+          if (action === 'claim_golden_cloud') {
+            soundEngine.playMilestoneFanfare();
+            const reward = Math.max(350, Math.round((engine.getTotalIncomePerSecond() || 10) * 90));
+            engine.dinars += reward;
+            engine.totalEarned += reward;
+            showRewardModalUI('🌧️', 'سحابة البركة والذهب !', `انهمر غيث البركة وغنمت : ${formatCurrencyPlain(reward)} د.ت !`, 'الحمد لله 🤲');
+            renderDOM();
+            return;
+          }
           if (action === 'hud_map') {
             switchTab('zones');
             return;
@@ -4823,7 +4844,7 @@
       if (overallProgressBar) overallProgressBar.style.width = `${stats.overallProgressPct}%`;
       if (overallProgressPctLabel) overallProgressPctLabel.innerText = `${stats.overallProgressPct}%`;
 
-      if (statUnlockedBiz) statUnlockedBiz.innerText = `${stats.unlockedBusinessesCount}/17`;
+      if (statUnlockedBiz) statUnlockedBiz.innerText = `${stats.unlockedBusinessesCount}/${engine.businesses.length}`;
       if (statTotalManagers) statTotalManagers.innerText = `${stats.totalManagersHired}`;
       if (statLifetimeDinars) statLifetimeDinars.innerHTML = formatCurrency(stats.lifetimeDinars, 0);
       const statEmpireFortune = document.getElementById("statEmpireFortune");
@@ -5330,7 +5351,10 @@
           const hireBtn = item.querySelector(`#hire-slot-${currentDetailBizId}-${idx}`);
           if (hireBtn) {
             hireBtn.onclick = (e) => {
-              if (e) e.stopPropagation();
+              if (e) {
+                if (typeof e.preventDefault === 'function') e.preventDefault();
+                if (typeof e.stopPropagation === 'function') e.stopPropagation();
+              }
               const res = engine.hireManager(currentDetailBizId);
               if (res) {
                 soundEngine.playEventFanfare();
@@ -5464,6 +5488,7 @@
       const handleBackdropClose = (e) => {
         if (e.target === overlay) {
           if (overlay.id === 'wheelModal' && isSpinningWheel) return;
+          if (overlay.id === 'bizDetailModal') return; // Protégé : fermeture stricte via bouton ✕ uniquement
           overlay.classList.remove('active');
           if (overlay.id === 'bizDetailModal' && storeSimulation) {
             storeSimulation.stop();

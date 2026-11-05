@@ -156,6 +156,20 @@ export const BUSINESS_CONFIGS = [
     ],
   },
   {
+    id: 'boulangerie_artisanale',
+    name: 'مخبزة الكوشة والطابونة',
+    tagline: 'باڤات سخونة مقرمشة، خبز طابونة بالسينوج وبسيسة الصباح البنينة',
+    icon: '🥖',
+    baseCost: 7500.0,
+    baseRevenue: 320.0,
+    costMultiplier: 1.11,
+    cycleDurationMs: 8500, // 8.5s
+    managers: [
+      { name: 'عاطف الكوّاش', role: 'معلّم بيت النار والفرن', avatar: '👨‍🍳', cost: 32000.0 },
+      { name: 'حمدي العجّان', role: 'عجّان السميد الصافي', avatar: '🌾', cost: 85000.0 }
+    ],
+  },
+  {
     id: 'salle_de_jeux',
     name: 'صالة بلياردو وبلاي',
     tagline: 'بلاي 5، طواول بلياردو وبيبي فوت، جوّ الشبيبة وطروح سخونة !',
@@ -211,6 +225,20 @@ export const BUSINESS_CONFIGS = [
     ],
   },
   {
+    id: 'artisanat_poterie',
+    name: 'ورشة الفخار والخزف التقليدي',
+    tagline: 'صنعة الأجداد النابلية والجرجيسية، فخار مزوّق وصحون خزف فاخرة تسحر العين',
+    icon: '🏺',
+    baseCost: 38000.0,
+    baseRevenue: 1450.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 19000, // 19.0s
+    managers: [
+      { name: 'العم عبد الرزاق', role: 'أسطى تشكيل الفخار', avatar: '🏺', cost: 160000.0 },
+      { name: 'حبيبة الخزفية', role: 'فنانة التزويق الأزرق التونسي', avatar: '🎨', cost: 450000.0 }
+    ],
+  },
+  {
     id: 'superette',
     name: 'سوبيرات الحومة',
     tagline: 'كليماتيزور بارد وشاريوات تجري وقضية سريعة',
@@ -223,6 +251,21 @@ export const BUSINESS_CONFIGS = [
       { name: 'منير الكاشير', role: 'كاشير الكاسة 1', avatar: '💳', cost: 500000.0 },
       { name: 'سليم الكاشير', role: 'كاشير الكاسة 2', avatar: '🧾', cost: 1100000.0 },
       { name: 'أمل الكاشيرة', role: 'كاشيرة الكاسة 3', avatar: '🛒', cost: 2200000.0 }
+    ],
+  },
+  {
+    id: 'huilerie_olive',
+    name: 'معصرة زيت الزيتونة التونسية',
+    tagline: 'ذهب تونس الأخضر، عصرة أولى على البارد وزيت شملالي فاوح يصدر للعالم',
+    icon: '🫒',
+    baseCost: 550000.0,
+    baseRevenue: 14000.0,
+    costMultiplier: 1.12,
+    cycleDurationMs: 40000, // 40.0s
+    managers: [
+      { name: 'المعلم الصادق', role: 'مولى المعصرة وحكيم الزيت', avatar: '🫒', cost: 2200000.0 },
+      { name: 'فوزي فني الطحن', role: 'مسؤول رحى الحجر وعصر الزيت', avatar: '⚙️', cost: 5500000.0 },
+      { name: 'كمال التصدير', role: 'مسؤول تعبئة القوارير والميناء', avatar: '🚢', cost: 12000000.0 }
     ],
   },
   {
@@ -339,6 +382,20 @@ export const BUSINESS_CONFIGS = [
       { name: 'ياسين كوميرسيال', role: 'كوميرسيال الكراهب', avatar: '🏎️', cost: 150000000.0 },
       { name: 'مدام مريم', role: 'مديرة المبيعات', avatar: '💎', cost: 350000000.0 },
       { name: 'سي طارق الدياري', role: 'الباترون وكيل الدار', avatar: '👑', cost: 800000000.0 }
+    ],
+  },
+  {
+    id: 'centre_thalasso',
+    name: 'منتجع الاستجمام والمياه البحرية',
+    tagline: 'دلال ملكي ومساج بزيوت الياسمين ومسابح بمياه البحر الدافئة تجلب السياح',
+    icon: '🫧',
+    baseCost: 75000000.0,
+    baseRevenue: 2200000.0,
+    costMultiplier: 1.13,
+    cycleDurationMs: 90000, // 90.0s
+    managers: [
+      { name: 'دكتورة ريم', role: 'مديرة المركز والعلاج البحري', avatar: '👩‍⚕️', cost: 280000000.0 },
+      { name: 'سوسن خبيرة المساج', role: 'أخصائية الزيوت العطرية والياسمين', avatar: '💆', cost: 750000000.0 }
     ],
   },
   {
@@ -512,6 +569,33 @@ export const TUNISIAN_COMBOS = [
     businessIds: ['promoteur_immobilier', 'tayaran_el_ghzela', 'agence_voyages'],
     multiplier: 4.0,
     bonusDesc: 'مداخيل الاستثمارات الكبرى x4'
+  },
+  {
+    id: 'combo_pain_huile',
+    name: 'زيت وطابونة الصباح',
+    tagline: 'خبزة طابونة سخونة مقرمشة مبلولة بزيت زيتونة بكر فاوح، أصل البنّة والخير',
+    icon: '🥖🫒',
+    businessIds: ['boulangerie_artisanale', 'huilerie_olive'],
+    multiplier: 2.3,
+    bonusDesc: 'مداخيل المخابز والمعاصر x2.3'
+  },
+  {
+    id: 'combo_artisanat_authentic',
+    name: 'صنعة الأجداد وفنون الديار',
+    tagline: 'فخار وخزف نابل المزوّق مع قعدة شاي منعنع وحلويات عربي، أصالة بلادنا',
+    icon: '🏺🍹',
+    businessIds: ['artisanat_poterie', 'salon_de_the', 'patisserie'],
+    multiplier: 2.6,
+    bonusDesc: 'مداخيل الحرف التقليدية والمقاهي x2.6'
+  },
+  {
+    id: 'combo_thalasso_royale',
+    name: 'استجمام وسياحة الملوك',
+    tagline: 'فخامة النزل مع دلال مركز التالاسو والمياه البحرية والرحلات، قمة الرفاهة',
+    icon: '🫧🏨⛵',
+    businessIds: ['centre_thalasso', 'hotel', 'croisiere_mer'],
+    multiplier: 3.2,
+    bonusDesc: 'مداخيل المنتجعات والفنادق والرحلات x3.2'
   }
 ];
 
@@ -854,23 +938,23 @@ export const TUNISIAN_CITIES = [
 ];
 
 export const CITY_BUSINESS_MAP = {
-  tunis: ['kaskrout', 'fricasse', 'kahwa', 'superette', 'supermarche', 'agence_voyages'],
+  tunis: ['kaskrout', 'fricasse', 'kahwa', 'boulangerie_artisanale', 'superette', 'supermarche', 'agence_voyages'],
   bizerte: ['fruits_de_mer', 'attariya', 'supermarche', 'librairie'],
-  nabeul_hammamet: ['librairie', 'superette', 'kahwa', 'croisiere_mer'],
-  kairouan: ['kahwa', 'patisserie', 'superette', 'vente_vetements', 'salle_de_jeux'],
+  nabeul_hammamet: ['librairie', 'artisanat_poterie', 'superette', 'kahwa', 'croisiere_mer', 'centre_thalasso'],
+  kairouan: ['kahwa', 'patisserie', 'superette', 'boulangerie_artisanale', 'vente_vetements', 'salle_de_jeux'],
   sbeitla: ['kahwa', 'superette', 'salle_de_jeux', 'vente_vetements', 'librairie', 'attariya'],
-  sfax: ['fruits_de_mer', 'librairie', 'vente_vetements', 'kahwa', 'salon_de_the', 'superette'],
-  djerba_holding: ['kahwa', 'fruits_de_mer', 'hotel', 'salon_de_the', 'superette', 'croisiere_mer'],
+  sfax: ['fruits_de_mer', 'huilerie_olive', 'librairie', 'vente_vetements', 'kahwa', 'salon_de_the', 'superette'],
+  djerba_holding: ['kahwa', 'artisanat_poterie', 'fruits_de_mer', 'hotel', 'centre_thalasso', 'salon_de_the', 'superette', 'croisiere_mer'],
   gabes: ['usine_conserves', 'superette', 'kahwa', 'attariya', 'vente_vetements', 'fricasse'],
   gafsa: ['emballage_dattes', 'attariya', 'hotel', 'vente_vetements', 'kahwa'],
   tozeur: ['hotel', 'salon_de_the', 'kahwa', 'attariya', 'superette', 'salle_de_jeux', 'fricasse'],
-  beja: ['produits_laitiers', 'boucherie', 'kahwa', 'attariya', 'superette', 'fricasse'],
+  beja: ['produits_laitiers', 'boulangerie_artisanale', 'boucherie', 'kahwa', 'attariya', 'superette', 'fricasse'],
   le_kef: ['boucherie', 'produits_laitiers', 'superette', 'kahwa', 'patisserie', 'salle_de_jeux'],
   tataouine: ['hotel', 'vente_vetements', 'vente_montres', 'attariya', 'supermarche'],
   medenine_zarzis: ['vente_vetements', 'attariya', 'superette', 'fricasse', 'patisserie', 'salle_de_jeux'],
-  monastir_mahdia: ['hotel', 'salon_de_the', 'superette', 'supermarche', 'patisserie', 'vente_vetements', 'librairie', 'croisiere_mer'],
+  monastir_mahdia: ['hotel', 'huilerie_olive', 'salon_de_the', 'superette', 'supermarche', 'patisserie', 'vente_vetements', 'librairie', 'croisiere_mer'],
   // Compléments pour les autres villes
-  sousse: ['salon_de_the', 'hotel', 'restaurant', 'supermarche'],
+  sousse: ['salon_de_the', 'hotel', 'centre_thalasso', 'restaurant', 'supermarche'],
   annaba: ['fruits_de_mer', 'supermarche', 'usine_conserves', 'agence_voyages'],
   tripoli: ['showroom_auto', 'supermarche', 'promoteur_immobilier', 'hotel']
 };
@@ -1926,46 +2010,57 @@ export class TycoonEngine {
       },
       sousse: {
         restaurant: { name: 'مطعم بوجعفر والمشاوي', icon: '🍖', tagline: 'مشوي علّوش على الكانون، سكالوب وسلايط بوجعفر البحرية' },
-        hotel: { name: 'نزل قصر القنطاوي ⭐⭐⭐⭐⭐', icon: '💎', tagline: 'إقامة فاخرة على شاطئ بوجعفر ومسابح أولمبية وخدمة ملكية' }
+        hotel: { name: 'نزل قصر القنطاوي ⭐⭐⭐⭐⭐', icon: '💎', tagline: 'إقامة فاخرة على شاطئ بوجعفر ومسابح أولمبية وخدمة ملكية' },
+        centre_thalasso: { name: 'منتجع تالاسو القنطاوي', icon: '🫧', tagline: 'علاج استجمامي فاخر بمياه بحر بوجعفر وزيوت التدليك الطبيعية' }
       },
       hammamet: {
         restaurant: { name: 'مطعم المارينا والياسمين', icon: '🍢', tagline: 'مشاوي الحمامات السياحية، كباب وريش مشوية مع نسيم البحر' },
-        hotel: { name: 'نزل شاطئ الحمامات ⭐⭐⭐⭐⭐', icon: '🏖️', tagline: 'أجنحة فاخرة مطلة على خليج الحمامات مع مسبح دافئ' }
+        hotel: { name: 'نزل شاطئ الحمامات ⭐⭐⭐⭐⭐', icon: '🏖️', tagline: 'أجنحة فاخرة مطلة على خليج الحمامات مع مسبح دافئ' },
+        centre_thalasso: { name: 'منتجع تالاسو ياسمين الحمامات', icon: '🫧', tagline: 'علاج بالمياه البحرية الدافئة ومساج بزيوت الياسمين الفاخرة' }
       },
       beja: {
         restaurant: { name: 'مطعم الخيرات الباجية', icon: '🥘', tagline: 'مصلّي بلحم خروف الشمال الفاوح، خبز طابونة ومشاوي على الحطب' },
         attariya: { name: 'أجبان ومشتقات حليب باجة', icon: '🧀', tagline: 'جبن مالح، ريكوتا طازجة وحليب بيو من مراعي باجة الخضراء' },
         supermarche: { name: 'مجمّع خيرات ومطامير باجة', icon: '🌾', tagline: 'قمح باجة العالي، سميد صافي ومخارق وزلابية سخونة' },
-        kaskrout: { name: 'كسكروت خبز طابونة باجي', icon: '🥖', tagline: 'طابونة سخونة بالجبن الباجي والزيت الحار' }
+        kaskrout: { name: 'كسكروت خبز طابونة باجي', icon: '🥖', tagline: 'طابونة سخونة بالجبن الباجي والزيت الحار' },
+        boulangerie_artisanale: { name: 'طابونة وكوشة باجة العتيقة', icon: '🥖', tagline: 'طابونة سخونة بالجبن الباجي وزيت الزيتونة الجديد من الفرن' }
       },
       le_kef: {
         restaurant: { name: 'مطعم القصبة العالية', icon: '🍖', tagline: 'مشاوي برنوس الكاف، لحم علّوش الجبل مفوّح بإكليل وزعتر الكاف' }
       },
       monastir_mahdia: {
-        restaurant: { name: 'مطعم السقيفة الكحلة', icon: '🐟', tagline: 'كسكسي بالمناني، سمك مشوي وفخار المهدية الأصيل' }
+        restaurant: { name: 'مطعم السقيفة الكحلة', icon: '🐟', tagline: 'كسكسي بالمناني، سمك مشوي وفخار المهدية الأصيل' },
+        huilerie_olive: { name: 'معصرة الزيتون والرباط المهدوي', icon: '🫒', tagline: 'زيت زيتون معتّق فاوح من مزارع المهدية والساحل المبارك' },
+        hotel: { name: 'نزل مارينا المنستير الفاخر ⭐⭐⭐⭐⭐', icon: '🏨', tagline: 'فخامة بحرية مطلة على مارينا المنستير التاريخية' }
       },
       tozeur: {
         restaurant: { name: 'مطعم النخيل الذهبي', icon: '🌴', tagline: 'مطمورة الواحة، لحم قعود ومشاوي تمور الشبيكة الشهيرة' },
         attariya: { name: 'تمور ودقلة النور الجريدية', icon: '🌴', tagline: 'دقلة العرجون معسّلة، ربّ التمر ومطاويح تمور الواحات العالمية' },
         patisserie: { name: 'حلويات التمور وواحة توزر', icon: '🍯', tagline: 'مقروض محشي بدقلة النور وكعك التمر باللوز' },
-        agence_voyages: { name: 'سفاري وواحات الشبيكة وتوزر', icon: '🚙', tagline: 'رحلات بالرباعية في كثبان الشبيكة وتامغزة والشط' }
+        agence_voyages: { name: 'سفاري وواحات الشبيكة وتوزر', icon: '🚙', tagline: 'رحلات بالرباعية في كثبان الشبيكة وتامغزة والشط' },
+        hotel: { name: 'نزل واحة النخيل والشمس ⭐⭐⭐⭐', icon: '🏨', tagline: 'سحر الجنوب والضيافة الصحراوية بين نخيل الجريد' }
       },
       nabeul_hammamet: {
         restaurant: { name: 'مطعم الفخار والزهر', icon: '🥘', tagline: 'كسكسي نابل بالعلوش والقرع، قلاية فاوحة وطواجن فخار نابلية' },
         attariya: { name: 'عطريّة وزهر نابل الأصيل', icon: '🏪', tagline: 'بهارات نابلية فاوحة، ماء زهر مقطّر، فلفل شايح وهريسة دياري' },
         patisserie: { name: 'زهر نابل وياسمين الحمامات', icon: '🌸', tagline: 'تقطير ماء الزهر الحر، حلويات اللوز ونبلية نابلية' },
-        hotel: { name: 'منتجع ياسمين الحمامات الفاخر', icon: '🏖️', tagline: 'شاطئ لازوردي، مسبح دافئ واستجمام على الطريقة النابلية' }
+        hotel: { name: 'نزل ياسمين الحمامات الملكي ⭐⭐⭐⭐⭐', icon: '🏖️', tagline: 'شاطئ لازوردي، مسبح دافئ واستجمام على الطريقة النابلية' },
+        artisanat_poterie: { name: 'فخار وخزف نابل الأصيل', icon: '🏺', tagline: 'أطباق ومحابس نابلية مزوّقة باليد بالأزرق والأصفر الملكي' },
+        centre_thalasso: { name: 'منتجع تالاسو ياسمين الحمامات', icon: '🫧', tagline: 'علاج بالمياه البحرية الدافئة ومساج بزيوت الياسمين الفاخرة' }
       },
       djerba_holding: {
         restaurant: { name: 'مطعم جزيرة الأحلام الجربي', icon: '🍢', tagline: 'عيش جربي بالقديد، مشاوي لحم وفواكه بحر خليج بوغرارة' },
         attariya: { name: 'عطريّة حومة السوق العتيقة', icon: '🏪', tagline: 'توابل جربية نادرة، زيتون معتّق، سميد وخيرات الجزيرة' },
         supermarche: { name: 'سوق الحارة والمنسوجات الجربية', icon: '🧶', tagline: 'كليم جربي، بشكير حمام وحياكة صوف جزيرة الأحلام' },
-        hotel: { name: 'منتجع الهولدينغ والمنزل الجربي 5 نجوم', icon: '👑', tagline: 'إقامة أندلسية بأقواس بيضاء وبحر قنطرة جربة' }
+        hotel: { name: 'نزل الأندلسيات والقصور الجربية ⭐⭐⭐⭐⭐', icon: '👑', tagline: 'إقامة أندلسية بأقواس بيضاء وبحر قنطرة جربة' },
+        artisanat_poterie: { name: 'فخار قلالة التراثي الجربي', icon: '🏺', tagline: 'صنعة فخار قلالة بالفرن الروماني الطيني، تحف أثرية متقونة' },
+        centre_thalasso: { name: 'سبا ومياه بحر جزيرة الأحلام', icon: '🫧', tagline: 'استجمام مائي بمياه البحر المتوسط النقية وأعشاب الجزيرة الشافية' }
       },
       sfax: {
         restaurant: { name: 'مطعم الشرمولة والقرنيط الصفاقسي', icon: '🐟', tagline: 'حوت مشوي طازج، شوربة قرنيط وشرمولة صفاقسية أصلية' },
         supermarche: { name: 'سوق باب الجبلي للسمك وزيت الزيتون', icon: '🫒', tagline: 'صابة زيت الزيتون البكر الممتاز وحوت شوابي طازة' },
-        usine_conserves: { name: 'مصنع مصبرات الحوت الأزرق وزيت الزيتون', icon: '🥫', tagline: 'تعليب السردينة والتن وتصدير الذهب الأخضر الصفاقسي' }
+        usine_conserves: { name: 'مصنع مصبرات الحوت الأزرق وزيت الزيتون', icon: '🥫', tagline: 'تعليب السردينة والتن وتصدير الذهب الأخضر الصفاقسي' },
+        huilerie_olive: { name: 'معصرة الذهب الأخضر الصفاقسية', icon: '🫒', tagline: 'عصر زيت الزيتونة الشملالي البكر الممتاز، فخر صفاقس وعاصمة الزيت' }
       },
       bizerte: {
         restaurant: { name: 'مطعم حوت الميناء العتيق', icon: '⛵', tagline: 'حوت قنال بنزرت، سردينة مشوية وكفتة بحرية مقرمشة' },
@@ -1980,13 +2075,15 @@ export class TycoonEngine {
         restaurant: { name: 'مطعم الكابيتول الروماني', icon: '🍖', tagline: 'مشاوي لحم الضأن الجبلي مع توابل سفيطلة التراثية' }
       },
       gafsa: {
-        restaurant: { name: 'مطعم البركة والجبل', icon: '🥘', tagline: 'كسكسي قفصي بالبركوكش، مشاوي علوش الجريد والواحة' }
+        restaurant: { name: 'مطعم البركة والجبل', icon: '🥘', tagline: 'كسكسي قفصي بالبركوكش، مشاوي علوش الجريد والواحة' },
+        hotel: { name: 'نزل واحة قفصة الكبير ⭐⭐⭐⭐', icon: '🏨', tagline: 'إقامة عريقة في قلب واحة قفصة التاريخية' }
       },
       gabes: {
         restaurant: { name: 'مطعم سوق جارة والواحة', icon: '🍢', tagline: 'مشاوي بحرية وخضار الواحة البحرية بميناء قابس' }
       },
       tataouine: {
-        restaurant: { name: 'مطعم القصور الصحراوية', icon: '🍖', tagline: 'مصلّي لحم الجمل الصحراوي وخبز الملة الفاوح' }
+        restaurant: { name: 'مطعم القصور الصحراوية', icon: '🍖', tagline: 'مصلّي لحم الجمل الصحراوي وخبز الملة الفاوح' },
+        hotel: { name: 'نزل قصر غيلان الصحراوي ⭐⭐⭐', icon: '🏨', tagline: 'إقامة بين الكثبان الذهبية وعيون المياه الكبريتية' }
       },
       medenine_zarzis: {
         restaurant: { name: 'مطعم مرسى جرجيس', icon: '🐟', tagline: 'سمك مشوي طازة من ميناء جرجيس مع كسكسي بالقرنيط' }
@@ -1995,7 +2092,8 @@ export class TycoonEngine {
         restaurant: { name: 'مطعم بونة الأصيل', icon: '🥘', tagline: 'مشاوي عنابة العتيقة، طواجن وشوربة فريك بونية تقليدية' }
       },
       tripoli: {
-        restaurant: { name: 'مطعم السرايا الحمراء', icon: '🍖', tagline: 'كسكسي وبازين ليبي، مشاوي ضأن على الطريقة المغاربية' }
+        restaurant: { name: 'مطعم السرايا الحمراء', icon: '🍖', tagline: 'كسكسي وبازين ليبي، مشاوي ضأن على الطريقة المغاربية' },
+        hotel: { name: 'نزل كورنثيا المتوسطي ⭐⭐⭐⭐⭐', icon: '🏨', tagline: 'إطلالة بانورامية راقية على شاطئ البحر الأبيض' }
       }
     };
 
@@ -2151,6 +2249,26 @@ export class TycoonEngine {
         { item: 'تذكرة طيارة رحلة دولية (للشخص)', price: 450.0, sharePct: 55 },
         { item: 'تذكرة درجة أعمال (للشخص)', price: 720.0, sharePct: 30 },
         { item: 'شحن حقيبة إضافية بالمطار', price: 95.0, sharePct: 15 }
+      ],
+      boulangerie_artisanale: [
+        { item: 'باڤات سخونة مقرمشة وخبز سميد', price: 0.8, sharePct: 55 },
+        { item: 'خبزة طابونة دياري بالسينوج', price: 1.2, sharePct: 30 },
+        { item: 'خبز مبيتون وبسيسة شعير', price: 1.5, sharePct: 15 }
+      ],
+      artisanat_poterie: [
+        { item: 'محبس فخار وقصرية مزوّقة', price: 12.0, sharePct: 50 },
+        { item: 'صحن خزف تونسي بالأزرق والأصفر', price: 25.0, sharePct: 35 },
+        { item: 'جرة زيت وقنينة ماء فخار نابلية', price: 18.0, sharePct: 15 }
+      ],
+      huilerie_olive: [
+        { item: 'بيدون زيت زيتونة بكر ممتاز (5 لتر)', price: 95.0, sharePct: 55 },
+        { item: 'قارورة زيت زيتونة شملالي AOC', price: 24.0, sharePct: 30 },
+        { item: 'صابون زيت زيتون ومخلفات المعصرة', price: 8.0, sharePct: 15 }
+      ],
+      centre_thalasso: [
+        { item: 'حصة مساج بزيوت الياسمين ومياه البحر', price: 90.0, sharePct: 50 },
+        { item: 'دخول حمام ومسبح مياه بحرية دافئة', price: 65.0, sharePct: 35 },
+        { item: 'علاج بالطين البحري والأعشاب', price: 120.0, sharePct: 15 }
       ]
     };
 

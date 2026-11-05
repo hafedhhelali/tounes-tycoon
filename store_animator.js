@@ -85,6 +85,10 @@ export class CanvasStoreEngine {
       showroom_auto: ['🚗', '🚘', '🔑', '🏎️'],
       promoteur_immobilier: ['🏢', '🏗️', '📐', '🏡'],
       tayaran_el_ghzela: ['✈️', '🛫', '💺', '🌍'],
+      boulangerie_artisanale: ['🥖', '🍞', '🥐', '🥯', '🥨'],
+      artisanat_poterie: ['🏺', '🥣', '🏺', '🎨', '🪔'],
+      huilerie_olive: ['🫒', '🧴', '🫒', '🌿', '🥫'],
+      centre_thalasso: ['🫧', '💆', '🧖', '🌸', '🧴'],
       default: ['🛒', '✨', '🪙', '📦']
     };
 
@@ -229,6 +233,10 @@ export class CanvasStoreEngine {
     if (bizId === 'salle_de_jeux') return 'arcade_billiard';
     if (bizId === 'kahwa') return 'kahwa_counter';
     if (bizId === 'salon_de_the' || bizId === 'restaurant') return 'tea_lounge';
+    if (bizId === 'boulangerie_artisanale') return 'boulangerie_oven';
+    if (bizId === 'artisanat_poterie') return 'pottery_workshop';
+    if (bizId === 'huilerie_olive') return 'olive_press';
+    if (bizId === 'centre_thalasso') return 'thalasso_spa';
     if (['croisiere_mer', 'agence_voyages', 'hotel', 'tayaran_el_ghzela', 'showroom_auto', 'promoteur_immobilier'].includes(bizId)) {
       return 'agency_desks';
     }
@@ -239,6 +247,14 @@ export class CanvasStoreEngine {
 
   getActivitySlotX(archetype, slotIndex) {
     const rightBound = Math.max(210, this.width - 44);
+    if (archetype === 'boulangerie_oven' || archetype === 'pottery_workshop' || archetype === 'olive_press') {
+      const span = Math.max(88, rightBound - 120);
+      return 120 + (slotIndex % 4) * (span / 3);
+    }
+    if (archetype === 'thalasso_spa') {
+      const span = Math.max(110, rightBound - 116);
+      return 116 + (slotIndex % 4) * (span / 3);
+    }
     if (archetype === 'kahwa_counter') {
       // 5 tabourets devant le comptoir de café ergonomique
       const span = Math.max(96, rightBound - 114);
@@ -348,7 +364,7 @@ export class CanvasStoreEngine {
   spawnCustomer() {
     const archetype = this.getBizArchetype(this.bizId);
     if (archetype === 'bank_branch') return;
-    const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
+    const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'thalasso_spa') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
     const activeCustomers = this.customers.filter(c => c.state !== 'walking_out');
     if (activeCustomers.length >= maxActive) return;
 
@@ -399,7 +415,28 @@ export class CanvasStoreEngine {
     } else if (archetype === 'food_counter') {
       activityType = 'eating';
       activityDuration = 1.5;
+    } else if (archetype === 'boulangerie_oven') {
+      activityType = 'buying_bread';
+      activityDuration = 1.35;
+      ticketIcon = '🥖';
+    } else if (archetype === 'pottery_workshop') {
+      activityType = 'viewing_pottery';
+      activityDuration = 1.75;
+      ticketIcon = '🏺';
+    } else if (archetype === 'olive_press') {
+      activityType = 'sampling_oil';
+      activityDuration = 1.6;
+      ticketIcon = '🫒';
+    } else if (archetype === 'thalasso_spa') {
+      activityType = 'relaxing_spa';
+      activityDuration = 2.4;
+      isSeated = true;
+      ticketIcon = '💆';
     }
+
+    const evolvedUnit = this.getEvolvedUnitPrice(this.bizId);
+    const basketMultiplier = 0.55 + Math.random() * 1.65 + (slotIdx % 3) * 0.35;
+    const basketTotal = Math.max(1.2, Math.round(evolvedUnit * basketMultiplier * 10) / 10);
 
     const customer = {
       id: Math.random(),
@@ -416,6 +453,7 @@ export class CanvasStoreEngine {
       groupSize,
       hasCart,
       isSeated,
+      basketTotal,
       needsWaiterService,
       servedByWaiter: !needsWaiterService,
       waitServiceTimer: 0,
@@ -470,7 +508,11 @@ export class CanvasStoreEngine {
       showroom_auto: 120.0,
       promoteur_immobilier: 140.0,
       hotel: 160.0,
-      tayaran_el_ghzela: 450.0
+      tayaran_el_ghzela: 450.0,
+      boulangerie_artisanale: 1.5,
+      artisanat_poterie: 18.0,
+      huilerie_olive: 35.0,
+      centre_thalasso: 90.0
     };
     return UNIT_PRICES[bizId] || 10.0;
   }
@@ -524,24 +566,51 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 0.8;
     ctx.strokeRect(scrX, scrY, scrW, scrH);
 
-    // Texte clippé et auto-dimensionné (ZÉRO DÉBORDEMENT garanti)
+    // Laser de scan animé
+    if (isOpen && isBusy) {
+      const scanX = scrX + 2 + Math.abs(Math.sin((timeSec || Date.now() * 0.005) * 6)) * (scrW - 4);
+      ctx.strokeStyle = 'rgba(52, 211, 153, 0.85)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(scanX, scrY + 1);
+      ctx.lineTo(scanX, scrY + scrH - 1);
+      ctx.stroke();
+    }
+
+    // AFFICHEUR CLIENT DÉDIÉ SUR MÂT (ÉLÉVATION PRO, ZÉRO DÉBORDEMENT, TRÈS LISIBLE)
     if (isOpen && priceText) {
+      const poleX = x + w - 4;
+      const poleY1 = y;
+      const poleY2 = y - 10;
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(poleX, poleY1);
+      ctx.lineTo(poleX, poleY2);
+      ctx.stroke();
+
+      const podW = 40;
+      const podH = 13;
+      const podX = poleX - podW + 6;
+      const podY = poleY2 - podH + 2;
+
+      ctx.fillStyle = '#090d16';
+      ctx.beginPath();
+      ctx.roundRect(podX, podY, podW, podH, 3);
+      ctx.fill();
+      ctx.strokeStyle = isBusy ? '#10b981' : '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
       ctx.save();
       ctx.beginPath();
-      ctx.rect(scrX, scrY, scrW, scrH);
+      ctx.rect(podX + 1, podY + 1, podW - 2, podH - 2);
       ctx.clip();
-
-      let fs = 6.0;
-      ctx.font = `bold ${fs}px monospace`;
-      let tw = ctx.measureText(priceText).width;
-      if (tw > scrW - 2) {
-        fs = Math.max(3.8, fs * ((scrW - 2) / tw));
-        ctx.font = `bold ${fs}px monospace`;
-      }
       ctx.fillStyle = '#34d399';
+      ctx.font = 'bold 7.5px monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(priceText, scrX + scrW / 2, scrY + scrH / 2);
+      ctx.fillText(priceText, podX + podW / 2, podY + podH / 2);
       ctx.restore();
     } else {
       ctx.fillStyle = '#64748b';
@@ -627,6 +696,10 @@ export class CanvasStoreEngine {
   }
 
   handleCanvasClick(event) {
+    if (event) {
+      if (typeof event.preventDefault === 'function') event.preventDefault();
+      if (typeof event.stopPropagation === 'function') event.stopPropagation();
+    }
     const rect = this.canvas.getBoundingClientRect();
     const ratioX = rect.width > 0 ? this.width / rect.width : 1;
     const ratioY = rect.height > 0 ? this.height / rect.height : 1;
@@ -747,6 +820,22 @@ export class CanvasStoreEngine {
       wallGrad.addColorStop(0, '#102e23');
       wallGrad.addColorStop(0.6, '#0b2019');
       wallGrad.addColorStop(1, '#05130e');
+    } else if (bizId === 'boulangerie_artisanale') {
+      wallGrad.addColorStop(0, '#451a03');
+      wallGrad.addColorStop(0.6, '#78350f');
+      wallGrad.addColorStop(1, '#270e02');
+    } else if (bizId === 'artisanat_poterie') {
+      wallGrad.addColorStop(0, '#431407');
+      wallGrad.addColorStop(0.6, '#9a3412');
+      wallGrad.addColorStop(1, '#1c0702');
+    } else if (bizId === 'huilerie_olive') {
+      wallGrad.addColorStop(0, '#14532d');
+      wallGrad.addColorStop(0.6, '#365314');
+      wallGrad.addColorStop(1, '#0a2608');
+    } else if (bizId === 'centre_thalasso') {
+      wallGrad.addColorStop(0, '#083344');
+      wallGrad.addColorStop(0.6, '#0e7490');
+      wallGrad.addColorStop(1, '#041f2a');
     } else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier') {
       wallGrad.addColorStop(0, '#0f172a');
       wallGrad.addColorStop(0.6, '#1e293b');
@@ -1674,10 +1763,11 @@ export class CanvasStoreEngine {
 
         // Écran caisse enregistreuse POS ergonomique avec prix dynamique par panier client
         const evolvedUnit = this.getEvolvedUnitPrice(currentBizId);
-        // Le prix varie selon chaque caisse et chaque panier client (différents achats)
+        // Le prix varie selon chaque caisse et chaque panier client (achats authentiques diversifiés)
         const custAtLane = this.customers.find(c => c.stationSlot === cIdx && (c.state === 'waiting_service' || c.state === 'doing_activity' || c.state === 'paying'));
-        const basketFactor = custAtLane ? (0.60 + ((cIdx * 43 + Math.floor(timeSec * 0.1) * 7) % 8) * 0.22) : (0.75 + cIdx * 0.35);
-        const laneAmount = evolvedUnit * basketFactor;
+        const laneAmount = custAtLane && custAtLane.basketTotal
+          ? custAtLane.basketTotal
+          : Math.max(1.8, Math.round(evolvedUnit * (0.65 + cIdx * 0.45) * 10) / 10);
         const lanePriceStr = this.formatEvolvedPrice(laneAmount) + ' DT';
 
         if (isLaneOpen) {
@@ -1803,20 +1893,20 @@ export class CanvasStoreEngine {
       return;
     }
 
-    // D. BANQUE (`bank_branch`) : Guichet réaliste blindé avec hygiaphone, tapis rouge et validation
+    // D. BANQUE (`bank_branch`) : Guichet réaliste de prestige, banquier haute visibilité & comptoir marbre
     if (archetype === 'bank_branch') {
       ctx.save();
-      const bx = 26;
-      const by = 114;
-      const bw = 112;
-      const bh = 42;
+      const bx = 24;
+      const by = 118;
+      const bw = 116;
+      const bh = 38;
 
       // 1. Tapis rouge d'honneur menant de l'entrée au guichet
       ctx.fillStyle = '#991b1b';
-      ctx.fillRect(bx + bw - 4, by + 16, this.width - (bx + bw), 18);
+      ctx.fillRect(bx + bw - 4, by + 12, this.width - (bx + bw), 20);
       ctx.fillStyle = '#f59e0b';
-      ctx.fillRect(bx + bw - 4, by + 15, this.width - (bx + bw), 1.5);
-      ctx.fillRect(bx + bw - 4, by + 33, this.width - (bx + bw), 1.5);
+      ctx.fillRect(bx + bw - 4, by + 11, this.width - (bx + bw), 1.5);
+      ctx.fillRect(bx + bw - 4, by + 31, this.width - (bx + bw), 1.5);
 
       // Logo bancaire officiel en médaillon doré au mur
       ctx.fillStyle = '#0f172a';
@@ -1832,66 +1922,67 @@ export class CanvasStoreEngine {
 
       const isAccepted = this.bankVipClient && this.bankVipClient.state === 'accepted';
 
-      // Éclairage zénithal chaleureux sur le guichet
-      ctx.fillStyle = 'rgba(254, 240, 138, 0.08)';
+      // Éclairage zénithal chaleureux et lumineux focalisé sur l'agent banquier
+      const spotGrad = ctx.createRadialGradient(bx + 58, by - 26, 6, bx + 58, by - 26, 65);
+      spotGrad.addColorStop(0, 'rgba(254, 240, 138, 0.28)');
+      spotGrad.addColorStop(0.6, 'rgba(254, 240, 138, 0.08)');
+      spotGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = spotGrad;
       ctx.beginPath();
-      ctx.moveTo(bx + 35, by - 55);
-      ctx.lineTo(bx + bw - 35, by - 55);
-      ctx.lineTo(bx + bw, by);
-      ctx.lineTo(bx, by);
-      ctx.closePath();
+      ctx.ellipse(bx + 58, by - 22, 54, 48, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Banquier actif derrière le guichet - Rehaussé et parfaitement visible !
-      this.drawWorker(ctx, bx + 56, by - 6, 0, true, timeSec);
+      // 2. Banquier professionnel actif derrière le guichet - POSITION PARFAITEMENT DÉGAGÉE ET VISIBLE
+      this.drawWorker(ctx, bx + 58, by - 2, 0, true, timeSec);
 
-      // Compteuse de billets automatique à côté du banquier
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(bx + 8, by - 12, 22, 16);
-      ctx.strokeStyle = '#64748b';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(bx + 8, by - 12, 22, 16);
-      ctx.fillStyle = '#10b981';
-      ctx.fillRect(bx + 11, by - 6, 16, 2);
-      ctx.font = '9px serif';
-      ctx.fillText('💵', bx + 19, by - 2);
-
-      // 3. Vitre blindée de sécurité cristalline (visibilité maximale de l'agent)
-      ctx.fillStyle = 'rgba(224, 242, 254, 0.06)';
-      ctx.fillRect(bx + 4, by - 36, bw - 8, 36);
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
-      ctx.lineWidth = 1.2;
-      ctx.strokeRect(bx + 4, by - 36, bw - 8, 36);
-
-      // Reflets diagonaux discrets sur le verre
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(bx + 10, by - 34);
-      ctx.lineTo(bx + 32, by - 4);
-      ctx.moveTo(bx + bw - 30, by - 34);
-      ctx.lineTo(bx + bw - 10, by - 6);
-      ctx.stroke();
-
-      // Micro sur col-de-cygne professionnel à gauche (visage de l'agent 100% dégagé)
+      // Compteuse de billets automatique à côté du banquier avec billets animés
       ctx.fillStyle = '#1e293b';
-      ctx.fillRect(bx + 14, by - 3, 6, 3);
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.2;
+      ctx.fillRect(bx + 8, by - 14, 22, 16);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bx + 8, by - 14, 22, 16);
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(bx + 11, by - 8, 16, 2);
+      ctx.font = '9px serif';
+      ctx.fillText('💵', bx + 19, by - 4);
+
+      // Lampe de banquier classique verte et laiton
+      ctx.fillStyle = '#065f46';
       ctx.beginPath();
-      ctx.moveTo(bx + 17, by - 3);
-      ctx.quadraticCurveTo(bx + 15, by - 12, bx + 21, by - 14);
+      ctx.roundRect(bx + bw - 26, by - 16, 16, 6, 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1;
       ctx.stroke();
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(bx + bw - 19, by - 10, 2, 10);
+
+      // 3. Vitres latérales blindées sécurisées avec large baie centrale 100% ouverte pour visibilité maximale
+      ctx.fillStyle = 'rgba(224, 242, 254, 0.08)';
+      ctx.fillRect(bx + 2, by - 44, 16, 44);
+      ctx.fillRect(bx + bw - 18, by - 44, 16, 44);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(bx + 2, by - 44, 16, 44);
+      ctx.strokeRect(bx + bw - 18, by - 44, 16, 44);
+
+      // Traverse haute avec arche de guichet moderne
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
-      ctx.arc(bx + 22, by - 14, 2.5, 0, Math.PI * 2);
+      ctx.roundRect(bx + 2, by - 48, bw - 4, 8, 3);
       ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.stroke();
 
-      // Passe-documents / tiroir coulissant en inox au bas du guichet
+      // Passe-documents en laiton brossé poli
       ctx.fillStyle = '#090d16';
-      ctx.fillRect(bx + 38, by - 4, 36, 6);
-      ctx.strokeStyle = '#94a3b8';
-      ctx.strokeRect(bx + 38, by - 4, 36, 6);
+      ctx.fillRect(bx + 40, by - 3, 36, 6);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(bx + 40, by - 3, 36, 6);
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(bx + 44, by - 1, 28, 2);
 
       // 4. Comptoir en marbre bleu nuit et or
       const bGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
@@ -1903,7 +1994,7 @@ export class CanvasStoreEngine {
       ctx.roundRect(bx, by, bw, bh, [6, 6, 3, 3]);
       ctx.fill();
       ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.6;
+      ctx.lineWidth = 1.8;
       ctx.stroke();
 
       // Tablette supérieure en marbre blanc veiné
@@ -1913,17 +2004,17 @@ export class CanvasStoreEngine {
       ctx.fillRect(bx - 1, by + 1.5, bw + 2, 1);
 
       // Enseigne lumineuse LED du guichet
-      ctx.fillStyle = isAccepted ? '#064e3b' : 'rgba(15, 23, 42, 0.9)';
+      ctx.fillStyle = isAccepted ? '#064e3b' : 'rgba(15, 23, 42, 0.92)';
       ctx.beginPath();
-      ctx.roundRect(bx + 16, by - 52, 80, 14, 4);
+      ctx.roundRect(bx + 18, by - 60, 80, 14, 4);
       ctx.fill();
       ctx.strokeStyle = isAccepted ? '#10b981' : '#38bdf8';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.2;
       ctx.stroke();
       ctx.fillStyle = isAccepted ? '#34d399' : '#7dd3fc';
-      ctx.font = 'bold 7.5px "Cairo", sans-serif';
+      ctx.font = 'bold 8px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(isAccepted ? '✓ العملية مقبولة' : '🟢 شباك 01 • استقبال الحرفاء', bx + 56, by - 42);
+      ctx.fillText(isAccepted ? '✓ جاري المعاملة' : '🏛️ الوكالة البنكية • الشباك 1', bx + 58, by - 50);
 
       // 5. Client VIP arrivant avec mallette de documents
       if (this.bankVipClient) {
@@ -2736,6 +2827,322 @@ export class CanvasStoreEngine {
       return;
     }
 
+    // 4.A BOULANGERIE ARTISANALE : Four traditionnel en briques réfractaires avec voûte, flammes & pelle à tabouna
+    if (archetype === 'boulangerie_oven') {
+      const ovenX = leftX + 8;
+      const ovenY = 96;
+      const ovenW = Math.min(108, zoneW * 0.46);
+      const ovenH = 50;
+
+      // Corps du grand four en briques voûté
+      const ovenGrad = ctx.createLinearGradient(ovenX, ovenY, ovenX, ovenY + ovenH);
+      ovenGrad.addColorStop(0, '#78350f');
+      ovenGrad.addColorStop(0.5, '#451a03');
+      ovenGrad.addColorStop(1, '#270e02');
+      ctx.fillStyle = ovenGrad;
+      ctx.beginPath();
+      ctx.roundRect(ovenX, ovenY, ovenW, ovenH, [16, 16, 4, 4]);
+      ctx.fill();
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Briques réfractaires décoratives
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.2)';
+      ctx.lineWidth = 0.8;
+      for (let by = ovenY + 6; by < ovenY + ovenH - 4; by += 8) {
+        ctx.beginPath();
+        ctx.moveTo(ovenX + 4, by);
+        ctx.lineTo(ovenX + ovenW - 4, by);
+        ctx.stroke();
+      }
+
+      // Bouche du four (voûte noire incandescente avec braises et flammes)
+      const mouthW = ovenW * 0.54;
+      const mouthH = 26;
+      const mouthX = ovenX + (ovenW - mouthW) / 2;
+      const mouthY = ovenY + ovenH - mouthH - 2;
+      ctx.fillStyle = '#0f0502';
+      ctx.beginPath();
+      ctx.roundRect(mouthX, mouthY, mouthW, mouthH, [12, 12, 2, 2]);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Braises & flammes rougeoyantes animées
+      const flameShift = isBusy ? Math.sin(timeSec * 8) * 2 : 0;
+      const flameGrad = ctx.createRadialGradient(mouthX + mouthW / 2, mouthY + mouthH - 4, 2, mouthX + mouthW / 2, mouthY + mouthH - 6, mouthW * 0.5);
+      flameGrad.addColorStop(0, '#fef08a');
+      flameGrad.addColorStop(0.3, '#f59e0b');
+      flameGrad.addColorStop(0.7, '#dc2626');
+      flameGrad.addColorStop(1, 'rgba(127, 29, 29, 0)');
+      ctx.fillStyle = flameGrad;
+      ctx.beginPath();
+      ctx.ellipse(mouthX + mouthW / 2, mouthY + mouthH - 6, mouthW * 0.44 + flameShift, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pelle en bois de boulanger qui glisse du pain
+      const peelX = mouthX + mouthW * 0.45;
+      const peelY = mouthY + mouthH - 8;
+      ctx.strokeStyle = '#92400e';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(peelX + 22, peelY + 4);
+      ctx.lineTo(peelX - 10, peelY - 1);
+      ctx.stroke();
+      ctx.fillStyle = '#d97706';
+      ctx.fillRect(peelX - 14, peelY - 4, 12, 6);
+
+      // Baguette dorée croustillante sur la pelle
+      ctx.font = '10px serif';
+      ctx.fillText('🥖', peelX - 8, peelY - 1);
+
+      // Étagère de pains et tabouna chauds à droite du four
+      const shelfX = ovenX + ovenW + 8;
+      const shelfW = Math.max(70, zoneW - ovenW - 14);
+      const shelfY = 120;
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(shelfX, shelfY, shelfW, 4);
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(shelfX, shelfY, shelfW, 4);
+
+      ctx.font = '11px serif';
+      ctx.textAlign = 'center';
+      const breads = ['🥖', '🫓', '🥐', '🥖'];
+      breads.forEach((b, i) => {
+        const bx = shelfX + 12 + i * 16;
+        if (bx < shelfX + shelfW - 4) {
+          ctx.fillText(b, bx, shelfY - 2);
+        }
+      });
+
+      // Panier d'osier au sol
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.roundRect(shelfX + 8, 138, 28, 12, [2, 2, 6, 6]);
+      ctx.fill();
+      ctx.font = '9px serif';
+      ctx.fillText('🥖🫓', shelfX + 22, 136);
+
+      ctx.restore();
+      return;
+    }
+
+    // 4.B ATELIER D'ARTISANAT & POTERIE : Tour de potier rotatif + étagères de céramiques peintes zellige
+    if (archetype === 'pottery_workshop') {
+      const wheelX = leftX + 28;
+      const wheelY = 138;
+
+      // Base du tour de potier
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(wheelX - 14, wheelY + 4, 28, 8);
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.ellipse(wheelX, wheelY + 12, 18, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Plateau circulaire tournant du potier
+      const rot = (timeSec * 5) % (Math.PI * 2);
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath();
+      ctx.ellipse(wheelX, wheelY + 2, 16, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Motte d'argile en cours de modelage avec ondulation réaliste
+      const clayH = 14 + Math.sin(rot * 2) * 1.5;
+      const clayGrad = ctx.createLinearGradient(wheelX - 8, wheelY - clayH, wheelX + 8, wheelY);
+      clayGrad.addColorStop(0, '#c2410c');
+      clayGrad.addColorStop(0.5, '#9a3412');
+      clayGrad.addColorStop(1, '#7c2d12');
+      ctx.fillStyle = clayGrad;
+      ctx.beginPath();
+      ctx.roundRect(wheelX - 7, wheelY - clayH + 2, 14, clayH, [5, 5, 2, 2]);
+      ctx.fill();
+
+      // Étagère d'exposition de céramiques peintes nabeuliennes zellige bleu cobalt & or
+      const shelfX = wheelX + 28;
+      const shelfW = Math.max(90, zoneW - 64);
+      const shelfY1 = 112;
+      const shelfY2 = 132;
+
+      [shelfY1, shelfY2].forEach((sy, rowIdx) => {
+        ctx.fillStyle = '#451a03';
+        ctx.fillRect(shelfX, sy, shelfW, 3.5);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 0.8;
+        ctx.strokeRect(shelfX, sy, shelfW, 3.5);
+
+        const items = rowIdx === 0 ? ['🏺', '🍶', '🥣', '🏺'] : ['🥣', '🏺', '🍶', '🏺'];
+        ctx.font = '11px serif';
+        ctx.textAlign = 'center';
+        items.forEach((it, i) => {
+          const ix = shelfX + 12 + i * 22;
+          if (ix < shelfX + shelfW - 6) {
+            ctx.fillText(it, ix, sy - 2);
+          }
+        });
+      });
+
+      // Petite étoile d'éclat zellige
+      if (isBusy) {
+        ctx.font = '8px serif';
+        ctx.fillText('✨', shelfX + 22, shelfY1 - 10);
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // 4.C MAÂSERA / HUILERIE D'OLIVE : Meule circulaire tournante en granit + écoulement d'huile dorée
+    if (archetype === 'olive_press') {
+      const millX = leftX + 26;
+      const millY = 132;
+
+      // Grande cuve en pierre de taille circulaire
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.ellipse(millX, millY + 10, 24, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      // Meule en granit qui tourne
+      const angle = (timeSec * 2.2) % (Math.PI * 2);
+      const wheelOffset = Math.sin(angle) * 12;
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath();
+      ctx.ellipse(millX + wheelOffset, millY - 2, 9, 14, 0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Pivot et axe en bois d'olivier
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(millX, millY - 14);
+      ctx.lineTo(millX, millY + 10);
+      ctx.stroke();
+
+      // Presse hydraulique & goulotte d'huile dorée luminescente
+      const pressX = millX + 34;
+      const pressW = Math.max(90, zoneW - 68);
+      const pressY = 122;
+
+      // Cuve inox de réception d'huile
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.roundRect(pressX + 6, pressY + 4, 34, 18, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Filet d'huile d'olive dorée qui coule en continu
+      const flowAlpha = 0.75 + Math.sin(timeSec * 10) * 0.2;
+      ctx.strokeStyle = `rgba(250, 204, 21, ${flowAlpha})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(pressX + 23, pressY - 4);
+      ctx.lineTo(pressX + 23, pressY + 12);
+      ctx.stroke();
+
+      // Huile d'olive pure dans la cuve avec reflets
+      ctx.fillStyle = '#eab308';
+      ctx.fillRect(pressX + 9, pressY + 13, 28, 7);
+
+      // Bonbonnes en verre traditionnelles et jarres d'huile (دبوزة ماجل)
+      ctx.font = '12px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🫒', pressX + 48, pressY + 14);
+      ctx.fillText('🏺', pressX + 64, pressY + 14);
+      ctx.fillText('🫒', pressX + 80, pressY + 14);
+
+      ctx.restore();
+      return;
+    }
+
+    // 4.D CENTRE DE THALASSOTHÉRAPIE : Bassin d'eau de mer chauffée turquoise, brume & transats teck
+    if (archetype === 'thalasso_spa') {
+      const poolX = leftX + 8;
+      const poolY = 126;
+      const poolW = Math.min(130, zoneW * 0.58);
+      const poolH = 24;
+
+      // Rebord du bassin en marbre blanc de Carrare / Thala
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.roundRect(poolX, poolY, poolW, poolH, 6);
+      ctx.fill();
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Eau de mer turquoise chauffée avec ondulations translucides
+      const seaGrad = ctx.createLinearGradient(poolX, poolY + 2, poolX, poolY + poolH);
+      seaGrad.addColorStop(0, '#06b6d4');
+      seaGrad.addColorStop(0.5, '#0891b2');
+      seaGrad.addColorStop(1, '#0e7490');
+      ctx.fillStyle = seaGrad;
+      ctx.beginPath();
+      ctx.roundRect(poolX + 3, poolY + 3, poolW - 6, poolH - 5, 4);
+      ctx.fill();
+
+      // Ondulations caustiques douces
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1;
+      for (let wx = poolX + 8; wx < poolX + poolW - 10; wx += 16) {
+        const cx = wx + Math.sin(timeSec * 3 + wx * 0.1) * 3;
+        ctx.beginPath();
+        ctx.arc(cx, poolY + 9, 4, 0, Math.PI);
+        ctx.stroke();
+      }
+
+      // Pétales de jasmin et fleurs flottant à la surface
+      ctx.font = '9px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🌸', poolX + 16, poolY + 12);
+      ctx.fillText('💮', poolX + poolW * 0.45, poolY + 10);
+      ctx.fillText('🌸', poolX + poolW - 20, poolY + 14);
+
+      // Particules de brume / vapeur thermale tiède relaxante
+      if (isBusy) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+        for (let i = 0; i < 4; i++) {
+          const sx = poolX + 14 + i * 26 + Math.sin(timeSec * 2 + i) * 4;
+          const sy = poolY - 2 - ((timeSec * 14 + i * 8) % 12);
+          ctx.beginPath();
+          ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Transat de relaxation en bois de teck avec serviette cyan roulée
+      const deckX = poolX + poolW + 6;
+      const deckW = Math.max(52, zoneW - poolW - 12);
+      const deckY = 132;
+      ctx.fillStyle = '#78350f';
+      ctx.beginPath();
+      ctx.roundRect(deckX, deckY, deckW, 6, 2);
+      ctx.fill();
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.roundRect(deckX + 4, deckY - 4, 16, 5, 2);
+      ctx.fill();
+      ctx.font = '10px serif';
+      ctx.fillText('💆', deckX + deckW / 2, deckY - 2);
+
+      ctx.restore();
+      return;
+    }
+
     // 5. RESTAURATION & BOUTIQUES (`food_counter` & `retail_shop`) : Vitrine / Comptoir d'Exposition éclairé
     const displayX = leftX + 6;
     const displayY = 135;
@@ -3287,6 +3694,49 @@ export class CanvasStoreEngine {
       ctx.fillText('بورصة تونس 📈', x + 2, y - 29);
     }
 
+    else if (bizId === 'boulangerie_artisanale') {
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.fillRect(x + 8, y - 16, 24, 4);
+      ctx.font = '9px serif';
+      ctx.fillText('🥖', x + 12, y - 5);
+      ctx.fillText('🫓', x + 24, y - 5);
+    }
+    else if (bizId === 'artisanat_poterie') {
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+      ctx.font = '9.5px serif';
+      ctx.fillText('🏺', x + 12, y - 5);
+      ctx.fillText('🥣', x + 24, y - 5);
+    }
+    else if (bizId === 'huilerie_olive') {
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#65a30d';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+      ctx.fillStyle = '#eab308';
+      ctx.fillRect(x + 8, y - 14, 8, 12);
+      ctx.font = '9.5px serif';
+      ctx.fillText('🫒', x + 24, y - 5);
+    }
+    else if (bizId === 'centre_thalasso') {
+      ctx.fillStyle = '#083344';
+      ctx.fillRect(x + 4, y - 18, 36, 18);
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + 4, y - 18, 36, 18);
+      ctx.font = '9.5px serif';
+      ctx.fillText('🫧', x + 12, y - 5);
+      ctx.fillText('💆', x + 24, y - 5);
+    }
     else if (bizId === 'taxi_collectif') {
       // Poste de dispatching / tableau de bord avec pneu de secours et radio
       ctx.fillStyle = '#1e293b';
@@ -4633,6 +5083,33 @@ export class QuartierAnimator {
     this.seagulls = [];
     this.interactiveHitboxes = [];
 
+    // Cycle Ciel Atmosphérique 240s
+    this.skyCycleDuration = 240;
+
+    // سحابة البركة والذهب (Golden Fortune Cloud)
+    this.goldenCloud = {
+      x: -160,
+      y: 42,
+      speed: 26,
+      width: 105,
+      height: 48,
+      claimed: false
+    };
+
+    // موكب الفرقة الشعبية والمهرجان التونسي (Tabbal, Mezoued, Derbouka & Folk Dancer)
+    this.folkTroupe = {
+      x: -320,
+      speed: 28,
+      dir: 1,
+      active: true,
+      troupers: [
+        { role: 'tabbal', name: 'الطبّال', instrument: '🥁', hat: '#dc2626', robe: '#fef08a' },
+        { role: 'mezoued', name: 'المزوادي', instrument: '🎺', hat: '#b91c1c', robe: '#ffffff' },
+        { role: 'derbouka', name: 'الدربوكة', instrument: '🪘', hat: '#dc2626', robe: '#38bdf8' },
+        { role: 'danseur', name: 'رقّاص', instrument: '🕺', hat: '#991b1b', robe: '#34d399' }
+      ]
+    };
+
     // Météo dynamique de quartier (Pluie, Parapluies, Course & Flaques d'eau)
     this.isRaining = false;
     this.rainTimer = 22; // cycle météo en secondes
@@ -4689,7 +5166,11 @@ export class QuartierAnimator {
       usine_conserves: { id: 'usine_conserves', width: 190, height: 155, style: 'harissa_factory', color: '#f43f5e', roofColor: '#be123c' },
       showroom_auto: { id: 'showroom_auto', width: 200, height: 162, style: 'auto_palace', color: '#e2e8f0', roofColor: '#334155' },
       promoteur_immobilier: { id: 'promoteur_immobilier', width: 210, height: 198, style: 'real_estate_tower', color: '#38bdf8', roofColor: '#0369a1' },
-      tayaran_el_ghzela: { id: 'tayaran_el_ghzela', width: 230, height: 205, style: 'airline_headquarters', color: '#f1f5f9', roofColor: '#e11d48' }
+      tayaran_el_ghzela: { id: 'tayaran_el_ghzela', width: 230, height: 205, style: 'airline_headquarters', color: '#f1f5f9', roofColor: '#e11d48' },
+      boulangerie_artisanale: { id: 'boulangerie_artisanale', width: 175, height: 140, style: 'boulangerie_oven', color: '#fef3c7', roofColor: '#b45309' },
+      artisanat_poterie: { id: 'artisanat_poterie', width: 170, height: 138, style: 'pottery_workshop', color: '#fed7aa', roofColor: '#0284c7' },
+      huilerie_olive: { id: 'huilerie_olive', width: 195, height: 156, style: 'olive_press', color: '#ecfccb', roofColor: '#3f6212' },
+      centre_thalasso: { id: 'centre_thalasso', width: 220, height: 188, style: 'thalasso_spa', color: '#e0f2fe', roofColor: '#0891b2' }
     };
 
     this.buildingsConfig = [];
@@ -4789,6 +5270,7 @@ export class QuartierAnimator {
       { type: 'monument_square', name: 'ساحة الساعة والنافورة والحديقة', width: 165 },
       { type: 'crossroad', streetName: 'نهج الباشا', width: 120, nextZoneId: 'bizerte', nextZoneLabel: 'بنزرت' },
       { type: 'biz', id: 'kahwa' },
+      { type: 'biz', id: 'boulangerie_artisanale' },
       { type: 'house', style: 'medina', name: 'دار العربي', width: 120, height: 125, wallColor: '#fffbeb', doorColor: '#eab308' },
       { type: 'biz', id: 'superette' },
       { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'bizerte', nextZoneLabel: 'بنزرت' },
@@ -4803,6 +5285,7 @@ export class QuartierAnimator {
       { type: 'biz', id: 'salon_de_the' },
       { type: 'crossroad', streetName: 'كورنيش بوجعفر', width: 130, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
       { type: 'biz', id: 'hotel' },
+      { type: 'biz', id: 'centre_thalasso' },
       { type: 'house', style: 'goulette', name: 'دار القنطاوي', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#059669' },
       { type: 'biz', id: 'restaurant' },
       { type: 'crossroad', streetName: 'باب بحر سوسة', width: 130, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
@@ -4847,10 +5330,12 @@ export class QuartierAnimator {
     zoneSpecs.nabeul_hammamet = [
       { type: 'house', style: 'hammamet', name: 'فيلا ياسمين نابل', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#d97706' },
       { type: 'biz', id: 'librairie' },
+      { type: 'biz', id: 'artisanat_poterie' },
       { type: 'crossroad', streetName: 'شارع الحبيب بورقيبة نابل', width: 125, nextZoneId: 'kairouan', nextZoneLabel: 'القيروان' },
       { type: 'biz', id: 'superette' },
       { type: 'house', style: 'hammamet', name: 'دار الفخار والزهر', width: 125, height: 130, wallColor: '#fef3c7', doorColor: '#059669' },
       { type: 'biz', id: 'kahwa' },
+      { type: 'biz', id: 'centre_thalasso' },
       { type: 'crossroad', streetName: 'مفترق الحمامات السياحي', width: 130, nextZoneId: 'kairouan', nextZoneLabel: 'القيروان' },
       { type: 'biz', id: 'croisiere_mer' }
     ];
@@ -4861,6 +5346,7 @@ export class QuartierAnimator {
       { type: 'biz', id: 'kahwa' },
       { type: 'crossroad', streetName: 'ساحة فسقية الأغالبة', width: 130, nextZoneId: 'sbeitla', nextZoneLabel: 'سبيطلة' },
       { type: 'biz', id: 'patisserie' },
+      { type: 'biz', id: 'boulangerie_artisanale' },
       { type: 'house', style: 'medina', name: 'قصر الزربية القيروانية', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#d97706' },
       { type: 'biz', id: 'superette' },
       { type: 'biz', id: 'vente_vetements' },
@@ -4884,6 +5370,7 @@ export class QuartierAnimator {
     zoneSpecs.sfax = [
       { type: 'house', style: 'medina', name: 'عمارة برج النار', width: 135, height: 155, wallColor: '#f8fafc', doorColor: '#0284c7' },
       { type: 'biz', id: 'fruits_de_mer' },
+      { type: 'biz', id: 'huilerie_olive' },
       { type: 'crossroad', streetName: 'ساحة باب الديوان', width: 130, nextZoneId: 'djerba_holding', nextZoneLabel: 'جربة' },
       { type: 'biz', id: 'librairie' },
       { type: 'biz', id: 'vente_vetements' },
@@ -4897,9 +5384,11 @@ export class QuartierAnimator {
     zoneSpecs.djerba_holding = [
       { type: 'house', style: 'djerba', name: 'حوش جربة الكبير', width: 140, height: 148, wallColor: '#f8fafc', doorColor: '#0284c7' },
       { type: 'biz', id: 'kahwa' },
+      { type: 'biz', id: 'artisanat_poterie' },
       { type: 'crossroad', streetName: 'ساحة حومة السوق', width: 135, nextZoneId: 'gabes', nextZoneLabel: 'قابس' },
       { type: 'biz', id: 'fruits_de_mer' },
       { type: 'biz', id: 'hotel' },
+      { type: 'biz', id: 'centre_thalasso' },
       { type: 'house', style: 'djerba', name: 'قصر ميدون', width: 145, height: 155, wallColor: '#fef3c7', doorColor: '#b45309' },
       { type: 'biz', id: 'salon_de_the' },
       { type: 'crossroad', streetName: 'مفترق المنطقة السياحية', width: 135, nextZoneId: 'gabes', nextZoneLabel: 'قابس' },
@@ -4949,6 +5438,7 @@ export class QuartierAnimator {
     zoneSpecs.beja = [
       { type: 'house', style: 'medina', name: 'قصر القمح الباجي', width: 125, height: 125, wallColor: '#fef3c7', doorColor: '#059669' },
       { type: 'biz', id: 'produits_laitiers' },
+      { type: 'biz', id: 'boulangerie_artisanale' },
       { type: 'crossroad', streetName: 'طريق الشمال الغربي', width: 125, nextZoneId: 'le_kef', nextZoneLabel: 'الكاف' },
       { type: 'biz', id: 'boucherie' },
       { type: 'biz', id: 'kahwa' },
@@ -4975,6 +5465,7 @@ export class QuartierAnimator {
     zoneSpecs.monastir_mahdia = [
       { type: 'house', style: 'goulette', name: 'برج الرباط البحري', width: 135, height: 145, wallColor: '#f8fafc', doorColor: '#0369a1' },
       { type: 'biz', id: 'hotel' },
+      { type: 'biz', id: 'huilerie_olive' },
       { type: 'crossroad', streetName: 'مارينا المنستير', width: 130, nextZoneId: 'medenine_zarzis', nextZoneLabel: 'مدنين' },
       { type: 'biz', id: 'salon_de_the' },
       { type: 'biz', id: 'superette' },
@@ -5404,6 +5895,28 @@ export class QuartierAnimator {
     } else if (action === 'open_tobacco') {
       // Action par défaut : petit pourboire / تفتوفة سريعة من القمريڨ
       if (this.onHudAction) this.onHudAction('hud_tobacco');
+    } else if (action === 'claim_golden_cloud') {
+      if (this.goldenCloud && !this.goldenCloud.claimed) {
+        this.goldenCloud.claimed = true;
+        const startX = this.goldenCloud.x + 50;
+        const startY = this.goldenCloud.y + 20;
+        for (let i = 0; i < 24; i++) {
+          const angle = (Math.PI * 2 * i) / 24;
+          const spd = 35 + Math.random() * 55;
+          this.smokePuffs.push({
+            x: startX,
+            y: startY,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd - 30,
+            color: '#fbbf24',
+            radius: 2.8 + Math.random() * 2.5,
+            alpha: 1.0
+          });
+        }
+        if (this.onHudAction) {
+          this.onHudAction('claim_golden_cloud');
+        }
+      }
     } else if (action === 'fountain_wish') {
       if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playCoin) {
         window.soundEngine.playCoin();
@@ -5467,6 +5980,28 @@ export class QuartierAnimator {
       c.x += c.speed * dt;
       if (c.x > this.worldWidth + 120) c.x = -150;
     });
+
+    // Progression de la سحابة البركة والذهب
+    if (this.goldenCloud) {
+      this.goldenCloud.x += this.goldenCloud.speed * dt;
+      if (this.goldenCloud.x > this.worldWidth + 200) {
+        this.goldenCloud.x = -180;
+        this.goldenCloud.y = 35 + (Math.sin(timestamp * 0.001) * 15);
+        this.goldenCloud.claimed = false;
+      }
+    }
+
+    // Déplacement du موكب الفرقة الشعبية
+    if (this.folkTroupe && this.folkTroupe.active) {
+      this.folkTroupe.x += this.folkTroupe.speed * this.folkTroupe.dir * dt;
+      if (this.folkTroupe.dir > 0 && this.folkTroupe.x > this.worldWidth + 300) {
+        this.folkTroupe.dir = -1;
+        this.folkTroupe.x = this.worldWidth + 280;
+      } else if (this.folkTroupe.dir < 0 && this.folkTroupe.x < -300) {
+        this.folkTroupe.dir = 1;
+        this.folkTroupe.x = -280;
+      }
+    }
 
     this.seagulls.forEach(s => {
       s.x += s.speed * dt;
@@ -5864,44 +6399,65 @@ export class QuartierAnimator {
     this.interactiveHitboxes = [];
     ctx.clearRect(0, 0, w, h);
 
+    // --- CYCLE CIEL PROGRESSIF (Jour / Coucher de Soleil Doré / Nuit Étoilée / Aube) ---
+    const cycleSec = this.skyCycleDuration || 240;
+    const skyPhase = ((timestamp * 0.001) % cycleSec) / cycleSec; // 0 à 1
     const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.65);
-    const z = this.currentZoneId;
-    if (z === 'la_goulette' || z === 'bizerte' || z === 'monastir_mahdia') {
-      skyGrad.addColorStop(0, '#0c4a6e');
-      skyGrad.addColorStop(0.5, '#0284c7');
-      skyGrad.addColorStop(1, '#38bdf8');
-    } else if (z === 'lac_2' || z === 'sousse' || z === 'sfax') {
-      skyGrad.addColorStop(0, '#0f172a');
-      skyGrad.addColorStop(0.5, '#1e1b4b');
-      skyGrad.addColorStop(1, '#4338ca');
-    } else if (z === 'hammamet' || z === 'nabeul_hammamet' || z === 'tozeur' || z === 'djerba_holding') {
-      skyGrad.addColorStop(0, '#1e1b4b');
-      skyGrad.addColorStop(0.5, '#701a75');
-      skyGrad.addColorStop(1, '#f59e0b');
-    } else if (z === 'gafsa' || z === 'gabes' || z === 'medenine_zarzis' || z === 'le_kef') {
-      skyGrad.addColorStop(0, '#1c1917');
-      skyGrad.addColorStop(0.5, '#78350f');
-      skyGrad.addColorStop(1, '#d97706');
+
+    let starAlphaFactor = 0;
+    if (skyPhase < 0.42) {
+      // 1. Jour Méditerranéen Ensoleillé (bleu azur limpide et ciel radieux)
+      skyGrad.addColorStop(0, '#0284c7');
+      skyGrad.addColorStop(0.55, '#38bdf8');
+      skyGrad.addColorStop(1, '#bae6fd');
+      starAlphaFactor = 0;
+    } else if (skyPhase < 0.65) {
+      // 2. Golden Hour Magique (coucher de soleil ambré d'or, pourpre et rose crépusculaire)
+      skyGrad.addColorStop(0, '#3b0764');
+      skyGrad.addColorStop(0.45, '#b45309');
+      skyGrad.addColorStop(0.8, '#f97316');
+      skyGrad.addColorStop(1, '#fde68a');
+      starAlphaFactor = ((skyPhase - 0.42) / 0.23) * 0.4;
+    } else if (skyPhase < 0.90) {
+      // 3. Nuit Étoilée Sidi Bou Saïd (bleu nuit profond, indigo et mystère)
+      skyGrad.addColorStop(0, '#030712');
+      skyGrad.addColorStop(0.5, '#0f172a');
+      skyGrad.addColorStop(1, '#1e1b4b');
+      starAlphaFactor = 0.85;
     } else {
-      skyGrad.addColorStop(0, '#0f172a');
-      skyGrad.addColorStop(0.4, '#1e1b4b');
-      skyGrad.addColorStop(0.75, '#431407');
-      skyGrad.addColorStop(1, '#b45309');
+      // 4. Aube Dorée / Lever de Soleil (éveil doux et lumière renaissante)
+      skyGrad.addColorStop(0, '#0c4a6e');
+      skyGrad.addColorStop(0.45, '#7c2d12');
+      skyGrad.addColorStop(0.8, '#fb923c');
+      skyGrad.addColorStop(1, '#fef08a');
+      starAlphaFactor = (1 - (skyPhase - 0.9) / 0.1) * 0.45;
     }
+
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, w, h);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-    for (let i = 0; i < 35; i++) {
-      const sx = ((i * 137.5) % w);
-      const sy = ((i * 73.1) % (h * 0.45));
-      const blink = Math.sin(timestamp * 0.003 + i) * 0.5 + 0.5;
-      ctx.globalAlpha = 0.2 + blink * 0.6;
-      ctx.fillRect(sx, sy, 1.5, 1.5);
+    // Étoiles scintillantes actives la nuit et à la tombée du jour
+    if (starAlphaFactor > 0.05) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      for (let i = 0; i < 35; i++) {
+        const sx = ((i * 137.5) % w);
+        const sy = ((i * 73.1) % (h * 0.45));
+        const blink = Math.sin(timestamp * 0.003 + i) * 0.5 + 0.5;
+        ctx.globalAlpha = starAlphaFactor * (0.25 + blink * 0.75);
+        ctx.fillRect(sx, sy, 1.5, 1.5);
+      }
+      ctx.globalAlpha = 1.0;
     }
-    ctx.globalAlpha = 1.0;
 
-    this.drawSkylineBackground(ctx, camX, w, h, groundY - 10);
+    this.drawSkylineBackground(ctx, camX, w, h, groundY - 10, skyPhase);
+
+    // سحابة البركة والذهب الكريمة
+    if (this.goldenCloud) {
+      const gcScreenX = this.goldenCloud.x - camX * 0.3;
+      if (gcScreenX > -130 && gcScreenX < w + 130) {
+        this.drawGoldenCloud(ctx, gcScreenX, this.goldenCloud.y, timestamp, this.goldenCloud.claimed);
+      }
+    }
 
     ctx.fillStyle = 'rgba(254, 243, 199, 0.22)';
     this.clouds.forEach(c => {
@@ -5984,6 +6540,9 @@ export class QuartierAnimator {
         ctx.restore();
       }
     });
+
+    // موكب الفرقة الشعبية والمهرجان
+    this.drawFolkTroupe(ctx, camX, groundY + 10, timestamp);
 
     this.pedestrians.forEach(p => {
       const screenX = p.x - camX;
@@ -6095,28 +6654,50 @@ export class QuartierAnimator {
     }
   }
 
-  drawSkylineBackground(ctx, camX, w, h, groundY = 245) {
+  drawSkylineBackground(ctx, camX, w, h, groundY = 245, skyPhase = 0) {
     ctx.save();
 
-    // Lune en croissant doré & halo céleste
-    const moonX = w - 95 - (camX * 0.03);
-    const moonY = 38;
-    const moonGlow = ctx.createRadialGradient(moonX, moonY, 4, moonX, moonY, 38);
-    moonGlow.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
-    moonGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
-    ctx.fillStyle = moonGlow;
-    ctx.beginPath();
-    ctx.arc(moonX, moonY, 38, 0, Math.PI * 2);
-    ctx.fill();
+    if (skyPhase < 0.62) {
+      // Soleil doré radieux de jour ou soleil couchant ambré
+      const isGoldenHour = skyPhase >= 0.42;
+      const sunX = w - 105 - (camX * 0.03);
+      const sunY = isGoldenHour ? (55 + (skyPhase - 0.42) * 200) : 40;
 
-    ctx.fillStyle = '#fef08a';
-    ctx.beginPath();
-    ctx.arc(moonX, moonY, 12, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = this.currentZoneId === 'la_goulette' ? '#0c4a6e' : '#0f172a';
-    ctx.beginPath();
-    ctx.arc(moonX - 4, moonY - 3, 10, 0, Math.PI * 2);
-    ctx.fill();
+      // Halo solaire
+      const sunGlow = ctx.createRadialGradient(sunX, sunY, 4, sunX, sunY, isGoldenHour ? 46 : 55);
+      sunGlow.addColorStop(0, isGoldenHour ? 'rgba(251, 146, 60, 0.55)' : 'rgba(254, 240, 138, 0.5)');
+      sunGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+      ctx.fillStyle = sunGlow;
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, isGoldenHour ? 46 : 55, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Disque solaire
+      ctx.fillStyle = isGoldenHour ? '#f97316' : '#fef08a';
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, isGoldenHour ? 15 : 13, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Lune en croissant doré & halo céleste de nuit
+      const moonX = w - 95 - (camX * 0.03);
+      const moonY = 38;
+      const moonGlow = ctx.createRadialGradient(moonX, moonY, 4, moonX, moonY, 38);
+      moonGlow.addColorStop(0, 'rgba(254, 240, 138, 0.4)');
+      moonGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+      ctx.fillStyle = moonGlow;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, 38, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(moonX - 4, moonY - 3, 10, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // Collines lointaines en parallaxe douce (Sidi Bou Saïd / Boukornine)
     ctx.fillStyle = '#1e1b4b';
@@ -6164,6 +6745,163 @@ export class QuartierAnimator {
         ctx.fill();
       }
     }
+    ctx.restore();
+  }
+
+  drawGoldenCloud(ctx, x, y, timestamp, claimed = false) {
+    ctx.save();
+    if (claimed) {
+      // Brume dorée scintillante évanescente
+      ctx.globalAlpha = 0.22;
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(x + 45, y + 15, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
+
+    const hover = Math.sin(timestamp * 0.003) * 3;
+    const cy = y + hover;
+
+    // Halo céleste doré radieux
+    const glow = ctx.createRadialGradient(x + 45, cy + 18, 8, x + 45, cy + 18, 65);
+    glow.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
+    glow.addColorStop(0.5, 'rgba(245, 158, 11, 0.25)');
+    glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(x + 45, cy + 18, 65, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Volume du nuage en dégradé or ambré
+    const cloudGrad = ctx.createLinearGradient(x, cy, x, cy + 35);
+    cloudGrad.addColorStop(0, '#ffffff');
+    cloudGrad.addColorStop(0.3, '#fef08a');
+    cloudGrad.addColorStop(0.7, '#f59e0b');
+    cloudGrad.addColorStop(1, '#d97706');
+    ctx.fillStyle = cloudGrad;
+
+    ctx.beginPath();
+    ctx.arc(x + 20, cy + 22, 16, 0, Math.PI * 2);
+    ctx.arc(x + 42, cy + 14, 22, 0, Math.PI * 2);
+    ctx.arc(x + 65, cy + 18, 18, 0, Math.PI * 2);
+    ctx.arc(x + 84, cy + 24, 14, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pièce d'or tournoyante au centre
+    const coinY = cy + 16 + Math.sin(timestamp * 0.008) * 3;
+    ctx.fillStyle = '#fde047';
+    ctx.beginPath();
+    ctx.ellipse(x + 50, coinY, 7.5, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // Étincelles scintillantes ✨
+    const spPhase = timestamp * 0.005;
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('✨', x + 5 + Math.sin(spPhase) * 4, cy + 6);
+    ctx.fillText('⭐', x + 82 + Math.cos(spPhase) * 4, cy + 8);
+
+    // Écusson interactif "سحابة البركة"
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.roundRect(x + 6, cy + 34, 88, 16, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 9.5px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('سحابة البركة 🪙', x + 50, cy + 45.5);
+
+    // Enregistrement de la hitbox cliquable
+    this.interactiveHitboxes.push({
+      x: x + 4,
+      y: cy,
+      w: 92,
+      h: 52,
+      action: 'claim_golden_cloud'
+    });
+
+    ctx.restore();
+  }
+
+  drawFolkTroupe(ctx, camX, groundY, timestamp) {
+    if (!this.folkTroupe || !this.folkTroupe.active) return;
+    const startX = this.folkTroupe.x - camX;
+    if (startX < -180 || startX > this.width + 180) return;
+
+    ctx.save();
+    const dir = this.folkTroupe.dir || 1;
+    const tMembers = this.folkTroupe.troupers;
+
+    // Musiciens marchant en cortège
+    tMembers.forEach((m, idx) => {
+      const mx = startX + idx * 36 * dir;
+      const walkBounce = Math.abs(Math.sin(timestamp * 0.009 + idx)) * 3;
+      const my = groundY - walkBounce;
+
+      // Ombre portée
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.beginPath();
+      ctx.ellipse(mx, groundY + 2, 8, 2.8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Corps / Jebba tunisienne
+      ctx.fillStyle = m.robe;
+      ctx.beginPath();
+      ctx.roundRect(mx - 6, my - 16, 12, 16, 4);
+      ctx.fill();
+
+      // Chéchia rouge tunisienne
+      ctx.fillStyle = m.hat;
+      ctx.beginPath();
+      ctx.roundRect(mx - 4, my - 23, 8, 5, 2);
+      ctx.fill();
+      // Kabbous (gland noir)
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(mx + (dir > 0 ? 3 : -4), my - 21, 2, 4);
+
+      // Tête
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath();
+      ctx.arc(mx, my - 17, 3.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Instrument
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      const instY = my - 10 + Math.sin(timestamp * 0.012 + idx) * 2;
+      ctx.fillText(m.instrument, mx + (dir * 7), instY);
+    });
+
+    // Notes de musique au-dessus de la troupe
+    const midX = startX + 54 * dir;
+    const noteY = groundY - 36 + Math.sin(timestamp * 0.007) * 4;
+    ctx.font = '10.5px sans-serif';
+    ctx.fillText('🎵', midX - 25, noteY);
+    ctx.fillText('🎶', midX + 25, noteY - 6);
+
+    // Petite bulle d'ambiance festive
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.78)';
+    ctx.strokeStyle = '#e11d48';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(midX - 44, groundY - 48, 88, 15, 7);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = 'bold 9px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('موكب الفرقة الشعبية 🇹🇳', midX, groundY - 37.5);
+
     ctx.restore();
   }
 
