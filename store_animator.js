@@ -378,6 +378,7 @@ export class CanvasStoreEngine {
       activityType = 'drinking';
       activityDuration = 2.1;
       needsWaiterService = true;
+      isSeated = true; // Assis sur les tabourets devant le comptoir
     } else if (archetype === 'tea_lounge') {
       activityType = this.bizId === 'restaurant' ? 'eating' : 'drinking';
       activityDuration = this.bizId === 'restaurant' ? 2.5 : 2.2;
@@ -427,6 +428,9 @@ export class CanvasStoreEngine {
                 : ['🍹', '🍸', '☕', '🍰', '🧋'][slotIdx % 5])
             : this.getOrderIcon()),
       ticketIcon,
+      isSmoking: archetype === 'kahwa_counter' ? (Math.random() < 0.45) : false,
+      talkPhase: Math.random() * Math.PI * 2,
+      hasChicha: (this.bizId === 'salon_de_the') && (slotIdx % 2 === 0 || Math.random() < 0.6),
       reaction: null,
       payDuration: (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'tobacco_kiosk') ? 0.55 : 0.75,
       payTimer: 0,
@@ -2436,14 +2440,15 @@ export class CanvasStoreEngine {
       return;
     }
 
-    // 3. SALON DE THÉ & RESTAURANT (`tea_lounge`) : 5 TABLES où les clients sont ASSIS (boissons ou plats selon métier)
+    // 3. SALON DE THÉ & RESTAURANT (`tea_lounge`) : Dossiers de fauteuils velours / chaises en arrière-plan
+    // (Les tables, plats gastronomiques et chichas sont dessinés au 1er plan devant les clients dans drawForegroundFurniture)
     if (archetype === 'tea_lounge') {
       const isResto = bizId === 'restaurant';
       for (let tIdx = 0; tIdx < 5; tIdx++) {
         const tx = this.getActivitySlotX('tea_lounge', tIdx) + 12;
         const ty = 145;
 
-        // Fauteuil lounge velours ou chaise de restaurant en bois noble
+        // Fauteuil lounge velours ou chaise de restaurant en bois noble (arrière-plan du client assis)
         ctx.fillStyle = isResto ? '#451a03' : '#831843';
         ctx.beginPath();
         ctx.roundRect(tx - 11, ty - 16, 22, 16, isResto ? 3 : 5);
@@ -2451,30 +2456,6 @@ export class CanvasStoreEngine {
         ctx.strokeStyle = isResto ? '#b45309' : '#f472b6';
         ctx.lineWidth = 1;
         ctx.stroke();
-
-        // Pied de table
-        ctx.fillStyle = isResto ? '#78350f' : '#fbbf24';
-        ctx.fillRect(tx - 1.5, ty, 3, 9);
-
-        // Plateau de table
-        ctx.fillStyle = isResto ? '#fef3c7' : '#f8fafc';
-        ctx.beginPath();
-        if (isResto) {
-          // Table de restaurant avec nappe blanche/dorée
-          ctx.roundRect(tx - 13, ty - 2, 26, 6, 2);
-        } else {
-          // Table ronde marbre salon de thé
-          ctx.ellipse(tx, ty, 12, 4.5, 0, 0, Math.PI * 2);
-        }
-        ctx.fill();
-        ctx.strokeStyle = isResto ? '#d97706' : '#fbbf24';
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-
-        // Décor sur table : bougie ou petite fleur
-        ctx.font = '8px serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(isResto ? '🕯️' : '🌸', tx, ty - 2);
       }
       ctx.restore();
       return;
@@ -3486,20 +3467,101 @@ export class CanvasStoreEngine {
         ctx.textAlign = 'center';
         ctx.fillText('🎮', -5, -7 + padVib);
       } else if (c.state === 'doing_activity' && c.activityType === 'drinking') {
+        const isKahwa = c.archetype === 'kahwa_counter';
         const sip = Math.max(0, Math.sin(c.activityTimer * 3.8 + seed));
         const cupY = -9 - sip * 11;
         const cupX = -8 + sip * 3;
-        ctx.strokeStyle = st.coat;
-        ctx.lineWidth = 2.2;
-        ctx.beginPath();
-        ctx.moveTo(-5, -14);
-        ctx.lineTo(cupX, cupY);
-        ctx.moveTo(5, -14);
-        ctx.lineTo(7, -5);
-        ctx.stroke();
-        ctx.font = '9.5px serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(c.orderIcon || '☕', cupX - 1, cupY + 2);
+
+        if (isKahwa && c.isSmoking) {
+          // --- CLIENT DU CAFÉ QUI FUME UNE CIGARETTE ---
+          const puffCycle = (c.activityTimer * 1.8 + seed);
+          const isPuffing = Math.sin(puffCycle) > 0.6; // porte la cigarette aux lèvres
+          const cigHandX = isPuffing ? -2 : -8;
+          const cigHandY = isPuffing ? -21 : -9;
+
+          // Bras gauche tenant la cigarette
+          ctx.strokeStyle = st.coat;
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(-5, -14);
+          ctx.lineTo(cigHandX, cigHandY);
+          // Bras droit posé sur le comptoir ou tenant la tasse
+          ctx.moveTo(5, -14);
+          ctx.lineTo(6, -6);
+          ctx.stroke();
+
+          // Cigarette fine blanche
+          ctx.save();
+          ctx.strokeStyle = '#f8fafc';
+          ctx.lineWidth = 1.3;
+          ctx.beginPath();
+          ctx.moveTo(cigHandX, cigHandY);
+          ctx.lineTo(cigHandX - 6, cigHandY - 2.5);
+          ctx.stroke();
+
+          // Filtre marron/doré
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(cigHandX, cigHandY);
+          ctx.lineTo(cigHandX - 2, cigHandY - 0.8);
+          ctx.stroke();
+
+          // Braise ardente rouge/orange vif incandescent
+          const emberPulse = isPuffing ? 1.6 : (0.9 + Math.sin(c.activityTimer * 12) * 0.3);
+          ctx.fillStyle = isPuffing ? '#ef4444' : '#f97316';
+          ctx.beginPath();
+          ctx.arc(cigHandX - 6.5, cigHandY - 2.7, emberPulse, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Volutes de fumée montantes et sinueuses
+          const smokeRise = ((c.activityTimer * 18 + seed * 5) % 22);
+          const smokeAlpha = Math.max(0, 0.5 - smokeRise / 24);
+          ctx.fillStyle = `rgba(226, 232, 240, ${smokeAlpha})`;
+          ctx.beginPath();
+          ctx.arc(cigHandX - 7 + Math.sin(smokeRise * 0.4) * 3, cigHandY - 5 - smokeRise, 1.8 + smokeRise * 0.15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          // Tasse de café posée sur le bar devant lui
+          ctx.font = '9.5px serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(c.orderIcon || '☕', 7, -5);
+        } else if (isKahwa) {
+          // --- CLIENT DU CAFÉ EN DISCUSSION AVEC SON VOISIN ---
+          const talkCycle = (c.talkPhase || 0) + c.activityTimer * 3.2;
+          const isGesticulating = Math.sin(talkCycle * 0.8) > -0.2;
+          const gestureY = isGesticulating ? -8 + Math.sin(talkCycle * 3) * 4 : -5;
+          const gestureX = isGesticulating ? 9 + Math.sin(talkCycle * 2) * 3 : 7;
+
+          ctx.strokeStyle = st.coat;
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          // Bras gauche buvant la gorgée de café
+          ctx.moveTo(-5, -14);
+          ctx.lineTo(cupX, cupY);
+          // Bras droit gesticulant en discussion vivante
+          ctx.moveTo(5, -14);
+          ctx.lineTo(gestureX, gestureY);
+          ctx.stroke();
+
+          ctx.font = '9.5px serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(c.orderIcon || '☕', cupX - 1, cupY + 2);
+        } else {
+          // Salon de thé ou autre
+          ctx.strokeStyle = st.coat;
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(-5, -14);
+          ctx.lineTo(cupX, cupY);
+          ctx.moveTo(5, -14);
+          ctx.lineTo(7, -5);
+          ctx.stroke();
+          ctx.font = '9.5px serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(c.orderIcon || '☕', cupX - 1, cupY + 2);
+        }
       } else if (c.state === 'doing_activity' && c.activityType === 'eating') {
         const bite = Math.max(0, Math.sin(c.activityTimer * 4.2 + seed));
         const foodY = -8 - bite * 10;
@@ -3618,6 +3680,174 @@ export class CanvasStoreEngine {
 
       ctx.restore();
     }
+  }
+
+  // --- MOBILIER & TABLES AU PREMIER PLAN (DEVANT LES CLIENTS ASSIS) ---
+  drawForegroundFurniture(ctx, bizId, now) {
+    const archetype = this.getArchetype();
+    if (archetype !== 'tea_lounge') return;
+
+    const isResto = bizId === 'restaurant';
+    ctx.save();
+
+    for (let tIdx = 0; tIdx < 5; tIdx++) {
+      const tx = this.getActivitySlotX('tea_lounge', tIdx) + 12;
+      const ty = 145;
+
+      // Pied central de table en laiton doré poli ou bois noble
+      ctx.fillStyle = isResto ? '#78350f' : '#fbbf24';
+      ctx.fillRect(tx - 1.5, ty, 3, 9);
+      // Socle au sol
+      ctx.beginPath();
+      ctx.ellipse(tx, ty + 9, 6, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Plateau de table AU PREMIER PLAN devant le buste et les jambes du client assis
+      ctx.beginPath();
+      if (isResto) {
+        // Table de restaurant avec nappe ivoire/blanche aux liserés dorés
+        ctx.fillStyle = '#fef3c7';
+        ctx.roundRect(tx - 14, ty - 2, 28, 7, 2);
+        ctx.fill();
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Couverts et serviette
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(tx - 11, ty - 1, 1, 4);
+        ctx.fillRect(tx + 10, ty - 1, 1, 4);
+
+        // Verre à pied élégant
+        ctx.font = '7.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🍷', tx + 9, ty - 3);
+
+        // Client assis à cette table
+        const seatedCust = this.customers.find(c => c.stationSlot === tIdx && (c.state === 'waiting_service' || c.state === 'doing_activity'));
+        if (seatedCust) {
+          const dishes = ['🍲', '🥘', '🍛', '🍗', '🐟'];
+          const dish = seatedCust.orderIcon || dishes[tIdx % dishes.length];
+          ctx.font = '10px serif';
+          ctx.fillText(dish, tx - 1, ty - 2);
+
+          // Vapeur chaude du plat mijotant
+          const steamLift = ((now * 0.015 + tIdx * 4) % 14);
+          const steamAlpha = Math.max(0, 0.45 - steamLift / 16);
+          ctx.fillStyle = `rgba(255, 255, 255, ${steamAlpha})`;
+          ctx.beginPath();
+          ctx.arc(tx - 1 + Math.sin(steamLift * 0.5) * 2, ty - 4 - steamLift, 1.4 + steamLift * 0.1, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.font = '8px serif';
+          ctx.fillText('🕯️', tx, ty - 2);
+        }
+      } else {
+        // Salon de thé : table ronde en marbre blanc veiné avec cerclage doré brillant
+        ctx.fillStyle = '#f8fafc';
+        ctx.ellipse(tx, ty, 13, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+
+        // Reflet poli sur marbre
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.2)';
+        ctx.beginPath();
+        ctx.ellipse(tx - 2, ty - 1, 8, 2.5, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        const seatedCust = this.customers.find(c => c.stationSlot === tIdx && (c.state === 'waiting_service' || c.state === 'doing_activity'));
+        if (seatedCust) {
+          const drinks = ['🍵', '☕', '🍹', '🧃', '🍰'];
+          const item = seatedCust.orderIcon || drinks[tIdx % drinks.length];
+          ctx.font = '10px serif';
+          ctx.fillText(item, tx - 2, ty - 2);
+        } else {
+          ctx.font = '8px serif';
+          ctx.fillText('🌸', tx, ty - 2);
+        }
+
+        // --- CHICHA TUNISIENNE MAJESTUEUSE (`شيشة معسّل`) ---
+        if (seatedCust && seatedCust.hasChicha) {
+          const shX = tx + 13;
+          const shY = ty + 7;
+
+          // Ombre de la chicha au sol
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+          ctx.beginPath();
+          ctx.ellipse(shX, shY + 3, 5, 1.8, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Vase tulipe en verre bleuté / ambre soufflé avec liseré doré
+          ctx.fillStyle = (tIdx % 2 === 0) ? '#0284c7' : '#ea580c';
+          ctx.beginPath();
+          ctx.ellipse(shX, shY - 1, 4.5, 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+
+          // Reflet d'eau dans le vase
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.beginPath();
+          ctx.arc(shX - 1.5, shY - 2, 1, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Tige en laiton doré ciselé
+          ctx.fillStyle = '#fbbf24';
+          ctx.fillRect(shX - 1, shY - 17, 2, 14);
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 0.6;
+          ctx.strokeRect(shX - 1, shY - 17, 2, 14);
+
+          // Plateau pare-cendres circulaire en laiton
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.ellipse(shX, shY - 14, 4.5, 1.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Foyer en terre cuite
+          ctx.fillStyle = '#b45309';
+          ctx.beginPath();
+          ctx.roundRect(shX - 2.5, shY - 19, 5, 3.5, 1);
+          ctx.fill();
+
+          // Feuille alu + Braise de charbon ardent incandescent
+          const glow = 0.65 + Math.sin(now * 0.007 + tIdx) * 0.35;
+          ctx.fillStyle = `rgba(239, 68, 68, ${glow})`;
+          ctx.beginPath();
+          ctx.arc(shX, shY - 19.5, 1.6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#fbbf24';
+          ctx.fillRect(shX - 0.7, shY - 20, 1.4, 1);
+
+          // Tuyau souple (marrach) brodé reliant la chicha à la main du client
+          ctx.strokeStyle = (tIdx % 2 === 0) ? '#dc2626' : '#1e3a8a';
+          ctx.lineWidth = 1.3;
+          ctx.beginPath();
+          ctx.moveTo(shX - 2, shY - 7);
+          ctx.bezierCurveTo(shX - 7, shY + 2, tx + 7, ty + 2, tx + 3, ty - 6);
+          ctx.stroke();
+
+          // Embout en bois précieux dans la main
+          ctx.fillStyle = '#78350f';
+          ctx.fillRect(tx + 2, ty - 8, 2.2, 3);
+
+          // Volutes de fumée de chicha blanche vaporeuse expirées vers le haut
+          const chichaPuff = ((now * 0.012 + tIdx * 3.5) % 24);
+          const pAlpha = Math.max(0, 0.5 - chichaPuff / 26);
+          if (pAlpha > 0.05) {
+            ctx.fillStyle = `rgba(241, 245, 249, ${pAlpha})`;
+            ctx.beginPath();
+            ctx.arc(tx + 2 + Math.sin(chichaPuff * 0.4) * 3, ty - 22 - chichaPuff * 0.8, 2.2 + chichaPuff * 0.18, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    }
+
+    ctx.restore();
   }
 
   // --- PARTICULES, ONDES DE TAP & GAIN FLOTTANT COMPACT ---
@@ -4008,6 +4238,7 @@ export class CanvasStoreEngine {
     }
 
     this.drawCustomers(this.ctx);
+    this.drawForegroundFurniture(this.ctx, this.bizId, now);
     this.drawParticles(this.ctx);
     this.drawVignette(this.ctx);
   }
@@ -4073,6 +4304,22 @@ export class QuartierAnimator {
     this.palms = [];
     this.seagulls = [];
     this.interactiveHitboxes = [];
+
+    // Météo dynamique de quartier (Pluie, Parapluies, Course & Flaques d'eau)
+    this.isRaining = false;
+    this.rainTimer = 22; // cycle météo en secondes
+    this.rainIntensity = 0; // 0 = soleil, 1 = averse
+    this.puddles = [190, 480, 840, 1260, 1690, 2180, 2680, 3200]; // Coordonnées monde des flaques sur l'asphalte
+    this.splashes = []; // Jaillissements d'eau soulevés par les roues des véhicules
+    this.rainDrops = [];
+    for (let r = 0; r < 90; r++) {
+      this.rainDrops.push({
+        x: Math.random() * 850,
+        y: Math.random() * 380,
+        speed: 420 + Math.random() * 260,
+        len: 12 + Math.random() * 12
+      });
+    }
 
     this.bizTemplates = {
       kaskrout: { id: 'kaskrout', width: 155, height: 120, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
@@ -4591,10 +4838,14 @@ export class QuartierAnimator {
     this.pedestrians = [];
     for (let i = 0; i < 18; i++) {
       const style = charStyles[i % charStyles.length];
+      const baseSpd = (18 + Math.random() * 18) * (Math.random() > 0.5 ? 1 : -1);
       this.pedestrians.push({
         x: 50 + Math.random() * Math.max(300, this.worldWidth - 100),
         yOffset: (Math.random() - 0.5) * 14,
-        speed: (18 + Math.random() * 18) * (Math.random() > 0.5 ? 1 : -1),
+        speed: baseSpd,
+        baseSpeed: baseSpd,
+        hasUmbrella: (i % 2 === 0), // 50% ont un parapluie
+        umbrellaColor: ['#ef4444', '#0284c7', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'][i % 6],
         coat: style.coat,
         pants: style.pants,
         skin: style.skin,
@@ -4835,6 +5086,27 @@ export class QuartierAnimator {
   update(dt, timestamp) {
     this.cameraX += (this.targetCameraX - this.cameraX) * Math.min(1, dt * 10);
 
+    // --- GESTION CYCLE MÉTÉO (PLUIE & SOLEIL) ---
+    this.rainTimer -= dt;
+    if (this.rainTimer <= 0) {
+      this.isRaining = !this.isRaining;
+      this.rainTimer = this.isRaining ? 20 : 28;
+    }
+    const targetRain = this.isRaining ? 1.0 : 0.0;
+    this.rainIntensity += (targetRain - this.rainIntensity) * Math.min(1, dt * 1.5);
+
+    // Mise à jour gouttes de pluie en diagonale
+    if (this.rainIntensity > 0.05) {
+      for (const d of this.rainDrops) {
+        d.y += d.speed * dt;
+        d.x -= d.speed * 0.22 * dt;
+        if (d.y > this.height) {
+          d.y = -15;
+          d.x = Math.random() * (this.width + 160);
+        }
+      }
+    }
+
     if (this.transitionTimer > 0) {
       this.transitionTimer -= dt;
       if (this.transitionTimer <= 0) {
@@ -4864,12 +5136,65 @@ export class QuartierAnimator {
         if (t.dir > 0 && t.x > this.worldWidth + 120) t.x = -100;
         if (t.dir < 0 && t.x < -120) t.x = this.worldWidth + 100;
       }
+
+      // Véhicule traversant une flaque d'eau sur l'asphalte -> JAILLISSEMENTS D'EAU ÉPIQUES !
+      if (this.rainIntensity > 0.15) {
+        for (const px of this.puddles) {
+          if (Math.abs(t.x - px) < 28) {
+            if (Math.random() < 0.45) {
+              const dir = t.dir || 1;
+              for (let k = 0; k < 3; k++) {
+                this.splashes.push({
+                  x: t.x + (Math.random() - 0.5) * 32,
+                  y: 255 + 40,
+                  vx: (dir * 42 + (Math.random() - 0.5) * 55),
+                  vy: -35 - Math.random() * 42,
+                  radius: 1.6 + Math.random() * 2.2,
+                  life: 0.45,
+                  maxLife: 0.45
+                });
+              }
+            }
+          }
+        }
+      }
     });
 
+    // Mise à jour particules d'éclaboussures
+    for (let si = this.splashes.length - 1; si >= 0; si--) {
+      const sp = this.splashes[si];
+      sp.life -= dt;
+      sp.x += sp.vx * dt;
+      sp.y += sp.vy * dt;
+      sp.vy += 180 * dt; // gravité
+      if (sp.life <= 0) this.splashes.splice(si, 1);
+    }
+
     this.pedestrians.forEach(p => {
+      // Vitesse et comportement sous la pluie
+      if (this.rainIntensity > 0.25) {
+        if (!p.hasUmbrella) {
+          // CEUX SANS PARAPLUIE SE METTENT À COURIR VITE !
+          const dir = (p.baseSpeed || p.speed) >= 0 ? 1 : -1;
+          p.speed = dir * Math.abs(p.baseSpeed || 20) * 2.3;
+          if (!p.bubbleText && Math.random() < 0.02) {
+            const rainQuips = ['يا لطيف صبّت ! 🌧️', 'جري جري ! 💨', 'مطر حيّة ! 🏃'];
+            p.bubbleText = rainQuips[Math.floor(Math.random() * rainQuips.length)];
+            p.bubbleTimer = 2.4;
+          }
+        } else {
+          // Marche normale tranquille avec parapluie
+          const dir = (p.baseSpeed || p.speed) >= 0 ? 1 : -1;
+          p.speed = dir * Math.abs(p.baseSpeed || 20);
+        }
+      } else {
+        const dir = (p.baseSpeed || p.speed) >= 0 ? 1 : -1;
+        p.speed = dir * Math.abs(p.baseSpeed || 20);
+      }
+
       p.x += p.speed * dt;
-      if (p.x < 30) { p.x = 30; p.speed *= -1; }
-      if (p.x > this.worldWidth - 30) { p.x = this.worldWidth - 30; p.speed *= -1; }
+      if (p.x < 30) { p.x = 30; if (p.baseSpeed) p.baseSpeed *= -1; p.speed *= -1; }
+      if (p.x > this.worldWidth - 30) { p.x = this.worldWidth - 30; if (p.baseSpeed) p.baseSpeed *= -1; p.speed *= -1; }
 
       p.visitTimer -= dt;
       if (p.visitTimer <= 0) {
@@ -5131,6 +5456,20 @@ export class QuartierAnimator {
       }
     });
 
+    // Jaillissements d'eau soulevés par les roues des véhicules
+    this.splashes.forEach(sp => {
+      const screenX = sp.x - camX;
+      if (screenX > -30 && screenX < w + 30) {
+        ctx.save();
+        const alpha = Math.max(0, sp.life / sp.maxLife);
+        ctx.fillStyle = `rgba(186, 230, 253, ${alpha * 0.85})`;
+        ctx.beginPath();
+        ctx.arc(screenX, sp.y, sp.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    });
+
     this.pedestrians.forEach(p => {
       const screenX = p.x - camX;
       if (screenX > -50 && screenX < w + 50) {
@@ -5160,6 +5499,21 @@ export class QuartierAnimator {
         ctx.restore();
       }
     });
+
+    // Rideau de pluie fine en diagonale
+    if (this.rainIntensity > 0.05) {
+      ctx.save();
+      ctx.strokeStyle = `rgba(186, 230, 253, ${this.rainIntensity * 0.62})`;
+      ctx.lineWidth = 1.2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      for (const drop of this.rainDrops) {
+        ctx.moveTo(drop.x, drop.y);
+        ctx.lineTo(drop.x - 3.5, drop.y + drop.len);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
 
     this.drawMinimapTrack(ctx, w, h);
     this.drawInCanvasOffersHUD(ctx, w, h, timestamp);
@@ -6759,6 +7113,52 @@ export class QuartierAnimator {
     ctx.lineTo(w, roadY + 22);
     ctx.stroke();
     ctx.setLineDash([]);
+
+    // --- FLAQUES D'EAU SUR L'ASPHALTE AVEC REFLETS & ONDULATIONS DE PLUIE ---
+    if (this.rainIntensity > 0.05) {
+      for (const px of this.puddles) {
+        const screenX = px - camX;
+        if (screenX > -70 && screenX < w + 70) {
+          const puddleAlpha = Math.min(0.72, this.rainIntensity * 0.7);
+          ctx.save();
+          // Fond d'eau sombre avec reflet du ciel
+          ctx.fillStyle = `rgba(30, 58, 138, ${puddleAlpha * 0.48})`;
+          ctx.beginPath();
+          ctx.ellipse(screenX, roadY + 22, 28, 6.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Reflet bleu ciel brillant au centre de la flaque
+          ctx.fillStyle = `rgba(56, 189, 248, ${puddleAlpha * 0.35})`;
+          ctx.beginPath();
+          ctx.ellipse(screenX - 3, roadY + 21, 20, 4, -0.05, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Bordure mouillée scintillante
+          ctx.strokeStyle = `rgba(186, 230, 253, ${puddleAlpha * 0.55})`;
+          ctx.lineWidth = 0.9;
+          ctx.stroke();
+
+          // Anneaux d'ondulation concentriques causés par les gouttes de pluie
+          const rippleNow = (performance.now() * 0.015 + px);
+          const r1 = (rippleNow % 16);
+          const r1Alpha = Math.max(0, 1 - r1 / 16) * puddleAlpha;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${r1Alpha * 0.75})`;
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.ellipse(screenX - 5, roadY + 22, r1, r1 * 0.28, 0, 0, Math.PI * 2);
+          ctx.stroke();
+
+          const r2 = ((rippleNow + 8) % 16);
+          const r2Alpha = Math.max(0, 1 - r2 / 16) * puddleAlpha;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${r2Alpha * 0.65})`;
+          ctx.beginPath();
+          ctx.ellipse(screenX + 7, roadY + 23, r2, r2 * 0.26, 0, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      }
+    }
   }
 
   drawVehicle(ctx, x, y, t, timestamp) {
@@ -6994,24 +7394,33 @@ export class QuartierAnimator {
 
   drawPedestrian(ctx, x, y, p, timestamp) {
     ctx.save();
-    const walkCycle = timestamp * 0.01 + (p.phase || 0) + p.x * 0.08;
-    const stride = Math.sin(walkCycle) * 4.5;
-    const bounce = Math.abs(Math.cos(walkCycle)) * 1.8;
+    const isRainingNow = this.rainIntensity > 0.25;
+    const isRunning = isRainingNow && !p.hasUmbrella;
+
+    const cycleRate = isRunning ? 0.024 : 0.01;
+    const walkCycle = timestamp * cycleRate + (p.phase || 0) + p.x * 0.08;
+    const stride = Math.sin(walkCycle) * (isRunning ? 7.5 : 4.5);
+    const bounce = Math.abs(Math.cos(walkCycle)) * (isRunning ? 3.0 : 1.8);
     const dir = p.speed >= 0 ? 1 : -1;
 
     // Ombre portée au sol
     ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
     ctx.beginPath();
-    ctx.ellipse(x, y + 6, 7, 2.8, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y + 6, isRunning ? 9 : 7, 2.8, 0, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.save();
     ctx.translate(x, y - bounce);
     if (dir < 0) ctx.scale(-1, 1);
 
-    // Jambes animées en marche
+    // Si le piéton court sous la pluie sans parapluie : corps penché en avant !
+    if (isRunning) {
+      ctx.rotate(0.24);
+    }
+
+    // Jambes animées en marche / course
     ctx.strokeStyle = p.pants || '#1e293b';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = isRunning ? 3.2 : 3;
     ctx.lineCap = 'round';
     ctx.beginPath();
     ctx.moveTo(-1, -4);
@@ -7026,13 +7435,63 @@ export class QuartierAnimator {
     ctx.roundRect(-4.5, -14, 9, 11, 3.5);
     ctx.fill();
 
-    // Bras oscillant + accessoire tunisien (Couffin, Sac, Café)
+    // Bras oscillant ou protection sous la pluie
     ctx.strokeStyle = p.coat || '#0284c7';
     ctx.lineWidth = 2.4;
     ctx.beginPath();
-    ctx.moveTo(0, -12);
-    ctx.lineTo(stride * 0.6, -5);
-    ctx.stroke();
+    if (isRunning) {
+      // Bras levés au-dessus de la tête pour tenter de s'abriter sous l'averse !
+      ctx.moveTo(-3, -12);
+      ctx.lineTo(-2, -22);
+      ctx.lineTo(3, -21);
+      ctx.stroke();
+    } else if (isRainingNow && p.hasUmbrella) {
+      // Bras levé tenant le mât du parapluie
+      const uPoleX = stride * 0.35 + 2;
+      ctx.moveTo(0, -12);
+      ctx.lineTo(uPoleX, -16);
+      ctx.stroke();
+
+      // Mât du parapluie
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(uPoleX, -10);
+      ctx.lineTo(uPoleX, -28);
+      ctx.stroke();
+
+      // Dôme du parapluie coloré déployé au-dessus de la tête
+      ctx.save();
+      const uX = uPoleX;
+      const uY = -28;
+      ctx.fillStyle = p.umbrellaColor || '#ef4444';
+      ctx.beginPath();
+      ctx.arc(uX, uY, 15, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+
+      // Baleines fines du dôme
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(uX, uY - 15);
+      ctx.lineTo(uX - 8, uY);
+      ctx.moveTo(uX, uY - 15);
+      ctx.lineTo(uX + 8, uY);
+      ctx.stroke();
+
+      // Pointe dorée du parapluie au sommet
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillRect(uX - 1, uY - 18, 2, 3.5);
+      ctx.restore();
+    } else {
+      ctx.moveTo(0, -12);
+      ctx.lineTo(stride * 0.6, -5);
+      ctx.stroke();
+    }
 
     if (p.prop === 'couffin') {
       // Couffin tunisien en osier tressé

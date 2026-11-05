@@ -1,3 +1,20 @@
+## [1.27.0] - 2026-11-05
+### Added & Improved
+- **Café Populaire (`kahwa` / `kahwa_counter`)** :
+  - **Conversations animées** : Les clients assis au comptoir interagissent entre eux (hochements de tête expressifs vers le voisin, gesticulations des mains animées à la tunisienne).
+  - **Cigarettes allumées** : Certains clients fument au comptoir avec une vraie cigarette fine tenue entre les doigts, portée périodiquement aux lèvres, dotée d'une braise rouge ardente qui pulse et de volutes de fumée montant et s'évaporant avec fluidité.
+- **Salon de thé (`salon_de_the`) & Restaurant (`restaurant`)** :
+  - **Correction du masquage de table (profondeur 2.5D)** : Découplage de l'ordre d'affichage (fauteuil en fond -> client assis -> plateau de table et service au premier plan) : la table, la nappe, les couverts et les décors ne sont plus jamais masqués par le buste ou les jambes du client !
+  - **Chicha tunisienne majestueuse (`شيشة معسّل`)** : Les clients du salon de thé peuvent commander une chicha posée à côté de la table (vase tulipe en verre teinté aux reflets d'eau, tige laiton ciselée, plateau pare-cendres, foyer terre cuite avec braise de charbon incandescent ardent, tuyau flexible brodé "marrach" relié à la main du client avec embout précieux, et bouffées de fumée blanche vaporeuses expirées vers le haut).
+  - **Service de restauration** : Plats chauds tunisiens mijotants (tajine, couscous, grillades) avec volutes de vapeur chaude devant chaque convive.
+- **Météo dynamique de la rue (`QuartierAnimator`)** :
+  - **Averses et pluie dynamique** : Cycle météo alternant avec intensité progressive, rideau de gouttes de pluie tombant en diagonale avec le vent.
+  - **Flaques d'eau sur l'asphalte** : Flaques d'eau réalistes à reflets bleutés formées sur la chaussée avec cercles d'ondulation concentriques animés par les impacts de gouttes.
+  - **Éclaboussures de véhicules (splashes)** : Quand les taxis, louages et voitures franchissent les flaques d'eau, des gerbes d'eau arquées jaillissent en éventail des roues.
+  - **Réaction des piétons** :
+    - Piétons avec parapluie (`☂️`) : Déploient un dôme de parapluie coloré au-dessus de la tête et continuent leur marche paisiblement à l'abri.
+    - Piétons sans parapluie : Se mettent immédiatement à courir vite (vitesse x2.3, foulée rapide, corps penché en avant, mains levées pour protéger leur tête) avec exclamations tunisiennes (`"يا لطيف صبّت ! 🌧️"`, `"جري جري ! 💨"`).
+
 ## [1.26.0] - 2026-11-05
 ### Added & Improved
 - **Épicerie (`attariya`)** : Étagères murales d'épicerie garnies de produits tunisiens diversifiés (`🥫`, `🍅`, `🫒`, `🍯`, `🥛`, `🧀`, `🍞`, `☕`), personnel positionné fièrement derrière le comptoir, disparition du bloc au-dessus de la caisse remplacé par un calendrier mural éphéméride tunisien traditionnel (`📅 5 NOV` / `خميس`), balance en laiton (`⚖️`) sur la table.

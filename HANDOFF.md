@@ -1,10 +1,10 @@
 # HANDOFF — Tounes Tycoon
-MAJ: 2026-11-05T01:48:00+01:00 - etat = HEAD de main (v126-epicerie-calendar-clothing-superette-bank-tobacco-billiard-dates)
+MAJ: 2026-11-05T10:05:00+01:00 - etat = HEAD de main (v128-cafe-cigarettes-chicha-table-depth-rain-weather-street)
 
-## État en 3 lignes (v126)
-1. Épicerie & Dattes : étagères murales riches et diversifiées, personnel derrière le comptoir, calendrier mural tunisien traditionnel au-dessus de la caisse, caisses de dattes Deglet Nour Tozeur dorées.
-2. Zéro icône sur la tête des clients : suppression des bulles flottantes dans toutes les boutiques, comptoir de caisse et caisse enregistreuse POS ultra-améliorés (scanner laser, clavier, tiroir doré).
-3. Boutique vêtements, Banque, Tabac & Salle de jeux : mannequins plastique + étendoir portant dans la boutique, guichet blindé réaliste + tapis rouge à la banque, modal tabac épuré, billard dégagé + 3 consoles gaming (FIFA, Course, Combat).
+## État en 3 lignes (v128)
+1. Café populaire : clients assis au comptoir interagissant et discutant avec animation gestuelle + clients allumant une cigarette avec braise ardente incandescente et volutes de fumée montantes.
+2. Salon de thé & Restaurant : correction 2.5D du masquage de la table (fauteuil en fond -> client assis -> plateau de table et plats/théière au premier plan) + chicha tunisienne majestueuse (vase verre tulipe, tige laiton, charbon ardent, marrach tenu en main, bouffées de fumée blanche).
+3. Rue animée sous la pluie : cycle météo averse/soleil, flaques d'eau sur l'asphalte avec ondes de pluie, éclaboussures d'eau au passage des véhicules, piétons avec parapluie ouvert ou se mettant à courir vite sans parapluie.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
