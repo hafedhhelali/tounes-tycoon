@@ -102,6 +102,7 @@
 # CHANGELOG
 
 ## 2026-11-05
+- fix(tycoon): customer continuous stream vitality and exact 1:1 staff workstation capacity match
 - feat(tycoon): 4 new authentic businesses, dynamic atmospheric sky, golden fortune cloud, and ergonomic zero-overflow layout
 - feat(tycoon): 4 new authentic businesses, dynamic atmospheric sky, golden fortune cloud, and ergonomic zero-overflow layout
 - fix(tycoon): solve hire modal closing bug, dynamic pos registers without overflow, 2-person restaurant tables, bank visibility and street tobacco kiosk flow

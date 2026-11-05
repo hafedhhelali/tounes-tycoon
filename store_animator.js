@@ -140,7 +140,7 @@ export class CanvasStoreEngine {
     this.waiter = { x: 118, y: 136, targetX: 140, carryingIcon: bizId === 'salon_de_the' ? '🍹' : '☕', busy: false };
     const biz = this.getBiz();
     this.lastProgressMs = biz ? (biz.progressMs || 0) : 0;
-    this.spawnTimer = 0.25;
+    this.spawnTimer = 0.8;
     this.resize();
     if (bizId === 'bank_branch') {
       this.doorSwing = 1.0;
@@ -148,12 +148,21 @@ export class CanvasStoreEngine {
         x: this.width - 26,
         y: 154,
         targetX: 148,
-        state: 'entering', // entering -> accepted
+        state: 'entering',
         walkCycle: 0,
-        greetTimer: 0
+        timer: 0
       };
     } else {
       this.bankVipClient = null;
+      // Pré-remplissage immédiat pour un commerce vivant dès la première seconde
+      this.spawnCustomer();
+      if (this.customers.length > 0) {
+        const firstCust = this.customers[0];
+        firstCust.x = firstCust.stationX;
+        firstCust.state = 'doing_activity';
+        firstCust.activityTimer = 0.5;
+      }
+      this.spawnCustomer();
     }
     this.resizeTimer = setTimeout(() => this.resize(), 300);
     if (typeof window !== 'undefined') window.addEventListener('resize', this.onWindowResize);
@@ -1523,10 +1532,22 @@ export class CanvasStoreEngine {
       ctx.save();
       const slots = (detail && detail.staffSlots) ? detail.staffSlots : [];
       const hiredCount = currentBiz ? (currentBiz.hiredManagersCount || (currentBiz.hasManager ? 1 : 0)) : 0;
-      const deskConfigs = [
-        { x: 64, y: 126, w: 76, h: 28, icon: '💻', slotIdx: 0, slot: slots[0] },
-        { x: 162, y: 126, w: 76, h: 28, icon: '🖥️', slotIdx: 1, slot: slots[1] }
-      ];
+      const totalDesks = Math.max(1, Math.min(3, slots.length || 2));
+      const deskW = totalDesks === 3 ? 66 : 76;
+      const spacing = totalDesks === 3 ? 72 : 98;
+      const startX = totalDesks === 3 ? 46 : 64;
+      const deskConfigs = [];
+      for (let dIdx = 0; dIdx < totalDesks; dIdx++) {
+        deskConfigs.push({
+          x: startX + dIdx * spacing,
+          y: 126,
+          w: deskW,
+          h: 28,
+          icon: dIdx === 0 ? '💻' : (dIdx === 1 ? '🖥️' : '📊'),
+          slotIdx: dIdx,
+          slot: slots[dIdx]
+        });
+      }
 
       // Décor mural minimaliste sans texte lourd (icônes exécutives)
       ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
@@ -1656,7 +1677,7 @@ export class CanvasStoreEngine {
       const slots = (detail && detail.staffSlots) ? detail.staffSlots : [];
       const hiredCount = currentBiz ? (currentBiz.hiredManagersCount || (currentBiz.hasManager ? 1 : 0)) : 0;
       const isSuperette = currentBizId === 'superette';
-      const maxLanes = isSuperette ? 2 : 3;
+      const maxLanes = Math.min(3, Math.max(1, slots.length || (isSuperette ? 2 : 3)));
 
       // Rayons d'arrière-plan propres et réalistes
       if (isSuperette) {
@@ -2376,7 +2397,7 @@ export class CanvasStoreEngine {
   drawWorkstations(ctx, detail, isBusy, now) {
     if (!detail || !detail.staffSlots) return;
     const archetype = this.getBizArchetype(this.bizId);
-    if (['agency_desks', 'supermarket_checkout', 'tobacco_kiosk', 'bank_branch', 'arcade_billiard'].includes(archetype)) {
+    if (['agency_desks', 'supermarket_checkout', 'tobacco_kiosk', 'bank_branch'].includes(archetype)) {
       return;
     }
 
@@ -4358,8 +4379,12 @@ export class CanvasStoreEngine {
   }
 
   // --- MOBILIER & TABLES AU PREMIER PLAN (DEVANT LES CLIENTS ASSIS) ---
+  getArchetype(bizId = this.bizId) {
+    return this.getBizArchetype(bizId);
+  }
+
   drawForegroundFurniture(ctx, bizId, now) {
-    const archetype = this.getArchetype();
+    const archetype = this.getBizArchetype(bizId);
     if (archetype !== 'tea_lounge') return;
 
     const isResto = bizId === 'restaurant';
@@ -4690,7 +4715,7 @@ export class CanvasStoreEngine {
   // --- BOUCLE D'ANIMATION 60 FPS SYNCHRONISÉE AVEC LE MOTEUR TYCOON ---
   step(now) {
     if (!this.lastTime) this.lastTime = now;
-    const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+    const dt = Math.max(0.001, Math.min((now - this.lastTime) / 1000, 0.1));
     this.lastTime = now;
 
     const biz = this.getBiz();
@@ -4711,23 +4736,48 @@ export class CanvasStoreEngine {
       this.doorSwing = Math.max(0, this.doorSwing - dt * 2.2);
     }
 
-    // 0. Animation d'entrée du client VIP à la Banque (`bank_branch`)
-    if (archetype === 'bank_branch' && this.bankVipClient) {
+    // 0. Animation continue des clients à la Banque (`bank_branch`)
+    if (archetype === 'bank_branch') {
+      if (!this.bankVipClient) {
+        this.bankVipClient = { x: this.width - 26, y: 154, targetX: 148, state: 'entering', walkCycle: 0, timer: 0 };
+      }
       const vc = this.bankVipClient;
       vc.walkCycle += dt;
       if (vc.state === 'entering') {
-        vc.x = Math.max(vc.targetX, vc.x - 68 * dt);
+        vc.x = Math.max(vc.targetX, vc.x - 72 * dt);
         if (vc.x <= vc.targetX + 0.5) {
           vc.x = vc.targetX;
-          vc.state = 'accepted';
+          vc.state = 'at_window';
+          vc.timer = 0;
           this.pushMoneyPuff({
             x: vc.x - 10,
             y: vc.y - 54,
             vy: -22,
-            text: '🏦 مرحبا بيك في الشباك ✓',
+            text: '🏦 مرحباً بك في الشباك ✓',
             life: 1.4,
             maxLife: 1.4
           });
+        }
+      } else if (vc.state === 'at_window') {
+        vc.timer += dt;
+        if (vc.timer > 2.0) {
+          vc.state = 'leaving';
+          this.pushMoneyPuff({
+            x: vc.x - 8,
+            y: vc.y - 48,
+            vy: -20,
+            text: '✓ سحب وقبض ناجح 💼',
+            life: 1.2,
+            maxLife: 1.2
+          });
+        }
+      } else if (vc.state === 'leaving') {
+        vc.x += 68 * dt;
+        if (vc.x > this.width + 16) {
+          this.doorSwing = 1.0;
+          vc.x = this.width - 26;
+          vc.state = 'entering';
+          vc.timer = 0;
         }
       }
     }
@@ -4773,10 +4823,10 @@ export class CanvasStoreEngine {
 
     // 2. Spawner de clients
     if (archetype !== 'bank_branch') {
-      const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
+      const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'thalasso_spa') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
       const maxTotal = maxActive + 2;
       this.spawnTimer += dt;
-      const spawnThreshold = isProducing ? (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'tobacco_kiosk' ? 1.45 : 1.95) : 3.6;
+      const spawnThreshold = isProducing ? (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'tobacco_kiosk' ? 1.15 : 1.45) : 1.95;
       const activeInStore = this.customers.filter(c => c.state !== 'walking_out').length;
       if (this.spawnTimer > spawnThreshold && activeInStore < maxActive && this.customers.length < maxTotal) {
         this.spawnCustomer();
@@ -4880,7 +4930,7 @@ export class CanvasStoreEngine {
       c.walkCycle += dt;
 
       if (c.state === 'walking_in') {
-        const speed = isProducing ? 68 : 50;
+        const speed = isProducing ? 82 : 68;
         if (c.x > c.stationX + 1) {
           c.x = Math.max(c.stationX, c.x - speed * dt);
         } else {
@@ -4949,7 +4999,7 @@ export class CanvasStoreEngine {
           c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
         }
       } else if (c.state === 'walking_out') {
-        c.x += 64 * dt;
+        c.x += 76 * dt;
         if (Math.abs(c.x - (this.width - 28)) < 8) {
           this.doorSwing = 1.0;
         }

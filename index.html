@@ -3210,6 +3210,10 @@
       <!-- TIROIR GLASS (s'ouvre au tap sur un onglet, fermé par défaut pour dégager l'animation) -->
       <div class="biz-drawer" id="bizDrawer">
         <div id="bizDetailPanelStaff" class="biz-drawer-panel">
+          <div id="bizDetailStaffCapacityBanner" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 8px; padding: 5px 10px; margin-bottom: 6px; font-size: 10.5px; font-weight: 800; color: #34d399; display: flex; align-items: center; justify-content: space-between;">
+            <span>👥 إطارات وأماكن العمل بالمحلّ :</span>
+            <b id="bizDetailStaffCapacityText">0 / 0</b>
+          </div>
           <div id="bizDetailStaffList" class="biz-staff-grid"></div>
         </div>
         <div id="bizDetailPanelRecipe" class="biz-drawer-panel" style="display: none;">
@@ -3371,11 +3375,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=133';
-    import { soundEngine } from './audio.js?v=133';
+    import { TycoonEngine } from './engine.js?v=134';
+    import { soundEngine } from './audio.js?v=134';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=133';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=133';
+    import { AdsService } from './ads_service.js?v=134';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=134';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -5321,9 +5325,14 @@
       }
 
       // 1. Staff Slots (Équipe et Encadrement réels du projet)
+      const staffCapText = document.getElementById('bizDetailStaffCapacityText');
+      if (staffCapText && detail && detail.staffSlots) {
+        const hCount = detail.hiredCount ?? (biz.hiredManagersCount || (biz.hasManager ? 1 : 0));
+        staffCapText.innerText = `${hCount} / ${detail.staffSlots.length} إطارات (تطابق 100% مع أماكن المشروع)`;
+      }
       if (bizDetailStaffList) {
         bizDetailStaffList.innerHTML = '';
-        const currentHiredCount = detail.hiredCount ?? 0;
+        const currentHiredCount = detail.hiredCount ?? (biz.hiredManagersCount || (biz.hasManager ? 1 : 0));
         detail.staffSlots.forEach((slot, idx) => {
           const item = document.createElement('div');
           const isNextToHire = !slot.hired && (idx === currentHiredCount);
