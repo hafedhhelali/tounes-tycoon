@@ -546,6 +546,7 @@ export class CanvasStoreEngine {
 
   drawPOSTerminal(ctx, x, y, w, h, priceText, isBusy = false, isOpen = true) {
     ctx.save();
+    const timeSec = (typeof performance !== 'undefined' ? performance.now() : Date.now()) * 0.001;
     // Pied de support inclinable sur socle noir
     ctx.fillStyle = '#334155';
     ctx.fillRect(x + w / 2 - 2, y + h - 1, 4, 6);

@@ -101,6 +101,9 @@
 
 # CHANGELOG
 
+## 2026-11-06
+- fix(tycoon): resolve drawPOSTerminal timeSec ReferenceError restoring customer rendering across all 30 businesses
+
 ## 2026-11-05
 - fix(tycoon): customer continuous stream vitality and exact 1:1 staff workstation capacity match
 - feat(tycoon): 4 new authentic businesses, dynamic atmospheric sky, golden fortune cloud, and ergonomic zero-overflow layout
