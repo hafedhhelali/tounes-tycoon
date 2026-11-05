@@ -1,3 +1,9 @@
+## [1.25.0] - 2026-11-05
+### Added & Fixed
+- **Caisses enregistreuses dynamiques** : Le prix affiché sur les caisses (comptoir standard, écrans POS supermarché/supérette, guichet de tabac, écrans croisière/voyage) évolue désormais en temps réel avec le niveau du commerce (+1.5%/niveau) au lieu de rester figé sur le prix de base.
+- **Recrutement direct au niveau de la place libre** : Ajout d'un bouton d'embauche clair et élégant (`➕ انتداب` / `➕ خدّم`) avec coût formaté (`DT`) directement sur les postes vacants (caisses libres du supermarché/supérette, 2ème bureau libre croisière/voyage, postes artisans vacants) permettant le recrutement en un clic.
+- **Fermeture automatique au clic extérieur** : Disparition immédiate du panneau des employés (`الخدّامة`) et du menu des produits (`اللائحة`) dès qu'on clique ou touche n'importe où en dehors du tiroir ; fermeture automatique de toutes les modales/popups au tap hors de leur carte centrale.
+
 ## [1.24.0] - 2026-11-05
 ### Added & Improved
 - **Salon de thé & Restaurant** : 5 tables assises dédiées avec nappes et bougies ; suppression totale des étagères génériques au profit d'une déco d'ambiance haut de gamme (lustres cristal, miroir baroque doré, plantes d'intérieur, assiettes zellige). Au restaurant, service dynamique de plats chauds tunisiens (`🍲`, `🍛`, `🍗`, `🥩`, `🥘`, `🥗`) apportés par le serveur aux clients attablés.

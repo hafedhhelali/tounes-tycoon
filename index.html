@@ -3399,11 +3399,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=124';
-    import { soundEngine } from './audio.js?v=124';
+    import { TycoonEngine } from './engine.js?v=125';
+    import { soundEngine } from './audio.js?v=125';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=124';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=124';
+    import { AdsService } from './ads_service.js?v=125';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=125';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -5245,13 +5245,20 @@
         if (!storeSimulation) {
           storeSimulation = new CanvasStoreEngine(canvasEl, engine);
           storeSimulation.setCallbacks({
-            onHire: (bizId) => {
-              if (engine.hireManager(bizId)) {
+            onHire: (bizId, slotIndex) => {
+              const res = engine.hireManager(bizId);
+              if (res) {
                 soundEngine.playEventFanfare();
                 renderBizDetailContent();
                 renderDOM();
+                updateSynergiesUI();
               } else {
-                triggerBalanceAlert('ناقصك فلوس باش تخدّمو ! 👔');
+                const b = engine.businesses.find(item => item.id === bizId);
+                const nextMgr = engine.getNextManager ? engine.getNextManager(b) : null;
+                const cost = nextMgr ? nextMgr.cost : 0;
+                const totalAvail = (engine.dinars || 0) + (engine.bankBalance || 0);
+                const manque = Math.max(0, cost - totalAvail);
+                triggerBalanceAlert(`ناقصك ${formatCurrencyPlain(manque)} فلوس باش تخدّمو ! 👔`);
               }
             },
             onServe: (bizId) => {
@@ -5481,8 +5488,8 @@
 
     // Fermeture automatique de toute popup en cliquant en dehors (.modal-overlay)
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('pointerdown', (e) => {
-        if (e.target === overlay) {
+      const handleBackdropClose = (e) => {
+        if (e.target === overlay || !e.target.closest('.modal-card')) {
           if (overlay.id === 'wheelModal' && isSpinningWheel) return;
           overlay.classList.remove('active');
           if (overlay.id === 'bizDetailModal' && storeSimulation) {
@@ -5501,7 +5508,9 @@
             clearInterval(chkobbaTimer);
           }
         }
-      });
+      };
+      overlay.addEventListener('pointerdown', handleBackdropClose);
+      overlay.addEventListener('click', handleBackdropClose);
     });
 
     function handleBackNavigation() {
@@ -5634,15 +5643,20 @@
       bizDrawer.addEventListener('pointerdown', () => resetBizDrawerTimer());
       bizDrawer.addEventListener('touchstart', () => resetBizDrawerTimer());
     }
-    // Fermeture immédiate du tiroir si clic/tap sur le canvas intérieur du commerce
-    const bizStoreCanvas = document.getElementById('bizStoreCanvas');
-    if (bizStoreCanvas) {
-      bizStoreCanvas.addEventListener('pointerdown', (e) => {
-        if (activeBizTab) {
-          switchBizDetailTab(null);
-        }
-      });
+
+    // Fermeture immédiate du tiroir (الخدّامة / اللائحة) dès qu'on clique ailleurs
+    function dismissBizDrawerIfOutside(e) {
+      if (!activeBizTab || !bizDrawer || !bizDrawer.classList.contains('open')) return;
+      const isInsideDrawer = bizDrawer.contains(e.target);
+      const isTabBtn = Boolean(e.target.closest && e.target.closest('.biz-tab'));
+      if (!isInsideDrawer && !isTabBtn) {
+        switchBizDetailTab(null);
+        e.stopPropagation();
+      }
     }
+    document.addEventListener('pointerdown', dismissBizDrawerIfOutside, true);
+    document.addEventListener('touchstart', dismissBizDrawerIfOutside, { capture: true, passive: false });
+    document.addEventListener('click', dismissBizDrawerIfOutside, true);
 
     if (bizTabBtnStaff) bizTabBtnStaff.onclick = () => switchBizDetailTab('staff');
     if (bizTabBtnRecipe) bizTabBtnRecipe.onclick = () => switchBizDetailTab('recipe');

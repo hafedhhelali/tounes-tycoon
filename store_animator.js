@@ -471,16 +471,26 @@ export class CanvasStoreEngine {
     return UNIT_PRICES[bizId] || 10.0;
   }
 
-  triggerPayment(customer, isProducing) {
+  getEvolvedUnitPrice(bizId) {
     const biz = this.getBiz();
     const lvl = biz && biz.level > 0 ? biz.level : 1;
-    // Petit pourcentage par niveau (+1.5% par niveau) pour garder des prix réalistes
-    const levelScale = 1 + (lvl - 1) * 0.015;
-    const baseUnit = this.getUnitBasePrice(this.bizId);
-    const groupSize = (customer && customer.groupSize) ? customer.groupSize : 1;
+    const base = this.getUnitBasePrice(bizId);
+    // Évolution douce (+1.5% par niveau) pour des prix cohérents avec la montée en niveau
+    return base * (1 + (lvl - 1) * 0.015);
+  }
+
+  formatEvolvedPrice(price) {
+    if (price < 10) return price.toFixed(2);
+    if (price < 100) return price.toFixed(1);
+    return Math.round(price).toString();
+  }
+
+  triggerPayment(customer, isProducing) {
+    const biz = this.getBiz();
     const isPerPersonBiz = (this.bizId === 'croisiere_mer' || this.bizId === 'agence_voyages');
-    const finalPrice = baseUnit * levelScale * (isPerPersonBiz ? groupSize : 1);
-    const formattedPrice = finalPrice < 10 ? finalPrice.toFixed(2) : (finalPrice < 100 ? finalPrice.toFixed(1) : Math.round(finalPrice).toString());
+    const groupSize = (customer && customer.groupSize) ? customer.groupSize : 1;
+    const finalPrice = this.getEvolvedUnitPrice(this.bizId) * (isPerPersonBiz ? groupSize : 1);
+    const formattedPrice = this.formatEvolvedPrice(finalPrice);
     const gainText = isPerPersonBiz
       ? `👥${groupSize} • +${formattedPrice} د.ت`
       : `+${formattedPrice} د.ت`;
@@ -1289,14 +1299,23 @@ export class CanvasStoreEngine {
         ctx.fillText('📄', d.x + d.w - 16, d.y - 4);
         ctx.fillText('🖨️', d.x + d.w - 28, d.y - 4);
 
-        // Badge compact d'état du bureau (sans gros texte)
+        if (isWorkerPresent) {
+          const evolvedPrice = this.getEvolvedUnitPrice(currentBizId);
+          ctx.fillStyle = '#34d399';
+          ctx.font = 'bold 5.5px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(this.formatEvolvedPrice(evolvedPrice) + ' DT', monX + 12, monY + 11);
+          this.drawRadialGauge(ctx, d.x + d.w - 12, d.y - 22, 6, Math.max(0.15, cycleRatio), '#10b981', '✓');
+        } else {
+          // Place libre : bouton d'intedab clair au niveau du bureau libre
+          const hireCost = d.slot ? d.slot.cost : (currentBiz ? (currentBiz.basePrice || 1000) * 2 : null);
+          this.drawHireButton(ctx, d.x + 6, d.y - 42, d.w - 12, 34, 'مساعد', idx, 'hire_worker', hireCost, now);
+        }
+
+        // Badge compact d'état du bureau
         ctx.fillStyle = isWorkerPresent ? '#34d399' : '#94a3b8';
         ctx.font = 'bold 8px sans-serif';
         ctx.fillText(isWorkerPresent ? `${d.icon} #${idx + 1}` : `🔒 #${idx + 1}`, d.x + d.w / 2, d.y + 17);
-
-        if (isWorkerPresent) {
-          this.drawRadialGauge(ctx, d.x + d.w - 12, d.y - 22, 6, Math.max(0.15, cycleRatio), '#10b981', '✓');
-        }
       });
 
       ctx.restore();
@@ -1409,12 +1428,34 @@ export class CanvasStoreEngine {
           ctx.stroke();
         }
 
+        // Écran caisse enregistreuse POS avec prix évolutif
         ctx.fillStyle = '#022c22';
-        ctx.fillRect(lx + lw - 20, ly - 10, 16, 12);
+        ctx.fillRect(lx + lw - 24, ly - 11, 22, 13);
         ctx.strokeStyle = isLaneOpen ? '#10b981' : '#64748b';
-        ctx.strokeRect(lx + lw - 20, ly - 10, 16, 12);
+        ctx.strokeRect(lx + lw - 24, ly - 11, 22, 13);
+        if (isLaneOpen) {
+          const evolvedUnit = this.getEvolvedUnitPrice(currentBizId);
+          ctx.fillStyle = '#34d399';
+          ctx.font = 'bold 5.5px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(this.formatEvolvedPrice(evolvedUnit) + ' DT', lx + lw - 13, ly - 2);
+        } else {
+          // Place libre : silhouette fantôme + bouton d'intedab au niveau de la caisse vide
+          ctx.save();
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+          ctx.beginPath();
+          ctx.roundRect(lx + 4, ly - 46, lw - 8, 44, 6);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+          ctx.setLineDash([3, 3]);
+          ctx.strokeRect(lx + 4, ly - 46, lw - 8, 44);
+          ctx.restore();
 
-        // ZÉRO numéro de caisse ! Indicateur LED discret
+          const hireCost = slot ? slot.cost : (currentBiz ? (currentBiz.basePrice || 1000) * (cIdx + 1) * 2 : null);
+          this.drawHireButton(ctx, lx + 2, ly - 42, lw - 4, 34, 'كاشير', cIdx, 'hire_cashier', hireCost, now);
+        }
+
+        // Indicateur LED discret
         ctx.fillStyle = isLaneOpen ? '#10b981' : '#475569';
         ctx.beginPath();
         ctx.arc(lx + lw / 2, ly + 18, 3.5, 0, Math.PI * 2);
@@ -1466,7 +1507,8 @@ export class CanvasStoreEngine {
       ctx.fillStyle = '#34d399';
       ctx.font = 'bold 7px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('10 DT', kx + kw - 17, ky - 4);
+      const evolvedTobaccoPrice = this.getEvolvedUnitPrice('tobacco_kiosk');
+      ctx.fillText(this.formatEvolvedPrice(evolvedTobaccoPrice) + ' DT', kx + kw - 17, ky - 4);
       ctx.restore();
       return;
     }
@@ -1770,11 +1812,11 @@ export class CanvasStoreEngine {
     ctx.lineWidth = 1.2;
     ctx.stroke();
 
-    const unitPrice = this.getUnitBasePrice(currentBizId);
+    const evolvedUnit = this.getEvolvedUnitPrice(currentBizId);
     ctx.fillStyle = '#34d399';
     ctx.font = 'bold 6.5px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText((unitPrice < 10 ? unitPrice.toFixed(1) : Math.round(unitPrice)) + ' DT', regX + regW / 2, regY + 11);
+    ctx.fillText(this.formatEvolvedPrice(evolvedUnit) + ' DT', regX + regW / 2, regY + 11);
 
     if (currentBiz && currentBiz.level > 0) {
       const gaugeColor = currentBiz.hasManager ? '#10b981' : '#fbbf24';
@@ -1845,7 +1887,7 @@ export class CanvasStoreEngine {
       return;
     }
 
-    // 3. Autres commerces : postes d'artisans / ouvriers (sans boutons textes orange encombrants)
+    // 3. Autres commerces : postes d'artisans / ouvriers
     detail.staffSlots.slice(1).forEach((slot, idx) => {
       const stationX = startX + idx * spacing;
       if (stationX > this.width - 42) return;
@@ -1865,6 +1907,17 @@ export class CanvasStoreEngine {
         });
         const workerRatio = isBusy ? ((baseRatio + idx * 0.28) % 1) : 0.25;
         this.drawRadialGauge(ctx, stationX + 22, baseY - 52, 6.5, workerRatio, '#10b981', '✓');
+      } else {
+        // Place libre : silhouette fantôme + bouton d'intedab au niveau du poste vide
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.beginPath();
+        ctx.roundRect(stationX + 4, baseY - 46, 44, 46, 6);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.setLineDash([3, 3]);
+        ctx.strokeRect(stationX + 4, baseY - 46, 44, 46);
+        ctx.setLineDash([]);
+        this.drawHireButton(ctx, stationX + 2, baseY - 42, 48, 34, 'عون', idx + 1, 'hire_worker', slot.cost, now);
       }
       ctx.restore();
     });
@@ -2880,44 +2933,45 @@ export class CanvasStoreEngine {
     ctx.restore();
   }
 
-  // Dessin d'un bouton de recrutement très lisible
+  // Dessin d'un bouton de recrutement très lisible au niveau de la place libre
   drawHireButton(ctx, x, y, width, height, label, slotIndex, type, cost = null, now = 0) {
     ctx.save();
-    const canAfford = cost === null || (this.engine.dinars >= cost);
+    const totalAvail = (this.engine.dinars || 0) + (this.engine.bankBalance || 0);
+    const canAfford = cost === null || (totalAvail >= cost);
     const pulse = Math.sin(now * 0.006) * 0.15 + 0.85;
 
     if (canAfford) {
-      ctx.shadowColor = 'rgba(245, 158, 11, 0.6)';
-      ctx.shadowBlur = 8 * pulse;
+      ctx.shadowColor = 'rgba(16, 185, 129, 0.6)';
+      ctx.shadowBlur = 6 * pulse;
     }
 
     const grad = ctx.createLinearGradient(x, y, x, y + height);
     if (canAfford) {
-      grad.addColorStop(0, '#f59e0b');
-      grad.addColorStop(1, '#b45309');
+      grad.addColorStop(0, '#10b981');
+      grad.addColorStop(1, '#047857');
     } else {
-      grad.addColorStop(0, '#475569');
-      grad.addColorStop(1, '#1e293b');
+      grad.addColorStop(0, '#334155');
+      grad.addColorStop(1, '#0f172a');
     }
     ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.roundRect(x, y, width, height, 8);
+    ctx.roundRect(x, y, width, height, 6);
     ctx.fill();
 
-    ctx.strokeStyle = canAfford ? '#fef08a' : '#64748b';
-    ctx.lineWidth = 1.8;
+    ctx.strokeStyle = canAfford ? '#34d399' : '#64748b';
+    ctx.lineWidth = 1.3;
     ctx.stroke();
 
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = height < 42 ? '900 9.5px "Cairo", sans-serif' : '900 11px "Cairo", sans-serif';
+    ctx.font = 'bold 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('➕ ' + label, x + width / 2, y + (height < 42 ? 14 : 18));
+    ctx.fillText('➕ ' + label, x + width / 2, y + (height < 36 ? 12 : 14));
 
     if (cost !== null) {
       ctx.fillStyle = canAfford ? '#fef08a' : '#94a3b8';
-      ctx.font = height < 42 ? 'bold 8.5px "Cairo", sans-serif' : 'bold 9px "Cairo", sans-serif';
-      ctx.fillText(this.formatNumber(cost) + ' DT', x + width / 2, y + (height < 42 ? 27 : 33));
+      ctx.font = 'bold 7.5px monospace';
+      ctx.fillText(this.formatNumber(cost) + ' DT', x + width / 2, y + (height < 36 ? 24 : 27));
     }
 
     this.clickZones.push({
