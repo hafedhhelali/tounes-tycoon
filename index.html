@@ -2842,8 +2842,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="modal-icon-glow" style="font-size: 22px;">🏦</div>
           <div>
-            <div class="modal-title" style="font-size: 14.5px; color: #7dd3fc; line-height: 1.2;">بنك الإمبراطورية الوطني</div>
-            <div class="modal-subtitle" style="font-size: 9.5px; color: #94a3b8; line-height: 1.2;">عون الشباك يستقبلك للقيام بعمليات الإيداع والسحب</div>
+            <div class="modal-title" style="font-size: 15px; color: #7dd3fc; line-height: 1.2; font-weight: 900;">البنك الشعبي</div>
           </div>
         </div>
         <button id="closeBankModalTopBtn" style="background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; padding: 2px 6px;">✕</button>
@@ -3370,11 +3369,11 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=130';
-    import { soundEngine } from './audio.js?v=130';
+    import { TycoonEngine } from './engine.js?v=132';
+    import { soundEngine } from './audio.js?v=132';
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=130';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=130';
+    import { AdsService } from './ads_service.js?v=132';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=132';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -4107,7 +4106,8 @@
 
         const mgrBtn = card.querySelector(`#mgr-${biz.id}`);
         if (mgrBtn) {
-          mgrBtn.onclick = () => {
+          mgrBtn.onclick = (e) => {
+            if (e) e.stopPropagation();
             const nextMgr = engine.getNextManager(biz);
             const hired = engine.hireManager(biz.id);
             if (hired) {
@@ -4720,7 +4720,8 @@
         },
         onOpenTobacco: () => {
           soundEngine.playCoin();
-          openTobaccoModalUI();
+          engine.addDinars(10);
+          showFeedbackToast('🪙 شباك القمريڨ : ربحت 10 دنانير تفتوفة على الطاير ! ✨', '🚬');
         }
       });
       quartierEngine.start();
@@ -5328,7 +5329,8 @@
 
           const hireBtn = item.querySelector(`#hire-slot-${currentDetailBizId}-${idx}`);
           if (hireBtn) {
-            hireBtn.onclick = () => {
+            hireBtn.onclick = (e) => {
+              if (e) e.stopPropagation();
               const res = engine.hireManager(currentDetailBizId);
               if (res) {
                 soundEngine.playEventFanfare();
@@ -5457,10 +5459,10 @@
     const confirmExitAppBtn = document.getElementById('confirmExitAppBtn');
     const cancelExitAppBtn = document.getElementById('cancelExitAppBtn');
 
-    // Fermeture automatique de toute popup en cliquant en dehors (.modal-overlay)
+    // Fermeture automatique de toute popup en cliquant STRICTEMENT sur le backdrop (.modal-overlay)
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
       const handleBackdropClose = (e) => {
-        if (e.target === overlay || !e.target.closest('.modal-card')) {
+        if (e.target === overlay) {
           if (overlay.id === 'wheelModal' && isSpinningWheel) return;
           overlay.classList.remove('active');
           if (overlay.id === 'bizDetailModal' && storeSimulation) {
@@ -5480,8 +5482,12 @@
           }
         }
       };
-      overlay.addEventListener('pointerdown', handleBackdropClose);
       overlay.addEventListener('click', handleBackdropClose);
+      const modalCard = overlay.querySelector('.modal-card');
+      if (modalCard) {
+        modalCard.addEventListener('click', (e) => e.stopPropagation());
+        modalCard.addEventListener('pointerdown', (e) => e.stopPropagation());
+      }
     });
 
     function handleBackNavigation() {

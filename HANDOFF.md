@@ -1,13 +1,13 @@
-# HANDOFF — Tounes Tycoon
-MAJ: 2026-11-05T11:08:00+01:00 - etat = HEAD de main (v130-kaskrout-seller-customer-flow-lowered-cart-monument-square-fix)
+﻿# HANDOFF — Tounes Tycoon
+MAJ: 2026-11-05 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v130)
-1. Kaskrout Ayari : brouette abaissée à proportion humaine, suppression du bouton visite inutile, marchand الشاف عياري au tablier et chéchia préparant les sandwichs derrière son stand.
-2. Interaction passagers de rue : piéton qui s'arrête devant la brouette, commande avec bulle, préparation au couteau, paiement 3.5 DT avec pièces flottantes, et départ avec le sandwich en main.
-3. Monument Square (Horloge/Statue, Fontaine animée et Jardin fleuri) : bug de dispatch résolu dans `buildZoneLayout`, présent et visible dans toutes les villes tunisiennes.
+## État en 3 lignes (v132)
+1. Bug recrutement résolu : arrêt de la fermeture accidentelle de la modale lors de l'embauche grâce à la propagation d'événements neutralisée et un ciblage backdrop strict (`e.target === overlay`).
+2. Caisses & supermarché : nouveau composant POS haute fidélité clippé avec zéro débordement, montants variant selon les caisses et le panier des clients.
+3. Ergonomie & vie urbaine : restaurant avec tables pour 2 personnes (couverts et convives en vis-à-vis), banque épurée avec agent visible, guichet de tabac avec animation piéton qui s'arrête/commande/paie/repart sans entrer, piétons silencieux en marche sauf pluie ou devant projet.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs : `store_animator.js`, `index.html`, `CHANGELOG.md`, `HANDOFF.md`, `www/*`.
+- Modifs : `engine.js`, `store_animator.js`, `index.html`, `HANDOFF.md`, `www/*`.
 - Suite de tests : 70/70 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

@@ -1,4 +1,4 @@
-## [1.29.0] - 2026-11-05
+﻿## [1.29.0] - 2026-11-05
 ### Added & Improved
 - **Brouette Kaskrout Ayari (`kaskrout`) - Refonte complète & Human scale** :
   - **Brouette abaissée à hauteur humaine réaliste** : Structure redimensionnée (hauteur 75px au lieu de 120px perchée trop haut) : caisse en bois patiné d'olivier à hauteur de hanche (`groundY - 30`), roues cerclées d'acier posées directement au sol (`wheelR = 10`), vitrine basse d'ingrédients frais (`🥚`, `🥖`, `🌶️`, `🥫`), mât inox et parasol rouge et blanc d'ombrage rabaissé harmonieusement.
@@ -100,6 +100,9 @@
 - Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
 
 # CHANGELOG
+
+## 2026-11-05
+- fix(tycoon): solve hire modal closing bug, dynamic pos registers without overflow, 2-person restaurant tables, bank visibility and street tobacco kiosk flow
 
 ## [v122] - 2026-11-04
 
