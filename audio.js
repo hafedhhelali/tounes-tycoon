@@ -18,11 +18,30 @@ class SoundEngine {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
+        try {
+          // Bus Master avec Compresseur dynamique de studio pour empêcher toute distorsion
+          this.masterCompressor = this.ctx.createDynamicsCompressor();
+          this.masterCompressor.threshold.setValueAtTime(-14, this.ctx.currentTime);
+          this.masterCompressor.knee.setValueAtTime(24, this.ctx.currentTime);
+          this.masterCompressor.ratio.setValueAtTime(6, this.ctx.currentTime);
+          this.masterCompressor.attack.setValueAtTime(0.003, this.ctx.currentTime);
+          this.masterCompressor.release.setValueAtTime(0.2, this.ctx.currentTime);
+
+          this.masterGain = this.ctx.createGain();
+          this.masterGain.gain.setValueAtTime(0.95, this.ctx.currentTime);
+
+          this.masterGain.connect(this.masterCompressor);
+          this.masterCompressor.connect(this.ctx.destination);
+        } catch (_) {}
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
       try { this.ctx.resume(); } catch (_) {}
     }
+  }
+
+  get destination() {
+    return this.masterGain || (this.ctx ? this.ctx.destination : null);
   }
 
   // Enregistrement et libération automatique des nœuds audio pour garantir zéro fuite mémoire
@@ -58,7 +77,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(t);
       osc.stop(t + 0.18);
@@ -91,7 +110,7 @@ class SoundEngine {
 
     osc1.connect(filter1);
     filter1.connect(gain1);
-    gain1.connect(this.ctx.destination);
+    gain1.connect(this.destination);
 
     osc1.start(now);
     osc1.stop(now + 0.07);
@@ -109,7 +128,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(t);
       osc.stop(t + 0.28);
@@ -137,7 +156,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(t);
       osc.stop(t + 0.15);
@@ -150,7 +169,11 @@ class SoundEngine {
     if (this.muted) return;
     this.init();
     if (bizId === 'kahwa' || bizId === 'salon_de_the') {
+      this.playCoffeeSteam();
       this.playTeaCup();
+    } else if (bizId === 'kaskrout' || bizId === 'fricasse' || bizId === 'restaurant') {
+      this.playSizzle();
+      this.playCoin();
     } else if (bizId === 'taxi_collectif' || bizId === 'showroom_auto') {
       this.playHorn();
     } else if (bizId === 'police_station') {
@@ -158,6 +181,163 @@ class SoundEngine {
     } else {
       this.playCashRegister();
     }
+  }
+
+  // Vapeur de café chaud / thé zzaouia
+  playCoffeeSteam() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.16);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1);
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(2400, now);
+    filter.frequency.linearRampToValueAtTime(1600, now + 0.16);
+    filter.Q.setValueAtTime(3.8, now);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.destination);
+
+    noise.start(now);
+    noise.stop(now + 0.16);
+    this.registerNode(noise, now + 0.16);
+  }
+
+  // Gril frémissant pour sandwichs et street-food
+  playSizzle() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.14);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (0.8 + 0.2 * Math.sin(i * 0.05));
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(3200, now);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.destination);
+
+    noise.start(now);
+    noise.stop(now + 0.14);
+    this.registerNode(noise, now + 0.14);
+  }
+
+  // Clic tactile haptique UI (boutons, onglets, navigation)
+  playTap() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(340, now);
+    osc.frequency.exponentialRampToValueAtTime(140, now + 0.035);
+
+    gain.gain.setValueAtTime(0.09, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.038);
+
+    osc.connect(gain);
+    gain.connect(this.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.038);
+    this.registerNode(osc, now + 0.038);
+  }
+
+  // Vœu de prospérité dans la fontaine (pièce + clapotis d'eau)
+  playFountainWish() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    // A. Tintement aigu de la pièce
+    this.playCoin();
+
+    // B. Éclaboussure d'eau étincelante
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.05));
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1200, now + 0.05);
+    filter.frequency.exponentialRampToValueAtTime(600, now + 0.22);
+    filter.Q.setValueAtTime(3.2, now + 0.05);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.setValueAtTime(0.12, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.24);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.destination);
+
+    noise.start(now + 0.05);
+    noise.stop(now + 0.24);
+    this.registerNode(noise, now + 0.24);
+  }
+
+  // Fanfare d'ascension de niveau royal (arpeggio 5 notes carillonnées)
+  playLevelUp() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 987.77, 1046.50]; // C5, E5, G5, B5, C6
+    notes.forEach((freq, idx) => {
+      const t = now + idx * 0.065;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+
+      gain.gain.setValueAtTime(0.12, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+
+      osc.connect(gain);
+      gain.connect(this.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.35);
+      this.registerNode(osc, t + 0.35);
+    });
   }
 
   // 5. Klaxon tunisien classique (Louage / Taxi 504)
@@ -179,7 +359,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(now);
       osc.stop(now + 0.2);
@@ -205,7 +385,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.52);
 
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this.destination);
 
     osc.start(now);
     osc.stop(now + 0.52);
@@ -232,7 +412,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(t);
       osc.stop(t + 0.16);
@@ -266,7 +446,7 @@ class SoundEngine {
         gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
 
         osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        gain.connect(this.destination);
 
         osc.start(t);
         osc.stop(t + 0.35);
@@ -303,7 +483,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.028);
 
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this.destination);
 
     osc.start(now);
     osc.stop(now + 0.028);
@@ -332,7 +512,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
 
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this.destination);
 
     osc.start(now);
     osc.stop(now + 0.16);
@@ -364,7 +544,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(now);
       osc.stop(now + 0.07);
@@ -382,7 +562,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(now);
       osc.stop(now + 0.12);
@@ -452,7 +632,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(time);
       osc.stop(time + duration + 0.04);
@@ -479,7 +659,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(time);
       osc.stop(time + duration + 0.04);
@@ -515,7 +695,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       lfo.start(time);
       osc.start(time);
@@ -546,7 +726,7 @@ class SoundEngine {
       }
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(time);
       osc.stop(time + (isDoum ? 0.1 : 0.06));
@@ -631,7 +811,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
 
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this.destination);
 
     osc.start(now);
     osc.stop(now + 0.055);
@@ -660,7 +840,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.destination);
 
       osc.start(t);
       osc.stop(t + 0.14);

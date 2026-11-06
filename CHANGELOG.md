@@ -1,4 +1,25 @@
-﻿## [1.30.0] - 2026-11-06
+﻿## [1.31.0] - 2026-11-06
+### Added & Improved
+- **Révolution Graphique Mobile & Direction Artistique (`store_animator.js`)** :
+  - **Devantures et vitrines haute définition** : Ajout de vitrines de magasins biseautées avec reflets spéculaires brillants à 45° (`linearGradient`), cadres moulurés et éclairage intérieur dynamique réagissant au cycle de production.
+  - **Auvents et tentes parasols 3D festonnées** : Tentes rayées au-dessus des portes de magasins avec rebords ondulés et ombrages portés sur la façade.
+  - **Éclairage nocturne atmosphérique & Fanous Médina** : Lanternes tunisiennes en laiton ciselé installées aux entrées des boutiques qui diffusent des halos dorés chaleureux (`createRadialGradient`) sur les murs et le trottoir à la tombée de la nuit.
+  - **Vœu magique de la fontaine municipale** : Clic direct sur la fontaine de la place publique déclenchant un son de vœu d'eau et de pièce étincelant (`playFountainWish`) avec toast de prospérité.
+- **Architecture Audio Studio & Bus Master Compresseur (`audio.js`)** :
+  - **Bus Master professionnel** : Intégration d'un `DynamicsCompressorNode` et d'un `masterGain` centralisant tous les instruments et SFX, prévenant toute saturation ou distorsion harmonique lors d'actions simultanées.
+  - **Nouveaux SFX cohérents & tactiles** :
+    - `playTap()` : Clic haptique feutré (340 Hz -> 140 Hz) pour chaque interaction tactile de l'interface.
+    - `playCoffeeSteam()` : Bruit blanc filtré passe-bande simulant la buse vapeur d'un espresso ou d'un thé zzaouia.
+    - `playSizzle()` : Frémissement de gril croustillant pour sandwichs kaskrout, fricassé et restaurant.
+    - `playFountainWish()` : Tintement harmonique suivi d'un splash cristallin.
+    - `playLevelUp()` : Arpège ascendant triomphal de 5 cloches harmoniques pour les montées de paliers.
+  - **Mappage sonore contextuel par boutique (`playWorkSound`)** : Chaque commerce émet désormais un retour sonore thématique authentique lors de la collecte et du service.
+- **Expérience Utilisateur & Animations Shimmer (`index.html`, `ARCH.md`)** :
+  - Câblage d'un listener global passif déclenchant le clic tactile `playTap()` sur l'ensemble des boutons, onglets et cartes.
+  - Animation de reflet spéculaire mobile (`btnGlint`) sur les boutons d'action d'élite (`.btn-serve`, `.btn-upgrade.can-afford`, `.btn-cookie-accept`).
+  - Documentation d'architecture mise à jour dans `ARCH.md`.
+
+## [1.30.0] - 2026-11-06
 ### Added & Improved
 - **Compositeur audio polyphonique 4 voix procédural tunisien (`audio.js`)** :
   - Synthétiseur Web Audio API à 4 voix indépendantes : Bourdon et basse Oud (onde triangle avec filtre passe-bas résonant), accords et arpèges Oud (gamme Hijaz tunisienne), flûte Ney soliste expressive avec modulation vibrato LFO (5 Hz), Kanoun scintillant et percussions Darbouka (Doum et Tak sur mesure selon la cellule rythmique Malfouf).
@@ -122,6 +143,7 @@
 # CHANGELOG
 
 ## 2026-11-06
+- feat(graphics,audio,ui): mobile game art revolution, dynamic store vitrines, master audio compressor and tactile haptics
 - feat(ui,audio,ads): polyphonic composer, 3d ergonomic buttons, splash landscape, google ads and cookie consent
 - fix(mobile): restore app startup on Android and fix AGENTS.md encoding
 - fix(mobile): restore app startup on Android and fix AGENTS.md encoding

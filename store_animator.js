@@ -5969,8 +5969,12 @@ export class QuartierAnimator {
         }
       }
     } else if (action === 'fountain_wish') {
-      if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playCoin) {
-        window.soundEngine.playCoin();
+      if (typeof window !== 'undefined' && window.soundEngine) {
+        if (window.soundEngine.playFountainWish) {
+          window.soundEngine.playFountainWish();
+        } else if (window.soundEngine.playCoin) {
+          window.soundEngine.playCoin();
+        }
       }
       if (typeof window !== 'undefined' && window.showFeedbackToast) {
         window.showFeedbackToast('🪙 رميت دينار في النافورة وتمنيت البركة والتوفيق ! ✨', '⛲');
@@ -7728,6 +7732,93 @@ export class QuartierAnimator {
     ctx.arc(doorX + doorW * 0.35, doorY + doorH * 0.6, 3, 0, Math.PI * 2);
     ctx.arc(doorX + doorW * 0.65, doorY + doorH * 0.6, 3, 0, Math.PI * 2);
     ctx.stroke();
+
+    // 3B. Vitrines de devanture avec reflets spéculaires brillants
+    const sideSpace = (b.width - doorW) / 2;
+    if (sideSpace >= 20) {
+      const winW = Math.min(22, sideSpace - 4);
+      const winH = Math.min(26, doorH * 0.72);
+      const winY = doorY + (doorH - winH) * 0.45;
+      const winPositions = [doorX - winW - 3, doorX + doorW + 3];
+
+      winPositions.forEach((wx) => {
+        ctx.save();
+        ctx.fillStyle = doorColor;
+        ctx.fillRect(wx - 1.5, winY - 1.5, winW + 3, winH + 3);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(wx - 1.5, winY - 1.5, winW + 3, winH + 3);
+
+        const isNightNow = this.skyPhase >= 0.52;
+        ctx.fillStyle = (isProducing || isNightNow) ? '#fef08a' : '#0284c7';
+        ctx.fillRect(wx, winY, winW, winH);
+
+        const glossGrad = ctx.createLinearGradient(wx, winY, wx + winW, winY + winH);
+        glossGrad.addColorStop(0, 'rgba(255, 255, 255, 0.55)');
+        glossGrad.addColorStop(0.35, 'rgba(255, 255, 255, 0.15)');
+        glossGrad.addColorStop(0.36, 'rgba(255, 255, 255, 0)');
+        glossGrad.addColorStop(0.65, 'rgba(255, 255, 255, 0)');
+        glossGrad.addColorStop(1, 'rgba(255, 255, 255, 0.22)');
+        ctx.fillStyle = glossGrad;
+        ctx.fillRect(wx, winY, winW, winH);
+
+        ctx.strokeStyle = 'rgba(15, 23, 42, 0.35)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(wx + winW / 2, winY);
+        ctx.lineTo(wx + winW / 2, winY + winH);
+        ctx.moveTo(wx, winY + winH / 2);
+        ctx.lineTo(wx + winW, winY + winH / 2);
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    // 3C. Tente de soleil rayée (auvent) au-dessus de la porte
+    const awningW = Math.min(b.width - 8, doorW + 44);
+    const awningX = x + (b.width - awningW) / 2;
+    const awningY = doorY - 7;
+    const awningH = 8.5;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    ctx.fillRect(awningX, awningY + awningH, awningW, 3);
+
+    const stripeCount = Math.max(5, Math.floor(awningW / 8));
+    const stripeW = awningW / stripeCount;
+    for (let si = 0; si < stripeCount; si++) {
+      ctx.fillStyle = si % 2 === 0 ? (b.color === '#e11d48' ? '#b91c1c' : '#dc2626') : '#ffffff';
+      ctx.fillRect(awningX + si * stripeW, awningY, stripeW, awningH);
+      ctx.beginPath();
+      ctx.arc(awningX + si * stripeW + stripeW / 2, awningY + awningH, stripeW / 2, 0, Math.PI);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 3D. Lanterne de nuit chaleureuse à l'entrée
+    if (this.skyPhase >= 0.48) {
+      const lanternPositions = [doorX - 5, doorX + doorW + 5];
+      lanternPositions.forEach(lx => {
+        ctx.save();
+        const glow = ctx.createRadialGradient(lx, doorY + 6, 2, lx, doorY + 6, 24);
+        glow.addColorStop(0, 'rgba(254, 240, 138, 0.65)');
+        glow.addColorStop(0.6, 'rgba(251, 146, 60, 0.22)');
+        glow.addColorStop(1, 'rgba(251, 146, 60, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(lx, doorY + 6, 24, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(lx, doorY + 6, 2.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
 
     // 4. Balcon en fer forgé / Moucharabieh à l'étage supérieur (uniquement si espace suffisant)
     const balcY = y + 54;

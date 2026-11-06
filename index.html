@@ -779,6 +779,24 @@
       background: linear-gradient(180deg, #f43f5e 0%, var(--red-tn) 55%, #9f1239 100%);
       box-shadow: 0 4px 0 #881337, 0 4px 12px rgba(225, 29, 72, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
       border-color: rgba(255, 228, 230, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-serve::after, .btn-upgrade.can-afford::after, .btn-cookie-accept::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+      transform: rotate(25deg);
+      animation: btnGlint 3.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes btnGlint {
+      0%, 72% { transform: translateX(0) rotate(25deg); }
+      100% { transform: translateX(450%) rotate(25deg); }
     }
     .btn-serve:active {
       box-shadow: 0 1px 0 #881337, inset 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -4375,9 +4393,7 @@
 
         const triggerServe = (clientX, clientY) => {
           if (engine.startProduction(biz.id)) {
-            if (biz.id === 'kahwa') soundEngine.playTeaCup();
-            else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
-            else soundEngine.playCoin();
+            soundEngine.playWorkSound(biz.id);
 
             spawnFloatText(clientX, clientY, `⚡ خدمة جارية...`);
 
@@ -4965,9 +4981,7 @@
           const biz = engine.getOrEnsureBusiness(bizId);
           if (biz && biz.level > 0) {
             if (engine.startProduction(biz.id)) {
-              if (biz.id === 'kahwa') soundEngine.playTeaCup();
-              else if (biz.id === 'taxi_collectif') soundEngine.playHorn();
-              else soundEngine.playCoin();
+              soundEngine.playWorkSound(biz.id);
               quartierEngine.spawnGainBubble(biz.id, `⚡ خدمة...`);
               renderDOM();
             }
@@ -6158,6 +6172,14 @@
         lastSave = now;
       }
     }
+
+    // Retour tactile sonore haptique universel sur boutons et onglets
+    document.addEventListener('pointerdown', (e) => {
+      const btn = e.target.closest('button, .btn-game, .nav-tab-item, .biz-tab, .icon-pill-btn, .biz-inspect-btn, .btn-cookie');
+      if (btn && !btn.disabled && window.soundEngine && window.soundEngine.playTap) {
+        window.soundEngine.playTap();
+      }
+    }, { passive: true });
 
     // Boucle principale : une exception ponctuelle ne doit jamais figer le solde
     function tick() {
