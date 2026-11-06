@@ -59,7 +59,7 @@ export class CanvasStoreEngine {
     // Émotes & répertoires d'articles authentiques et spécifiques pour CHAQUE projet
     this.orderIcons = {
       kaskrout: ['🥖', '🥪', '🌶️', '🥤'],
-      fricasse: ['🥟', '🍩', '🫒', '🥚'],
+      fricasse: ['🍩', '🥪', '🍯', '✨'],
       kahwa: ['☕', '🍵', '♠️', '🍏'],
       attariya: ['🍞', '🥛', '🧀', '🫒', '🥫', '🧼', '🥚', '🧂'],
       fruits_de_mer: ['🐟', '🦐', '🦑', '🦀', '🐟'],
@@ -782,7 +782,13 @@ export class CanvasStoreEngine {
       wallGrad.addColorStop(0, '#261a12');
       wallGrad.addColorStop(0.6, '#3a271d');
       wallGrad.addColorStop(1, '#1b120c');
-    } else if (bizId === 'kaskrout' || bizId === 'fricasse') {
+    } else if (bizId === 'fricasse') {
+      // Sidi Bou Saïd chaux blanche immaculée et voûte bleue
+      wallGrad.addColorStop(0, '#1d4ed8');
+      wallGrad.addColorStop(0.18, '#3b82f6');
+      wallGrad.addColorStop(0.24, '#f8fafc');
+      wallGrad.addColorStop(1, '#e2e8f0');
+    } else if (bizId === 'kaskrout') {
       wallGrad.addColorStop(0, '#1c2833');
       wallGrad.addColorStop(0.6, '#131e29');
       wallGrad.addColorStop(1, '#0c141c');
@@ -1275,15 +1281,250 @@ export class CanvasStoreEngine {
       ctx.fillText('🕐', 48, 52);
     }
 
-    // 7. KASKROUT / FRICASSÉ : Pain chaud et ardoise traditionnelle
-    else if (bizId === 'kaskrout' || bizId === 'fricasse') {
+    // 7. KASKROUT : Pain chaud et ardoise traditionnelle
+    else if (bizId === 'kaskrout') {
       ctx.fillStyle = '#854d0e';
       ctx.fillRect(105, 52, w - 130, 4);
       ctx.font = '13px serif';
       for (let x = 118; x < w - 34; x += 36) {
         ctx.fillText('🥖', x, 48);
-        ctx.fillText(bizId === 'fricasse' ? '🍩' : '🫒', x, 78);
+        ctx.fillText('🫒', x, 78);
       }
+    }
+
+    // 7.B FRICASSÉ SIDI BOU SAÏD :
+    // Zéro déco encombrante : mur épuré blanc/bleu avec :
+    // 1. Photo officielle de Kaïs Saïed avec cadre doré et drapeau tunisien
+    // 2. Calendrier mural éphéméride tunisien 2026 (روزنامة إفريقية)
+    else if (bizId === 'fricasse') {
+      ctx.save();
+
+      // Frise discrète en faïence bleue Sidi Bou Saïd en haut du mur
+      ctx.fillStyle = '#1d4ed8';
+      ctx.fillRect(104, 20, w - 128, 2);
+      ctx.fillStyle = '#38bdf8';
+      for (let zx = 108; zx < w - 28; zx += 16) {
+        ctx.fillRect(zx, 18, 6, 2);
+      }
+
+      // --- 1. PHOTO OFFICIELLE DE KAÏS SAÏED ---
+      // Cadre doré noble et solennel au centre-gauche du mur
+      const frameX = 138;
+      const frameY = 24;
+      const frameW = 42;
+      const frameH = 52;
+
+      // Ombre portée du cadre
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.fillRect(frameX + 3, frameY + 3, frameW, frameH);
+
+      // Moulure dorée extérieure
+      const goldGrad = ctx.createLinearGradient(frameX, frameY, frameX + frameW, frameY + frameH);
+      goldGrad.addColorStop(0, '#fef08a');
+      goldGrad.addColorStop(0.3, '#d97706');
+      goldGrad.addColorStop(0.7, '#f59e0b');
+      goldGrad.addColorStop(1, '#78350f');
+      ctx.fillStyle = goldGrad;
+      ctx.fillRect(frameX, frameY, frameW, frameH);
+
+      // Baguette dorée intérieure
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(frameX + 2.5, frameY + 2.5, frameW - 5, frameH - 5);
+
+      // Passe-partout intérieur sombre
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(frameX + 4, frameY + 4, frameW - 8, frameH - 8);
+
+      // Fond de la photo : Drapeau tunisien officiel (rouge avec croissant et étoile)
+      const photoX = frameX + 5;
+      const photoY = frameY + 5;
+      const photoW = frameW - 10;
+      const photoH = frameH - 14;
+
+      ctx.fillStyle = '#dc2626'; // Rouge drapeau tunisien
+      ctx.fillRect(photoX, photoY, photoW, photoH);
+
+      // Disque blanc du drapeau tunisien
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(photoX + photoW / 2, photoY + 13, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Croissant rouge et étoile
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(photoX + photoW / 2 + 1, photoY + 13, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(photoX + photoW / 2 + 3, photoY + 13, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = '6px sans-serif';
+      ctx.fillStyle = '#dc2626';
+      ctx.textAlign = 'center';
+      ctx.fillText('★', photoX + photoW / 2 + 3, photoY + 15);
+
+      // Buste de Kaïs Saïed
+      // Costume sombre présidentiel
+      ctx.fillStyle = '#090d16';
+      ctx.beginPath();
+      ctx.moveTo(photoX + 2, photoY + photoH);
+      ctx.lineTo(photoX + 7, photoY + 22);
+      ctx.lineTo(photoX + photoW - 7, photoY + 22);
+      ctx.lineTo(photoX + photoW - 2, photoY + photoH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Col de chemise blanche
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(photoX + photoW / 2 - 4.5, photoY + 20);
+      ctx.lineTo(photoX + photoW / 2 + 4.5, photoY + 20);
+      ctx.lineTo(photoX + photoW / 2, photoY + 26);
+      ctx.closePath();
+      ctx.fill();
+
+      // Cravate rouge présidentielle
+      ctx.fillStyle = '#991b1b';
+      ctx.beginPath();
+      ctx.moveTo(photoX + photoW / 2 - 1.8, photoY + 21);
+      ctx.lineTo(photoX + photoW / 2 + 1.8, photoY + 21);
+      ctx.lineTo(photoX + photoW / 2 + 2.2, photoY + photoH);
+      ctx.lineTo(photoX + photoW / 2 - 2.2, photoY + photoH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Cou et visage
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath();
+      ctx.arc(photoX + photoW / 2, photoY + 16, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Lunettes fines rectangulaires caractéristiques
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(photoX + photoW / 2 - 4.2, photoY + 13.5, 3.5, 2.2);
+      ctx.strokeRect(photoX + photoW / 2 + 0.7, photoY + 13.5, 3.5, 2.2);
+      ctx.beginPath();
+      ctx.moveTo(photoX + photoW / 2 - 0.7, photoY + 14.5);
+      ctx.lineTo(photoX + photoW / 2 + 0.7, photoY + 14.5);
+      ctx.stroke();
+
+      // Cheveux poivre et sel caractéristiques
+      ctx.fillStyle = '#e2e8f0';
+      ctx.beginPath();
+      ctx.arc(photoX + photoW / 2, photoY + 13, 6.2, Math.PI, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillRect(photoX + photoW / 2 - 6.2, photoY + 12, 1.8, 3.5);
+      ctx.fillRect(photoX + photoW / 2 + 4.4, photoY + 12, 1.8, 3.5);
+
+      // Reflet de vitre sur le cadre
+      const glassGrad = ctx.createLinearGradient(photoX, photoY, photoX + photoW, photoY + photoH);
+      glassGrad.addColorStop(0, 'rgba(255, 255, 255, 0.35)');
+      glassGrad.addColorStop(0.3, 'rgba(255, 255, 255, 0.08)');
+      glassGrad.addColorStop(0.7, 'transparent');
+      ctx.fillStyle = glassGrad;
+      ctx.fillRect(photoX, photoY, photoW, photoH);
+
+      // Plaque dorée gravée au bas du cadre : "قيس سعيّد"
+      const plaqueY = frameY + frameH - 9;
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(frameX + 5, plaqueY, frameW - 10, 6);
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 0.6;
+      ctx.strokeRect(frameX + 5, plaqueY, frameW - 10, 6);
+      ctx.font = 'bold 5px "Cairo", sans-serif';
+      ctx.fillStyle = '#451a03';
+      ctx.textAlign = 'center';
+      ctx.fillText('قيس سعيّد', frameX + frameW / 2, plaqueY + 4.8);
+
+      // --- 2. CALENDRIER ÉPHÉMÉRIDE TUNISIEN 2026 (روزنامة إفريقية 2026) ---
+      const calX = Math.min(w - 68, 204);
+      const calY = 25;
+      const calW = 34;
+      const calH = 48;
+
+      // Cordelette rouge de suspension & clou en laiton
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(calX + calW / 2, calY);
+      ctx.lineTo(calX + calW / 2, calY - 5);
+      ctx.stroke();
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(calX + calW / 2, calY - 5, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ombre du calendrier
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.fillRect(calX + 2, calY + 2, calW, calH);
+
+      // Tête en carton rigide rouge de la روزنامة
+      const headH = 18;
+      ctx.fillStyle = '#991b1b';
+      ctx.beginPath();
+      ctx.roundRect(calX, calY, calW, headH, [3, 3, 0, 0]);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 0.8;
+      ctx.strokeRect(calX, calY, calW, headH);
+
+      // Inscription dorée sur le carton : "روزنامة" et "2026"
+      ctx.font = 'bold 5.5px "Cairo", sans-serif';
+      ctx.fillStyle = '#fde047';
+      ctx.textAlign = 'center';
+      ctx.fillText('روزنامة تونسية', calX + calW / 2, calY + 7);
+      ctx.font = 'bold 7px "Cairo", sans-serif';
+      ctx.fillText('2026', calX + calW / 2, calY + 15);
+
+      // Bloc éphéméride détachable (feuilles blanches avec tranche)
+      const padY = calY + headH;
+      const padH = calH - headH;
+      // Tranche de papier (épaisseur)
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(calX + 1, padY + 1, calW, padH);
+      // Feuille du jour
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(calX, padY, calW - 1, padH - 1);
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 0.6;
+      ctx.strokeRect(calX, padY, calW - 1, padH - 1);
+
+      // Ligne de pointillés de détachement
+      ctx.strokeStyle = '#94a3b8';
+      ctx.setLineDash([2, 1.5]);
+      ctx.beginPath();
+      ctx.moveTo(calX + 1, padY + 1.5);
+      ctx.lineTo(calX + calW - 2, padY + 1.5);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Mois en bandeau rouge
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(calX + 2, padY + 3, calW - 5, 5);
+      ctx.font = 'bold 4.5px "Cairo", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('نوفمبر NOVEMBRE', calX + calW / 2, padY + 6.8);
+
+      // Grand chiffre du jour en rouge vif
+      ctx.font = 'bold 13px "Cairo", sans-serif';
+      ctx.fillStyle = '#dc2626';
+      ctx.fillText('6', calX + calW / 2, padY + 18.5);
+
+      // Nom du jour en arabe
+      ctx.font = 'bold 5px "Cairo", sans-serif';
+      ctx.fillStyle = '#1e293b';
+      ctx.fillText('الجمعة', calX + calW / 2, padY + 24);
+
+      // Heures de prière / citation discrète en bas de page
+      ctx.font = '3.5px sans-serif';
+      ctx.fillStyle = '#059669';
+      ctx.fillText('الفجر 05:14 • المغرب 17:28', calX + calW / 2, padY + 28.5);
+
+      ctx.restore();
     }
 
     // 8. BOUCHERIE : Faïence blanche bouchère, tringle inox avec crochets et viande
@@ -2262,13 +2503,26 @@ export class CanvasStoreEngine {
       ctx.fillStyle = '#475569';
       ctx.font = '5px "Cairo", sans-serif';
       ctx.fillText('الخميس', calX + calW / 2, calY + 32);
-    } else if (currentBizId === 'kaskrout' || currentBizId === 'fricasse') {
+    } else if (currentBizId === 'kaskrout') {
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(counterX, 50, deskW, 34);
       ctx.font = '13px serif';
       ctx.fillText('🥖', counterX + 12, 72);
       ctx.fillText('🥚', counterX + 36, 72);
       ctx.fillText('🫒', counterX + 60, 72);
+    } else if (currentBizId === 'fricasse') {
+      // Comptoir de garnissage authentique de Sidi Bou Saïd
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(counterX, 50, deskW, 34);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(counterX, 50, deskW, 34);
+      // Ingrédients traditionnels fricassé : Harissa arbi, thon, œufs durs, olives et bambalouni
+      ctx.font = '12px serif';
+      ctx.fillText('🥫', counterX + 8, 72);
+      ctx.fillText('🥚', counterX + 28, 72);
+      ctx.fillText('🫒', counterX + 48, 72);
+      ctx.fillText('🍩', counterX + 68, 72);
     } else {
       ctx.fillStyle = '#1e293b';
       ctx.beginPath();
@@ -3240,6 +3494,288 @@ export class CanvasStoreEngine {
       return;
     }
 
+    // 4.B FRICASSÉ & BAMBALOUNI SIDI BOU SAÏD :
+    // 2 GRANDES POÊLES DE FRITURE MAJEURES EN ÉBULLITION :
+    // Poêle 1 : Bambalouni dorés & Ftayers géants croustillants avec sucre et égouttoir
+    // Poêle 2 : Fricassés ovales gonflés dorés dans l'huile bouillante avec écumoire
+    if (bizId === 'fricasse') {
+      const fryX = leftX + 4;
+      const fryY = 126;
+      const fryW = Math.max(136, zoneW - 10);
+      const halfW = fryW / 2;
+
+      // 1. Meuble de cuisson en inox brossé avec brûleurs intégrés
+      ctx.fillStyle = '#334155';
+      ctx.beginPath();
+      ctx.roundRect(fryX, fryY + 2, fryW, 20, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Rebord brillant inox et boutons de réglage du gaz
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(fryX + 2, fryY + 4, fryW - 4, 3);
+      const knobs = [fryX + halfW * 0.35, fryX + halfW * 0.75, fryX + halfW * 1.35, fryX + halfW * 1.75];
+      knobs.forEach(kx => {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(kx, fryY + 14, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(kx - 0.6, fryY + 12, 1.2, 2);
+      });
+
+      // --- POÊLE 1 (GAUCHE) : BAMBALOUNI & FTAYER SIDI BOU SAÏD ---
+      const pan1CenterX = fryX + halfW * 0.48;
+      const pan1CenterY = fryY - 3;
+      const panRadiusX = Math.min(30, halfW * 0.42);
+      const panRadiusY = 13;
+
+      // Flammes de gaz sous la poêle 1 (bleues et oranges animées)
+      const flamePhase1 = Math.sin(timeSec * 16);
+      ctx.fillStyle = flamePhase1 > 0 ? '#38bdf8' : '#f97316';
+      for (let fx = pan1CenterX - panRadiusX + 4; fx <= pan1CenterX + panRadiusX - 4; fx += 5) {
+        const fh = 3 + Math.sin(fx + timeSec * 12) * 1.8;
+        ctx.beginPath();
+        ctx.moveTo(fx, fryY + 2);
+        ctx.lineTo(fx + 2, fryY + 2 - fh);
+        ctx.lineTo(fx + 4, fryY + 2);
+        ctx.fill();
+      }
+
+      // Cuve extérieure en fonte de la grande poêle 1
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.ellipse(pan1CenterX, pan1CenterY + 4, panRadiusX + 2, panRadiusY + 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Huile bouillante dorée frémissante
+      const oilGrad1 = ctx.createRadialGradient(pan1CenterX, pan1CenterY, 3, pan1CenterX, pan1CenterY, panRadiusX);
+      oilGrad1.addColorStop(0, '#fef08a');
+      oilGrad1.addColorStop(0.4, '#f59e0b');
+      oilGrad1.addColorStop(0.85, '#d97706');
+      oilGrad1.addColorStop(1, '#92400e');
+      ctx.fillStyle = oilGrad1;
+      ctx.beginPath();
+      ctx.ellipse(pan1CenterX, pan1CenterY, panRadiusX, panRadiusY, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bulles d'huile de friture vives
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      for (let b = 0; b < 6; b++) {
+        const bubbleX = pan1CenterX + Math.sin(timeSec * 6 + b * 1.3) * (panRadiusX * 0.65);
+        const bubbleY = pan1CenterY + Math.cos(timeSec * 7 + b * 1.7) * (panRadiusY * 0.55);
+        ctx.beginPath();
+        ctx.arc(bubbleX, bubbleY, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Bambalounis dorés en train de frire dans la poêle 1
+      // Bambalouni 1 (grand anneau gonflé doré)
+      const b1x = pan1CenterX - 8 + Math.sin(timeSec * 2) * 2;
+      const b1y = pan1CenterY - 2;
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.ellipse(b1x, b1y, 7, 4.5, 0.2, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Bambalouni 2 (second anneau en train de dorer)
+      const b2x = pan1CenterX + 10 + Math.cos(timeSec * 2.2) * 2;
+      const b2y = pan1CenterY + 2;
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      ctx.ellipse(b2x, b2y, 6.2, 4, -0.3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Ftayer (grande galette ronde soufflée dorée au centre)
+      const ftX = pan1CenterX + 1 + Math.sin(timeSec * 1.5);
+      const ftY = pan1CenterY - 4;
+      ctx.fillStyle = '#ea580c';
+      ctx.beginPath();
+      ctx.ellipse(ftX, ftY, 7, 4, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.ellipse(ftX, ftY, 5, 2.5, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Broche de fer / سفّود حديد traditionnel posé sur le bord pour retourner le bambalouni
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(pan1CenterX - panRadiusX - 4, pan1CenterY + 8);
+      ctx.lineTo(pan1CenterX + 4, pan1CenterY - 4);
+      ctx.stroke();
+      ctx.fillStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.arc(pan1CenterX - panRadiusX - 4, pan1CenterY + 8, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Égouttoir à bambalouni avec sucre à gauche
+      const rackX = fryX + 2;
+      const rackY = fryY - 14;
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(rackX, rackY + 8, 12, 2);
+      ctx.font = '11px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🍩', rackX + 6, rackY + 6);
+      ctx.font = '7px sans-serif';
+      ctx.fillText('✨', rackX + 9, rackY - 1); // Sucre scintillant
+
+      // --- POÊLE 2 (DROITE) : GRANDE POÊLE À FRICASSÉ ---
+      const pan2CenterX = fryX + halfW * 1.48;
+      const pan2CenterY = fryY - 3;
+      const pan2RadiusX = Math.min(30, halfW * 0.42);
+      const pan2RadiusY = 13;
+
+      // Flammes de gaz sous la poêle 2
+      const flamePhase2 = Math.cos(timeSec * 15);
+      ctx.fillStyle = flamePhase2 > 0 ? '#38bdf8' : '#f59e0b';
+      for (let fx = pan2CenterX - pan2RadiusX + 4; fx <= pan2CenterX + pan2RadiusX - 4; fx += 5) {
+        const fh = 3 + Math.cos(fx + timeSec * 11) * 1.8;
+        ctx.beginPath();
+        ctx.moveTo(fx, fryY + 2);
+        ctx.lineTo(fx + 2, fryY + 2 - fh);
+        ctx.lineTo(fx + 4, fryY + 2);
+        ctx.fill();
+      }
+
+      // Cuve fonte poêle 2
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.ellipse(pan2CenterX, pan2CenterY + 4, pan2RadiusX + 2, pan2RadiusY + 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Huile de friture dorée poêle 2
+      const oilGrad2 = ctx.createRadialGradient(pan2CenterX, pan2CenterY, 3, pan2CenterX, pan2CenterY, pan2RadiusX);
+      oilGrad2.addColorStop(0, '#fef08a');
+      oilGrad2.addColorStop(0.45, '#f59e0b');
+      oilGrad2.addColorStop(0.85, '#d97706');
+      oilGrad2.addColorStop(1, '#78350f');
+      ctx.fillStyle = oilGrad2;
+      ctx.beginPath();
+      ctx.ellipse(pan2CenterX, pan2CenterY, pan2RadiusX, pan2RadiusY, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bulles d'huile poêle 2
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      for (let b = 0; b < 6; b++) {
+        const bx = pan2CenterX + Math.cos(timeSec * 5 + b * 1.5) * (pan2RadiusX * 0.65);
+        const by = pan2CenterY + Math.sin(timeSec * 6 + b * 1.8) * (pan2RadiusY * 0.55);
+        ctx.beginPath();
+        ctx.arc(bx, by, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Petits pains fricassés ovales gonflés et dorés dans la poêle
+      // Fricassé 1
+      const fc1x = pan2CenterX - 9 + Math.sin(timeSec * 2.5) * 1.5;
+      const fc1y = pan2CenterY - 1;
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.ellipse(fc1x, fc1y, 7, 4.5, 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.ellipse(fc1x, fc1y - 0.8, 5.5, 2.8, 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      // Fente médiane dorée caractéristique du pain fricassé
+      ctx.strokeStyle = '#92400e';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(fc1x - 5, fc1y);
+      ctx.lineTo(fc1x + 5, fc1y);
+      ctx.stroke();
+
+      // Fricassé 2
+      const fc2x = pan2CenterX + 8 + Math.cos(timeSec * 2.1) * 1.5;
+      const fc2y = pan2CenterY + 2;
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.ellipse(fc2x, fc2y, 6.5, 4.2, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.ellipse(fc2x, fc2y - 0.6, 5, 2.5, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#92400e';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(fc2x - 4, fc2y);
+      ctx.lineTo(fc2x + 4, fc2y);
+      ctx.stroke();
+
+      // Fricassé 3 (au fond, pâte en train de gonfler)
+      const fc3x = pan2CenterX;
+      const fc3y = pan2CenterY - 4;
+      ctx.fillStyle = '#ea580c';
+      ctx.beginPath();
+      ctx.ellipse(fc3x, fc3y, 6, 3.8, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fffbeb';
+      ctx.beginPath();
+      ctx.ellipse(fc3x, fc3y - 0.5, 4.2, 2.2, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Écumoire en inox (كسكاس / مقصوصة قليان)
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(pan2CenterX + pan2RadiusX + 4, pan2CenterY + 8);
+      ctx.lineTo(pan2CenterX - 2, pan2CenterY - 3);
+      ctx.stroke();
+      // Tête ronde perforée de l'écumoire
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.fillStyle = 'rgba(203, 213, 225, 0.35)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(pan2CenterX - 2, pan2CenterY - 3, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Panier d'égouttage inox avec fricassés croustillants dorés prêts
+      const dripX = fryX + fryW - 14;
+      const dripY = fryY - 14;
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(dripX, dripY + 8, 12, 2);
+      ctx.font = '10px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🥪', dripX + 6, dripY + 7);
+
+      // Vapeur chaude montante animée des 2 poêles
+      const steamAlpha = 0.3 + Math.sin(timeSec * 4) * 0.15;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${steamAlpha})`;
+      ctx.lineWidth = 1.5;
+      // Vapeur poêle 1
+      ctx.beginPath();
+      ctx.moveTo(pan1CenterX, pan1CenterY - 6);
+      ctx.quadraticCurveTo(pan1CenterX + Math.sin(timeSec * 3) * 4, pan1CenterY - 18, pan1CenterX + 2, pan1CenterY - 26);
+      ctx.stroke();
+      // Vapeur poêle 2
+      ctx.beginPath();
+      ctx.moveTo(pan2CenterX, pan2CenterY - 6);
+      ctx.quadraticCurveTo(pan2CenterX + Math.cos(timeSec * 3) * 4, pan2CenterY - 18, pan2CenterX - 2, pan2CenterY - 26);
+      ctx.stroke();
+
+      ctx.restore();
+      return;
+    }
+
     // 5. RESTAURATION & BOUTIQUES (`food_counter` & `retail_shop`) : Vitrine / Comptoir d'Exposition éclairé
     const displayX = leftX + 6;
     const displayY = 135;
@@ -3270,7 +3806,7 @@ export class CanvasStoreEngine {
     ctx.save();
 
     // 1. TRADITIONAL FOOD / LABLABI / KASKROUT : marmite fumante, découpe de baguette, louche en mouvement
-    if (bizId === 'kaskrout' || bizId === 'fricasse') {
+    if (bizId === 'kaskrout') {
       ctx.fillStyle = '#334155';
       ctx.fillRect(x + 4, y - 20, 36, 20);
       ctx.strokeStyle = '#64748b';
@@ -3326,6 +3862,47 @@ export class CanvasStoreEngine {
       ctx.fillRect(x + 2, y - 6, 14, 4);
       ctx.fillStyle = '#fde047';
       ctx.fillRect(x + 4, y - 8, 10, 3);
+    }
+
+    // 1.B FRICASSÉ SIDI BOU SAÏD : Plan de travail en marbre pour façonner et étirer les bambalounis
+    else if (bizId === 'fricasse') {
+      // Table inox / marbre blanc
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.roundRect(x + 2, y - 22, 40, 22, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Boules de pâte levée moelleuses prêtes pour la friture
+      ctx.fillStyle = '#fef08a';
+      const doughs = [
+        { dx: x + 9, dy: y - 14, r: 4 },
+        { dx: x + 20, dy: y - 15, r: 4.5 },
+        { dx: x + 31, dy: y - 13, r: 4 }
+      ];
+      doughs.forEach(d => {
+        ctx.beginPath();
+        ctx.arc(d.dx, d.dy, d.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      });
+
+      // Bol d'huile pour façonner à la main
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.ellipse(x + 10, y - 6, 4.5, 2.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Anneau de bambalouni cru en cours d'étirement
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(x + 26, y - 6, 5.5, 3, 0, 0, Math.PI * 2);
+      ctx.stroke();
     }
 
     // 1B. RESTAURANT : Passe-plats inox du chef avec cloche dorée fumante et tajine chaud
@@ -5261,7 +5838,7 @@ export class QuartierAnimator {
 
     this.bizTemplates = {
       kaskrout: { id: 'kaskrout', width: 140, height: 75, style: 'sandwich_stall', color: '#f59e0b', roofColor: '#dc2626' },
-      fricasse: { id: 'fricasse', width: 155, height: 122, style: 'fricasse_stand', color: '#f97316', roofColor: '#b45309' },
+      fricasse: { id: 'fricasse', width: 155, height: 122, style: 'fricasse_stand', color: '#f97316', roofColor: '#1d4ed8', signText: 'فريكاسي سيدي بوسعيد 🍩' },
       kahwa: { id: 'kahwa', width: 170, height: 132, style: 'cafe_terrasse', color: '#eab308', roofColor: '#1e3a8a' },
       attariya: { id: 'attariya', width: 155, height: 128, style: 'attariya_shop', color: '#10b981', roofColor: '#047857' },
       fruits_de_mer: {
@@ -7859,7 +8436,8 @@ export class QuartierAnimator {
 
     // 2. Vantail de la porte en bois peint (Bleu Sidi Bou Saïd / Ocre / Vert Médina)
     let doorColor = '#1d4ed8'; // Bleu Sidi Bou Saïd par défaut
-    if (b.id === 'kaskrout' || b.id === 'fricasse') doorColor = '#eab308'; // Ocre jaune chaleureux
+    if (b.id === 'kaskrout') doorColor = '#eab308'; // Ocre jaune chaleureux
+    else if (b.id === 'fricasse') doorColor = '#1d4ed8'; // Bleu Sidi Bou Saïd éclatant
     else if (b.id === 'patisserie' || b.id === 'attariya') doorColor = '#059669'; // Vert émeraude médina
     else if (b.id === 'tayaran_el_ghzela' || b.id === 'showroom_auto') doorColor = '#1e293b'; // Noir / Bleu marine luxueux
 

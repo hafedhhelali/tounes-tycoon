@@ -1,10 +1,10 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-06 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v142)
-1. Joujma Mania / Fever Mode x3 (`engine.js`, `store_animator.js`, `index.html`) : jauge d'ambiance 🌶️ جوجمة qui grimpe aux taps/récoltes, déclenchant 15s de frénésie à production x3 avec pluie de confettis, cadre néon pulsant et fanfare festive (`playJoujmaFanfare`).
-2. Personnages VIP de rue interactifs (`store_animator.js`, `engine.js`, `audio.js`) : apparition du Touriste Riche 📸 (+devises), du Critique Gastronomique 🧐 (+réputation), de la Voiture de la Mariée 👰🚗 (+jackpot festif & Joujma direct) et de l'Artisan 🧰, cliquables dans la rue avec badges tactiles pulsants.
-3. Progression des paliers visible & accélération manuelle continue (`index.html`) : barre de progression du prochain palier (Lv 10, 25, 50, 100...) affichée sur chaque commerce ; bouton de service qui reste actif même avec manager (`🌶️ تسريع جوجمة`) pour accélérer le cycle et chauffer la jauge.
+## État en 3 lignes (v143)
+1. Fricassé & Bambalouni Sidi Bou Saïd (`engine.js`, `store_animator.js`) : commerce renommé `فريكاسي سيدي بوسعيد` avec déco intérieure épurée blanchie à la chaux et voûte bleue Sidi Bou Saïd.
+2. 2 Grandes poêles de friture en ébullition (`store_animator.js`) : Poêle 1 pour Bambalounis dorés & Ftayers croustillants avec broche de fer سفّود et égouttoir à sucre ; Poêle 2 pour petits pains Fricassés gonflés dorés dans l'huile bouillante avec écumoire كسكاس.
+3. Portrait officiel de Kaïs Saïed & Calendrier 2026 (`store_animator.js`) : photo officielle encadrée avec dorures, fond drapeau tunisien et plaque gravée ; calendrier mural éphéméride tunisien 2026 (روزنامة إفريقية 2026) avec éphéméride détachable.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).

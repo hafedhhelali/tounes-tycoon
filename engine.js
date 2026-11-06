@@ -19,15 +19,15 @@ export const BUSINESS_CONFIGS = [
   },
   {
     id: 'fricasse',
-    name: 'فريكاسي وبمبلوني',
-    tagline: 'كعبة مقرمشة تعوّم في العسل وشاربة الزيت بالبركة، تعضّ الكعبة تتفرشك !',
+    name: 'فريكاسي سيدي بوسعيد',
+    tagline: 'فريكاسي وبمبلوني سيدي بوسعيد: كعبة مقرمشة تعوّم في العسل وفطاير سخونة مقرمشة !',
     icon: '🍩',
     baseCost: 30.0,
     baseRevenue: 3.5,
     costMultiplier: 1.08,
     cycleDurationMs: 1400, // 1.4s
     managers: [
-      { name: 'الباجي البمبلوني', role: 'فنّان البمبلوني', avatar: '🧑‍🍳', cost: 150.0 }
+      { name: 'الباجي البمبلوني', role: 'معلّم البمبلوني والفطاير', avatar: '🧑‍🍳', cost: 150.0 }
     ],
   },
   {
@@ -2231,9 +2231,9 @@ export class TycoonEngine {
         { item: 'قازوز بوڨا بارد', price: 1.5, sharePct: 15 }
       ],
       fricasse: [
-        { item: 'كعبة فريكاسي سخونة بالزيتون', price: 1.2, sharePct: 55 },
+        { item: 'كعبة فريكاسي سخونة بالطن والزيتون', price: 1.2, sharePct: 45 },
         { item: 'كعبة بمبلوني مرشوشة سكر', price: 1.2, sharePct: 35 },
-        { item: 'دبوزة ماء باردة', price: 1.0, sharePct: 10 }
+        { item: 'فطاير عسل سيدي بوسعيد', price: 1.5, sharePct: 20 }
       ],
       kahwa: [
         { item: 'قهوة فيلتري / إكسبريس', price: 1.8, sharePct: 50 },

@@ -220,6 +220,7 @@
 # CHANGELOG
 
 ## 2026-11-06
+- feat(fricasse): sidi bou said authentic shop with 2 frying pans, kais saied portrait and 2026 calendar
 - feat(gameplay,art): joujma fever mode x3, interactive street vips, milestone progress bars and rush serve button
 - feat(map,biz): fullwidth project view with zero side margins, beautiful cartography with coastal shelf, nile, pyramids, zoom controls and country jump pills
 - feat(map,ui): single row header, canvas map bubble, enlarged north africa map with algeria, morocco, libya, egypt, mauritania and all capitals
