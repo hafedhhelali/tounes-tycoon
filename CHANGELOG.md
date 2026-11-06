@@ -102,6 +102,8 @@
 # CHANGELOG
 
 ## 2026-11-06
+- fix(mobile): restore app startup on Android and fix AGENTS.md encoding
+- fix(mobile): restore app startup on Android and fix AGENTS.md encoding
 - fix(tycoon): resolve drawPOSTerminal timeSec ReferenceError restoring customer rendering across all 30 businesses
 
 ## 2026-11-05

@@ -21,13 +21,12 @@
   - RNG dÃ©terministe avec seed pour les Ã©vÃ©nements quotidiens.
 
 ## 3. DOCS AUTO (OBLIGATOIRE, SANS DEMANDE)
-- Tout changement de code/texte/UI => MAJ immédiate de HANDOFF.md (état, TODO, pièges), CHANGELOG.md, et ARCH.md/README.md si impact.
-- Livrer UNIQUEMENT via `scripts/ship.ps1 "<type>(<scope>): <msg>"` (test, sync www, MD auto, commit, push, vérif).
+- Tout changement de code/texte/UI => MAJ immÃ©diate de HANDOFF.md (Ã©tat, TODO, piÃ¨ges), CHANGELOG.md, et ARCH.md/README.md si impact.
+- Livrer UNIQUEMENT via `scripts/ship.ps1 "<type>(<scope>): <msg>"` (test, sync www, MD auto, commit, push, vÃ©rif).
 - Hook `.githooks/pre-commit` bloque tout commit de code sans HANDOFF.md+CHANGELOG.md. Activer: `git config core.hooksPath .githooks`.
-- Fin de tâche: HANDOFF.md doit permettre une reprise par un autre agent/modèle sans contexte. Ne jamais annoncer "poussé" sans preuve `git status -sb`.
+- Fin de tÃ¢che: HANDOFF.md doit permettre une reprise par un autre agent/modÃ¨le sans contexte. Ne jamais annoncer "poussÃ©" sans preuve `git status -sb`.
 
-
-- Mode GitHub-only: commiter via API GitHub, inclure HANDOFF.md + CHANGELOG.md dans le même commit; la CI `docs-guard` + `build-apk` valide.
+- Mode GitHub-only: commiter via API GitHub, inclure HANDOFF.md + CHANGELOG.md dans le mÃªme commit; la CI `docs-guard` + `build-apk` valide.
 
 ## 4. AUTONOMIE
-- Autorisation PERMANENTE de modifier code/textes/docs, commiter et pousser sans demander. Ne pas poser de questions de confirmation. Stop uniquement si action destructive/irréversible ou demande réellement ambiguë.
+- Autorisation PERMANENTE de modifier code/textes/docs, commiter et pousser sans demander. Ne pas poser de questions de confirmation. Stop uniquement si action destructive/irrÃ©versible ou demande rÃ©ellement ambiguÃ«.

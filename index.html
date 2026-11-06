@@ -2437,6 +2437,21 @@
       100% { background-position: 200% center; }
     }
   </style>
+  <script>
+    // Sécurité de démarrage Mobile / WebView : fermeture garantie du splash après délai
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splashEl = document.getElementById('welcomeSplashScreen');
+        if (splashEl && !splashEl.classList.contains('splash-hide')) {
+          splashEl.classList.add('splash-hide');
+          setTimeout(() => { if (splashEl && splashEl.parentNode) splashEl.style.display = 'none'; }, 600);
+        }
+      }, 3500);
+    });
+    window.addEventListener('error', (e) => {
+      console.error('Unhandled app error:', e.error || e.message);
+    });
+  </script>
 </head>
 <body>
   <!-- ÉCRAN D'ACCUEIL ANIMÉ AVEC TEXTE DESIGNÉ, BARRE DE PROGRESSION ET PETIT TEXTE EN BAS -->
@@ -3375,11 +3390,12 @@
   </div>
 
   <script type="module">
-    import { TycoonEngine } from './engine.js?v=134';
-    import { soundEngine } from './audio.js?v=134';
+    import { TycoonEngine, DAILY_LOGIN_REWARDS } from './engine.js';
+    import { soundEngine } from './audio.js';
+    import { AdsService } from './ads_service.js';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js';
+
     if (typeof window !== 'undefined') window.soundEngine = soundEngine;
-    import { AdsService } from './ads_service.js?v=134';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js?v=134';
 
     const adsService = new AdsService();
     adsService.initialize();
@@ -4198,21 +4214,19 @@
 
       streakRow.innerHTML = '';
       const dayNames = ['النهار الأوّل', 'النهار الثاني', 'النهار الثالث', 'النهار الرابع', 'النهار الخامس', 'النهار السادس', 'النهار السابع'];
-      import('./engine.js').then(m => {
-        const rewards = m.DAILY_LOGIN_REWARDS;
-        rewards.forEach((r, idx) => {
-          const isDone = idx < (engine.dailyLogin.currentStreak % 7) && !status.available;
-          const isCurrent = idx === status.dayIndex;
-          const cell = document.createElement('div');
-          cell.style.cssText = `background: ${isCurrent ? 'rgba(245,158,11,0.3)' : 'rgba(0,0,0,0.4)'}; border: 1px solid ${isCurrent ? '#f59e0b' : 'rgba(255,255,255,0.1)'}; border-radius: 8px; padding: 4px 2px; text-align: center; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 58px;`;
-          const dayTitle = dayNames[idx] || `النهار ${r.day}`;
-          cell.innerHTML = `
-            <div style="font-weight: 800; color: #cbd5e1; font-size: 8.5px; line-height: 1.1; margin-bottom: 2px;">${dayTitle}</div>
-            <div style="font-size: 16px; margin: 1px 0;">${r.icon}</div>
-            <div style="color: ${isDone ? '#34d399' : isCurrent ? '#fde047' : '#94a3b8'}; font-size: 9px; font-weight: 900;">${isDone ? '✓' : isCurrent ? 'توّا' : ''}</div>
-          `;
-          streakRow.appendChild(cell);
-        });
+      const rewards = DAILY_LOGIN_REWARDS || [];
+      rewards.forEach((r, idx) => {
+        const isDone = idx < (engine.dailyLogin.currentStreak % 7) && !status.available;
+        const isCurrent = idx === status.dayIndex;
+        const cell = document.createElement('div');
+        cell.style.cssText = `background: ${isCurrent ? 'rgba(245,158,11,0.3)' : 'rgba(0,0,0,0.4)'}; border: 1px solid ${isCurrent ? '#f59e0b' : 'rgba(255,255,255,0.1)'}; border-radius: 8px; padding: 4px 2px; text-align: center; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 58px;`;
+        const dayTitle = dayNames[idx] || `النهار ${r.day}`;
+        cell.innerHTML = `
+          <div style="font-weight: 800; color: #cbd5e1; font-size: 8.5px; line-height: 1.1; margin-bottom: 2px;">${dayTitle}</div>
+          <div style="font-size: 16px; margin: 1px 0;">${r.icon}</div>
+          <div style="color: ${isDone ? '#34d399' : isCurrent ? '#fde047' : '#94a3b8'}; font-size: 9px; font-weight: 900;">${isDone ? '✓' : isCurrent ? 'توّا' : ''}</div>
+        `;
+        streakRow.appendChild(cell);
       });
 
       if (claimBtn) {

@@ -1,13 +1,13 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-06 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v135)
-1. Bug critique d'affichage des clients résolu à 100% : correction du `ReferenceError: timeSec is not defined` dans `drawPOSTerminal`, qui interrompait silencieusement la boucle de rendu avant l'appel de `drawCustomers` dès qu'un commerce entrait en production.
-2. Vitalité garantie sur les 30 commerces : test automatisé validé sur l'intégralité des 30 projets sans aucune exception, avec pré-remplissage immédiat (1 client au comptoir, 1 client à la porte) et rythme de spawn fluide de 1.1s.
-3. Synchronisation parfaite des postes : 1:1 entre effectif du menu et postes dans le décor, bandeaux de capacité actualisés, et clients bancaires en défilement continu.
+## État en 3 lignes (v136)
+1. Résolution du démarrage mobile Android/Capacitor : suppression du code exécutable inséré entre les imports ESM (`window.soundEngine`), suppression des paramètres de version (`?v=...`) incompatibles avec la résolution d'assets locaux sur WebView Android, et remplacement de l'import dynamique par un import statique propre.
+2. Failsafe Splash Screen & Erreurs : ajout d'un minuteur de secours indépendant (3.5s) garantissant la fermeture du rideau d'accueil royal même si un script tarde ou échoue, et capture globale des erreurs pour diagnostic immédiat.
+3. Encodage AGENTS.md restauré : AGENTS.md réécrit en UTF-8 pur sans octets corrompus ni mojibake.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs : `store_animator.js`, `index.html`, `HANDOFF.md`, `CHANGELOG.md`, `www/*`.
+- Modifs : `index.html`, `AGENTS.md`, `scripts/ship.ps1`, `.github/workflows/build-apk.yml`, `HANDOFF.md`, `CHANGELOG.md`.
 - Suite de tests : 70/70 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.
