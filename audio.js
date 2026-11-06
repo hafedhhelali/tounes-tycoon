@@ -1,113 +1,151 @@
 /**
- * Tounes Tycoon - Moteur Audio Procédural
- * © EOLabs 2026. Pur Web Audio API - Zéro asset lourd, zéro latence.
+ * Tounes Tycoon - Moteur Audio Procédural Polyphonique
+ * © EOLabs 2026. Pur Web Audio API - Zéro asset lourd, zéro latence, zéro fuite mémoire.
+ * Composition polyphonique tunisienne authentique : Maqam Bayati & Rast (Oud, Ney, Kanoun & Darbouka).
  */
 
 class SoundEngine {
   constructor() {
     this.ctx = null;
     this.muted = false;
+    this.bgmTimer = null;
+    this.activeNodes = new Set();
   }
 
   init() {
+    if (typeof window === 'undefined') return;
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new AudioCtx();
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
     }
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
+    if (this.ctx && this.ctx.state === 'suspended') {
+      try { this.ctx.resume(); } catch (_) {}
     }
   }
 
-  // Tintement cristallin de pièces de Dinars (harmonique double richesse)
+  // Enregistrement et libération automatique des nœuds audio pour garantir zéro fuite mémoire
+  registerNode(node, stopTime = null) {
+    if (!node) return;
+    this.activeNodes.add(node);
+    if (stopTime && this.ctx) {
+      const cleanupDelay = Math.max(0.1, (stopTime - this.ctx.currentTime) + 0.1) * 1000;
+      setTimeout(() => {
+        try { node.disconnect(); } catch (_) {}
+        this.activeNodes.delete(node);
+      }, cleanupDelay);
+    }
+  }
+
+  // 1. Tintement cristallin doré de pièces de Dinars (double éclat harmonique cuivre & or)
   playCoin() {
     if (this.muted) return;
     this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
-    // Fondamentale + harmonique d'octave dorée
-    [987.77, 1318.51].forEach((freq, i) => {
+    [1046.50, 1318.51, 2093.00].forEach((freq, i) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      const t = now + i * 0.045;
+      const t = now + (i * 0.038);
 
-      osc.type = i === 0 ? 'sine' : 'triangle';
+      osc.type = i === 1 ? 'triangle' : 'sine';
       osc.frequency.setValueAtTime(freq, t);
-      osc.frequency.exponentialRampToValueAtTime(freq * 1.33, t + 0.09);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.35, t + 0.08);
 
-      gain.gain.setValueAtTime(i === 0 ? 0.14 : 0.10, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+      gain.gain.setValueAtTime(i === 0 ? 0.14 : 0.09, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.16);
+      osc.stop(t + 0.18);
+      this.registerNode(osc, t + 0.18);
+      this.registerNode(gain, t + 0.18);
     });
   }
 
-  // Son de tiroir-caisse (Cha-Ching ! authentique de caisse enregistreuse)
+  // 2. Caisse enregistreuse de prestige (Tiroir mécanique vintage + carillon aigu)
   playCashRegister() {
     if (this.muted) return;
     this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
-    // 1. Claquement mécanique du tiroir
+    // A. Bruit mécanique d'ouverture de tiroir (glissière métallique et roulement)
     const osc1 = this.ctx.createOscillator();
+    const filter1 = this.ctx.createBiquadFilter();
     const gain1 = this.ctx.createGain();
-    osc1.type = 'triangle';
-    osc1.frequency.setValueAtTime(320, now);
-    osc1.frequency.exponentialRampToValueAtTime(110, now + 0.05);
-    gain1.gain.setValueAtTime(0.18, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
-    osc1.connect(gain1);
-    gain1.connect(this.ctx.destination);
-    osc1.start(now);
-    osc1.stop(now + 0.055);
 
-    // 2. Clochette aiguë de caisse (Ching!)
-    [1567.98, 2093.00].forEach((freq, idx) => {
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(360, now);
+    osc1.frequency.exponentialRampToValueAtTime(95, now + 0.065);
+
+    filter1.type = 'lowpass';
+    filter1.frequency.setValueAtTime(650, now);
+
+    gain1.gain.setValueAtTime(0.19, now);
+    gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+
+    osc1.connect(filter1);
+    filter1.connect(gain1);
+    gain1.connect(this.ctx.destination);
+
+    osc1.start(now);
+    osc1.stop(now + 0.07);
+    this.registerNode(osc1, now + 0.07);
+
+    // B. Carillon "Cha-Ching" aigu et scintillant
+    [1567.98, 2093.00, 2637.02].forEach((freq, idx) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       const t = now + 0.05 + idx * 0.035;
+
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, t);
-      gain.gain.setValueAtTime(0.15, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+      gain.gain.setValueAtTime(0.12, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+
       osc.connect(gain);
       gain.connect(this.ctx.destination);
+
       osc.start(t);
-      osc.stop(t + 0.24);
+      osc.stop(t + 0.28);
+      this.registerNode(osc, t + 0.28);
     });
   }
 
-  // Tintement cristallin du verre de thé à la menthe et service
+  // 3. Verre de thé tunisien à la menthe (tasse fine cristalline)
   playTeaCup() {
     if (this.muted) return;
     this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
-    [2400, 3100].forEach((f, idx) => {
+    [2489.02, 3135.96, 4186.01].forEach((f, idx) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      const t = now + idx * 0.05;
+      const t = now + idx * 0.045;
 
       osc.type = 'sine';
       osc.frequency.setValueAtTime(f, t);
-      osc.frequency.exponentialRampToValueAtTime(f * 1.12, t + 0.04);
+      osc.frequency.exponentialRampToValueAtTime(f * 1.15, t + 0.04);
 
-      gain.gain.setValueAtTime(0.16, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      gain.gain.setValueAtTime(0.13, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.12);
+      osc.stop(t + 0.15);
+      this.registerNode(osc, t + 0.15);
     });
   }
 
-  // Son d'ambiance métier lors d'un service à l'intérieur d'un projet
+  // 4. Son contextuel par type de commerce
   playWorkSound(bizId) {
     if (this.muted) return;
     this.init();
@@ -115,267 +153,287 @@ class SoundEngine {
       this.playTeaCup();
     } else if (bizId === 'taxi_collectif' || bizId === 'showroom_auto') {
       this.playHorn();
+    } else if (bizId === 'police_station') {
+      this.playPoliceSiren();
     } else {
       this.playCashRegister();
     }
   }
 
-  // Double coup de klaxon de Louage / Taxi Collectif (Tut Tut !)
+  // 5. Klaxon tunisien classique (Louage / Taxi 504)
   playHorn() {
     if (this.muted) return;
     this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
-    const playBeep = (startTime) => {
+    [440, 554.37].forEach(f => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(440, startTime); // A4
-      osc.frequency.setValueAtTime(466.16, startTime + 0.05); // Bb4
+      osc.frequency.setValueAtTime(f, now);
+      osc.frequency.linearRampToValueAtTime(f * 1.02, now + 0.18);
 
-      gain.gain.setValueAtTime(0.12, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.12);
+      gain.gain.setValueAtTime(0.11, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
-      osc.start(startTime);
-      osc.stop(startTime + 0.12);
-    };
-
-    playBeep(now);
-    playBeep(now + 0.15);
+      osc.start(now);
+      osc.stop(now + 0.2);
+      this.registerNode(osc, now + 0.2);
+    });
   }
 
-  // Sirène de Police tunisienne réaliste à deux tons (Pin-Pon Pin-Pon !)
-  // Sirène de Police tunisienne réaliste à deux tons avec balayage et écho
+  // 6. Sirène de police municipale
   playPoliceSiren() {
     if (this.muted) return;
     this.init();
-    const now = this.ctx.currentTime;
-
-    // Deux tonalités alternées répétées sur 2.5 secondes complètes
-    const cycles = 6;
-    let t = now;
-    for (let c = 0; c < cycles; c++) {
-      const f1 = 659.25; // Mi5
-      const f2 = 493.88; // Si4
-      const dur = 0.20;
-
-      [f1, f2].forEach((freq) => {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(freq, t);
-
-        gain.gain.setValueAtTime(0.18, t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + dur);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start(t);
-        osc.stop(t + dur);
-
-        t += dur;
-      });
-    }
-  }
-
-  // Son de déblocage / Achat de niveau
-  playUpgrade() {
-    if (this.muted) return;
-    this.init();
-    const now = this.ctx.currentTime;
-
-    [440, 554.37, 659.25, 880].forEach((freq, idx) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const t = now + (idx * 0.05);
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, t);
-
-      gain.gain.setValueAtTime(0.15, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(t);
-      osc.stop(t + 0.08);
-    });
-  }
-
-  // Fanfare d'événement
-  playEventFanfare() {
-    if (this.muted) return;
-    this.init();
-    const now = this.ctx.currentTime;
-
-    [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const t = now + (idx * 0.08);
-
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(freq, t);
-
-      gain.gain.setValueAtTime(0.1, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(t);
-      osc.stop(t + 0.15);
-    });
-  }
-
-  // Célébration Milestone Majestueux (Feux d'artifice sonores)
-  playMilestoneFanfare() {
-    if (this.muted) return;
-    this.init();
-    const now = this.ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.5, 1318.51];
-    notes.forEach((freq, i) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const t = now + (i * 0.06);
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, t);
-      gain.gain.setValueAtTime(0.2, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.25);
-    });
-  }
-
-  // Son de Roue de la fortune (Roue qui tourne - tic tic tic)
-  playWheelTick() {
-    if (this.muted) return;
-    this.init();
-    const now = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(800 + Math.random() * 200, now);
-    gain.gain.setValueAtTime(0.08, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.03);
-  }
-
-  // Son de validation de décision de dilemme
-  playDilemmaSuccess() {
-    if (this.muted) return;
-    this.init();
-    const now = this.ctx.currentTime;
-    [440, 660].forEach((freq, i) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const t = now + (i * 0.07);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, t);
-      gain.gain.setValueAtTime(0.15, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.18);
-    });
-  }
-
-  // Son d'erreur / Solde insuffisant (Buzzer doux)
-  playBuzzer() {
-    if (this.muted) return;
-    this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(150, now);
-    osc.frequency.linearRampToValueAtTime(110, now + 0.18);
+    osc.frequency.setValueAtTime(620, now);
+    osc.frequency.linearRampToValueAtTime(920, now + 0.25);
+    osc.frequency.linearRampToValueAtTime(620, now + 0.5);
 
-    gain.gain.setValueAtTime(0.18, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+    gain.gain.setValueAtTime(0.09, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.52);
 
     osc.connect(gain);
     gain.connect(this.ctx.destination);
 
     osc.start(now);
-    osc.stop(now + 0.18);
+    osc.stop(now + 0.52);
+    this.registerNode(osc, now + 0.52);
   }
 
-  // Son de tambour darbouka / derbouka au tap de mini-jeu
-  playDarbouka(accent = false) {
+  // 7. Amélioration de niveau d'un commerce (Arpège ascendant triomphal en Maqam Rast)
+  playUpgrade() {
     if (this.muted) return;
     this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    // Do (523Hz), Ré (587Hz), Mi-demi-bémol (622Hz), Sol (784Hz), Do aigu (1046Hz)
+    [523.25, 587.33, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = now + (idx * 0.045);
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+
+      gain.gain.setValueAtTime(0.14, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.16);
+      this.registerNode(osc, t + 0.16);
+    });
+  }
+
+  // 8. Fanfare festive pour quête ou palier (Accords polyphoniques royaux)
+  playEventFanfare() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    const chords = [
+      { t: 0, notes: [392.00, 523.25, 659.25] },
+      { t: 0.12, notes: [440.00, 587.33, 698.46] },
+      { t: 0.25, notes: [523.25, 659.25, 783.99, 1046.50] }
+    ];
+
+    chords.forEach(c => {
+      c.notes.forEach(f => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const t = now + c.t;
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(f, t);
+
+        gain.gain.setValueAtTime(0.11, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(t);
+        osc.stop(t + 0.35);
+        this.registerNode(osc, t + 0.35);
+      });
+    });
+  }
+
+  // 9. Grande fanfare de jalon Prestige (Célébration impériale tunisienne)
+  playMilestoneFanfare() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    this.playEventFanfare();
+    setTimeout(() => {
+      this.playDarbouka(true);
+    }, 200);
+  }
+
+  // 10. Tic-tac de la Roue de la fortune
+  playWheelTick() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    osc.type = 'sine';
-    const startFreq = accent ? 220 : 130;
-    osc.frequency.setValueAtTime(startFreq, now);
-    osc.frequency.exponentialRampToValueAtTime(45, now + 0.08);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(1100, now);
+    osc.frequency.exponentialRampToValueAtTime(320, now + 0.025);
 
-    gain.gain.setValueAtTime(accent ? 0.35 : 0.22, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    gain.gain.setValueAtTime(0.09, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.028);
 
     osc.connect(gain);
     gain.connect(this.ctx.destination);
 
     osc.start(now);
-    osc.stop(now + 0.1);
+    osc.stop(now + 0.028);
+    this.registerNode(osc, now + 0.028);
   }
 
-  // Musique d'ambiance feutrée, type lounge méditerranéen relaxant (Guitare nylon & Rhodes doux)
-    // Musique tunisienne classique authentique (Malouf traditionnel - Maqam Bayati / Rast sans copyright)
-  // Simulation procédurale d'Oud tunisien (عود تونسي) et de Kanoun doux (قانون)
+  // 11. Réussite d'un dilemme moral
+  playDilemmaSuccess() {
+    this.playUpgrade();
+  }
+
+  // 12. Buzzer de refus ou manque de fonds
+  playBuzzer() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.linearRampToValueAtTime(120, now + 0.15);
+
+    gain.gain.setValueAtTime(0.14, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.16);
+    this.registerNode(osc, now + 0.16);
+  }
+
+  // 13. Percussion Darbouka tunisienne (Doum rond ou Tak claqué)
+  playDarbouka(accent = false) {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    if (accent) {
+      // Tak claqué aigu et vibrant (bord de Darbouka)
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.05);
+
+      filter.type = 'highpass';
+      filter.frequency.setValueAtTime(300, now);
+
+      gain.gain.setValueAtTime(0.24, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.07);
+      this.registerNode(osc, now + 0.07);
+    } else {
+      // Doum profond et résonant (centre de la peau de chèvre)
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(120, now);
+      osc.frequency.exponentialRampToValueAtTime(48, now + 0.09);
+
+      gain.gain.setValueAtTime(0.32, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.12);
+      this.registerNode(osc, now + 0.12);
+    }
+  }
+
+  // 14. COMPOSITEUR POLYPHONIQUE TUNISIEN (Oud, Ney, Kanoun & Darbouka en Maqam Bayati/Rast)
   startBGM() {
     if (this.bgmTimer || this.muted) return;
     this.init();
+    if (!this.ctx) return;
 
-    // Rythme de Malouf tunisien apaisant (Dukah / Samai 72 BPM)
-    const bpm = 72;
-    const stepDuration = 60 / bpm / 2; // ~416ms
+    const bpm = 74;
+    const stepDuration = 60 / bpm / 2; // ~405ms par croche (rythme Malfouf 2/4)
     let bgmStep = 0;
 
-    // Gamme Maqam Bayati / Rast tunisien traditionnel : D, E-half-flat (~155Hz), F, G, A, Bb, C, D
-    // Fréquences harmoniques de l'Oud et du Kanoun tunisien
-    const maloufChords = [
+    // Orchestration harmonique tunisienne : 4 cycles d'accords Maqam Bayati & Rast
+    const score = [
+      // 1. Accord de base : Ré Maqam Bayati (D-Bayati)
       {
         bass: 73.42, // Ré (D2)
-        oud: [146.83, 220.00, 293.66, 349.23], // D3, A3, D4, F4
-        kanoun: [349.23, 392.00, 440.00, 523.25, 587.33] // F4, G4, A4, C5, D5
+        oud: [146.83, 220.00, 293.66, 349.23], // Ré3, La3, Ré4, Fa4
+        kanoun: [349.23, 392.00, 440.00, 523.25, 587.33], // Fa4, Sol4, La4, Do5, Ré5
+        neyLead: 293.66 // Ré4
       },
+      // 2. Accord de transition : Fa Majeur tunisien (F)
       {
         bass: 87.31, // Fa (F2)
-        oud: [174.61, 220.00, 261.63, 349.23], // F3, A3, C4, F4
-        kanoun: [440.00, 523.25, 587.33, 659.25, 698.46] // A4, C5, D5, E5, F5
+        oud: [174.61, 220.00, 261.63, 349.23], // Fa3, La3, Do4, Fa4
+        kanoun: [440.00, 523.25, 587.33, 659.25, 698.46], // La4, Do5, Ré5, Mi5, Fa5
+        neyLead: 349.23 // Fa4
       },
+      // 3. Cadence Sol (G-Bayati)
       {
         bass: 98.00, // Sol (G2)
-        oud: [196.00, 246.94, 293.66, 392.00], // G3, B3, D4, G4
-        kanoun: [392.00, 440.00, 523.25, 587.33, 440.00] // G4, A4, C5, D5, A4
+        oud: [196.00, 246.94, 293.66, 392.00], // Sol3, Si-demi-bémol3, Ré4, Sol4
+        kanoun: [392.00, 440.00, 523.25, 587.33, 440.00], // Sol4, La4, Do5, Ré5, La4
+        neyLead: 392.00 // Sol4
       },
+      // 4. Résolution La / Ré (A -> D)
       {
         bass: 110.00, // La (A2)
-        oud: [220.00, 261.63, 329.63, 440.00], // A3, C4, E4, A4
-        kanoun: [523.25, 440.00, 392.00, 349.23, 293.66] // C5, A4, G4, F4, D4
+        oud: [220.00, 261.63, 329.63, 440.00], // La3, Do4, Mi4, La4
+        kanoun: [523.25, 440.00, 392.00, 349.23, 293.66], // Do5, La4, Sol4, Fa4, Ré4
+        neyLead: 440.00 // La4
       }
     ];
 
-    // Synthèse instrumentale Oud tunisien feutré (corde pincée résonante et boisée)
-    const playOudNote = (freq, time, duration, peakGain = 0.025) => {
+    // Synthèse instrumentale Oud tunisien (luth acoustique chaud à cordes pincées)
+    const playOud = (freq, time, duration, peakGain = 0.024) => {
       if (!freq || this.muted || !this.ctx) return;
       const osc = this.ctx.createOscillator();
       const filter = this.ctx.createBiquadFilter();
@@ -385,34 +443,8 @@ class SoundEngine {
       osc.frequency.setValueAtTime(freq, time);
 
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(480, time);
+      filter.frequency.setValueAtTime(520, time);
       filter.frequency.exponentialRampToValueAtTime(140, time + duration);
-
-      gain.gain.setValueAtTime(0.0001, time);
-      gain.gain.linearRampToValueAtTime(peakGain, time + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(time);
-      osc.stop(time + duration + 0.05);
-    };
-
-    // Synthèse Kanoun oriental subtil (arpège métallique soyeux)
-    const playKanounNote = (freq, time, duration, peakGain = 0.015) => {
-      if (!freq || this.muted || !this.ctx) return;
-      const osc = this.ctx.createOscillator();
-      const filter = this.ctx.createBiquadFilter();
-      const gain = this.ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, time);
-
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(freq * 1.2, time);
-      filter.Q.setValueAtTime(3.0, time);
 
       gain.gain.setValueAtTime(0.0001, time);
       gain.gain.linearRampToValueAtTime(peakGain, time + 0.015);
@@ -423,34 +455,142 @@ class SoundEngine {
       gain.connect(this.ctx.destination);
 
       osc.start(time);
-      osc.stop(time + duration + 0.05);
+      osc.stop(time + duration + 0.04);
+      this.registerNode(osc, time + duration + 0.04);
     };
 
+    // Synthèse instrumentale Kanoun oriental (arpèges soyeux résonants)
+    const playKanoun = (freq, time, duration, peakGain = 0.014) => {
+      if (!freq || this.muted || !this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time);
+
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(freq * 1.25, time);
+      filter.Q.setValueAtTime(2.8, time);
+
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(peakGain, time + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(time);
+      osc.stop(time + duration + 0.04);
+      this.registerNode(osc, time + duration + 0.04);
+    };
+
+    // Synthèse instrumentale Ney mélodique solo (flûte de roseau avec vibrato LFO)
+    const playNey = (freq, time, duration, peakGain = 0.018) => {
+      if (!freq || this.muted || !this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const lfo = this.ctx.createOscillator();
+      const lfoGain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, time);
+
+      // Vibrato doux oriental (5.2 Hz)
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(5.2, time);
+      lfoGain.gain.setValueAtTime(freq * 0.018, time);
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(freq * 2.2, time);
+      filter.Q.setValueAtTime(2.0, time);
+
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(peakGain, time + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      lfo.start(time);
+      osc.start(time);
+      lfo.stop(time + duration + 0.05);
+      osc.stop(time + duration + 0.05);
+      this.registerNode(osc, time + duration + 0.05);
+      this.registerNode(lfo, time + duration + 0.05);
+    };
+
+    // Rythme procédural Darbouka intégré à la partition
+    const playBgmDarbouka = (isDoum, time) => {
+      if (this.muted || !this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      if (isDoum) {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(96, time);
+        osc.frequency.exponentialRampToValueAtTime(46, time + 0.08);
+        gain.gain.setValueAtTime(0.022, time);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.1);
+      } else {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, time);
+        osc.frequency.exponentialRampToValueAtTime(140, time + 0.04);
+        gain.gain.setValueAtTime(0.015, time);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.055);
+      }
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(time);
+      osc.stop(time + (isDoum ? 0.1 : 0.06));
+      this.registerNode(osc, time + (isDoum ? 0.1 : 0.06));
+    };
+
+    // Planificateur d'horloge audio absolue (zéro dérive temporelle)
     let nextNoteTime = this.ctx.currentTime + 0.08;
     this.bgmTimer = setInterval(() => {
       if (this.muted || !this.ctx) return;
-      while (nextNoteTime < this.ctx.currentTime + 0.35) {
-        const chordIdx = Math.floor(bgmStep / 8) % maloufChords.length;
+      while (nextNoteTime < this.ctx.currentTime + 0.38) {
+        const chordIdx = Math.floor(bgmStep / 8) % score.length;
         const pos = bgmStep % 8;
-        const chord = maloufChords[chordIdx];
+        const bar = score[chordIdx];
 
-        // Bourdon de l'Oud (قرارة العود) sur les temps 0 et 4
+        // Voix 1 : Bourdon de l'Oud sur temps forts (0 et 4)
         if (pos === 0) {
-          playOudNote(chord.bass, nextNoteTime, stepDuration * 3.5, 0.032);
+          playOud(bar.bass, nextNoteTime, stepDuration * 3.6, 0.028);
         } else if (pos === 4) {
-          playOudNote(chord.bass * 1.5, nextNoteTime, stepDuration * 2.2, 0.02);
+          playOud(bar.bass * 1.5, nextNoteTime, stepDuration * 2.2, 0.018);
         }
 
-        // Pincements de cordes d'Oud traditionnels
+        // Voix 2 : Corde pincée d'Oud (contrepoint rythmique)
         if (pos === 1 || pos === 3 || pos === 6) {
-          const oudIdx = (pos === 1 ? 0 : pos === 3 ? 1 : 2) % chord.oud.length;
-          playOudNote(chord.oud[oudIdx], nextNoteTime, stepDuration * 1.8, 0.018);
+          const oIdx = (pos === 1 ? 0 : pos === 3 ? 1 : 2) % bar.oud.length;
+          playOud(bar.oud[oIdx], nextNoteTime, stepDuration * 1.8, 0.016);
         }
 
-        // Répétitions et ornementations douces de Kanoun (زخرفة القانون)
+        // Voix 3 : Kanoun étincelant (ornementations en cascade)
         if (pos === 2 || pos === 5 || pos === 7) {
-          const kIdx = (pos === 2 ? 0 : pos === 5 ? 2 : 4) % chord.kanoun.length;
-          playKanounNote(chord.kanoun[kIdx], nextNoteTime, stepDuration * 1.4, 0.012);
+          const kIdx = (pos === 2 ? 0 : pos === 5 ? 2 : 4) % bar.kanoun.length;
+          playKanoun(bar.kanoun[kIdx], nextNoteTime, stepDuration * 1.4, 0.012);
+        }
+
+        // Voix 4 : Ney solo chantant (mélodie expressive sur temps 0 et 4)
+        if (pos === 0 || pos === 4) {
+          playNey(bar.neyLead * (pos === 4 ? 1.12 : 1.0), nextNoteTime, stepDuration * 3.2, 0.015);
+        }
+
+        // Voix 5 : Rythme Malfouf tunisien (Doum sur 0, Tak sur 2 et 3)
+        if (pos === 0) {
+          playBgmDarbouka(true, nextNoteTime);
+        } else if (pos === 2 || pos === 3) {
+          playBgmDarbouka(false, nextNoteTime);
         }
 
         nextNoteTime += stepDuration;
@@ -459,62 +599,76 @@ class SoundEngine {
     }, 60);
   }
 
+  // Arrêt propre du BGM et déconnexion complète
   stopBGM() {
     if (this.bgmTimer) {
       clearInterval(this.bgmTimer);
       this.bgmTimer = null;
     }
+    for (const node of this.activeNodes) {
+      try { node.disconnect(); } catch (_) {}
+    }
+    this.activeNodes.clear();
     if (this.ctx && this.ctx.state === 'running') {
-      try { this.ctx.suspend(); } catch(e) {}
+      try { this.ctx.suspend(); } catch (_) {}
     }
   }
 
-  // Son de carte de chkobba
+  // 15. Carte de chkobba tunisienne (bruissement réaliste)
   playCardFlip() {
     if (this.muted) return;
     this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(600, now);
-    osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+    osc.frequency.setValueAtTime(620, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.045);
 
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
 
     osc.connect(gain);
     gain.connect(this.ctx.destination);
 
     osc.start(now);
-    osc.stop(now + 0.06);
+    osc.stop(now + 0.055);
+    this.registerNode(osc, now + 0.055);
   }
 
-  // Son de réussite Chkobba !
+  // 16. Victoire Chkobba (Célébration festive tunisienne)
   playChkobbaWin() {
     if (this.muted) return;
     this.init();
+    if (!this.ctx) return;
     const now = this.ctx.currentTime;
-    [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((freq, idx) => {
+
+    // Coup de darbouka triomphal
+    this.playDarbouka(true);
+
+    [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, idx) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      const t = now + (idx * 0.06);
+      const t = now + (idx * 0.055);
 
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, t);
 
-      gain.gain.setValueAtTime(0.18, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      gain.gain.setValueAtTime(0.16, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.12);
+      osc.stop(t + 0.14);
+      this.registerNode(osc, t + 0.14);
     });
   }
 
+  // Bascule Muet / Actif
   toggleSound() {
     this.muted = !this.muted;
     if (this.muted) {
@@ -527,4 +681,3 @@ class SoundEngine {
 }
 
 export const soundEngine = new SoundEngine();
-

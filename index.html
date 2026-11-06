@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- GOOGLE ADS / ADMOB SDK (AVEC GESTION RGPD & FALLBACK SÉCURISÉ) -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
   <style>
     :root {
       --bg: #070a12;
@@ -327,25 +329,32 @@
     .nav-tab-item {
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
       color: #cbd5e1;
       font-size: 11px;
       font-weight: 800;
       cursor: pointer;
-      padding: 3px 7px;
+      padding: 4px 9px;
       border-radius: 10px;
-      transition: all 0.15s ease;
+      transition: all 0.12s ease;
       white-space: nowrap;
       flex-shrink: 0;
+      min-height: 34px;
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+      touch-action: manipulation;
     }
     .nav-tab-item.active {
       color: #fbbf24;
-      background: rgba(245, 158, 11, 0.22);
-      border-color: rgba(245, 158, 11, 0.6);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.22) 100%);
+      border-color: rgba(245, 158, 11, 0.7);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35), 0 2px 0 #b45309;
     }
-    .nav-tab-item:active { transform: scale(0.9); }
+    .nav-tab-item:active {
+      transform: translateY(2px) scale(0.96);
+      box-shadow: 0 0 0 transparent;
+    }
 
     /* SQUASH & STRETCH ANIMATION */
     .squash-target {
@@ -715,7 +724,7 @@
       50% { transform: scale(1.025); box-shadow: 0 0 16px rgba(16, 185, 129, 0.8); }
     }
 
-    /* BOUTONS D'INTERACTION */
+    /* BOUTONS D'INTERACTION ERGONOMIQUES 3D TACTILES */
     .biz-controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -723,23 +732,36 @@
       margin-top: 2px;
     }
     .btn-game {
-      border: none;
-      border-radius: 10px;
-      padding: 10px 6px;
-      font-weight: 800;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 10px 8px;
+      font-weight: 850;
       font-size: 12px;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: all 0.1s ease;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
       color: white;
+      touch-action: manipulation;
+      min-height: 46px;
+      will-change: transform;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
-    .btn-game { touch-action: manipulation; min-height: 44px; will-change: transform; box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 3px 0 rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12); }
-    .btn-game:active { transform: translate3d(0, 2px, 0) scale(0.97); filter: brightness(1.15); }
-    .btn-game:disabled { opacity: 0.45; cursor: not-allowed; transform: none; filter: grayscale(0.4); }
-    .ad-card-btn { touch-action: manipulation; min-height: 44px; }
+    .btn-game:active {
+      transform: translateY(3px) scale(0.98);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.25);
+      filter: brightness(1.15);
+    }
+    .btn-game:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      filter: grayscale(0.5);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+    }
+    .ad-card-btn { touch-action: manipulation; min-height: 44px; border-radius: 10px; }
     .biz-card.active { box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 0 1px rgba(245,158,11,0.25); }
     @media (prefers-reduced-motion: reduce) { *, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
 
@@ -754,22 +776,42 @@
     }
 
     .btn-serve {
-      background: linear-gradient(135deg, var(--red-tn) 0%, #be123c 100%);
-      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+      background: linear-gradient(180deg, #f43f5e 0%, var(--red-tn) 55%, #9f1239 100%);
+      box-shadow: 0 4px 0 #881337, 0 4px 12px rgba(225, 29, 72, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 228, 230, 0.25);
+    }
+    .btn-serve:active {
+      box-shadow: 0 1px 0 #881337, inset 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     .btn-upgrade {
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 55%, #1e40af 100%);
+      box-shadow: 0 4px 0 #1e3a8a, 0 4px 12px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border-color: rgba(219, 234, 254, 0.25);
+    }
+    .btn-upgrade:active {
+      box-shadow: 0 1px 0 #1e3a8a, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .btn-upgrade.can-afford {
+      background: linear-gradient(180deg, #10b981 0%, #059669 55%, #047857 100%) !important;
+      box-shadow: 0 4px 0 #064e3b, 0 0 16px rgba(16, 185, 129, 0.6) !important;
+      border-color: rgba(167, 243, 208, 0.35) !important;
+    }
+    .btn-upgrade.can-afford:active {
+      box-shadow: 0 1px 0 #064e3b, inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
     }
     .btn-manager {
-      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      background: linear-gradient(180deg, #059669 0%, #047857 60%, #064e3b 100%);
       grid-column: span 2;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-      padding: 8px 6px;
+      box-shadow: 0 4px 0 #022c22, 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      border-color: rgba(167, 243, 208, 0.3);
+      padding: 9px 8px;
       white-space: normal;
       overflow-wrap: break-word;
       text-align: center;
       line-height: 1.3;
+    }
+    .btn-manager:active {
+      box-shadow: 0 1px 0 #022c22, inset 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     /* TOAST DE NOTIFICATION (DANGER / INFO / SUCCESS) */
@@ -900,18 +942,23 @@
     }
     .modal-btn {
       width: 100%;
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      border: 1px solid #10b981;
+      min-height: 44px;
+      background: linear-gradient(180deg, #10b981 0%, #059669 55%, #047857 100%);
+      border: 1.5px solid rgba(167, 243, 208, 0.4);
       color: white;
-      padding: 9px 14px;
+      padding: 10px 16px;
       border-radius: 12px;
       font-size: 13.5px;
       font-weight: 900;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
-      transition: transform 0.1s ease;
+      box-shadow: 0 4px 0 #064e3b, 0 4px 14px rgba(5, 150, 105, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+      touch-action: manipulation;
     }
-    .modal-btn:active { transform: scale(0.97); }
+    .modal-btn:active {
+      transform: translateY(3px) scale(0.98);
+      box-shadow: 0 1px 0 #064e3b, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
 
     /* BARRE DE PRESTIGE & ASCENSION */
     .prestige-bar-box {
@@ -2436,6 +2483,163 @@
       0% { background-position: 0% center; }
       100% { background-position: 200% center; }
     }
+
+    /* ERGONOMIE PAYSAGE & ÉCRANS FAIBLE HAUTEUR (SPLASH ACCUEIL ZÉRO DÉBORDEMENT) */
+    @media (max-height: 520px), (orientation: landscape) and (max-height: 600px) {
+      #welcomeSplashScreen {
+        padding: 8px 16px 6px !important;
+        justify-content: space-around !important;
+        gap: 4px !important;
+      }
+      .splash-CenterStage {
+        display: grid !important;
+        grid-template-columns: auto 1fr !important;
+        align-items: center !important;
+        column-gap: 14px !important;
+        row-gap: 4px !important;
+        max-width: 580px !important;
+        margin: 0 auto !important;
+        text-align: right !important;
+      }
+      .splash-crest-wrap {
+        grid-row: span 2 !important;
+        width: 60px !important;
+        height: 60px !important;
+      }
+      .splash-crest-wrap svg {
+        width: 54px !important;
+        height: 54px !important;
+      }
+      .splash-title-designed {
+        font-size: 20px !important;
+        text-align: right !important;
+        line-height: 1.1 !important;
+      }
+      .splash-subtitle-designed {
+        font-size: 10px !important;
+        padding: 2px 10px !important;
+        align-self: flex-start !important;
+        width: fit-content !important;
+      }
+      .splash-progress-box {
+        grid-column: span 2 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 2px !important;
+        gap: 3px !important;
+      }
+      .splash-progress-header {
+        font-size: 10px !important;
+      }
+      .splash-progress-track {
+        height: 8px !important;
+      }
+      .splash-footer-small {
+        font-size: 9px !important;
+        gap: 1px !important;
+      }
+      .splash-footer-small span:first-child {
+        display: none !important;
+      }
+    }
+
+    /* --- BANNIÈRE CONSENTEMENT COOKIES & RGPD (ERGONOMIQUE & NON-INTRUSIVE) --- */
+    #cookieConsentBanner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 24000;
+      background: rgba(11, 17, 32, 0.97);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 2px solid rgba(245, 158, 11, 0.5);
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.8), 0 0 16px rgba(245, 158, 11, 0.15);
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      direction: rtl;
+      font-family: 'Cairo', system-ui, sans-serif;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    }
+    #cookieConsentBanner.banner-hidden {
+      transform: translateY(115%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .cookie-banner-content {
+      flex: 1 1 320px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cookie-banner-icon {
+      font-size: 26px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.4));
+    }
+    .cookie-banner-text {
+      font-size: 11.5px;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .cookie-banner-text strong {
+      color: #fef08a;
+    }
+    .cookie-banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-cookie {
+      padding: 7px 14px;
+      font-size: 11.5px;
+      font-weight: 850;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      touch-action: manipulation;
+      min-height: 38px;
+      transition: all 0.12s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .btn-cookie-accept {
+      background: linear-gradient(180deg, #10b981 0%, #059669 60%, #047857 100%);
+      color: #fff;
+      border-color: rgba(167, 243, 208, 0.4);
+      box-shadow: 0 3px 0 #064e3b, 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+    .btn-cookie-accept:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #064e3b;
+    }
+    .btn-cookie-params {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fde68a;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+    }
+    .btn-cookie-params:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    }
+    .btn-cookie-essential {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.18);
+      color: #94a3b8;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+    }
+    .btn-cookie-essential:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    }
   </style>
   <script>
     // Sécurité de démarrage Mobile / WebView : fermeture garantie du splash après délai
@@ -2461,14 +2665,42 @@
       <div class="splash-crest-wrap">
         <div class="splash-crest-halo"></div>
         <svg width="88" height="88" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="27" cy="27" r="24" stroke="url(#goldCrown3D)" stroke-width="3.2" fill="#090d16"/>
-          <circle cx="27" cy="27" r="20" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="2.5 2" fill="none"/>
-          <circle cx="27" cy="27" r="16.5" fill="url(#emeraldVault3D)" stroke="#fde047" stroke-width="1.4"/>
-          <rect x="17" y="31" width="20" height="4.5" rx="2" fill="url(#goldCrown3D)" stroke="#78350f" stroke-width="0.8"/>
-          <rect x="19" y="26.5" width="16" height="4.2" rx="2" fill="url(#goldCrown3D)" stroke="#78350f" stroke-width="0.8"/>
-          <circle cx="27" cy="21" r="7.2" fill="url(#goldCrown3D)" stroke="#78350f" stroke-width="1"/>
+          <defs>
+            <linearGradient id="splashGoldCrown" x1="0" y1="0" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#fffbeb"/>
+              <stop offset="25%" stop-color="#fef08a"/>
+              <stop offset="60%" stop-color="#f59e0b"/>
+              <stop offset="90%" stop-color="#b45309"/>
+              <stop offset="100%" stop-color="#78350f"/>
+            </linearGradient>
+            <linearGradient id="splashEmeraldVault" x1="10" y1="10" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#34d399"/>
+              <stop offset="45%" stop-color="#059669"/>
+              <stop offset="85%" stop-color="#065f46"/>
+              <stop offset="100%" stop-color="#022c22"/>
+            </linearGradient>
+            <radialGradient id="splashSunburst" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fef08a" stop-opacity="0.9"/>
+              <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#b45309" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="splashGlowFilter" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f59e0b" flood-opacity="0.75"/>
+            </filter>
+          </defs>
+          <circle cx="27" cy="27" r="26" fill="url(#splashSunburst)"/>
+          <circle cx="27" cy="27" r="23.5" stroke="url(#splashGoldCrown)" stroke-width="3" fill="#090d16" filter="url(#splashGlowFilter)"/>
+          <circle cx="27" cy="27" r="19.5" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="2.5 2" fill="none" opacity="0.9"/>
+          <circle cx="27" cy="27" r="16" fill="url(#splashEmeraldVault)" stroke="#fde047" stroke-width="1.4"/>
+          <rect x="17" y="31" width="20" height="4.5" rx="2" fill="url(#splashGoldCrown)" stroke="#78350f" stroke-width="0.8"/>
+          <rect x="19" y="26.5" width="16" height="4.2" rx="2" fill="url(#splashGoldCrown)" stroke="#78350f" stroke-width="0.8"/>
+          <circle cx="27" cy="21" r="7.2" fill="url(#splashGoldCrown)" stroke="#78350f" stroke-width="1"/>
+          <circle cx="27" cy="21" r="5.5" fill="none" stroke="#fffbeb" stroke-width="0.7" stroke-dasharray="1.8 1.2"/>
           <text x="27" y="24.2" text-anchor="middle" fill="#78350f" font-family="Tajawal, sans-serif" font-weight="900" font-size="9.5">د.ت</text>
-          <path d="M 18 11.5 L 22.5 6.5 L 27 10.5 L 31.5 6.5 L 36 11.5 Z" fill="url(#goldCrown3D)"/>
+          <path d="M 18 11.5 L 22.5 6.5 L 27 10.5 L 31.5 6.5 L 36 11.5 Z" fill="url(#splashGoldCrown)"/>
+          <circle cx="22.5" cy="6.5" r="1.5" fill="#fef08a"/>
+          <circle cx="27" cy="10.5" r="1.8" fill="#10b981"/>
+          <circle cx="31.5" cy="6.5" r="1.5" fill="#fef08a"/>
         </svg>
       </div>
 
@@ -3267,34 +3499,76 @@
     </div>
   </div>
 
-  <!-- MODAL MENTIONS LÉGALES & CONFIDENTIALITÉ (2 COLONNES ZÉRO SCROLL) -->
+  <!-- MODAL MENTIONS LÉGALES, GOOGLE ADS & USAGE DES COOKIES (RGPD & INPDP) -->
   <div class="modal-overlay" id="legalModal">
-    <div class="modal-card" style="max-width: 600px; width: 96%; max-height: 94vh; padding: 12px 16px; text-align: right; direction: rtl; gap: 8px; overflow: hidden;">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
-        <div style="font-size: 15px; font-weight: 900; color: #fbbf24;">📜 الشروط القانونية وحماية المعطيات</div>
+    <div class="modal-card" style="max-width: 640px; width: 96%; max-height: 94vh; padding: 14px 18px; text-align: right; direction: rtl; gap: 10px; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1.5px solid rgba(245, 158, 11, 0.3); padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">📜</span>
+          <div style="font-size: 15px; font-weight: 900; color: #fbbf24;">الشروط القانونية، إعلانات Google وسياسة الكوكيز</div>
+        </div>
         <button class="settings-close-btn" id="closeLegalModalBtn">✕</button>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10.5px; color: #cbd5e1; line-height: 1.4; width: 100%;">
-        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-          <strong style="color: #f8fafc; font-size: 11px;">1. الناشر والملكية الفكرية :</strong><br>
-          لعبة <strong>Tounes Tycoon</strong> مطوّرة ومملوكة لـ <strong>© EOLabs 2026</strong>. جميع الحقوق محفوظة.
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; color: #cbd5e1; line-height: 1.45; width: 100%;">
+        <div style="background: rgba(255,255,255,0.03); padding: 9px 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+          <strong style="color: #fef08a; font-size: 11.5px;">1. الناشر والمُلكية الفكرية :</strong><br>
+          لعبة <strong>Tounes Tycoon</strong> مطوّرة ومملوكة حصرياً لـ <strong>© EOLabs 2026</strong> تونس. العلامة وكافة الرسوم والمؤثرات الصوتية والشيفرات محمية بقوانين الملكية الفكرية.
         </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-          <strong style="color: #f8fafc; font-size: 11px;">2. حماية المعطيات وحساب Google (RGPD) :</strong><br>
-          لا نجمع ولا نبيع أي بيانات شخصية خارجية. ربط البروفيل بحساب Google اختياري 100% ويُحفظ محلياً في جهازك مع إمكانية الحذف الفوري.
+        <div style="background: rgba(255,255,255,0.03); padding: 9px 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+          <strong style="color: #6ee7b7; font-size: 11.5px;">2. حماية المعطيات (INPDP & RGPD) :</strong><br>
+          مطابقة للقانون التونسي عدد 63 لسنة 2004 والمعايير الأوروبية RGPD. حفظ التقدم يتم محلياً على جهازك (Local Storage) ولا تتم مشاركة هويتك الشخصية مع أي طرف ثالث.
         </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-          <strong style="color: #f8fafc; font-size: 11px;">3. الإعلانات (Google AdMob) :</strong><br>
-          تُعرض إعلانات المكافآت الاختيارية وفق سياسة الخصوصية المعتمدة من Google.
+        <div style="background: rgba(255,255,255,0.03); padding: 9px 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+          <strong style="color: #93c5fd; font-size: 11.5px;">3. إعلانات Google Ads & AdMob :</strong><br>
+          تُعرض إعلانات الفيديو بمكافآت (Rewarded Ads) عبر شبكة Google الرسمية لدعم استمرارية التطوير. لا يتم تشغيل أي إعلان بالإكراه أو دون موافقتك الصريحة.
         </div>
-        <div style="background: rgba(255,255,255,0.03); padding: 7px 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-          <strong style="color: #f8fafc; font-size: 11px;">4. شروط الاستخدام والاتصال :</strong><br>
-          العملة الافتراضية (د.ت) ترفيهية وهمية. للتواصل : <code>contact@eolabs.tn</code>
+        <div style="background: rgba(255,255,255,0.03); padding: 9px 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+          <strong style="color: #fca5a5; font-size: 11.5px;">4. استعمال الكوكيز والبيانات المحلية :</strong><br>
+          نستخدم كوكيز تقنية أساسية لحفظ رصيدك وإعدادات الصوت. يمكنك ضبط تفضيلات الكوكيز الإعلانية أدناه بحرية كاملة.
         </div>
       </div>
-      <button class="modal-btn" id="confirmLegalBtn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 8px;">
-        فهمت وموافق ✓
-      </button>
+
+      <!-- PANNEAU DE CONTRÔLE DES PRÉFÉRENCES COOKIES -->
+      <div style="background: rgba(15, 23, 42, 0.7); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 10px 14px; width: 100%; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 12px; font-weight: 850; color: #7dd3fc; display: flex; align-items: center; justify-content: space-between;">
+          <span>⚙️ خيارات الخصوصية والكوكيز</span>
+          <span style="font-size: 10px; color: #94a3b8;">تحديث حيني</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;">
+          <span>💾 كوكيز تقنية وتخزين اللعبة (ضرورية لتشغيل الكاسة والمشاريع) :</span>
+          <span style="color: #34d399; font-weight: 800; background: rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 6px;">مفعّلة دائماً</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+          <span>🎯 تخصيص إعلانات Google Ads (تحسين ملاءمة العروض) :</span>
+          <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" id="cookieAdConsentCheckbox" checked style="accent-color: #10b981; width: 16px; height: 16px; cursor: pointer;">
+            <span id="cookieAdConsentLabel" style="color: #fef08a; font-weight: 800;">موافقة</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; width: 100%;">
+        <button class="modal-btn" id="confirmLegalBtn" style="background: linear-gradient(180deg, #10b981 0%, #059669 60%, #047857 100%);">
+          حفظ التفضيلات والموافقة ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANNIÈRE FLOTTANTE DE CONSENTEMENT COOKIES -->
+  <div id="cookieConsentBanner" class="banner-hidden" role="dialog" aria-label="موافقة ملفات تعريف الارتباط">
+    <div class="cookie-banner-content">
+      <div class="cookie-banner-icon">🍪</div>
+      <div class="cookie-banner-text">
+        <strong>ملفات تعريف الارتباط (Cookies) & حماية الخصوصية :</strong>
+        نستعمل التخزين المحلي وكوكيز Google Ads لتأمين حفظ أموالك ومشاريعك وعرض إعلانات الدعم وفق معايير INPDP و RGPD.
+      </div>
+    </div>
+    <div class="cookie-banner-actions">
+      <button class="btn-cookie btn-cookie-accept" id="cookieAcceptAllBtn">قبول الكل ✓</button>
+      <button class="btn-cookie btn-cookie-params" id="cookieOpenSettingsBtn">⚙️ خيارات</button>
+      <button class="btn-cookie btn-cookie-essential" id="cookieAcceptEssentialBtn">الضرورية فقط</button>
     </div>
   </div>
 
@@ -5439,13 +5713,86 @@
       };
     }
 
-    // --- GESTION DU MODAL MENTIONS LÉGALES & CONFIDENTIALITÉ ---
+    // --- GESTION DU MODAL MENTIONS LÉGALES, GOOGLE ADS & COOKIE CONSENT BANNER ---
     const legalModal = document.getElementById('legalModal');
     const openLegalModalBtn = document.getElementById('openLegalModalBtn');
     const headerLegalBtn = document.getElementById('headerLegalBtn');
     const headerExitBtn = document.getElementById('headerExitBtn');
     const closeLegalModalBtn = document.getElementById('closeLegalModalBtn');
     const confirmLegalBtn = document.getElementById('confirmLegalBtn');
+
+    const cookieConsentBanner = document.getElementById('cookieConsentBanner');
+    const cookieAcceptAllBtn = document.getElementById('cookieAcceptAllBtn');
+    const cookieOpenSettingsBtn = document.getElementById('cookieOpenSettingsBtn');
+    const cookieAcceptEssentialBtn = document.getElementById('cookieAcceptEssentialBtn');
+    const cookieAdConsentCheckbox = document.getElementById('cookieAdConsentCheckbox');
+    const cookieAdConsentLabel = document.getElementById('cookieAdConsentLabel');
+
+    function loadCookieConsent() {
+      try {
+        const raw = localStorage.getItem('tounes_cookie_consent');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (cookieAdConsentCheckbox) {
+            cookieAdConsentCheckbox.checked = parsed.adConsent !== false;
+            if (cookieAdConsentLabel) cookieAdConsentLabel.innerText = cookieAdConsentCheckbox.checked ? 'موافقة' : 'مرفوض';
+          }
+          return parsed;
+        }
+      } catch (e) {
+        console.warn('Cookie consent read error:', e);
+      }
+      return null;
+    }
+
+    function saveCookieConsent(adConsent) {
+      const payload = {
+        essential: true,
+        adConsent: !!adConsent,
+        date: new Date().toISOString()
+      };
+      localStorage.setItem('tounes_cookie_consent', JSON.stringify(payload));
+      if (cookieConsentBanner) cookieConsentBanner.classList.add('banner-hidden');
+      if (cookieAdConsentCheckbox) {
+        cookieAdConsentCheckbox.checked = !!adConsent;
+        if (cookieAdConsentLabel) cookieAdConsentLabel.innerText = adConsent ? 'موافقة' : 'مرفوض';
+      }
+    }
+
+    if (cookieAdConsentCheckbox) {
+      cookieAdConsentCheckbox.onchange = () => {
+        if (cookieAdConsentLabel) {
+          cookieAdConsentLabel.innerText = cookieAdConsentCheckbox.checked ? 'موافقة' : 'مرفوض';
+        }
+      };
+    }
+
+    // Affichage de la bannière si non encore consenti
+    const existingConsent = loadCookieConsent();
+    if (!existingConsent && cookieConsentBanner) {
+      setTimeout(() => {
+        cookieConsentBanner.classList.remove('banner-hidden');
+      }, 1500);
+    }
+
+    if (cookieAcceptAllBtn) {
+      cookieAcceptAllBtn.onclick = () => {
+        saveCookieConsent(true);
+        soundEngine.playCoin();
+      };
+    }
+    if (cookieAcceptEssentialBtn) {
+      cookieAcceptEssentialBtn.onclick = () => {
+        saveCookieConsent(false);
+        soundEngine.playCoin();
+      };
+    }
+    if (cookieOpenSettingsBtn && legalModal) {
+      cookieOpenSettingsBtn.onclick = () => {
+        soundEngine.playCoin();
+        legalModal.classList.add('active');
+      };
+    }
 
     if (openLegalModalBtn && legalModal) {
       openLegalModalBtn.onclick = () => legalModal.classList.add('active');
@@ -5457,7 +5804,12 @@
       closeLegalModalBtn.onclick = () => legalModal.classList.remove('active');
     }
     if (confirmLegalBtn && legalModal) {
-      confirmLegalBtn.onclick = () => legalModal.classList.remove('active');
+      confirmLegalBtn.onclick = () => {
+        soundEngine.playCoin();
+        const allowAds = cookieAdConsentCheckbox ? cookieAdConsentCheckbox.checked : true;
+        saveCookieConsent(allowAds);
+        legalModal.classList.remove('active');
+      };
     }
 
     // --- GESTION DU GUIDE DE DÉMARRAGE RAPIDE (دليل البداية السريع) ---

@@ -1,4 +1,24 @@
-﻿## [1.29.0] - 2026-11-05
+﻿## [1.30.0] - 2026-11-06
+### Added & Improved
+- **Compositeur audio polyphonique 4 voix procédural tunisien (`audio.js`)** :
+  - Synthétiseur Web Audio API à 4 voix indépendantes : Bourdon et basse Oud (onde triangle avec filtre passe-bas résonant), accords et arpèges Oud (gamme Hijaz tunisienne), flûte Ney soliste expressive avec modulation vibrato LFO (5 Hz), Kanoun scintillant et percussions Darbouka (Doum et Tak sur mesure selon la cellule rythmique Malfouf).
+  - Horloge audio déterministe basée sur `AudioContext.currentTime` avec lookahead constant, zéro dérive de timer, et système de nettoyage explicite de nœuds audio (`registerNode` / `disconnect`) garantissant zéro fuite mémoire.
+  - SFX enrichis et tactiles : tintement de dinars harmoniques, caisse enregistreuse mécanique, cliquetis de tasse de café/thé zzaouia, fanfare d'amélioration royale, chkobba win et fanfare d'ascension.
+- **Écran d'accueil royal (Splash Screen) & Ergonomie Paysage (`index.html`)** :
+  - Emblème 3D autonome en SVG avec médaillon d'or, croissant, couronne impériale et voûte d'émeraude sans dépendance externe.
+  - Typographie arabe soignée avec reflets dorés animés et barre de progression fluide.
+  - Ergonomie paysage et écrans basse hauteur (`@media (max-height: 520px)` / paysage) : disposition compacte en 2 colonnes sans débordement vertical, barre de progression adaptée, protection contre le scroll indésirable.
+- **Forme et ergonomie des boutons d'interaction 3D (`index.html`)** :
+  - Boutons de jeu (`.btn-game`, `.btn-serve`, `.btn-upgrade`, `.btn-manager`, `.nav-tab-item`, `.modal-btn`) refondus avec biseau tactile 3D, bordure brillante et effet d'enfoncement physique au tap (`:active { transform: translateY(3px) }`).
+  - Cibles tactiles ergonomiques garanties (hauteur minimale 44px - 46px).
+  - Nuances de couleurs vibrantes (rouge tunisien velours, bleu saphir méditerranéen, vert émeraude impérial).
+- **Google Ads, Mentions Légales & Gestion des Cookies (`index.html`)** :
+  - Intégration du SDK Google Ads / AdMob avec gestion des annonces récompensées et fallback sécurisé hors-ligne.
+  - Bannière de consentement aux cookies et au stockage local (`#cookieConsentBanner`) non-intrusive, conforme RGPD et loi tunisienne INPDP (n° 2004-63).
+  - Modal Mentions Légales & Confidentialité enrichi avec panneau de contrôle des préférences de cookies (techniques indispensables / personnalisation des annonces Google).
+  - Persistance locale du consentement dans `localStorage.tounes_cookie_consent`.
+
+## [1.29.0] - 2026-11-05
 ### Added & Improved
 - **Brouette Kaskrout Ayari (`kaskrout`) - Refonte complète & Human scale** :
   - **Brouette abaissée à hauteur humaine réaliste** : Structure redimensionnée (hauteur 75px au lieu de 120px perchée trop haut) : caisse en bois patiné d'olivier à hauteur de hanche (`groundY - 30`), roues cerclées d'acier posées directement au sol (`wheelR = 10`), vitrine basse d'ingrédients frais (`🥚`, `🥖`, `🌶️`, `🥫`), mât inox et parasol rouge et blanc d'ombrage rabaissé harmonieusement.
@@ -102,6 +122,7 @@
 # CHANGELOG
 
 ## 2026-11-06
+- feat(ui,audio,ads): polyphonic composer, 3d ergonomic buttons, splash landscape, google ads and cookie consent
 - fix(mobile): restore app startup on Android and fix AGENTS.md encoding
 - fix(mobile): restore app startup on Android and fix AGENTS.md encoding
 - fix(tycoon): resolve drawPOSTerminal timeSec ReferenceError restoring customer rendering across all 30 businesses
