@@ -466,7 +466,72 @@ class SoundEngine {
     }, 200);
   }
 
-  // 10. Tic-tac de la Roue de la fortune
+  // 10. Fanfare frénétique Joujma Time (Roulement Darbouka + cascade d'accords Maqam)
+  playJoujmaFanfare() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    // A. Rafale rythmique Darbouka (Dum - Tak - Tak - Dum - Tak)
+    [0.0, 0.08, 0.16, 0.24, 0.32].forEach((tOff, i) => {
+      setTimeout(() => {
+        if (!this.muted) this.playDarbouka(i === 0 || i === 3);
+      }, tOff * 1000);
+    });
+
+    // B. Arpège ascendant triomphant (Do - Ré - Mi - Sol - La - Do aigu)
+    const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+    scale.forEach((freq, idx) => {
+      const t = now + (idx * 0.055);
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.05, t + 0.15);
+
+      gain.gain.setValueAtTime(0.09, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+
+      osc.connect(gain);
+      gain.connect(this.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.22);
+      this.registerNode(osc, t + 0.22);
+    });
+  }
+
+  // 11. Récompense VIP de rue (Carillon double doré + scintillement)
+  playVipReward() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    [1318.51, 1567.98, 2093.00, 2637.02].forEach((freq, i) => {
+      const t = now + (i * 0.045);
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.25, t + 0.12);
+
+      gain.gain.setValueAtTime(0.12, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+
+      osc.connect(gain);
+      gain.connect(this.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.22);
+      this.registerNode(osc, t + 0.22);
+    });
+  }
+
+  // 12. Tic-tac de la Roue de la fortune
   playWheelTick() {
     if (this.muted) return;
     this.init();

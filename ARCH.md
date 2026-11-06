@@ -13,6 +13,7 @@ index.html (UI/CSS/câblage) ──► engine.js (TycoonEngine, état pur)
 - **Boucle** : `requestAnimationFrame(tick)` dans `index.html`; gains calculés par delta-time réel.
 - **Persistance** : `engine.exportState()` → `localStorage['tounes_tycoon_save']`. Gains hors-ligne calculés au réveil (modale offline).
 - **Progression** : commerces déverrouillés dans l'ordre; plusieurs recrues par commerce (`getNextManager`), multiplicateur de staff; équipe complète = commerce automatique.
+- **Dopamine & Rétention** : Mode Joujma Time (Fever x3 15s via jauge de taps), VIPs de rue interactifs (touriste, critique, mariage, artisan), barres de palier visibles (Lv 25, 50, 100, 200).
 - **Événements** : chheli, derby, aaras, embouteillage (multiplicateurs temporaires).
 - **Pubs** : récompense « solde gratuit » et « boost x2 4h » via `AdsService` (stub web, pont natif Android).
 - **Audio** : Bus Master avec DynamicsCompressorNode; SFX cohérents (`playTap`, `playWorkSound`, `playFountainWish`, `playLevelUp`); BGM 4 voix (Oud, Ney LFO vibrato, Kanoun, Darbouka).

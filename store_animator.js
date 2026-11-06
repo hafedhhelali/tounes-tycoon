@@ -5209,6 +5209,13 @@ export class QuartierAnimator {
     this.seagulls = [];
     this.interactiveHitboxes = [];
 
+    // Personnages VIP & Joujma Mania
+    this.streetVips = [];
+    this.vipSpawnTimer = 8;
+    this.vipCounter = 0;
+    this.onClaimVip = null;
+    this.joujmaConfetti = [];
+
     // Cycle Ciel Atmosphérique 240s
     this.skyCycleDuration = 240;
 
@@ -5318,7 +5325,7 @@ export class QuartierAnimator {
     this.resize();
   }
 
-  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone, onOpenMap, onOpenBank, onOpenPolice, onOpenTobacco }) {
+  setCallbacks({ onInspect, onUpgrade, onCollect, onHudAction, onSwitchZone, onOpenMap, onOpenBank, onOpenPolice, onOpenTobacco, onClaimVip }) {
     if (onOpenMap) this.onOpenMap = onOpenMap;
     if (onInspect) this.onInspectBiz = onInspect;
     if (onUpgrade) this.onUpgradeBiz = onUpgrade;
@@ -5328,6 +5335,7 @@ export class QuartierAnimator {
     if (onOpenBank) this.onOpenBank = onOpenBank;
     if (onOpenPolice) this.onOpenPolice = onOpenPolice;
     if (onOpenTobacco) this.onOpenTobacco = onOpenTobacco;
+    if (onClaimVip) this.onClaimVip = onClaimVip;
   }
 
   buildZoneLayout(zoneId) {
@@ -6054,8 +6062,35 @@ export class QuartierAnimator {
       if (typeof window !== 'undefined' && window.showFeedbackToast) {
         window.showFeedbackToast('🪙 رميت دينار في النافورة وتمنيت البركة والتوفيق ! ✨', '⛲');
       }
+    } else if (action === 'claim_vip') {
+      this.claimVip(bizId);
     } else if (action.startsWith('hud_') && this.onHudAction) {
       this.onHudAction(action);
+    }
+  }
+
+  claimVip(vipId) {
+    const idx = this.streetVips.findIndex(v => v.id === vipId);
+    if (idx === -1) return;
+    const vip = this.streetVips[idx];
+    this.streetVips.splice(idx, 1);
+
+    for (let i = 0; i < 20; i++) {
+      const angle = (Math.PI * 2 * i) / 20;
+      const spd = 30 + Math.random() * 60;
+      this.smokePuffs.push({
+        x: vip.x,
+        y: this.height - 70,
+        vx: Math.cos(angle) * spd,
+        vy: Math.sin(angle) * spd - 25,
+        color: vip.type === 'wedding' ? '#ec4899' : (vip.type === 'critic' ? '#38bdf8' : '#fbbf24'),
+        radius: 3 + Math.random() * 2.5,
+        alpha: 1.0
+      });
+    }
+
+    if (this.onClaimVip) {
+      this.onClaimVip(vip);
     }
   }
 
@@ -6266,6 +6301,71 @@ export class QuartierAnimator {
       if (c.x < 20) { c.x = 20; c.dir = 1; }
       if (c.x > this.worldWidth - 20) { c.x = this.worldWidth - 20; c.dir = -1; }
     });
+
+    // --- GESTION DES VIPs DE LA RUE ---
+    this.vipSpawnTimer -= dt;
+    if (this.vipSpawnTimer <= 0 && this.streetVips.length < 2) {
+      this.vipCounter = (this.vipCounter || 0) + 1;
+      const vipPrototypes = [
+        { type: 'tourist', name: 'سائح ألماني', icon: '📸', badge: 'بوربوار 📸', speed: 18 },
+        { type: 'critic', name: 'ناقد الماكلة', icon: '🧐', badge: '5 نجوم 🧐', speed: 16 },
+        { type: 'wedding', name: 'كرهبة العروسة', icon: '👰', badge: 'كلولولوش 💍', speed: 28 },
+        { type: 'artisan', name: 'صنايعي الحومة', icon: '🧰', badge: 'تيربو 🧰', speed: 22 }
+      ];
+      const proto = vipPrototypes[Math.floor(Math.random() * vipPrototypes.length)];
+      const fromLeft = Math.random() > 0.5;
+      const startX = fromLeft ? -50 : (this.worldWidth + 50);
+      const dir = fromLeft ? 1 : -1;
+      this.streetVips.push({
+        id: 'vip_' + this.vipCounter,
+        type: proto.type,
+        name: proto.name,
+        icon: proto.icon,
+        badge: proto.badge,
+        x: startX,
+        yOffset: (Math.random() - 0.5) * 8,
+        speed: proto.speed * dir,
+        dir: dir,
+        phase: Math.random() * Math.PI * 2
+      });
+      this.vipSpawnTimer = 22 + Math.random() * 25;
+    }
+
+    for (let i = this.streetVips.length - 1; i >= 0; i--) {
+      const v = this.streetVips[i];
+      v.x += v.speed * dt;
+      if (v.dir > 0 && v.x > this.worldWidth + 120) {
+        this.streetVips.splice(i, 1);
+      } else if (v.dir < 0 && v.x < -120) {
+        this.streetVips.splice(i, 1);
+      }
+    }
+
+    // --- GESTION DU FEVER MODE JOUJMA (CONFETTIS & ÉNERGIE) ---
+    const isJoujmaNow = Boolean(this.engine && this.engine.isJoujmaActive && this.engine.isJoujmaActive());
+    if (isJoujmaNow) {
+      if (Math.random() < 0.35 && this.joujmaConfetti.length < 45) {
+        this.joujmaConfetti.push({
+          x: this.cameraX + Math.random() * this.width,
+          y: -10,
+          vx: (Math.random() - 0.5) * 35,
+          vy: 45 + Math.random() * 65,
+          color: ['#fbbf24', '#ef4444', '#38bdf8', '#34d399', '#f472b6'][Math.floor(Math.random() * 5)],
+          size: 3 + Math.random() * 4,
+          rot: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 6
+        });
+      }
+    }
+    for (let i = this.joujmaConfetti.length - 1; i >= 0; i--) {
+      const c = this.joujmaConfetti[i];
+      c.x += c.vx * dt;
+      c.y += c.vy * dt;
+      c.rot += c.rotSpeed * dt;
+      if (c.y > this.height + 20) {
+        this.joujmaConfetti.splice(i, 1);
+      }
+    }
 
     // Animation vivante du client qui commande et paye à la brouette Kaskrout Ayari
     const kaskroutItem = (this.streetLayout || []).find(it => it.id === 'kaskrout');
@@ -6678,6 +6778,9 @@ export class QuartierAnimator {
       }
     });
 
+    // Dessin des VIPs de rue avec badges interactifs
+    this.drawStreetVips(ctx, camX, groundY + 12, timestamp);
+
     this.floatingCoins.forEach(fc => {
       const screenX = fc.x - camX;
       if (screenX > -50 && screenX < w + 50) {
@@ -6711,6 +6814,9 @@ export class QuartierAnimator {
 
     this.drawMinimapTrack(ctx, w, h);
     this.drawInCanvasOffersHUD(ctx, w, h, timestamp);
+
+    // Superposition festive Joujma Time (Fever Mode x3)
+    this.drawJoujmaOverlay(ctx, w, h, timestamp);
 
     if (this.transitionAlpha > 0) {
       ctx.save();
@@ -9355,6 +9461,257 @@ export class QuartierAnimator {
       ctx.lineTo(wx + Math.cos(wheelAngle) * 2.5, -3 + Math.sin(wheelAngle) * 2.5);
       ctx.stroke();
     });
+
+    ctx.restore();
+  }
+
+  drawStreetVips(ctx, camX, groundY, timestamp) {
+    if (!this.streetVips || this.streetVips.length === 0) return;
+
+    this.streetVips.forEach(vip => {
+      const screenX = vip.x - camX;
+      if (screenX < -70 || screenX > this.width + 70) return;
+
+      const y = groundY + (vip.yOffset || 0) * 0.5;
+      const walkCycle = timestamp * 0.012 + (vip.phase || 0);
+      const stride = Math.sin(walkCycle) * 4.5;
+      const bounce = Math.abs(Math.cos(walkCycle)) * 1.8;
+      const dir = (vip.dir || 1) >= 0 ? 1 : -1;
+
+      // Ombre
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(screenX, y + 6, 9, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(screenX, y - bounce);
+      if (dir < 0) ctx.scale(-1, 1);
+
+      // Dessin personnalisé du VIP selon son type
+      if (vip.type === 'tourist') {
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-1, -4); ctx.lineTo(-1 - stride * 0.7, 5);
+        ctx.moveTo(1, -4); ctx.lineTo(1 + stride * 0.7, 5);
+        ctx.stroke();
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.roundRect(-5, -14, 10, 11, 3);
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(-2, -10, 1.2, 0, Math.PI * 2);
+        ctx.arc(2, -7, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-2.5, -9, 5, 4);
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(0, -7, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.arc(0, -18, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#eab308';
+        ctx.beginPath();
+        ctx.ellipse(0, -21, 8, 2.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-2, -18, 4.5, 1.5);
+      } else if (vip.type === 'critic') {
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-1, -4); ctx.lineTo(-1 - stride * 0.7, 5);
+        ctx.moveTo(1, -4); ctx.lineTo(1 + stride * 0.7, 5);
+        ctx.stroke();
+
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.roundRect(-4.5, -14, 9, 11, 3);
+        ctx.fill();
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(-0.8, -13, 1.6, 5);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(stride * 0.5 + 2, -10, 4, 6);
+
+        ctx.fillStyle = '#fcd34d';
+        ctx.beginPath();
+        ctx.arc(0, -18, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(1.5, -18, 2, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (vip.type === 'wedding') {
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.roundRect(-16, -11, 32, 12, 4);
+        ctx.fill();
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(-9, 2, 3.5, 0, Math.PI * 2);
+        ctx.arc(9, 2, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(-9, 2, 1.2, 0, Math.PI * 2);
+        ctx.arc(9, 2, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ec4899';
+        ctx.fillRect(-14, -8, 28, 2);
+        ctx.fillStyle = '#f43f5e';
+        ctx.beginPath();
+        ctx.arc(0, -11, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(2, -14, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(-4, -14, 3, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.strokeStyle = '#1d4ed8';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-1, -4); ctx.lineTo(-1 - stride * 0.7, 5);
+        ctx.moveTo(1, -4); ctx.lineTo(1 + stride * 0.7, 5);
+        ctx.stroke();
+
+        ctx.fillStyle = '#2563eb';
+        ctx.beginPath();
+        ctx.roundRect(-4.5, -14, 9, 11, 3);
+        ctx.fill();
+
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(stride * 0.5 + 2, -8, 6, 5);
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(0, -18, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(-1, -21, 6, 2.5);
+      }
+
+      ctx.restore();
+
+      const bobY = Math.sin(timestamp * 0.007 + (vip.phase || 0)) * 3.5;
+      const badgeY = y - 36 + bobY;
+      const pulseScale = 1.0 + Math.sin(timestamp * 0.01) * 0.06;
+
+      ctx.save();
+      ctx.translate(screenX, badgeY);
+      ctx.scale(pulseScale, pulseScale);
+
+      ctx.shadowColor = vip.type === 'wedding' ? 'rgba(236, 72, 153, 0.8)' : 'rgba(245, 158, 11, 0.85)';
+      ctx.shadowBlur = 8;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+      ctx.strokeStyle = vip.type === 'wedding' ? '#ec4899' : '#fbbf24';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.roundRect(-36, -11, 72, 22, 11);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = vip.type === 'wedding' ? '#ec4899' : '#fbbf24';
+      ctx.beginPath();
+      ctx.moveTo(-4, 11);
+      ctx.lineTo(4, 11);
+      ctx.lineTo(0, 15);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fef08a';
+      ctx.font = '900 10.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(vip.badge, 0, 0);
+
+      ctx.restore();
+
+      this.interactiveHitboxes.push({
+        x: screenX - 40,
+        y: badgeY - 14,
+        w: 80,
+        h: 60,
+        action: 'claim_vip',
+        bizId: vip.id
+      });
+    });
+  }
+
+  drawJoujmaOverlay(ctx, w, h, timestamp) {
+    const isJoujma = Boolean(this.engine && this.engine.isJoujmaActive && this.engine.isJoujmaActive());
+    if (!isJoujma) return;
+
+    ctx.save();
+
+    if (this.joujmaConfetti && this.joujmaConfetti.length > 0) {
+      this.joujmaConfetti.forEach(c => {
+        const screenX = c.x - this.cameraX;
+        if (screenX > -10 && screenX < w + 10) {
+          ctx.save();
+          ctx.translate(screenX, c.y);
+          ctx.rotate(c.rot);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 1.5);
+          ctx.restore();
+        }
+      });
+    }
+
+    const pulse = (Math.sin(timestamp * 0.009) + 1) * 0.5;
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = `rgba(245, 158, 11, ${0.65 + pulse * 0.35})`;
+    ctx.shadowColor = '#ef4444';
+    ctx.shadowBlur = 12 + pulse * 8;
+    ctx.strokeRect(3, 3, w - 6, h - 6);
+
+    const remMs = Math.max(0, (this.engine.joujmaEndsAt || 0) - Date.now());
+    const remSec = Math.ceil(remMs / 1000);
+    const bannerW = Math.min(230, w * 0.65);
+    const bannerH = 26;
+    const bannerX = (w - bannerW) / 2;
+    const bannerY = 8;
+
+    const grad = ctx.createLinearGradient(bannerX, bannerY, bannerX + bannerW, bannerY);
+    grad.addColorStop(0, 'rgba(239, 68, 68, 0.95)');
+    grad.addColorStop(0.5, 'rgba(245, 158, 11, 0.98)');
+    grad.addColorStop(1, 'rgba(239, 68, 68, 0.95)');
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 13);
+    ctx.fill();
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 12px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`🔥 جوجمة تايم x3 ! (${remSec}s) 🌶️`, w / 2, bannerY + bannerH / 2);
 
     ctx.restore();
   }

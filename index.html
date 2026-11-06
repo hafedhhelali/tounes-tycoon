@@ -382,6 +382,90 @@
       transform: scale(1.1);
     }
 
+    /* JOUJMA FEVER HERO PILL */
+    .joujma-hero-pill {
+      border-color: #ef4444;
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(185, 28, 28, 0.35) 100%);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.12s ease, border-color 0.2s ease;
+    }
+    .joujma-hero-pill:active {
+      transform: scale(0.93);
+    }
+    .joujma-hero-pill.joujma-burning {
+      border-color: #fbbf24;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.9) 0%, rgba(245, 158, 11, 0.85) 100%);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.7), inset 0 0 8px rgba(254, 240, 138, 0.5);
+      animation: joujmaPulse 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes joujmaPulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      100% { transform: scale(1.04); filter: brightness(1.2); }
+    }
+    .joujma-gauge-wrap {
+      position: relative;
+      width: 58px;
+      height: 14px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 7px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .joujma-gauge-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b 0%, #ef4444 100%);
+      border-radius: 7px;
+      transition: width 0.2s ease;
+    }
+    .joujma-label {
+      position: relative;
+      z-index: 1;
+      font-size: 9px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+    }
+
+    /* JAUGE DE PALIER DANS LES CARTES COMMERCES */
+    .milestone-track-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+    .milestone-track-bar {
+      width: 32px;
+      height: 5px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .milestone-track-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8 0%, #fbbf24 100%);
+      border-radius: 3px;
+      transition: width 0.25s ease;
+    }
+    .btn-serve.btn-rush {
+      background: linear-gradient(135deg, #b45309 0%, #ea580c 100%);
+      border-color: #f59e0b;
+      color: #fef08a;
+    }
+    .btn-serve.btn-rush:active {
+      transform: scale(0.95);
+      filter: brightness(1.2);
+    }
+
     /* MINI PILLS D'ACTIONS RAPIDES */
     .header-quick-pills {
       display: flex;
@@ -2917,6 +3001,13 @@
             <span class="balance-label" style="color: #7dd3fc;">🏦</span>
             <span class="balance-val" id="bankDisplay" style="color: #38bdf8; text-shadow: 0 0 14px rgba(56, 189, 248, 0.65);">0.00 د.ت</span>
           </div>
+          <div class="balance-hero joujma-hero-pill" id="joujmaHeroPill" title="جوجمة تايم - اضغط أو سرّع للمضاعفة x3 !">
+            <span class="joujma-icon" id="joujmaIcon">🌶️</span>
+            <div class="joujma-gauge-wrap">
+              <div class="joujma-gauge-fill" id="joujmaGaugeFill" style="width: 0%;"></div>
+              <span class="joujma-label" id="joujmaLabel">جوجمة 0%</span>
+            </div>
+          </div>
         </div>
 
         <div class="header-system-actions">
@@ -4418,9 +4509,12 @@
                   ${rev > 0 ? '+' + formatCurrency(rev) : '0.00&nbsp;د.ت'} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/ <span class="num-ltr">${(biz.cycleDurationMs/1000).toFixed(1)}</span>&nbsp;ثانية</span>
                 </div>
                 ${milestone.nextLevel ? `
-                  <span class="milestone-badge" title="وصّل للمستوى ${milestone.nextLevel} باش تدوبل السرعة !">
-                    🎯 ${milestone.nextLevel} (x${milestone.nextMultiplier})
-                  </span>
+                  <div class="milestone-track-wrap" title="وصّل للمستوى ${milestone.nextLevel} باش تدوبل السرعة !">
+                    <div class="milestone-track-bar">
+                      <div class="milestone-track-fill" style="width: ${milestone.progress || 0}%;"></div>
+                    </div>
+                    <span class="milestone-badge">🎯 ${biz.level}/${milestone.nextLevel} (x${milestone.nextMultiplier})</span>
+                  </div>
                 ` : `
                   <span class="milestone-badge" style="color: #34d399; border-color: #34d399;">👑 معلّم كامل</span>
                 `}
@@ -4433,8 +4527,8 @@
           </div>
 
           <div class="biz-controls">
-            <button class="btn-game btn-serve" id="produce-${biz.id}" ${biz.level === 0 || biz.hasManager ? 'disabled' : ''}>
-              ${biz.hasManager ? '⚡ يخدم وحدو' : '<span>سربّي الحرفاء !</span> ⚡'}
+            <button class="btn-game btn-serve ${biz.hasManager ? 'btn-rush' : ''}" id="produce-${biz.id}" ${biz.level === 0 ? 'disabled' : ''}>
+              ${biz.hasManager ? '<span>🌶️ تسريع جوجمة</span> ⚡' : '<span>سربّي الحرفاء !</span> ⚡'}
             </button>
             <button class="btn-game btn-upgrade ${canAfford ? 'can-afford' : ''}" id="buy-${biz.id}">
               ${buyLabel}
@@ -4505,12 +4599,21 @@
         const prodBtn = card.querySelector(`#produce-${biz.id}`);
 
         const triggerServe = (clientX, clientY) => {
-          if (engine.startProduction(biz.id)) {
+          if (biz.hasManager) {
+            const heatRes = engine.addJoujmaHeat(6);
+            biz.progressMs = Math.min(biz.cycleDurationMs, (biz.progressMs || 0) + (biz.cycleDurationMs * 0.25));
             soundEngine.playWorkSound(biz.id);
-
+            avatarEl.classList.add('squashed');
+            setTimeout(() => avatarEl.classList.remove('squashed'), 150);
+            if (heatRes.triggered) {
+              soundEngine.playJoujmaFanfare();
+              showRewardModalUI('🔥', 'جوجمة تايم x3 ! 🔥', 'الشارع شعل نار ومداخيل المشاريع تضاعفت 3 مرات !', '🔥 فرجة حية');
+            } else {
+              spawnFloatText(clientX, clientY, `🔥 +6% جوجمة !`);
+            }
+          } else if (engine.startProduction(biz.id)) {
+            soundEngine.playWorkSound(biz.id);
             spawnFloatText(clientX, clientY, `⚡ خدمة جارية...`);
-
-            // Animation squash
             avatarEl.classList.add('squashed');
             setTimeout(() => avatarEl.classList.remove('squashed'), 150);
           }
@@ -4522,7 +4625,7 @@
           };
         }
         avatarEl.onpointerdown = (e) => {
-          if (!biz.hasManager && biz.level > 0) {
+          if (biz.level > 0) {
             triggerServe(e.clientX, e.clientY);
           }
         };
@@ -4602,6 +4705,20 @@
     if (tabBtnLeague) tabBtnLeague.onclick = () => switchTab('league');
     const returnToStreetBtn = document.getElementById('returnToStreetBtn');
     if (returnToStreetBtn) returnToStreetBtn.onclick = () => switchTab('businesses');
+
+    const joujmaPillBtn = document.getElementById('joujmaHeroPill');
+    if (joujmaPillBtn) {
+      joujmaPillBtn.onclick = () => {
+        const res = engine.addJoujmaHeat(7);
+        if (res.triggered) {
+          soundEngine.playJoujmaFanfare();
+          showRewardModalUI('🔥', 'جوجمة تايم x3 ! 🔥', 'الشارع شعل نار ومداخيل المشاريع تضاعفت 3 مرات !', '🔥 فرجة حية');
+        } else {
+          soundEngine.playTap();
+          spawnFloatText(window.innerWidth * 0.45, 60, '+7% جوجمة 🔥');
+        }
+      };
+    }
 
     // --- RENDU DU PANNEAU LIGUE, مربوح النهار & التحديات ---
     function renderLeagueTabUI() {
@@ -5102,6 +5219,20 @@
             }
           } else if (biz && biz.level === 0) {
             triggerBalanceAlert(engine.getBusinessLockDiagnosis(biz.id));
+          }
+        },
+        onClaimVip: (vip) => {
+          const res = engine.claimStreetVip(vip.type);
+          if (res && res.success) {
+            if (res.triggeredJoujma) {
+              soundEngine.playJoujmaFanfare();
+              showRewardModalUI('🔥', 'جوجمة تايم x3 ! 🔥', res.message, `+${formatCurrency(res.rewardDinars)}`);
+            } else {
+              soundEngine.playVipReward();
+              showFeedbackToast(res.message, vip.icon || '💎');
+            }
+            launchCoinShower(window.innerWidth / 2, window.innerHeight * 0.35, 12);
+            renderDOM();
           }
         },
         onHudAction: async (action) => {
@@ -6228,6 +6359,25 @@
         if (displayTxt !== lastDisplayedTitle) {
           titleBadgeEl.innerText = displayTxt;
           lastDisplayedTitle = displayTxt;
+        }
+      }
+
+      // Mise à jour de la jauge Joujma Time (Fever Mode x3)
+      const joujmaPill = document.getElementById('joujmaHeroPill');
+      const joujmaFill = document.getElementById('joujmaGaugeFill');
+      const joujmaLbl = document.getElementById('joujmaLabel');
+      const joujmaIcn = document.getElementById('joujmaIcon');
+      if (joujmaFill && joujmaLbl && engine.getJoujmaStatus) {
+        const jStat = engine.getJoujmaStatus(now);
+        joujmaFill.style.width = jStat.gauge + '%';
+        if (jStat.active) {
+          if (joujmaPill) joujmaPill.classList.add('joujma-burning');
+          joujmaLbl.innerText = `🔥 ${jStat.remainingSeconds}s x3`;
+          if (joujmaIcn) joujmaIcn.innerText = '🔥';
+        } else {
+          if (joujmaPill) joujmaPill.classList.remove('joujma-burning');
+          joujmaLbl.innerText = `🌶️ ${Math.round(jStat.gauge)}%`;
+          if (joujmaIcn) joujmaIcn.innerText = '🌶️';
         }
       }
 

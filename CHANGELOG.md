@@ -1,4 +1,22 @@
-﻿## [1.34.0] - 2026-11-06
+﻿## [1.35.0] - 2026-11-06
+### Added & Improved
+- **Mode Joujma Mania / Fever Rush Tunisien x3** (`engine.js`, `store_animator.js`, `audio.js`, `index.html`) :
+  - **Moteur d'excitation & Jauge d'ambiance 🌶️ جوجمة** : Chaque tap manuel, récolte ou interaction charge la jauge Joujma de 0% à 100%.
+  - **Déclenchement du Rush x3 (15s)** : Dès 100%, l'écran passe en mode fête survoltée tunisienne : production globale multipliée par 3, fanfare dynamique (`playJoujmaFanfare`), roulements de darbouka et cascade d'accords Maqam.
+  - **FX visuels 60 FPS** : Cadre néon or & rouge pulsant autour de la rue, pluie de confettis multicolores en dérive et bannière flamboyante animée `🔥 جوجمة تايم x3 ! 🔥`.
+- **Personnages VIP Tunisiens interactifs dans la rue** (`store_animator.js`, `engine.js`, `audio.js`, `index.html`) :
+  - **La rue devient un terrain de jeu actif** : Apparition dynamique de personnages VIP traversant le quartier avec badge flottant lumineux `[💎 اضغط!]` :
+    - 📸 **السائح الثري (Le Touriste Riche)** : Chemise hawaïenne et appareil photo, octroie un gros pourboire en devises au clic (+Dinars instantanés).
+    - 🧐 **ناقد الماكلة والصنعة (Le Critique Gastronomique)** : Costume chic et calepin de notes, booste la jauge Joujma et la réputation (+40% chaleur).
+    - 👰🚗 **كرهبة العروسة (Le Cortège Nuptial Tunisien)** : Berline blanche ornée de rubans roses et fleurs, déclenche un méga jackpot et le mode Joujma direct !
+    - 🧰 **الصنايعي المتجول (L'Artisan de Quartier)** : Boîte à outils et salopette, coup de main rapide et bonus de dinars.
+- **Barre de progression des paliers & Engagement actif continu** (`index.html`) :
+  - **Jauge de palier intégrée (`.milestone-track-wrap`)** : Visualisation claire et motivante de la progression vers le prochain palier multiplicateur (`🎯 18/25 (x1.25)`).
+  - **Bouton d'accélération active même avec manager** : Le bouton de production reste jouable en mode `🌶️ تسريع جوجمة ⚡` pour raboter 25% du cycle et charger la jauge Joujma sans bloquer l'automatisation.
+- **Tests unitaires et zéro régression** (`engine.test.js`) :
+  - 2 nouveaux tests unitaires complets validant la jauge Joujma, le multiplicateur x3, l'expiration et les gains VIPs (72/72 tests passants).
+
+## [1.34.0] - 2026-11-06
 ### Added & Improved
 - **Vue projet plein écran sans marges latérales** (`index.html`) :
   - **Suppression intégrale des bandes noires à gauche et à droite** : Suppression du `max-width: 940px` restrictif sur `.modal-card.biz-immersive` et passage en `width: 100% !important; max-width: 100% !important; height: 100vh !important; padding: 0 !important; margin: 0 !important; border-radius: 0 !important;`.
@@ -202,6 +220,7 @@
 # CHANGELOG
 
 ## 2026-11-06
+- feat(gameplay,art): joujma fever mode x3, interactive street vips, milestone progress bars and rush serve button
 - feat(map,biz): fullwidth project view with zero side margins, beautiful cartography with coastal shelf, nile, pyramids, zoom controls and country jump pills
 - feat(map,ui): single row header, canvas map bubble, enlarged north africa map with algeria, morocco, libya, egypt, mauritania and all capitals
 - feat(ui,ux): clean header without scroll, single prominent map button, silenced sunny pedestrians, grounded boutique and unmasked cash loader

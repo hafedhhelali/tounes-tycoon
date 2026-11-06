@@ -577,6 +577,68 @@ test('Google Profile connection, serialization and GDPR disconnect', () => {
   assert.equal(restored.googleProfile.email, '');
 });
 
+test('Joujma Fever Mode: heat accumulation, x3 revenue multiplier and clean expiration', () => {
+  const t0 = 1000000;
+  const engine = new TycoonEngine();
+  engine.lastTimestamp = t0;
+  engine.buyBusiness('kaskrout');
+
+  // Au début : jauge 0%, non actif
+  assert.equal(engine.isJoujmaActive(t0), false);
+  assert.equal(engine.getJoujmaStatus(t0).multiplier, 1.0);
+
+  // Ajout de chaleur (ex: taps)
+  engine.addJoujmaHeat(50, t0);
+  assert.equal(engine.joujmaGauge, 50);
+  assert.equal(engine.isJoujmaActive(t0), false);
+
+  // Franchissement du seuil 100% -> déclenchement Joujma Time
+  const res = engine.addJoujmaHeat(60, t0);
+  assert.equal(res.triggered, true);
+  assert.equal(res.active, true);
+  assert.equal(engine.isJoujmaActive(t0), true);
+
+  // Multiplicateur de revenu passe à x3
+  const normalRev = 0.8;
+  const joujmaRev = engine.getRevenue(engine.businesses[0], t0);
+  assert.equal(Math.round(joujmaRev * 10) / 10, Math.round(normalRev * 3.0 * 10) / 10);
+
+  // Expiration propre après 15s (15000ms)
+  engine.update(t0 + 16000);
+  assert.equal(engine.isJoujmaActive(t0 + 16000), false);
+  assert.equal(engine.joujmaGauge, 0);
+});
+
+test('Street VIPs: claiming tourist, critic and wedding awards dinars and bonuses', () => {
+  const t0 = 1000000;
+  const engine = new TycoonEngine();
+  engine.lastTimestamp = t0;
+  engine.dinars = 100;
+
+  // 1. Touriste : pourboire immédiat
+  const resTour = engine.claimStreetVip('tourist', t0);
+  assert.equal(resTour.success, true);
+  assert.ok(resTour.rewardDinars >= 25);
+  assert.ok(engine.dinars > 100);
+
+  // 2. Mariage tunisien : gros jackpot + déclenchement Joujma direct
+  const prevDinars = engine.dinars;
+  const resWed = engine.claimStreetVip('wedding', t0);
+  assert.equal(resWed.success, true);
+  assert.equal(resWed.triggeredJoujma, true);
+  assert.ok(engine.dinars >= prevDinars + 60);
+  assert.equal(engine.isJoujmaActive(t0), true);
+
+  // 3. Sauvegarde & Restauration de l'état Joujma
+  const saved = engine.exportState();
+  assert.equal(saved.joujmaActive, true);
+  assert.equal(saved.joujmaGauge, 100);
+
+  const restored = new TycoonEngine(saved);
+  assert.equal(restored.isJoujmaActive(t0), true);
+  assert.equal(restored.joujmaGauge, 100);
+});
+
 
 
 

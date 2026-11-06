@@ -1005,6 +1005,14 @@ export class TycoonEngine {
     this.speedBoostEndsAt = 0;
     this.speedBoostMultiplier = 1.0;
 
+    // جوجمة تايم (Fever Mode Tunisien x3)
+    this.joujmaGauge = 0;
+    this.joujmaActive = false;
+    this.joujmaEndsAt = 0;
+    this.joujmaDurationMs = 15000;
+    this.joujmaMultiplier = 3.0;
+    this.lastJoujmaHeatAt = Date.now();
+
     // Quartier / Ville active de conquête (compatibilité ascendante)
     this.currentZoneId = 'tunis';
     this.currentCityId = 'tunis';
@@ -1699,6 +1707,9 @@ export class TycoonEngine {
     this.currentCityId = 'tunis';
     this.currentZoneId = 'tunis';
     this.unlockedCityIds = ['tunis'];
+    this.joujmaGauge = 0;
+    this.joujmaActive = false;
+    this.joujmaEndsAt = 0;
 
     // Calcul du nouveau titre de prestige
     this.updatePlayerPrestigeTitle();
@@ -1922,6 +1933,100 @@ export class TycoonEngine {
 
   isSpeedBoostActive(now = Date.now()) {
     return now < this.speedBoostEndsAt;
+  }
+
+  // --- JOUJMA MODE (جوجمة تايم - Ambiance Chaâbi Surchargée x3) ---
+  isJoujmaActive(now = Date.now()) {
+    return Boolean(this.joujmaActive && now < this.joujmaEndsAt);
+  }
+
+  getJoujmaStatus(now = Date.now()) {
+    const active = this.isJoujmaActive(now);
+    const remainingMs = active ? Math.max(0, this.joujmaEndsAt - now) : 0;
+    return {
+      active,
+      gauge: active ? 100 : (this.joujmaGauge || 0),
+      remainingMs,
+      remainingSeconds: Math.ceil(remainingMs / 1000),
+      multiplier: active ? (this.joujmaMultiplier || 3.0) : 1.0
+    };
+  }
+
+  addJoujmaHeat(amount = 7, now = Date.now()) {
+    this.lastJoujmaHeatAt = now;
+    if (this.isJoujmaActive(now)) {
+      this.joujmaEndsAt = Math.min(now + 25000, this.joujmaEndsAt + 400);
+      return { triggered: false, active: true, gauge: 100 };
+    }
+    this.joujmaGauge = Math.min(100, Math.max(0, (this.joujmaGauge || 0) + amount));
+    if (this.joujmaGauge >= 100) {
+      this.joujmaActive = true;
+      this.joujmaEndsAt = now + (this.joujmaDurationMs || 15000);
+      this.joujmaGauge = 100;
+      return { triggered: true, active: true, gauge: 100 };
+    }
+    return { triggered: false, active: false, gauge: this.joujmaGauge };
+  }
+
+  // --- PERSONNAGES VIP DE LA RUE (شخصيات الشارع التونسية) ---
+  claimStreetVip(vipType = 'tourist', now = Date.now()) {
+    const ratePerSec = this.getTotalDinarsPerSecond(now);
+    let reward = 0;
+    let message = '';
+    let triggeredJoujma = false;
+
+    if (vipType === 'tourist') {
+      reward = Math.max(25.0, Math.floor(ratePerSec * 40));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
+      this.addJoujmaHeat(15, now);
+      message = `السائح عجباتو الأجواء وسيّب بوربوار بالدوفيز ! (+${reward} د.ت)`;
+    } else if (vipType === 'critic') {
+      reward = Math.max(15.0, Math.floor(ratePerSec * 25));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
+      const res = this.addJoujmaHeat(40, now);
+      triggeredJoujma = res.triggered;
+      message = `الناقد عطا 5 نجوم للمشاريع والصنعة التونسية ! (+${reward} د.ت)`;
+    } else if (vipType === 'wedding') {
+      reward = Math.max(60.0, Math.floor(ratePerSec * 80));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
+      this.joujmaActive = true;
+      this.joujmaEndsAt = now + (this.joujmaDurationMs || 15000);
+      this.joujmaGauge = 100;
+      triggeredJoujma = true;
+      message = `عرس تونسي وكلولولوش وفرحة كبيرة في الشارع ! جوجمة x3 تلهلب (+${reward} د.ت)`;
+    } else if (vipType === 'artisan') {
+      reward = Math.max(10.0, Math.floor(ratePerSec * 15));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
+      this.addJoujmaHeat(20, now);
+      message = `الصنايعي عمل دورة وتفقّد الماتريال والمحلاّت ! (+${reward} د.ت)`;
+    } else {
+      reward = Math.max(10.0, Math.floor(ratePerSec * 10));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.addJoujmaHeat(10, now);
+      message = `حريف وفي عطاك بركة وتفتوفة سمحة ! (+${reward} د.ت)`;
+    }
+
+    if (this.currentCityId) {
+      if (!this.cityBalances) this.cityBalances = {};
+      this.cityBalances[this.currentCityId] = this.dinars;
+    }
+
+    return {
+      success: true,
+      vipType,
+      rewardDinars: reward,
+      message,
+      triggeredJoujma
+    };
   }
 
   checkQuests() {
@@ -2371,10 +2476,13 @@ export class TycoonEngine {
     const milestoneInfo = this.getBusinessMilestones ? this.getBusinessMilestones(business) : { multiplier: 1.0 };
     const milestoneMultiplier = milestoneInfo.multiplier || 1.0;
 
+    // Multiplicateur Joujma Time (Fever Mode x3)
+    const joujmaMultiplier = this.isJoujmaActive(now) ? (this.joujmaMultiplier || 3.0) : 1.0;
+
     // Progression progressive et équilibrée des gains par niveau :
     // Au lieu d'une explosion astronomique, montée calibrée pour préserver la valeur de la monnaie
     const levelMultiplier = 1.0 + ((business.level - 1) * 0.40);
-    const rawRevenue = business.baseRevenue * levelMultiplier * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier;
+    const rawRevenue = business.baseRevenue * levelMultiplier * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier * joujmaMultiplier;
 
     // Équilibrage macro-économique tunisien : au-delà de 2 millions DT / cycle,
     // amortissement d'échelle (loi des rendements décroissants réaliste)
@@ -2480,6 +2588,7 @@ export class TycoonEngine {
     if (!biz || biz.level === 0 || biz.isProducing) return false;
     biz.isProducing = true;
     this.manualServesCount += 1;
+    this.addJoujmaHeat(8);
     return true;
   }
 
@@ -2498,6 +2607,12 @@ export class TycoonEngine {
     const deltaMs = Math.max(0, now - this.lastTimestamp);
     this.lastTimestamp = now;
     this.totalPlayTimeSeconds = (this.totalPlayTimeSeconds || 0) + (deltaMs / 1000);
+
+    // Gestion de l'expiration du Joujma Time (Fever Mode x3)
+    if (this.joujmaActive && now >= this.joujmaEndsAt) {
+      this.joujmaActive = false;
+      this.joujmaGauge = 0;
+    }
 
     // Gestion du timer de l'événement en cours
     if (this.activeEvent && now >= this.activeEvent.endsAt) {
@@ -2869,6 +2984,9 @@ export class TycoonEngine {
       total: 0,
       effectiveRatePct: 12
     };
+    this.joujmaGauge = 0;
+    this.joujmaActive = false;
+    this.joujmaEndsAt = 0;
   }
 
   // Sauvegarde / Restauration
@@ -2895,6 +3013,9 @@ export class TycoonEngine {
       activeEvent: this.activeEvent,
       adBoostEndsAt: this.adBoostEndsAt,
       speedBoostEndsAt: this.speedBoostEndsAt || 0,
+      joujmaGauge: this.joujmaGauge || 0,
+      joujmaActive: Boolean(this.joujmaActive),
+      joujmaEndsAt: this.joujmaEndsAt || 0,
       currentZoneId: this.currentZoneId || this.currentCityId || 'tunis',
       currentCityId: this.currentCityId || this.currentZoneId || 'tunis',
       unlockedCityIds: this.unlockedCityIds || ['tunis'],
@@ -2960,6 +3081,9 @@ export class TycoonEngine {
     this.activeEvent = state.activeEvent ?? null;
     this.adBoostEndsAt = state.adBoostEndsAt ?? 0;
     this.speedBoostEndsAt = state.speedBoostEndsAt ?? 0;
+    this.joujmaGauge = state.joujmaGauge ?? 0;
+    this.joujmaActive = Boolean(state.joujmaActive);
+    this.joujmaEndsAt = state.joujmaEndsAt ?? 0;
     const rawZone = state.currentCityId ?? state.currentZoneId ?? 'tunis';
     const mappedZone = (rawZone === 'bab_souika') ? 'tunis'
       : (rawZone === 'la_goulette') ? 'bizerte'
