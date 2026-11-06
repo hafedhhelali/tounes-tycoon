@@ -1,10 +1,10 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-06 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v140)
-1. Header ultra-compact 1 ligne & Bulle Carte 3D (`index.html`, `store_animator.js`) : `<header>` épuré sur une seule ligne (~38px, zéro scroll), et réintégration de l'orbe 3D haute visibilité dans le ciel du canvas (`hud_map`) avec double anneau doré pulsant et ruban `خريطة تونس 🇹🇳`.
-2. Carte élargie Grand Maghreb & Afrique du Nord (`store_animator.js`) : dimension étendue à 1040x760 avec pan 2D fluide (X/Y) et inertie pour parcourir l'Afrique du Nord, avec silhouettes vectorielles détaillées et badges nationaux pour le Maroc 🇲🇦, la Mauritanie 🇲🇷, l'Algérie 🇩🇿, la Libye 🇱🇾, l'Égypte 🇪🇬 et la Tunisie 🇹🇳.
-3. Toutes les 6 capitales régionales interactives (`store_animator.js`) : Rabat 🇲🇦, Alger 🇩🇿, Tunis 🇹🇳, Tripoli 🇱🇾, Le Caire 🇪🇬, Nouakchott 🇲🇷 avec nœuds dorés `🏛️⭐`, autoroutes transmaghrébines connectées, caravanes animées et modales de bonus commerciaux internationaux.
+## État en 3 lignes (v141)
+1. Vue projet plein écran (`index.html`) : `.modal-card.biz-immersive` libérée des marges restrictives (largeur 100%, suppression du `max-width: 940px` et padding 0), s'étendant d'un bord à l'autre sans aucun espace noir à gauche ou à droite.
+2. Carte Grand Maghreb esthétique & détaillée (`store_animator.js`) : halo aquamarine lagonaire le long de toutes les côtes, graticule nautique avec coordonnées réelles, rose des vents dorée, fleuve du Nil et Pyramides de Gizeh `🔺🔺` en Égypte, et Chott el Djerid cristallin étincelant `✨`.
+3. Commandes de zoom & Navigation HUD (`store_animator.js`) : zoom interactif fluide (0.55x à 2.6x avec support pinch-to-zoom 2 doigts), boutons tactiles `➕`, `🇹🇳`, `➖` et barre de saut direct vers les 6 pays frères (`[🇹🇳 تونس] [🇩🇿 الجزائر] [🇲🇦 المغرب] [🇱🇾 ليبيا] [🇪🇬 مصر] [🇲🇷 موريتانيا]`).
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).

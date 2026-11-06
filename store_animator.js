@@ -9838,16 +9838,23 @@ export class TunisiaMapEngine {
     // Pan & Zoom interactifs 2D pour exploration fluide de toute l'Afrique du Nord (Maroc/Mauritanie -> Tunisie -> Libye/Égypte)
     this.panX = -130;
     this.targetPanX = -130;
-    this.minPanX = 120;
-    this.maxPanX = 640;
+    this.minPanX = 280;
+    this.maxPanX = 720;
     this.panY = 0;
     this.targetPanY = 0;
-    this.maxPanY = 220;
+    this.maxPanY = 320;
+    this.zoom = 1.0;
+    this.targetZoom = 1.0;
+    this.minZoom = 0.55;
+    this.maxZoom = 2.6;
     this.pointerVelocityX = 0;
     this.pointerVelocityY = 0;
     this.lastPointerTime = 0;
     this.lastPointerX = 0;
     this.lastPointerY = 0;
+    this.pointers = new Map();
+    this.initialPinchDist = null;
+    this.initialPinchZoom = 1;
 
     // Effet d'arrivée dans la ville (onde de choc dorée & flash cinématique)
     this.arrivalEffect = null;
@@ -10211,10 +10218,22 @@ export class TunisiaMapEngine {
   }
 
   handlePointerDown(e) {
-    this.isPanning = true;
+    if (!this.pointers) this.pointers = new Map();
+    this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
     if (this.canvas.setPointerCapture && e.pointerId !== undefined) {
       try { this.canvas.setPointerCapture(e.pointerId); } catch (_) {}
     }
+
+    if (this.pointers.size === 2) {
+      this.isPanning = false;
+      const pts = Array.from(this.pointers.values());
+      this.initialPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      this.initialPinchZoom = this.zoom || 1;
+      return;
+    }
+
+    this.isPanning = true;
     this.startPanY = e.clientY;
     this.startPanX = e.clientX;
     this.lastPointerY = e.clientY;
@@ -10230,13 +10249,27 @@ export class TunisiaMapEngine {
   }
 
   handlePointerMove(e) {
+    if (this.pointers && this.pointers.has(e.pointerId)) {
+      this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    if (this.pointers && this.pointers.size === 2 && this.initialPinchDist) {
+      const pts = Array.from(this.pointers.values());
+      const currentDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const ratio = currentDist / this.initialPinchDist;
+      this.targetZoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.initialPinchZoom * ratio));
+      this.hasDraggedMap = true;
+      return;
+    }
+
     if (!this.isPanning) return;
     const now = performance.now();
     const dt = Math.max(0.005, (now - (this.lastPointerTime || now)) / 1000);
-    const dy = (e.clientY - this.startPanY) / (this.scale || 1);
-    const dx = (e.clientX - this.startPanX) / (this.scale || 1);
-    const instantDy = (e.clientY - (this.lastPointerY || e.clientY)) / (this.scale || 1);
-    const instantDx = (e.clientX - (this.lastPointerX || e.clientX)) / (this.scale || 1);
+    const effScale = Math.max(0.001, (this.scale || 1) * (this.zoom || 1));
+    const dy = (e.clientY - this.startPanY) / effScale;
+    const dx = (e.clientX - this.startPanX) / effScale;
+    const instantDy = (e.clientY - (this.lastPointerY || e.clientY)) / effScale;
+    const instantDx = (e.clientX - (this.lastPointerX || e.clientX)) / effScale;
 
     const currentVelY = instantDy / dt;
     const currentVelX = instantDx / dt;
@@ -10250,13 +10283,18 @@ export class TunisiaMapEngine {
     if (dragDist > 6) {
       this.hasDraggedMap = true;
     }
-    this.panY = Math.max(-this.maxPanY, Math.min(80, this.startOriginPanY + dy));
+    this.panY = Math.max(-this.maxPanY, Math.min(180, this.startOriginPanY + dy));
     this.panX = Math.max(-this.maxPanX, Math.min(this.minPanX, this.startOriginPanX + dx));
     this.targetPanY = this.panY;
     this.targetPanX = this.panX;
   }
 
   handlePointerUp(e) {
+    if (this.pointers) this.pointers.delete(e.pointerId);
+    if (this.pointers && this.pointers.size < 2) {
+      this.initialPinchDist = null;
+    }
+
     if (!this.isPanning) return;
     this.isPanning = false;
     if (this.canvas.releasePointerCapture && e.pointerId !== undefined) {
@@ -10271,7 +10309,7 @@ export class TunisiaMapEngine {
     // Fling / Inertie dynamique 2D
     if (Math.abs(this.pointerVelocityY || 0) > 30) {
       const flingDistY = (this.pointerVelocityY || 0) * 0.35;
-      this.targetPanY = Math.max(-this.maxPanY, Math.min(80, (this.panY || 0) + flingDistY));
+      this.targetPanY = Math.max(-this.maxPanY, Math.min(180, (this.panY || 0) + flingDistY));
     }
     if (Math.abs(this.pointerVelocityX || 0) > 30) {
       const flingDistX = (this.pointerVelocityX || 0) * 0.35;
@@ -10280,10 +10318,9 @@ export class TunisiaMapEngine {
   }
 
   handleWheel(e) {
-    const deltaY = (e.deltaY || 0) * 0.45;
-    const deltaX = (e.deltaX || 0) * 0.45;
-    this.targetPanY = Math.max(-this.maxPanY, Math.min(80, (this.targetPanY || 0) - deltaY));
-    this.targetPanX = Math.max(-this.maxPanX, Math.min(this.minPanX, (this.targetPanX || 0) - deltaX));
+    e.preventDefault();
+    const zoomDelta = e.deltaY < 0 ? 0.16 : -0.16;
+    this.targetZoom = Math.max(this.minZoom, Math.min(this.maxZoom, (this.targetZoom || 1) + zoomDelta));
   }
 
   resize() {
@@ -10291,7 +10328,7 @@ export class TunisiaMapEngine {
     const parent = this.canvas.parentElement;
     const rect = this.canvas.getBoundingClientRect();
     let cssW = (parent && parent.clientWidth) || rect.width || (typeof window !== 'undefined' ? window.innerWidth : 440);
-    let cssH = (parent && parent.clientHeight) || rect.height || (typeof window !== 'undefined' ? 640 : 640);
+    let cssH = (parent && parent.clientHeight) || rect.height || (typeof window !== 'undefined' ? 680 : 680);
     
     cssW = Math.max(320, cssW);
     cssH = Math.max(520, cssH);
@@ -10305,14 +10342,10 @@ export class TunisiaMapEngine {
     this.canvas.style.width = cssW + 'px';
     this.canvas.style.height = cssH + 'px';
 
-    // Échelle panoramique pour visibilité claire du Maghreb et de la Tunisie
-    const scaleY = cssH / this.height;
-    const scaleX = cssW / 460;
-    this.scale = Math.max(0.85, Math.min(scaleY * 1.05, scaleX));
-    if (!this.scale || isNaN(this.scale) || this.scale <= 0) this.scale = 1;
-
-    this.offsetX = Math.max(0, (cssW - 460 * this.scale) / 2);
-    this.offsetY = Math.max(0, (cssH - this.height * this.scale) / 2);
+    // Échelle équilibrée pour visibilité claire du Maghreb et centrage direct sur la Tunisie
+    this.scale = Math.max(0.72, Math.min(1.3, Math.min(cssW / 520, cssH / 660)));
+    this.offsetX = Math.max(0, (cssW - 520 * this.scale) / 2);
+    this.offsetY = Math.max(0, (cssH - 660 * this.scale) / 2);
   }
 
   start() {
@@ -10478,23 +10511,74 @@ export class TunisiaMapEngine {
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
 
-    const scale = Math.max(0.001, this.scale || 1);
-    const screenX = (clientX - (this.offsetX || 0)) / scale;
-    const screenY = (clientY - (this.offsetY || 0)) / scale;
-    const mapX = screenX - (this.panX || 0);
-    const mapY = screenY - (this.panY || 0);
+    const baseScale = Math.max(0.001, this.scale || 1);
+    const currentZoom = this.zoom || 1;
+    const totalScale = baseScale * currentZoom;
 
-    const vpW = this.canvas.width / (this.dpr * scale);
-    const vpH = this.canvas.height / (this.dpr * scale);
-    const cardW = Math.min(420, vpW - 24);
-    const cardH = 110;
-    const cardX = Math.max(12, (vpW - cardW) / 2);
-    const cardY = vpH - cardH - 12;
+    // 1. Détection de clic sur les éléments de l'interface HUD (coordonnées écran fixes)
+    const hudX = (clientX - (this.offsetX || 0)) / baseScale;
+    const hudY = (clientY - (this.offsetY || 0)) / baseScale;
+    const vpW = this.canvas.width / (this.dpr * baseScale);
+    const vpH = this.canvas.height / (this.dpr * baseScale);
 
-    // 1. Détection de clic sur la carte Popover en bas (coordonnées écran fixes)
+    // Boutons de Zoom à droite
+    const btnSize = 34;
+    const btnX = vpW - btnSize - 12;
+    // Bouton Zoom Plus (+)
+    if (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 48 && hudY <= 48 + btnSize) {
+      this.targetZoom = Math.min(this.maxZoom, (this.targetZoom || 1) + 0.35);
+      if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
+      return;
+    }
+    // Bouton Centrage Tunisie (🇹🇳)
+    if (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 88 && hudY <= 88 + btnSize) {
+      this.targetZoom = 1.0;
+      this.targetPanX = -130;
+      this.targetPanY = 0;
+      if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
+      return;
+    }
+    // Bouton Zoom Moins (-)
+    if (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 128 && hudY <= 128 + btnSize) {
+      this.targetZoom = Math.max(this.minZoom, (this.targetZoom || 1) - 0.35);
+      if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
+      return;
+    }
+
+    // Pilules de navigation rapide vers les pays en haut (y: 10 à 38)
+    if (hudY >= 8 && hudY <= 42) {
+      const pills = [
+        { id: 'tn', name: 'تونس', flag: '🇹🇳', x: -130, y: 0, zoom: 1.15 },
+        { id: 'dz', name: 'الجزائر', flag: '🇩🇿', x: 60, y: 20, zoom: 1.1 },
+        { id: 'ma', name: 'المغرب', flag: '🇲🇦', x: 220, y: 0, zoom: 1.1 },
+        { id: 'ly', name: 'ليبيا', flag: '🇱🇾', x: -280, y: -140, zoom: 1.05 },
+        { id: 'eg', name: 'مصر', flag: '🇪🇬', x: -540, y: -140, zoom: 1.05 },
+        { id: 'mr', name: 'موريتانيا', flag: '🇲🇷', x: 240, y: -280, zoom: 1.05 }
+      ];
+      const pillW = Math.min(62, Math.floor((vpW - 24) / pills.length));
+      const totalW = pillW * pills.length;
+      const startX = Math.max(10, Math.floor((vpW - totalW) / 2));
+      for (let i = 0; i < pills.length; i++) {
+        const px = startX + i * pillW;
+        if (hudX >= px && hudX <= px + pillW) {
+          const p = pills[i];
+          this.targetPanX = p.x;
+          this.targetPanY = p.y;
+          this.targetZoom = p.zoom;
+          if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
+          return;
+        }
+      }
+    }
+
+    // 2. Détection de clic sur la carte Popover en bas
     if (this.selectedCityId) {
-      // Hitbox large sur le bouton ou le bandeau de la carte Popover
-      if (screenX >= cardX && screenX <= cardX + cardW && screenY >= cardY && screenY <= cardY + cardH) {
+      const cardW = Math.min(420, vpW - 24);
+      const cardH = 110;
+      const cardX = Math.max(12, (vpW - cardW) / 2);
+      const cardY = vpH - cardH - 12;
+
+      if (hudX >= cardX && hudX <= cardX + cardW && hudY >= cardY && hudY <= cardY + cardH) {
         const c = this.cities.find(item => item.id === this.selectedCityId);
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
@@ -10513,7 +10597,12 @@ export class TunisiaMapEngine {
       }
     }
 
-    // 2. Détection de clic sur les nœuds de villes tunisiennes (coordonnées carte 2D mapX, mapY)
+    // 3. Détection de clic sur les nœuds de la carte (coordonnées monde 2D prenant en compte le zoom et le pan)
+    const mapScreenX = (clientX - (this.offsetX || 0)) / totalScale;
+    const mapScreenY = (clientY - (this.offsetY || 0)) / totalScale;
+    const mapX = mapScreenX - (this.panX || 0);
+    const mapY = mapScreenY - (this.panY || 0);
+
     for (const c of this.cities) {
       const dist = Math.hypot(mapX - c.x, mapY - c.y);
       if (dist <= 42) {
@@ -10521,7 +10610,6 @@ export class TunisiaMapEngine {
         const canUnlock = this.canUnlockCity(c);
         const diag = this.engine.getCityLockDiagnosis ? this.engine.getCityLockDiagnosis(c.id) : c.tagline;
 
-        // Si la ville est verrouillée, TOUJOURS afficher le diagnostic exact de ce qui manque + modale/toast + son buzzer
         if (!isUnlocked && !canUnlock) {
           if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playBuzzer) {
             window.soundEngine.playBuzzer();
@@ -10534,11 +10622,9 @@ export class TunisiaMapEngine {
           }
         }
 
-        // Mettre à jour la sélection de la ville
         this.selectedCityId = c.id;
         if (this.onSelect) this.onSelect(c);
 
-        // Si accessible et pas encore dans cette ville, voyager
         if ((isUnlocked || canUnlock) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
         }
@@ -10546,7 +10632,7 @@ export class TunisiaMapEngine {
       }
     }
 
-    // 3. Détection de clic sur les 6 Grandes Capitales régionales d'Afrique du Nord
+    // 4. Détection de clic sur les 6 Grandes Capitales régionales d'Afrique du Nord
     for (const cap of (this.regionalCapitals || [])) {
       const dist = Math.hypot(mapX - cap.x, mapY - cap.y);
       if (dist <= 38) {
@@ -10562,7 +10648,6 @@ export class TunisiaMapEngine {
           }
         }
 
-        // Présentation sonore et modale de la capitale internationale
         if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playCelebrationChord) {
           window.soundEngine.playCelebrationChord();
         } else if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
@@ -10583,9 +10668,29 @@ export class TunisiaMapEngine {
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
 
-    const scale = Math.max(0.001, this.scale || 1);
-    const x = ((clientX - (this.offsetX || 0)) / scale) - (this.panX || 0);
-    const y = ((clientY - (this.offsetY || 0)) / scale) - (this.panY || 0);
+    const baseScale = Math.max(0.001, this.scale || 1);
+    const currentZoom = this.zoom || 1;
+    const totalScale = baseScale * currentZoom;
+
+    // Survol HUD
+    const hudX = (clientX - (this.offsetX || 0)) / baseScale;
+    const hudY = (clientY - (this.offsetY || 0)) / baseScale;
+    const vpW = this.canvas.width / (this.dpr * baseScale);
+    const btnSize = 34;
+    const btnX = vpW - btnSize - 12;
+
+    const isHoverZoom = (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 48 && hudY <= 170);
+    const isHoverPill = (hudY >= 8 && hudY <= 42 && hudX >= 10 && hudX <= vpW - 10);
+
+    if (isHoverZoom || isHoverPill) {
+      this.canvas.style.cursor = 'pointer';
+      return;
+    }
+
+    const mapScreenX = (clientX - (this.offsetX || 0)) / totalScale;
+    const mapScreenY = (clientY - (this.offsetY || 0)) / totalScale;
+    const x = mapScreenX - (this.panX || 0);
+    const y = mapScreenY - (this.panY || 0);
 
     let hovered = null;
     for (const c of this.cities) {
@@ -10611,109 +10716,249 @@ export class TunisiaMapEngine {
     this.lastTime = now;
     const t = now / 1000;
 
-    // Lissage du défilement 2D (panY et panX)
+    // Lissage du défilement 2D (panY et panX) et du zoom
     if (this.targetPanY !== undefined) {
       this.panY = (this.panY || 0) + ((this.targetPanY || 0) - (this.panY || 0)) * Math.min(1, dt * 10);
     }
     if (this.targetPanX !== undefined) {
       this.panX = (this.panX || 0) + ((this.targetPanX || 0) - (this.panX || 0)) * Math.min(1, dt * 10);
     }
+    if (this.targetZoom !== undefined) {
+      this.zoom = (this.zoom || 1) + ((this.targetZoom || 1) - (this.zoom || 1)) * Math.min(1, dt * 10);
+    }
 
     const ctx = this.ctx;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Appliquer le facteur DPR et l'échelle uniforme avec centrage et défilement 2D
+    const currentZoom = this.zoom || 1;
     ctx.scale(this.dpr, this.dpr);
     ctx.translate(this.offsetX, this.offsetY);
-    ctx.scale(this.scale, this.scale);
+    ctx.scale(this.scale * currentZoom, this.scale * currentZoom);
 
     ctx.save();
     ctx.translate(this.panX || 0, this.panY || 0);
 
-    // 1. Fond Méditerranée & Océan Atlantique avec reflets d'eau
+    // 1. Fond Mer Méditerranée & Océan Atlantique avec reflets bioluminescents & coordonnées
     this.drawSeaBackground(ctx, t);
 
-    // 1B. Pays voisins d'Afrique du Nord (Algérie, Maroc, Libye, Égypte, Mauritanie)
+    // 2. Silhouette Vectorielle Réelle des Pays du Grand Maghreb & Égypte
     this.drawNeighboringCountries(ctx, t);
 
-    // 2. Silhouette Vectorielle Réelle de la Tunisie (Côtes, Reliefs & Chott el Djerid)
+    // 3. Silhouette Vectorielle Haute Définition de la Tunisie
     this.drawTunisiaLandmass(ctx, t);
 
-    // 3. Réseau des Autoroutes & Voies Commerciales Dorées animées
+    // 4. Réseau des Autoroutes & Voies Commerciales Dorées animées
     this.drawHighwaysNetwork(ctx, dt, t);
 
-    // 4. Les Nœuds de Villes et Capitales Maghrébines avec Statuts et Pulsations
+    // 5. Les Nœuds de Villes et Capitales Maghrébines avec Statuts et Pulsations
     this.drawCityNodes(ctx, t);
 
-    // 5. Animation de caravane de voyage en cours
+    // 6. Animation de caravane de voyage en cours
     this.drawCaravanAnimation(ctx, now);
 
-    // 5B. Effet cinématique d'arrivée dans la ville
+    // 7. Effet cinématique d'arrivée dans la ville
     if (this.arrivalEffect) {
       this.drawArrivalEffect(ctx, now);
     }
     ctx.restore();
 
-    // 6. Carte flottante de la ville sélectionnée (fixée en bas, hors scroll panX/panY)
+    // 8. Commandes HUD tactiles (Zoom in, Zoom out, Reset, Pills pays)
+    this.drawMapHUD(ctx);
+
+    // 9. Carte flottante de la ville sélectionnée (fixée en bas)
     this.drawSelectedCityOverlay(ctx);
   }
 
+  drawMapHUD(ctx) {
+    const baseScale = Math.max(0.001, this.scale || 1);
+    const vpW = this.canvas.width / (this.dpr * baseScale);
+    const vpH = this.canvas.height / (this.dpr * baseScale);
+
+    ctx.save();
+
+    // 1. Barre supérieure : Pilules de saut rapide vers chaque pays
+    const pills = [
+      { id: 'tn', name: 'تونس', flag: '🇹🇳' },
+      { id: 'dz', name: 'الجزائر', flag: '🇩🇿' },
+      { id: 'ma', name: 'المغرب', flag: '🇲🇦' },
+      { id: 'ly', name: 'ليبيا', flag: '🇱🇾' },
+      { id: 'eg', name: 'مصر', flag: '🇪🇬' },
+      { id: 'mr', name: 'موريتانيا', flag: '🇲🇷' }
+    ];
+    const pillW = Math.min(62, Math.floor((vpW - 24) / pills.length));
+    const pillH = 26;
+    const totalW = pillW * pills.length;
+    const startX = Math.max(10, Math.floor((vpW - totalW) / 2));
+    const pillY = 10;
+
+    for (let i = 0; i < pills.length; i++) {
+      const p = pills[i];
+      const px = startX + i * pillW;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.beginPath();
+      ctx.roundRect(px + 2, pillY, pillW - 4, pillH, 8);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '900 10.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${p.flag} ${p.name}`, px + pillW / 2, pillY + pillH / 2);
+    }
+
+    // 2. Boutons de Zoom flottants sur le côté droit
+    const btnSize = 34;
+    const btnX = vpW - btnSize - 12;
+    const zoomBtns = [
+      { id: 'plus', icon: '➕', y: 48 },
+      { id: 'reset', icon: '🇹🇳', y: 88 },
+      { id: 'minus', icon: '➖', y: 128 }
+    ];
+
+    for (const zb of zoomBtns) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+      ctx.beginPath();
+      ctx.roundRect(btnX, zb.y, btnSize, btnSize, 10);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.font = '14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(zb.icon, btnX + btnSize / 2, zb.y + btnSize / 2);
+    }
+
+    // Indicateur de zoom textuel
+    const zoomPct = Math.round((this.zoom || 1) * 100);
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+    ctx.beginPath();
+    ctx.roundRect(btnX - 8, 168, btnSize + 16, 16, 5);
+    ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '900 9px "Cairo", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${zoomPct}%`, btnX + btnSize / 2, 179);
+
+    ctx.restore();
+  }
+
   drawSeaBackground(ctx, t) {
-    const seaGrad = ctx.createLinearGradient(0, 0, this.width, this.height);
-    seaGrad.addColorStop(0, '#041527');
-    seaGrad.addColorStop(0.35, '#0a2540');
-    seaGrad.addColorStop(0.7, '#071f36');
-    seaGrad.addColorStop(1, '#030c18');
+    // Fond océanique riche avec dégradé radial et abyssal
+    const seaGrad = ctx.createRadialGradient(this.width * 0.5, this.height * 0.4, 60, this.width * 0.5, this.height * 0.5, this.width * 0.75);
+    seaGrad.addColorStop(0, '#0a2542');
+    seaGrad.addColorStop(0.35, '#071c35');
+    seaGrad.addColorStop(0.7, '#051427');
+    seaGrad.addColorStop(1, '#020b15');
     ctx.fillStyle = seaGrad;
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // Ondulations nautiques avec reflets bioluminescents
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
-    ctx.lineWidth = 1.4;
-    for (let wave = 0; wave < 10; wave++) {
-      const wy = 35 + wave * 72 + Math.sin(t * 0.8 + wave * 1.2) * 5;
-      ctx.beginPath();
-      ctx.moveTo(10, wy);
-      ctx.bezierCurveTo(this.width * 0.35, wy - 8, this.width * 0.65, wy + 8, this.width - 10, wy);
-      ctx.stroke();
-    }
-
-    // Vagues et brise marine animées sans aucun quadrillage
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
-    ctx.lineWidth = 1.2;
-    for (let wave = 0; wave < 8; wave++) {
-      const wy = 50 + wave * 90 + Math.sin(t * 0.001 + wave) * 6;
-      ctx.beginPath();
-      ctx.moveTo(10, wy);
-      ctx.bezierCurveTo(this.width * 0.35, wy - 10, this.width * 0.65, wy + 10, this.width - 10, wy);
-      ctx.stroke();
-    }
-
-    // Mention des espaces maritimes
+    // Coordonnées cartographiques / Graticule nautique subtil
     ctx.save();
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.35)';
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.06)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+
+    // Lignes de latitude
+    const latitudes = [
+      { y: 70, label: '37° N (بنزرت والرأس الأبيض)' },
+      { y: 220, label: '35° N (سوسة والساحل)' },
+      { y: 390, label: '33° N (قابس وجربة)' },
+      { y: 540, label: '31° N (الصحراء الكبرى)' }
+    ];
+    for (const lat of latitudes) {
+      ctx.beginPath();
+      ctx.moveTo(10, lat.y);
+      ctx.lineTo(this.width - 10, lat.y);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.25)';
+      ctx.font = '700 8.5px "Cairo", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(lat.label, 14, lat.y - 3);
+    }
+
+    // Lignes de longitude
+    const longitudes = [
+      { x: 80, label: '0° Greenwich' },
+      { x: 260, label: '5° E (الجزائر)' },
+      { x: 470, label: '10° E (تونس العاصمة)' },
+      { x: 670, label: '15° E (طرابلس)' },
+      { x: 900, label: '30° E (القاهرة والنيل)' }
+    ];
+    for (const lon of longitudes) {
+      ctx.beginPath();
+      ctx.moveTo(lon.x, 10);
+      ctx.lineTo(lon.x, this.height - 10);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.22)';
+      ctx.font = '700 8px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(lon.label, lon.x, this.height - 12);
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // Ondulations marines avec reflets bioluminescents
+    ctx.save();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+    ctx.lineWidth = 1.3;
+    for (let wave = 0; wave < 10; wave++) {
+      const wy = 40 + wave * 68 + Math.sin(t * 0.9 + wave * 1.3) * 5;
+      ctx.beginPath();
+      ctx.moveTo(15, wy);
+      ctx.bezierCurveTo(this.width * 0.35, wy - 9, this.width * 0.65, wy + 9, this.width - 15, wy);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Mention des espaces maritimes en calligraphie dorée / azur
+    ctx.save();
+    ctx.fillStyle = 'rgba(148, 163, 184, 0.45)';
     ctx.font = '900 13px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('البحر الأبيض المتوسط 🌊', 620, 65);
-    ctx.fillText('المحيط الأطلسي 🌊', 55, 395);
+    ctx.fillText('البحر الأبيض المتوسط 🌊 (Mare Nostrum)', 650, 72);
+    ctx.fillText('المحيط الأطلسي 🌊', 65, 395);
+    ctx.font = '800 10px "Cairo", sans-serif';
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+    ctx.fillText('خليج قابس 🐬', 530, 345);
+    ctx.fillText('خليج تونس ⛵', 485, 68);
+    ctx.fillText('خليج سرت ⚓', 660, 440);
 
-    // Rose des vents dorée décorative au Nord-Ouest
-    const roseX = 75;
+    // Rose des vents dorée majestueuse au Nord-Ouest
+    const roseX = 85;
     const roseY = 55;
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.arc(roseX, roseY, 18, 0, Math.PI * 2);
-    ctx.moveTo(roseX - 22, roseY);
-    ctx.lineTo(roseX + 22, roseY);
-    ctx.moveTo(roseX, roseY - 22);
-    ctx.lineTo(roseX, roseY + 22);
+    ctx.arc(roseX, roseY, 20, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.fillStyle = '#fbbf24';
-    ctx.font = '900 10px "Cairo", sans-serif';
-    ctx.fillText('N', roseX, roseY - 24);
+    // Étoile à 8 branches
+    const points = 8;
+    for (let i = 0; i < points; i++) {
+      const a = (i * Math.PI) / 4;
+      const r = i % 2 === 0 ? 24 : 14;
+      const px = roseX + Math.cos(a) * r;
+      const py = roseY + Math.sin(a) * r;
+      ctx.beginPath();
+      ctx.moveTo(roseX, roseY);
+      ctx.lineTo(px, py);
+      ctx.strokeStyle = i % 2 === 0 ? '#f59e0b' : 'rgba(251, 191, 36, 0.4)';
+      ctx.lineWidth = i % 2 === 0 ? 2 : 1;
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '900 11px "Cairo", sans-serif';
+    ctx.fillText('N', roseX, roseY - 26);
     ctx.fillText('🧭', roseX, roseY + 4);
     ctx.restore();
   }
@@ -10721,19 +10966,25 @@ export class TunisiaMapEngine {
   drawNeighboringCountries(ctx, t) {
     ctx.save();
 
-    // 1. MAROC 🇲🇦 (المملكة المغربية - الواجهة الغربية والمحيط الأطلسي)
-    const moroccoGrad = ctx.createLinearGradient(10, 90, 150, 380);
-    moroccoGrad.addColorStop(0, '#1c2e24');
-    moroccoGrad.addColorStop(0.5, '#192620');
-    moroccoGrad.addColorStop(1, '#2a2218');
+    // --- HALO LUMINEUX DES CÔTES (AQUAMARINE SHELF GLOW) ---
+    // Donne l'effet de haut-fond turquoise et de relief insulaire luxueux
+    ctx.shadowColor = 'rgba(56, 189, 248, 0.55)';
+    ctx.shadowBlur = 14;
+
+    // 1. MAROC 🇲🇦 (المملكة المغربية - الأطلسي، الريف وجبال الأطلس)
+    const moroccoGrad = ctx.createLinearGradient(10, 80, 160, 390);
+    moroccoGrad.addColorStop(0, '#1d3e2b'); // Rif et détroit
+    moroccoGrad.addColorStop(0.4, '#244b34'); // Plaines atlantiques
+    moroccoGrad.addColorStop(0.7, '#42371e'); // Haut Atlas
+    moroccoGrad.addColorStop(1, '#2f2416'); // Désert
     ctx.fillStyle = moroccoGrad;
-    ctx.strokeStyle = 'rgba(74, 222, 128, 0.45)';
-    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = '#4ade80';
+    ctx.lineWidth = 1.6;
     ctx.beginPath();
     ctx.moveTo(10, 110);
     ctx.lineTo(45, 95);
-    ctx.lineTo(85, 90);
-    ctx.lineTo(130, 95);
+    ctx.lineTo(80, 85); // Détroit de Gibraltar
+    ctx.lineTo(130, 92);
     ctx.lineTo(155, 125);
     ctx.lineTo(145, 230);
     ctx.lineTo(140, 360);
@@ -10743,26 +10994,36 @@ export class TunisiaMapEngine {
     ctx.fill();
     ctx.stroke();
 
-    // Badge national Maroc
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    // Crêtes des montagnes de l'Atlas marocain
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.35)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(35, 215, 105, 22, 6);
+    ctx.moveTo(70, 110);
+    ctx.lineTo(110, 160);
+    ctx.lineTo(125, 240);
+    ctx.stroke();
+
+    // Médaillon national Maroc
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.beginPath();
+    ctx.roundRect(35, 215, 105, 23, 7);
     ctx.fill();
     ctx.strokeStyle = '#4ade80';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.3;
     ctx.stroke();
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 11.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('المملكة المغربية 🇲🇦', 87, 230);
+    ctx.fillText('المملكة المغربية 🇲🇦', 87, 231);
 
-    // 2. MAURITANIE 🇲🇷 (الجمهورية الإسلامية الموريتانية - الجنوب الغربي والصحراء الكبرى)
+    // 2. MAURITANIE 🇲🇷 (الجمهورية الإسلامية الموريتانية - شنقيط والمحيط الأطلسي)
     const maurGrad = ctx.createLinearGradient(10, 390, 180, 750);
-    maurGrad.addColorStop(0, '#262017');
-    maurGrad.addColorStop(1, '#1e1a14');
+    maurGrad.addColorStop(0, '#382a17');
+    maurGrad.addColorStop(0.5, '#2c2214');
+    maurGrad.addColorStop(1, '#1e170e');
     ctx.fillStyle = maurGrad;
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
-    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.6;
     ctx.beginPath();
     ctx.moveTo(10, 390);
     ctx.lineTo(140, 365);
@@ -10773,33 +11034,43 @@ export class TunisiaMapEngine {
     ctx.fill();
     ctx.stroke();
 
-    // Badge national Mauritanie
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    // Dunes de sable de Mauritanie
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
+    ctx.lineWidth = 1.2;
+    for (let d = 0; d < 4; d++) {
+      ctx.beginPath();
+      ctx.arc(60 + d * 30, 480 + d * 55, 35, 0.3, Math.PI - 0.3);
+      ctx.stroke();
+    }
+
+    // Médaillon national Mauritanie
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
     ctx.beginPath();
-    ctx.roundRect(32, 625, 95, 22, 6);
+    ctx.roundRect(32, 625, 95, 23, 7);
     ctx.fill();
     ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.3;
     ctx.stroke();
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 11.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('موريتانيا 🇲🇷', 79, 640);
+    ctx.fillText('موريتانيا 🇲🇷', 79, 641);
 
-    // 3. ALGÉRIE 🇩🇿 (الجمهورية الجزائرية - قلب المغرب العربي)
-    const algeriaGrad = ctx.createLinearGradient(155, 90, 370, 750);
-    algeriaGrad.addColorStop(0, '#1a2e24');
-    algeriaGrad.addColorStop(0.3, '#17271f');
-    algeriaGrad.addColorStop(0.7, '#242119');
-    algeriaGrad.addColorStop(1, '#2d2217');
+    // 3. ALGÉRIE 🇩🇿 (الجمهورية الجزائرية - البهجة، الأطلس والصحراء الشاسعة)
+    const algeriaGrad = ctx.createLinearGradient(155, 80, 370, 750);
+    algeriaGrad.addColorStop(0, '#1c3e2b'); // Tell et Méditerranée
+    algeriaGrad.addColorStop(0.25, '#244d34'); // Hauts Plateaux
+    algeriaGrad.addColorStop(0.65, '#3a2d19'); // Sahara septentrional
+    algeriaGrad.addColorStop(1, '#241b10'); // Grand Sud
     ctx.fillStyle = algeriaGrad;
-    ctx.strokeStyle = 'rgba(74, 222, 128, 0.5)';
-    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 1.6;
     ctx.beginPath();
     ctx.moveTo(155, 125);
-    ctx.lineTo(200, 90);
-    ctx.lineTo(240, 85);
-    ctx.lineTo(295, 70); // Jonction frontière tunisienne Nord (+200)
+    ctx.lineTo(190, 85); // Baie d'Oran
+    ctx.lineTo(235, 80); // Tipaza
+    ctx.lineTo(260, 78); // Baie d'Alger
+    ctx.lineTo(295, 70); // Frontière tunisienne Tabarka
     ctx.lineTo(282, 110);
     ctx.lineTo(280, 170);
     ctx.lineTo(275, 215);
@@ -10819,32 +11090,52 @@ export class TunisiaMapEngine {
     ctx.fill();
     ctx.stroke();
 
-    // Badge national Algérie
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    // Relief de l'Atlas tellien et saharien
+    ctx.strokeStyle = 'rgba(74, 222, 128, 0.3)';
+    ctx.lineWidth = 2.2;
     ctx.beginPath();
-    ctx.roundRect(175, 335, 115, 23, 6);
+    ctx.moveTo(180, 105);
+    ctx.lineTo(240, 100);
+    ctx.lineTo(270, 95);
+    ctx.stroke();
+
+    // Chott Melrhir (lac salé algérien face au Chott el Djerid)
+    ctx.fillStyle = 'rgba(186, 230, 253, 0.45)';
+    ctx.beginPath();
+    ctx.ellipse(225, 365, 28, 12, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Médaillon national Algérie
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.beginPath();
+    ctx.roundRect(175, 335, 118, 24, 7);
     ctx.fill();
     ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.4;
     ctx.stroke();
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 12px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('الجمهورية الجزائرية 🇩🇿', 232, 351);
+    ctx.fillText('الجمهورية الجزائرية 🇩🇿', 234, 351);
 
-    // 4. LIBYE 🇱🇾 (دولة ليبيا - الواجهة الشرقية للجنوب)
+    // 4. LIBYE 🇱🇾 (دولة ليبيا - طرابلس، خليج سرت والجبل الأخضر)
     const libyaGrad = ctx.createLinearGradient(430, 440, 750, 750);
-    libyaGrad.addColorStop(0, '#261f18');
-    libyaGrad.addColorStop(0.5, '#292017');
-    libyaGrad.addColorStop(1, '#1f1913');
+    libyaGrad.addColorStop(0, '#312519');
+    libyaGrad.addColorStop(0.3, '#3a2b1b');
+    libyaGrad.addColorStop(0.7, '#2a1f13');
+    libyaGrad.addColorStop(1, '#1c140c');
     ctx.fillStyle = libyaGrad;
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
-    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.6;
     ctx.beginPath();
-    ctx.moveTo(525, 485); // Jonction frontière tunisienne Ras Jedir (+200)
-    ctx.lineTo(590, 450);
-    ctx.lineTo(660, 440);
-    ctx.lineTo(710, 460);
+    ctx.moveTo(525, 485); // Ras Jedir
+    ctx.lineTo(580, 440); // Tripoli
+    ctx.lineTo(630, 430); // Misrata
+    ctx.lineTo(670, 450); // Arc de Syrte
+    ctx.lineTo(715, 440); // Benghazi
     ctx.lineTo(750, 470);
     ctx.lineTo(750, 750);
     ctx.lineTo(430, 750);
@@ -10854,56 +11145,116 @@ export class TunisiaMapEngine {
     ctx.fill();
     ctx.stroke();
 
-    // Badge national Libye
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    // Oasis et massif du Jebel Akhdar libyen
+    ctx.fillStyle = 'rgba(74, 222, 128, 0.2)';
     ctx.beginPath();
-    ctx.roundRect(580, 535, 95, 23, 6);
+    ctx.ellipse(710, 460, 24, 14, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Médaillon national Libye
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.beginPath();
+    ctx.roundRect(580, 535, 95, 24, 7);
     ctx.fill();
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.4;
     ctx.stroke();
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 12px "Cairo", sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('دولة ليبيا 🇱🇾', 627, 551);
 
-    // 5. ÉGYPTE 🇪🇬 (جمهورية مصر العربية - بوابة الشرق وقناة السويس)
+    // 5. ÉGYPTE 🇪🇬 (جمهورية مصر العربية - القاهرة، النيل العظيم والأهرامات)
     const egyptGrad = ctx.createLinearGradient(750, 420, 1030, 750);
-    egyptGrad.addColorStop(0, '#2b1f1a');
-    egyptGrad.addColorStop(0.4, '#241b17');
-    egyptGrad.addColorStop(1, '#1b1412');
+    egyptGrad.addColorStop(0, '#36231c');
+    egyptGrad.addColorStop(0.4, '#2d1c16');
+    egyptGrad.addColorStop(1, '#1c110d');
     ctx.fillStyle = egyptGrad;
-    ctx.strokeStyle = 'rgba(234, 179, 8, 0.45)';
-    ctx.lineWidth = 1.4;
+    ctx.strokeStyle = '#eab308';
+    ctx.lineWidth = 1.6;
     ctx.beginPath();
     ctx.moveTo(750, 470);
-    ctx.lineTo(820, 440);
-    ctx.lineTo(890, 420);
-    ctx.lineTo(940, 415);
-    ctx.lineTo(990, 430);
-    ctx.lineTo(1030, 420);
+    ctx.lineTo(815, 435); // Alexandrie
+    ctx.lineTo(875, 410); // Delta du Nil Ouest
+    ctx.lineTo(925, 410); // Delta du Nil Est
+    ctx.lineTo(965, 425); // Port-Saïd & Canal de Suez
+    ctx.lineTo(1030, 415); // Sinaï
     ctx.lineTo(1030, 750);
     ctx.lineTo(750, 750);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
-    // Badge national Égypte
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+    // DELTA DU NIL VERT ÉMERAUDE (دلتا النيل الخضراء الخصبة)
+    ctx.fillStyle = '#166534';
     ctx.beginPath();
-    ctx.roundRect(830, 475, 125, 23, 6);
+    ctx.moveTo(890, 445); // Apex à Alexandrie / Le Caire
+    ctx.lineTo(875, 410);
+    ctx.lineTo(925, 410);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#22c55e';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // LE FLEUVE DU NIL ÉCLATANT (شريان نهر النيل الأزرق)
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 3.2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(898, 445);
+    ctx.bezierCurveTo(905, 480, 892, 530, 902, 590);
+    ctx.bezierCurveTo(915, 640, 900, 680, 908, 740);
+    ctx.stroke();
+
+    // Reflet cyan au cœur du Nil
+    ctx.strokeStyle = '#e0f2fe';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    // LES 3 GRANDES PYRAMIDES DE GIZEH 🔺🔺🔺 (أهرامات الجيزة الخالدة)
+    const pyrX = 878;
+    const pyrY = 460;
+    // Grande Pyramide
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.moveTo(pyrX, pyrY);
+    ctx.lineTo(pyrX - 9, pyrY + 12);
+    ctx.lineTo(pyrX + 9, pyrY + 12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#d97706';
+    ctx.beginPath();
+    ctx.moveTo(pyrX, pyrY);
+    ctx.lineTo(pyrX + 9, pyrY + 12);
+    ctx.lineTo(pyrX, pyrY + 12);
+    ctx.closePath();
+    ctx.fill();
+    // Deuxième Pyramide
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.moveTo(pyrX + 13, pyrY + 4);
+    ctx.lineTo(pyrX + 6, pyrY + 14);
+    ctx.lineTo(pyrX + 20, pyrY + 14);
+    ctx.closePath();
+    ctx.fill();
+
+    // Médaillon national Égypte
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.beginPath();
+    ctx.roundRect(830, 485, 126, 24, 7);
     ctx.fill();
     ctx.strokeStyle = '#eab308';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.4;
     ctx.stroke();
     ctx.fillStyle = '#f8fafc';
     ctx.font = '900 12px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('جمهورية مصر العربية 🇪🇬', 892, 491);
+    ctx.fillText('جمهورية مصر العربية 🇪🇬', 893, 501);
 
     // Frontières régionales en pointillés dorés
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
-    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
+    ctx.lineWidth = 1.8;
     ctx.setLineDash([4, 4]);
 
     // Frontière Maroc - Algérie
@@ -10921,6 +11272,7 @@ export class TunisiaMapEngine {
     ctx.stroke();
 
     ctx.setLineDash([]);
+    ctx.shadowBlur = 0;
     ctx.restore();
   }
 
@@ -10928,24 +11280,24 @@ export class TunisiaMapEngine {
     ctx.save();
     const ox = 200; // Décalage pour centrer la Tunisie dans la carte élargie du Grand Maghreb
 
-    // Ombre portée de la masse continentale
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-    ctx.shadowBlur = 18;
-    ctx.shadowOffsetY = 6;
+    // Ombre portée et lueur côtière aquamarine de la Tunisie
+    ctx.shadowColor = 'rgba(56, 189, 248, 0.65)';
+    ctx.shadowBlur = 16;
+    ctx.shadowOffsetY = 2;
 
     // Dégradé topographique réaliste (Verts du Nord -> Sahelo-steppes -> Sables dorés du Sahara)
-    const landGrad = ctx.createLinearGradient(ox, 40, ox, 560);
-    landGrad.addColorStop(0, '#1c4d32'); // Nord verdoyant (Bizerte, Kroumirie)
-    landGrad.addColorStop(0.22, '#285a3c'); // Plaines de la Medjerda
-    landGrad.addColorStop(0.42, '#525a34'); // Sahel et Centre (Sousse, Kairouan)
-    landGrad.addColorStop(0.65, '#785b30'); // Steppes et Sfax
-    landGrad.addColorStop(0.85, '#92632b'); // Sud et Chotts
-    landGrad.addColorStop(1.0, '#b4732a'); // Sahara et dunes de Tataouine
+    const landGrad = ctx.createLinearGradient(ox + 20, 40, ox + 20, 560);
+    landGrad.addColorStop(0, '#1c5d38'); // Nord verdoyant (Bizerte, Kroumirie)
+    landGrad.addColorStop(0.22, '#286a42'); // Plaines de la Medjerda
+    landGrad.addColorStop(0.42, '#526b34'); // Sahel et Centre (Sousse, Kairouan)
+    landGrad.addColorStop(0.65, '#82632b'); // Steppes et Sfax
+    landGrad.addColorStop(0.85, '#a16c27'); // Sud et Chotts
+    landGrad.addColorStop(1.0, '#c77e26'); // Sahara et dunes de Tataouine
 
     // Tracé fidèle des côtes et frontières de la Tunisie
     ctx.fillStyle = landGrad;
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 2.2;
     ctx.beginPath();
 
     const coastline = [
@@ -10969,7 +11321,7 @@ export class TunisiaMapEngine {
     // ÎLE DE DJERBA (جزيرة جربة - Découpage insulaire fidèle)
     ctx.fillStyle = '#b4732a';
     ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.8;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(312 + ox, 424);
     ctx.lineTo(338 + ox, 422);
@@ -10981,8 +11333,16 @@ export class TunisiaMapEngine {
     ctx.fill();
     ctx.stroke();
 
+    // Chaussée romaine d'El Kantara reliant Djerba à Zarzis
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(314 + ox, 448);
+    ctx.lineTo(270 + ox, 425);
+    ctx.stroke();
+
     // Île de La Galite (أرخبيل جالطة - Nord de Bizerte / Tabarka)
-    ctx.fillStyle = '#285a3c';
+    ctx.fillStyle = '#286a42';
     ctx.beginPath();
     ctx.ellipse(140 + ox, 26, 7, 3.5, 0.2, 0, Math.PI * 2);
     ctx.fill();
@@ -10991,7 +11351,7 @@ export class TunisiaMapEngine {
     ctx.stroke();
 
     // Îles Zembra et Zembretta (جزيرة زمبرة وزمبرتا - Golfe de Tunis)
-    ctx.fillStyle = '#285a3c';
+    ctx.fillStyle = '#286a42';
     ctx.beginPath();
     ctx.ellipse(282 + ox, 80, 5, 3, 0.5, 0, Math.PI * 2);
     ctx.ellipse(289 + ox, 75, 2.5, 1.8, 0.4, 0, Math.PI * 2);
@@ -11001,7 +11361,7 @@ export class TunisiaMapEngine {
     ctx.stroke();
 
     // Archipel des Kerkennah (جزر قرقنة)
-    ctx.fillStyle = '#655734';
+    ctx.fillStyle = '#6e5d32';
     ctx.beginPath();
     ctx.ellipse(320 + ox, 312, 12, 4, 0.4, 0, Math.PI * 2);
     ctx.ellipse(334 + ox, 304, 10, 3.5, 0.3, 0, Math.PI * 2);
@@ -11011,7 +11371,7 @@ export class TunisiaMapEngine {
     ctx.stroke();
 
     // Îles Kuriat (جزر قوريا - Monastir)
-    ctx.fillStyle = '#525a34';
+    ctx.fillStyle = '#526b34';
     ctx.beginPath();
     ctx.ellipse(336 + ox, 230, 4, 2.5, 0.3, 0, Math.PI * 2);
     ctx.fill();
@@ -11020,9 +11380,9 @@ export class TunisiaMapEngine {
     ctx.stroke();
 
     // CHOTT EL DJERID (شط الجريد - Étendue saline scintillante)
-    ctx.fillStyle = 'rgba(207, 250, 254, 0.55)';
+    ctx.fillStyle = 'rgba(207, 250, 254, 0.65)';
     ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.4;
     ctx.beginPath();
     ctx.moveTo(85 + ox, 402);
     ctx.lineTo(145 + ox, 392);

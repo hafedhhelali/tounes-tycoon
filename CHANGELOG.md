@@ -1,4 +1,21 @@
-﻿## [1.33.0] - 2026-11-06
+﻿## [1.34.0] - 2026-11-06
+### Added & Improved
+- **Vue projet plein écran sans marges latérales** (`index.html`) :
+  - **Suppression intégrale des bandes noires à gauche et à droite** : Suppression du `max-width: 940px` restrictif sur `.modal-card.biz-immersive` et passage en `width: 100% !important; max-width: 100% !important; height: 100vh !important; padding: 0 !important; margin: 0 !important; border-radius: 0 !important;`.
+  - La scène de boutique intérieure (comptoirs, étagères, clients, caisse) et les barres HUD haute et basse s'étirent désormais d'un bord à l'autre de l'écran avec une immersion totale.
+- **Révolution esthétique & Ergonomie cartographique de la Carte du Grand Maghreb** (`store_animator.js`) :
+  - **Cartographie maritime & côtière de prestige** :
+    - Halo aquamarine cyan (`rgba(56, 189, 248, 0.55)`) le long de toutes les côtes méditerranéennes et atlantiques, simulant les hauts-fonds lagunaires et découpant les silhouettes avec relief.
+    - Graticule nautique avec coordonnées de latitude (37°N Bizerte, 35°N Sousse, 33°N Gabès, 31°N Sahara) et longitude (0°, 5°E Alger, 10°E Tunis, 15°E Tripoli, 30°E Le Caire).
+    - Rose des vents ornée à 8 pointes dorées avec facettes d'ombrage et indications cardinales (N, S, E, W).
+    - Égypte avec le fleuve du Nil (ruban cyan éclatant) et les 3 Grandes Pyramides de Gizeh dorées `🔺🔺`.
+    - Chott el Djerid cristallin avec cristaux de sel étincelants `✨` et reflets aquatiques animés.
+  - **Moteur de Zoom interactif & Commandes HUD tactiles** :
+    - Zoom dynamique fluide (0.55x à 2.6x), compatible pinch-to-zoom tactile à 2 doigts et molette souris.
+    - Boutons flottants tactiles à droite : `➕` (Zoom In), `🇹🇳` (Centrage Tunisie), `➖` (Zoom Out) avec jauge de pourcentage.
+    - Barre supérieure de saut instantané vers les 6 nations : `[🇹🇳 تونس] [🇩🇿 الجزائر] [🇲🇦 المغرب] [🇱🇾 ليبيا] [🇪🇬 مصر] [🇲🇷 موريتانيا]`.
+
+## [1.33.0] - 2026-11-06
 ### Added & Improved
 - **Header ultra-compact sur une seule ligne & Bulle d'accès Carte 3D** (`index.html`, `store_animator.js`) :
   - **Header sur une seule ligne** : Restauration de l'en-tête `<header>` sur une rangée fine (`min-height: 38px`), libérant un espace vertical maximal sur mobile sans aucun défilement.
@@ -185,6 +202,7 @@
 # CHANGELOG
 
 ## 2026-11-06
+- feat(map,biz): fullwidth project view with zero side margins, beautiful cartography with coastal shelf, nile, pyramids, zoom controls and country jump pills
 - feat(map,ui): single row header, canvas map bubble, enlarged north africa map with algeria, morocco, libya, egypt, mauritania and all capitals
 - feat(ui,ux): clean header without scroll, single prominent map button, silenced sunny pedestrians, grounded boutique and unmasked cash loader
 - feat(graphics,audio,ui): mobile game art revolution, dynamic store vitrines, master audio compressor and tactile haptics

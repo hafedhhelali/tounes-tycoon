@@ -1568,35 +1568,45 @@
     body.zone-medenine { background-image: radial-gradient(circle at 50% -10%, #2f1d2a 0%, #070a12 75%); }
     body.zone-djerba { background-image: radial-gradient(circle at 50% -10%, #31104b 0%, #070a12 75%); }
 
-    /* --- MODAL IMMERSIVE PROJET : SCÈNE PLEIN POPUP + HUD EN SUPERPOSITION --- */
-    #bizDetailModal { padding: 4px 6px; }
+    /* --- MODAL IMMERSIVE PROJET : PLEIN ÉCRAN TOTAL SANS MARGES LATÉRALES --- */
+    #bizDetailModal {
+      padding: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+    }
     .modal-card.biz-immersive {
       position: relative;
       display: flex;
       flex-direction: column;
-      width: 100%;
-      max-width: 940px;
-      height: 96vh;
-      height: 96dvh;
-      max-height: none;
-      padding: 0;
-      border-radius: 16px;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      max-height: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      border-top: 2px solid var(--gold) !important;
+      border-bottom: 2px solid var(--gold) !important;
       overflow: hidden;
       direction: rtl;
       text-align: right;
-      border: 2px solid var(--gold);
       background: #090d16;
     }
     /* HUD haut / scène / HUD bas empilés : ZÉRO chevauchement sur l'animation */
-    .biz-scene { position: relative; order: 2; flex: 1 1 auto; min-height: 0; z-index: 0; }
+    .biz-scene { position: relative; order: 2; flex: 1 1 auto; min-height: 0; z-index: 0; width: 100%; }
     .biz-scene canvas { display: block; width: 100%; height: 100%; cursor: pointer; touch-action: manipulation; }
     .biz-hud-top, .biz-hud-bottom {
       position: relative; flex: 0 0 auto; z-index: 3;
-      display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 14px;
+      width: 100%;
     }
-    .biz-hud-top { order: 1; background: rgba(2,6,23,0.95); border-bottom: 1px solid rgba(251,191,36,0.25); }
-    .biz-hud-bottom { order: 3; background: rgba(2,6,23,0.96); border-top: 1px solid rgba(251,191,36,0.25); }
-    .biz-hud-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 0 1 36%; max-width: 360px; overflow: hidden; }
+    .biz-hud-top { order: 1; background: rgba(2,6,23,0.95); border-bottom: 1.5px solid rgba(251,191,36,0.3); }
+    .biz-hud-bottom { order: 3; background: rgba(2,6,23,0.96); border-top: 1.5px solid rgba(251,191,36,0.3); }
+    .biz-hud-id { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1 1 auto; max-width: none; overflow: hidden; }
     .biz-hud-icon { font-size: 24px; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7)); }
     .biz-hud-names { min-width: 0; flex: 1; overflow: hidden; }
     .biz-hud-title { font-size: 13.5px; line-height: 1.4; font-weight: 900; color: #f8fafc; text-shadow: 0 2px 6px #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
