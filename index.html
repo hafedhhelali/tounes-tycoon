@@ -141,27 +141,24 @@
       }
     }
 
-    /* HEADER TYCOON - ULTRA ÉPURÉ & AÉRIEN (HAUTEUR DIVISÉE PAR 3) */
+    /* HEADER TYCOON - PRO ÉPURÉ, STRICTEMENT SANS AUCUN SCROLL */
     header {
-      background: rgba(15, 23, 42, 0.92);
+      background: rgba(15, 23, 42, 0.94);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 3px 6px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 4px 6px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
       position: sticky;
       top: 2px;
       z-index: 50;
       display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
       gap: 4px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden !important; /* STRICTEMENT AUCUN SCROLL */
     }
     header::-webkit-scrollbar {
       display: none;
@@ -170,9 +167,107 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      flex-shrink: 0;
       width: 100%;
+      box-sizing: border-box;
       justify-content: space-between;
+    }
+    .header-finances {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      min-width: 0;
+      flex: 1;
+      justify-content: center;
+    }
+    .header-system-actions {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .header-nav-switcher {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .nav-segmented-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-height: 38px;
+      padding: 4px 8px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      background: rgba(30, 41, 59, 0.6);
+      color: #94a3b8;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      user-select: none;
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+    .nav-segmented-btn:active {
+      transform: scale(0.97);
+    }
+    .nav-segmented-btn.active#tabBtnBusinesses {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(180, 83, 9, 0.45) 100%);
+      border-color: #f59e0b;
+      color: #fef08a;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(254, 240, 138, 0.3);
+      font-weight: 900;
+    }
+    .nav-segmented-btn.active#tabBtnZones {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(3, 105, 161, 0.5) 100%);
+      border-color: #38bdf8;
+      color: #e0f2fe;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.45), inset 0 1px 0 rgba(125, 211, 252, 0.3);
+      font-weight: 900;
+    }
+    .nav-seg-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+    .nav-seg-badge {
+      background: rgba(56, 189, 248, 0.25);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+      padding: 1px 5px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 900;
+      margin-right: 2px;
+    }
+    .nav-segmented-btn.active#tabBtnZones .nav-seg-badge {
+      background: rgba(254, 240, 138, 0.25);
+      border-color: #fef08a;
+      color: #fef08a;
+    }
+    .return-street-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(180, 83, 9, 0.4) 100%);
+      border: 1.5px solid #f59e0b;
+      color: #fef08a;
+      font-family: 'Cairo', sans-serif;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+      transition: all 0.15s ease;
+    }
+    .return-street-btn:active {
+      transform: scale(0.95);
     }
     .brand-pill {
       display: flex;
@@ -2800,38 +2895,50 @@
             <span class="badge-tn" id="playerTitleBadge" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: #38bdf8; font-weight: 900;">⭐ المستوى 1 : تاجر مبتدئ 💼</span>
           </div>
         </div>
-        <div class="header-actions">
+        <div class="header-finances">
           <div class="balance-hero" id="balanceHeroWallet" title="السيولة المتاحة في الجيب (كاش)">
-            <span class="balance-label">💵 سيولة:</span>
+            <span class="balance-label">💵</span>
             <span class="balance-val" id="dinarsDisplay">0.00 د.ت</span>
           </div>
           <div class="balance-hero bank-hero-pill" id="balanceHeroBank" title="الرصيد في البنك (اضغط للدخول للبنك)" style="border-color: #38bdf8; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(2, 132, 199, 0.25) 100%); cursor: pointer;">
-            <span class="balance-label" style="color: #7dd3fc;">🏦 بنك:</span>
+            <span class="balance-label" style="color: #7dd3fc;">🏦</span>
             <span class="balance-val" id="bankDisplay" style="color: #38bdf8; text-shadow: 0 0 14px rgba(56, 189, 248, 0.65);">0.00 د.ت</span>
           </div>
-          <button class="nav-tab-item active" id="tabBtnBusinesses" title="الشارع والمشاريع">
-            <span>🏪</span><span>الشارع</span>
-          </button>
-          <button class="nav-tab-item" id="tabBtnTactics" title="تكتيكات وصنعة" style="display: none !important;">
-            <span>⚡</span><span>الصنعة</span>
-          </button>
-          <button class="nav-tab-item" id="tabBtnZones" title="خريطة تونس والأحياء" style="background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(3, 105, 161, 0.45) 100%); border-color: rgba(56, 189, 248, 0.7); color: #7dd3fc; font-weight: 900; padding: 4px 10px; font-size: 12px;">
-            <span style="font-size: 16px;">🗺️</span><span>الخريطة:</span><span id="currentZoneName" style="color: #fef08a; font-weight: 900; font-size: 13.5px; margin-right: 2px;">تونس</span>
-          </button>
-          <button class="nav-tab-item" id="tabBtnLeague" title="بريم و مربوح النهار">
-            <span>🎁</span><span>بريم</span>
-          </button>
-          <button class="icon-pill-btn" id="openZoneMapBtn" style="display: none;"></button>
-          <button class="quick-pill-btn ad-pill" id="adBoostBtn" style="display: none;"><span id="adBoostStatus"></span></button>
-          <button class="quick-pill-btn ad-pill" id="adCashBtn" style="display: none;"><span id="cashRewardHint"></span></button>
-          <button class="quick-pill-btn gold" id="prestigeOpenBtn" style="display: none;"><span id="prestigeInfoLabel"></span></button>
-          <button class="icon-pill-btn" id="soundToggleBtn" title="صوت">🔊</button>
-          <button class="icon-pill-btn" id="openGuideBtn" title="دليل البداية وكيفاش تلعب" style="border-color: rgba(56, 189, 248, 0.45); color: #7dd3fc;">❓</button>
-          <button class="icon-pill-btn" id="headerLegalBtn" title="الشروط القانونية والخصوصية" style="display: none;">📜</button>
-          <button class="icon-pill-btn" id="openProfileHeaderBtn" title="البروفيل وحساب Google" style="border-color: rgba(52, 211, 153, 0.55); color: #6ee7b7;">👤</button>
-          <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات الإمبراطورية">⚙️</button>
-          <button class="icon-pill-btn exit-pill-btn" id="headerExitBtn" title="خروج من اللعبة" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">🚪</button>
         </div>
+
+        <div class="header-system-actions">
+          <button class="icon-pill-btn gold" id="tabBtnLeague" title="بريم ومربوح النهار" style="border-color: rgba(245, 158, 11, 0.5); background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.25) 100%);">
+            <span>🎁</span><span style="font-weight: 900; color: #fef08a; font-size: 11px;">بريم</span>
+          </button>
+          <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات الإمبراطورية">⚙️</button>
+        </div>
+      </div>
+
+      <!-- BARRE DE NAVIGATION ERGONOMIQUE ÉPURÉE [الشارع | الخريطة] — STRICTEMENT AUCUN SCROLL -->
+      <div class="header-nav-switcher">
+        <button class="nav-segmented-btn active" id="tabBtnBusinesses" title="الشارع والمشاريع">
+          <span class="nav-seg-icon">🏪</span>
+          <span class="nav-seg-title">الشارع والمشاريع</span>
+        </button>
+        <button class="nav-segmented-btn" id="tabBtnZones" title="خريطة تونس والأحياء">
+          <span class="nav-seg-icon">🗺️</span>
+          <span class="nav-seg-title">خريطة تونس</span>
+          <span class="nav-seg-badge" id="currentZoneName">تونس</span>
+        </button>
+      </div>
+
+      <!-- Éléments système et boutons préservés dans le DOM pour compatibilité JS totale -->
+      <div style="display: none !important;">
+        <button id="soundToggleBtn"></button>
+        <button id="openGuideBtn"></button>
+        <button id="openProfileHeaderBtn"></button>
+        <button id="headerExitBtn"></button>
+        <button id="tabBtnTactics"></button>
+        <button id="openZoneMapBtn"></button>
+        <button id="adBoostBtn"><span id="adBoostStatus"></span></button>
+        <button id="adCashBtn"><span id="cashRewardHint"></span></button>
+        <button id="prestigeOpenBtn"><span id="prestigeInfoLabel"></span></button>
+        <button id="headerLegalBtn"></button>
       </div>
 
       <!-- Éléments d'état cachés du DOM (rendus sous forme d'icônes dans le Canvas) -->
@@ -2896,8 +3003,11 @@
             <div style="text-align: right;">
               <div style="font-weight: 900; font-size: 15px; color: #f8fafc; line-height: 1.4;">خريطة تونس 🇹🇳</div>
             </div>
+            <div id="mapActiveCityBadge" class="badge-tn" style="font-size: 12px; padding: 3px 8px;">تونس العاصمة 🇹🇳</div>
           </div>
-          <div id="mapActiveCityBadge" class="badge-tn" style="font-size: 12px; padding: 3px 8px;">تونس العاصمة 🇹🇳</div>
+          <button class="return-street-btn" id="returnToStreetBtn" title="الرجوع إلى شارع المشاريع">
+            <span>🏪</span><span>رجوع للشارع ←</span>
+          </button>
         </div>
         <div class="tunisia-map-canvas-wrap" id="tunisiaMapCanvasWrap">
           <canvas id="tunisiaMapCanvas"></canvas>
@@ -3422,6 +3532,7 @@
               <button id="settingsOpenGuideBtn" style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #7dd3fc; border-radius: 6px; padding: 4px 8px; font-size: 10px; cursor: pointer;">❓ دليل البداية وكيفاش تلعب</button>
               <button id="openLegalModalBtn" style="background: none; border: none; color: #38bdf8; font-size: 10px; cursor: pointer; text-decoration: underline;">📜 الشروط القانونية والخصوصية</button>
             </div>
+            <button id="settingsExitAppBtn" class="danger-cancel-btn" style="width: 100%; margin-top: 8px; border-color: rgba(239, 68, 68, 0.5); color: #fca5a5; background: rgba(239, 68, 68, 0.1); cursor: pointer; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800;">🚪 خروج من اللعبة</button>
           </div>
         </section>
 
@@ -4487,6 +4598,8 @@
     tabBtnTactics.onclick = () => switchTab('tactics');
     tabBtnZones.onclick = () => switchTab('zones');
     if (tabBtnLeague) tabBtnLeague.onclick = () => switchTab('league');
+    const returnToStreetBtn = document.getElementById('returnToStreetBtn');
+    if (returnToStreetBtn) returnToStreetBtn.onclick = () => switchTab('businesses');
 
     // --- RENDU DU PANNEAU LIGUE, مربوح النهار & التحديات ---
     function renderLeagueTabUI() {
@@ -5994,6 +6107,10 @@
     window.handleBackNavigation = handleBackNavigation;
     if (headerExitBtn) {
       headerExitBtn.onclick = () => handleBackNavigation();
+    }
+    const settingsExitAppBtn = document.getElementById('settingsExitAppBtn');
+    if (settingsExitAppBtn) {
+      settingsExitAppBtn.onclick = () => handleBackNavigation();
     }
     registerBackButtonListener();
 

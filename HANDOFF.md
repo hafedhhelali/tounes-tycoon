@@ -1,13 +1,13 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-06 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v138)
-1. Révolution visuelle mobile AAA (`store_animator.js`) : vitrines de commerces biseautées avec reflets brillants à 45°, stores vénitiens / auvents festonnés 3D, et fuanis (lanternes médina) à halos chauds illuminant le boulevard à la tombée de la nuit.
-2. Chaîne audio studio & Bus Master Compresseur (`audio.js`) : ajout d'un DynamicsCompressorNode éliminant toute distorsion, retour tactile universel `playTap()`, vœu magique de la fontaine `playFountainWish()`, sons de vapeur `playCoffeeSteam()`, gril `playSizzle()` et fanfare d'ascension `playLevelUp()`.
-3. Architecture propre & UX haptique (`index.html`, `ARCH.md`) : câblage universel du son tactile `playTap()` sur tous les boutons/onglets, reflets spéculaires animés (glint shimmer) sur boutons d'action clés, et synchronisation 100% propre avec le moteur de quartier.
+## État en 3 lignes (v139)
+1. Header épuré & Navigation ergonomique (`index.html`) : zéro scroll horizontal (`overflow: hidden; width: 100%`), barre de navigation segmentée [🏪 الشارع والمشاريع | 🗺️ خريطة تونس] à cibles 40px confortables, bouton retour immédiat sur la carte `returnToStreetBtn`, et suppression des doublons de boutons carte et guide (un seul bouton carte, un seul bouton `?` dans les Paramètres).
+2. Clarté & Réduction du bruit visuel (`store_animator.js`) : piétons silencieux par temps clair (ne parlent que sous la pluie en courant s'abriter), et étiquette explicite pour la سحابة البركة `🎁 كاش هدية (انقر!)`.
+3. Visuel intérieur & Agencement boutique (`store_animator.js`) : loader radial de la caisse décalé sur le flanc pour ne plus masquer le texte des prix, portant à roulettes et mannequin de la boutique de vêtements (محلّ الملابس) ancrés au sol (`floorY`) avec grand miroir d'essayage sur pied.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs récentes : `audio.js`, `store_animator.js`, `index.html`, `ARCH.md`, `HANDOFF.md`, `CHANGELOG.md`.
+- Modifs récentes : `store_animator.js`, `index.html`, `HANDOFF.md`, `CHANGELOG.md`.
 - Suite de tests : 70/70 au vert (`npm test`).
 - Copyright : `© EOLabs 2026`.

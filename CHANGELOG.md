@@ -1,4 +1,21 @@
-﻿## [1.31.0] - 2026-11-06
+﻿## [1.32.0] - 2026-11-06
+### Added & Improved
+- **Header épuré & Navigation ergonomique fluide (Zéro Scroll)** (`index.html`) :
+  - **Suppression intégrale du défilement horizontal** : Le header est verrouillé en `overflow: hidden; width: 100%;` avec disposition responsive en 2 rangées aérées adaptées aux petits et grands écrans mobiles.
+  - **Barre de navigation segmentée 3D [🏪 الشارع والمشاريع | 🗺️ خريطة تونس]** : Sélecteur de vue tactile large (hauteur 40px, cibles ergonomiques 50% de la largeur) pour basculer instantanément entre la rue des commerces et la carte géographique de Tunisie.
+  - **Bouton retour immédiat sur la carte (`returnToStreetBtn`)** : Ajout d'un bouton d'action `🏪 رجوع للشارع ←` directement dans l'en-tête de la carte de Tunisie pour un retour à la rue en 1 tap.
+  - **Élimination de la pollution visuelle et des doublons** :
+    - Bouton Carte unique : Suppression de l'orbe doublon dans le ciel du canvas (`hud_map`), navigation carte unifiée sur le switcher principal et retour ergonomique.
+    - Bouton Guide unique : Suppression du doublon `?` dans le canvas (`hud_guide`) et simplification du header ; accès au guide rapide centralisé dans les Paramètres (`⚙️`).
+    - Réduction du nombre de boutons en barre supérieure : Déplacement des actions système (Profil Google, sortie, mentions légales) dans la modale Paramètres (`#settingsModal`).
+- **Piétons et ambiance urbaine (`store_animator.js`)** :
+  - **Silence par temps clair** : Les piétons ne parlent plus en marchant sous le soleil (réduction drastique du bruit visuel). Leurs bulles de dialogue et répliques tunisiennes n'apparaissent désormais que lorsqu'il pleut et qu'ils courent s'abriter sous les auvents.
+  - **Clarté de la سحابة البركة (Golden Cloud)** : Remplacement de l'étiquette par un libellé clair et incitatif `🎁 كاش هدية (انقر!)`.
+- **Intérieur de boutique et caisse enregistreuse (`store_animator.js`)** :
+  - **Caisse enregistreuse démasquée** : L'indicateur circulaire de cycle de production (loader radial) est déplacé sur le flanc de la caisse (`regX - 12, counterY + 6`), ne masquant plus jamais l'afficheur digital des prix.
+  - **Boutique de vêtements (محلّ الملابس) ancrée au sol** : Portant métallique à roulettes reposant au sol (`floorY - 2`), socle chromé du mannequin de vitrine posé au sol (`floorY - 1`), grand miroir d'essayage sur pied incliné et étagère murale rabaissée avec équerres en laiton.
+
+## [1.31.0] - 2026-11-06
 ### Added & Improved
 - **Révolution Graphique Mobile & Direction Artistique (`store_animator.js`)** :
   - **Devantures et vitrines haute définition** : Ajout de vitrines de magasins biseautées avec reflets spéculaires brillants à 45° (`linearGradient`), cadres moulurés et éclairage intérieur dynamique réagissant au cycle de production.
@@ -143,6 +160,7 @@
 # CHANGELOG
 
 ## 2026-11-06
+- feat(ui,ux): clean header without scroll, single prominent map button, silenced sunny pedestrians, grounded boutique and unmasked cash loader
 - feat(graphics,audio,ui): mobile game art revolution, dynamic store vitrines, master audio compressor and tactile haptics
 - feat(ui,audio,ads): polyphonic composer, 3d ergonomic buttons, splash landscape, google ads and cookie consent
 - fix(mobile): restore app startup on Android and fix AGENTS.md encoding

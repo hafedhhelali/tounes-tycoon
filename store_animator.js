@@ -1358,72 +1358,144 @@ export class CanvasStoreEngine {
       });
     }
 
-    // 12. BOUTIQUE DE VÊTEMENTS (محلّ الملابس) : Étagères, mannequins en plastique et étendoirs de magasin
+    // 12. BOUTIQUE DE VÊTEMENTS (محلّ الملابس) : Disposition harmonieuse rabaissée et ancrée au sol
     else if (bizId === 'vente_vetements') {
+      const floorY = h - 54;
       const shX = 104;
       const shW = w - 128;
 
-      // Étagères murales avec vêtements pliés
+      // A. Étagère murale haute avec vêtements pliés (alignée au-dessus)
+      const shelfY = floorY - 64;
       ctx.fillStyle = '#4a044e';
-      ctx.fillRect(shX, 40, shW, 4);
+      ctx.fillRect(shX, shelfY, shW, 4);
       ctx.strokeStyle = '#ec4899';
       ctx.lineWidth = 1;
-      ctx.strokeRect(shX, 40, shW, 4);
+      ctx.strokeRect(shX, shelfY, shW, 4);
+
+      // Équerres murales en laiton sous l'étagère
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.2;
+      for (let eqX = shX + 16; eqX < shX + shW; eqX += 45) {
+        ctx.beginPath();
+        ctx.moveTo(eqX, shelfY + 4);
+        ctx.lineTo(eqX, shelfY + 12);
+        ctx.lineTo(eqX + 8, shelfY + 4);
+        ctx.stroke();
+      }
+
       const foldedClothes = ['👕', '👖', '👗', '🧥', '👚', '👕', '👖'];
       ctx.font = '11px serif';
       foldedClothes.forEach((fc, idx) => {
-        const cx = shX + 8 + idx * 24;
+        const cx = shX + 8 + idx * 22;
         if (cx + 18 <= shX + shW) {
-          ctx.fillText(fc, cx, 38);
+          ctx.fillText(fc, cx, shelfY - 2);
         }
       });
 
-      // Étendoir / portant de magasin métallique avec vêtements sur cintres
-      const rackX = shX + 6;
-      const rackY = 60;
+      // B. Portant métallique sur roulettes (ancré directement au sol floorY)
+      const rackX = shX + 8;
       const rackW = Math.min(68, shW * 0.44);
+      const rackTopY = floorY - 44;
+
+      ctx.save();
+      // Barre supérieure du portant
       ctx.strokeStyle = '#e2e8f0';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
-      ctx.moveTo(rackX, rackY);
-      ctx.lineTo(rackX + rackW, rackY);
-      ctx.moveTo(rackX + 4, rackY);
-      ctx.lineTo(rackX + 4, rackY + 34);
-      ctx.moveTo(rackX + rackW - 4, rackY);
-      ctx.lineTo(rackX + rackW - 4, rackY + 34);
+      ctx.moveTo(rackX, rackTopY);
+      ctx.lineTo(rackX + rackW, rackTopY);
+      // Montants verticaux descendant jusqu'au sol
+      ctx.moveTo(rackX + 4, rackTopY);
+      ctx.lineTo(rackX + 4, floorY - 2);
+      ctx.moveTo(rackX + rackW - 4, rackTopY);
+      ctx.lineTo(rackX + rackW - 4, floorY - 2);
+      // Barre basse de renfort
+      ctx.moveTo(rackX + 2, floorY - 6);
+      ctx.lineTo(rackX + rackW - 2, floorY - 6);
       ctx.stroke();
 
-      const hangers = ['🧥', '👗', '👔'];
+      // Roulettes chromées au niveau du sol
+      ctx.fillStyle = '#475569';
+      ctx.beginPath();
+      ctx.arc(rackX + 4, floorY - 2, 2.5, 0, Math.PI * 2);
+      ctx.arc(rackX + rackW - 4, floorY - 2, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cintres suspendus à la barre
+      const hangers = ['🧥', '👗', '👔', '👘'];
       ctx.font = '12px serif';
       hangers.forEach((hItem, hIdx) => {
-        ctx.fillText(hItem, rackX + 10 + hIdx * 18, rackY + 18);
+        ctx.fillText(hItem, rackX + 8 + hIdx * 15, rackTopY + 18);
       });
+      ctx.restore();
 
-      // Mannequins en plastique de boutique
-      const manX = shX + rackW + 20;
-      const manY = 58;
-      if (manX + 24 < w - 24) {
-        // Socle chromé
+      // C. Mannequin de couture / vitrine (posé fermement sur le sol)
+      const manX = shX + rackW + 24;
+      if (manX + 22 < w - 24) {
+        ctx.save();
+        // Socle chromé posé sur le sol floorY
         ctx.fillStyle = '#94a3b8';
         ctx.beginPath();
-        ctx.ellipse(manX + 10, manY + 36, 10, 3, 0, 0, Math.PI * 2);
+        ctx.ellipse(manX + 10, floorY - 1, 11, 3.5, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#e2e8f0';
         ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        ctx.moveTo(manX + 10, manY + 16);
-        ctx.lineTo(manX + 10, manY + 36);
         ctx.stroke();
-        // Buste en plastique
+
+        // Tige métallique verticale
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(manX + 10, floorY - 28);
+        ctx.lineTo(manX + 10, floorY - 1);
+        ctx.stroke();
+
+        // Buste en velours
+        const busteY = floorY - 48;
         ctx.fillStyle = '#fef08a';
         ctx.beginPath();
-        ctx.roundRect(manX + 3, manY, 14, 18, [5, 5, 2, 2]);
+        ctx.roundRect(manX + 3, busteY, 14, 20, [5, 5, 2, 2]);
         ctx.fill();
         ctx.strokeStyle = '#d97706';
         ctx.lineWidth = 1;
         ctx.stroke();
-        ctx.font = '13px serif';
-        ctx.fillText('👗', manX + 3, manY + 14);
+
+        ctx.font = '14px serif';
+        ctx.fillText('👗', manX + 3, busteY + 16);
+        ctx.restore();
+      }
+
+      // D. Miroir d'essayage ovale sur pied (posé au sol)
+      const mirX = shX + shW - 24;
+      if (mirX > manX + 30) {
+        ctx.save();
+        // Pieds du miroir au sol
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(mirX + 8, floorY - 1);
+        ctx.lineTo(mirX + 4, floorY - 14);
+        ctx.moveTo(mirX + 8, floorY - 1);
+        ctx.lineTo(mirX + 12, floorY - 14);
+        ctx.stroke();
+
+        // Miroir ovale
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.ellipse(mirX + 8, floorY - 32, 8, 18, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Reflet brillant spéculaire sur la glace
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(mirX + 4, floorY - 40);
+        ctx.lineTo(mirX + 10, floorY - 24);
+        ctx.stroke();
+        ctx.restore();
       }
     }
 
@@ -2373,7 +2445,10 @@ export class CanvasStoreEngine {
 
     if (currentBiz && currentBiz.level > 0) {
       const gaugeColor = currentBiz.hasManager ? '#10b981' : '#fbbf24';
-      this.drawRadialGauge(ctx, regX + regW / 2, regY - 9, 6.5, isBusy ? cycleRatio : 1, gaugeColor, '✓');
+      // Indicateur de cycle placé à gauche de la caisse pour ne JAMAIS masquer l'afficheur prix
+      const gaugeX = regX - 12;
+      const gaugeY = counterY + 6;
+      this.drawRadialGauge(ctx, gaugeX, gaugeY, 6.5, isBusy ? cycleRatio : 1, gaugeColor, '✓');
     }
 
     // Double poignée dorée et serrure sur le tiroir-caisse
@@ -6168,21 +6243,11 @@ export class QuartierAnimator {
           const artList = bizArticles[nearbyBiz.id] || bizArticles.default;
           p.carriedItem = artList[Math.floor(Math.random() * artList.length)];
           p.carriedTimer = 6.0;
+        }
 
-          const tunisianQuips = [
-            'بنينة تشره ! 🤤',
-            'عزّ الطلة والسرفيس 👌',
-            'تبارك الله على الصنعة 🔥',
-            'صحة وبشفا يا معلّم ! ☕',
-            'ملا جو وملا حومة 🇹🇳',
-            'الكاسة تصبّ في الخير 💰',
-            'سلعة طازة وريحة تفحفح 🌿',
-            'سيرفيس مريڤل والخدمة نظيفة 👏'
-          ];
-          p.bubbleText = (p.carriedItem ? (p.carriedItem + ' ') : '') + tunisianQuips[Math.floor(Math.random() * tunisianQuips.length)];
-          p.bubbleTimer = 2.4;
-        } else {
-          // Règle d'or : Silence en marchant SAUF pluie ou devant un projet
+        // RÈGLE D'OR : Les piétons ne parlent JAMAIS par beau temps (réduction du bruit visuel)
+        // Ils ne s'expriment en bulles QUE sous la pluie lorsqu'ils courent pour s'abriter
+        if (this.rainIntensity <= 0.25) {
           p.bubbleText = null;
         }
       }
@@ -6861,26 +6926,26 @@ export class QuartierAnimator {
     ctx.fillText('✨', x + 5 + Math.sin(spPhase) * 4, cy + 6);
     ctx.fillText('⭐', x + 82 + Math.cos(spPhase) * 4, cy + 8);
 
-    // Écusson interactif "سحابة البركة"
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    // Écusson interactif clair : هدية كاش مجانية عند النقر
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
     ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.4;
     ctx.beginPath();
-    ctx.roundRect(x + 6, cy + 34, 88, 16, 8);
+    ctx.roundRect(x + 2, cy + 34, 96, 17, 8);
     ctx.fill();
     ctx.stroke();
 
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 9.5px "Cairo", sans-serif';
+    ctx.font = '900 10px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('سحابة البركة 🪙', x + 50, cy + 45.5);
+    ctx.fillText('🎁 كاش هدية (انقر!)', x + 50, cy + 46);
 
     // Enregistrement de la hitbox cliquable
     this.interactiveHitboxes.push({
-      x: x + 4,
+      x: x + 2,
       y: cy,
-      w: 92,
-      h: 52,
+      w: 96,
+      h: 54,
       action: 'claim_golden_cloud'
     });
 
@@ -9619,76 +9684,8 @@ export class QuartierAnimator {
       }
     };
 
-    // 1. Bouton Carte de Tunisie en haut à droite (Agrandie, royale, pulsante et enrichie)
-    const mapBtnR = 30; // Bouton large bien visible
-    const mapBtnX = w - 42;
-    const mapBtnY = topY + 6;
-    const mapPulse = Math.sin(timestamp * 0.006) * 4 + 8;
-
-    ctx.save();
-    ctx.shadowColor = '#38bdf8';
-    ctx.shadowBlur = mapPulse;
-
-    // Halo circulaire externe pulsant doré avec double anneau
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(mapBtnX, mapBtnY, mapBtnR + 4, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.arc(mapBtnX, mapBtnY, mapBtnR + 1.5, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Dégradé royal bleu nuit / azur lumineux
-    const mapGrad = ctx.createRadialGradient(mapBtnX - 8, mapBtnY - 8, 4, mapBtnX, mapBtnY, mapBtnR);
-    mapGrad.addColorStop(0, '#7dd3fc');
-    mapGrad.addColorStop(0.3, '#0284c7');
-    mapGrad.addColorStop(0.8, '#0369a1');
-    mapGrad.addColorStop(1, '#082f49');
-    ctx.fillStyle = mapGrad;
-    ctx.beginPath();
-    ctx.arc(mapBtnX, mapBtnY, mapBtnR, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Reflet de verre supérieur
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.beginPath();
-    ctx.ellipse(mapBtnX, mapBtnY - 12, mapBtnR * 0.7, mapBtnR * 0.32, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Icône Map 3D
-    ctx.font = '26px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🗺️', mapBtnX, mapBtnY - 2);
-
-    // Ruban textuel 'خريطة تونس' sous le bouton
-    ctx.fillStyle = '#0f172a';
-    ctx.beginPath();
-    ctx.roundRect(mapBtnX - 34, mapBtnY + 18, 68, 17, 5);
-    ctx.fill();
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-    ctx.fillStyle = '#fef08a';
-    ctx.font = '900 10px "Cairo", sans-serif';
-    ctx.fillText('خريطة تونس 🇹🇳', mapBtnX, mapBtnY + 27);
-    ctx.restore();
-
-    this.interactiveHitboxes.push({
-      x: mapBtnX - mapBtnR - 12,
-      y: mapBtnY - mapBtnR - 10,
-      w: (mapBtnR + 12) * 2,
-      h: (mapBtnR + 22) * 2,
-      action: 'hud_map',
-      bizId: null
-    });
-
-    // Bouton Boost Turbo x2 à côté (uniquement via PUB)
-    const boostX = mapBtnX - 74;
+    // 1. Bouton Boost Turbo x2 en haut à droite du ciel (icône 3D dynamique)
+    const boostX = w - 36;
     draw3DOrbIcon(boostX, topY, '🚀', o.adBoostActive ? '#059669' : '#0284c7', o.adBoostActive ? '#6ee7b7' : '#7dd3fc', o.adBoostActive ? 'x2' : '🎬', '#10b981');
     this.interactiveHitboxes.push({
       x: boostX - r - 8,
@@ -9696,18 +9693,6 @@ export class QuartierAnimator {
       w: (r + 8) * 2,
       h: (r + 8) * 2,
       action: 'hud_boost',
-      bizId: null
-    });
-
-    // Bouton Guide de démarrage rapide ❓ à côté du boost
-    const guideX = boostX - 52;
-    draw3DOrbIcon(guideX, topY, '❓', '#0369a1', '#38bdf8', '', '#38bdf8');
-    this.interactiveHitboxes.push({
-      x: guideX - r - 8,
-      y: topY - r - 8,
-      w: (r + 8) * 2,
-      h: (r + 8) * 2,
-      action: 'hud_guide',
       bizId: null
     });
 
