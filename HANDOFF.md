@@ -1,13 +1,14 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-06 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v139)
-1. Header épuré & Navigation ergonomique (`index.html`) : zéro scroll horizontal (`overflow: hidden; width: 100%`), barre de navigation segmentée [🏪 الشارع والمشاريع | 🗺️ خريطة تونس] à cibles 40px confortables, bouton retour immédiat sur la carte `returnToStreetBtn`, et suppression des doublons de boutons carte et guide (un seul bouton carte, un seul bouton `?` dans les Paramètres).
-2. Clarté & Réduction du bruit visuel (`store_animator.js`) : piétons silencieux par temps clair (ne parlent que sous la pluie en courant s'abriter), et étiquette explicite pour la سحابة البركة `🎁 كاش هدية (انقر!)`.
-3. Visuel intérieur & Agencement boutique (`store_animator.js`) : loader radial de la caisse décalé sur le flanc pour ne plus masquer le texte des prix, portant à roulettes et mannequin de la boutique de vêtements (محلّ الملابس) ancrés au sol (`floorY`) avec grand miroir d'essayage sur pied.
+## État en 3 lignes (v140)
+1. Header ultra-compact 1 ligne & Bulle Carte 3D (`index.html`, `store_animator.js`) : `<header>` épuré sur une seule ligne (~38px, zéro scroll), et réintégration de l'orbe 3D haute visibilité dans le ciel du canvas (`hud_map`) avec double anneau doré pulsant et ruban `خريطة تونس 🇹🇳`.
+2. Carte élargie Grand Maghreb & Afrique du Nord (`store_animator.js`) : dimension étendue à 1040x760 avec pan 2D fluide (X/Y) et inertie pour parcourir l'Afrique du Nord, avec silhouettes vectorielles détaillées et badges nationaux pour le Maroc 🇲🇦, la Mauritanie 🇲🇷, l'Algérie 🇩🇿, la Libye 🇱🇾, l'Égypte 🇪🇬 et la Tunisie 🇹🇳.
+3. Toutes les 6 capitales régionales interactives (`store_animator.js`) : Rabat 🇲🇦, Alger 🇩🇿, Tunis 🇹🇳, Tripoli 🇱🇾, Le Caire 🇪🇬, Nouakchott 🇲🇷 avec nœuds dorés `🏛️⭐`, autoroutes transmaghrébines connectées, caravanes animées et modales de bonus commerciaux internationaux.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Modifs récentes : `store_animator.js`, `index.html`, `HANDOFF.md`, `CHANGELOG.md`.
+- Fichiers modifiés : `store_animator.js`, `index.html`, `HANDOFF.md`, `CHANGELOG.md`.
 - Suite de tests : 70/70 au vert (`npm test`).
+- Outil de livraison obligatoire : `scripts/ship.ps1 "<type>(<scope>): <msg>"`.
 - Copyright : `© EOLabs 2026`.

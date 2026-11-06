@@ -1,4 +1,29 @@
-﻿## [1.32.0] - 2026-11-06
+﻿## [1.33.0] - 2026-11-06
+### Added & Improved
+- **Header ultra-compact sur une seule ligne & Bulle d'accès Carte 3D** (`index.html`, `store_animator.js`) :
+  - **Header sur une seule ligne** : Restauration de l'en-tête `<header>` sur une rangée fine (`min-height: 38px`), libérant un espace vertical maximal sur mobile sans aucun défilement.
+  - **Bulle 3D Haute Visibilité dans le Canvas** : Réintégration de l'orbe d'accès carte dans le ciel (`hud_map`) avec double anneau doré pulsant, dégradé azur vibrant, lueur néon et ruban `خريطة تونس 🇹🇳`.
+  - **Bouton retour immédiat** : `🏪 رجوع للشارع ←` intégré dans l'en-tête de la carte pour revenir en 1 tap à la vue commerces.
+- **Carte élargie du Grand Maghreb & Afrique du Nord avec toutes les capitales** (`store_animator.js`, `index.html`) :
+  - **Canvas géographique agrandi (1040 x 760)** : Système de déplacement tactile 2D (pan horizontal & vertical avec inertie de glissement) permettant de naviguer fluidement du Maroc/Mauritanie à l'Égypte.
+  - **Intégration vectorielle des 5 pays frères d'Afrique du Nord** :
+    - **المملكة المغربية 🇲🇦** (Maroc) : relief atlantique et rifain, côtes océaniques, badge officiel.
+    - **الجمهورية الإسلامية الموريتانية 🇲🇷** (Mauritanie) : désert et côte atlantique, badge officiel.
+    - **الجمهورية الجزائرية 🇩🇿** (Algérie) : masse continentale centrale, frontières est/ouest et badge officiel.
+    - **دولة ليبيا 🇱🇾** (Libye) : littoral méditerranéen et frontière Ras Jedir, badge officiel.
+    - **جمهورية مصر العربية 🇪🇬** (Égypte) : delta du Nil, canal de Suez et côtes orientales, badge officiel.
+    - **الجمهورية التونسية 🇹🇳** (Tunisie) : côtes, îles (Djerba, Kerkennah, La Galite, Zembra) et 18 villes jouables parfaitement positionnées.
+  - **Les 6 Grandes Capitales régionales interactives (`regionalCapitals`)** :
+    - **الرباط (Rabat)** 🇲🇦 (Maroc)
+    - **الجزائر العاصمة (Alger)** 🇩🇿 (Algérie)
+    - **تونس العاصمة (Tunis)** 🇹🇳 (Tunisie avec couronne royale `👑`)
+    - **طرابلس (Tripoli)** 🇱🇾 (Libye)
+    - **القاهرة (Le Caire)** 🇪🇬 (Égypte)
+    - **نواكشوط (Nouakchott)** 🇲🇷 (Mauritanie)
+    - Pins dorés `🏛️⭐`, auras néon animées, fiches modales au clic avec descriptif historique et bonus commercial international.
+    - Tracé du réseau autoroutier maghrébin reliant toutes les capitales avec flux de caravanes de marchands.
+
+## [1.32.0] - 2026-11-06
 ### Added & Improved
 - **Header épuré & Navigation ergonomique fluide (Zéro Scroll)** (`index.html`) :
   - **Suppression intégrale du défilement horizontal** : Le header est verrouillé en `overflow: hidden; width: 100%;` avec disposition responsive en 2 rangées aérées adaptées aux petits et grands écrans mobiles.
@@ -160,6 +185,7 @@
 # CHANGELOG
 
 ## 2026-11-06
+- feat(map,ui): single row header, canvas map bubble, enlarged north africa map with algeria, morocco, libya, egypt, mauritania and all capitals
 - feat(ui,ux): clean header without scroll, single prominent map button, silenced sunny pedestrians, grounded boutique and unmasked cash loader
 - feat(graphics,audio,ui): mobile game art revolution, dynamic store vitrines, master audio compressor and tactile haptics
 - feat(ui,audio,ads): polyphonic composer, 3d ergonomic buttons, splash landscape, google ads and cookie consent

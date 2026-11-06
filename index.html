@@ -141,24 +141,27 @@
       }
     }
 
-    /* HEADER TYCOON - PRO ÉPURÉ, STRICTEMENT SANS AUCUN SCROLL */
+    /* HEADER TYCOON - PRO ÉPURÉ, STRICTEMENT SANS AUCUN SCROLL (LIGNE UNIQUE) */
     header {
       background: rgba(15, 23, 42, 0.94);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      padding: 4px 6px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+      padding: 3px 6px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
       position: sticky;
       top: 2px;
       z-index: 50;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
       gap: 4px;
       width: 100%;
       box-sizing: border-box;
       overflow: hidden !important; /* STRICTEMENT AUCUN SCROLL */
+      min-height: 38px;
     }
     header::-webkit-scrollbar {
       display: none;
@@ -2437,8 +2440,8 @@
     .tunisia-map-canvas-wrap {
       position: relative;
       width: 100%;
-      height: 640px !important;
-      min-height: 580px !important;
+      height: 680px !important;
+      min-height: 600px !important;
       flex-shrink: 0;
       background: radial-gradient(circle at center, #0f2942 0%, #0a192f 100%);
       border-radius: 12px;
@@ -2457,8 +2460,8 @@
     }
     @media (max-width: 480px) {
       .tunisia-map-canvas-wrap {
-        height: 560px !important;
-        min-height: 500px !important;
+        height: 600px !important;
+        min-height: 540px !important;
       }
     }
 
@@ -2914,21 +2917,10 @@
         </div>
       </div>
 
-      <!-- BARRE DE NAVIGATION ERGONOMIQUE ÉPURÉE [الشارع | الخريطة] — STRICTEMENT AUCUN SCROLL -->
-      <div class="header-nav-switcher">
-        <button class="nav-segmented-btn active" id="tabBtnBusinesses" title="الشارع والمشاريع">
-          <span class="nav-seg-icon">🏪</span>
-          <span class="nav-seg-title">الشارع والمشاريع</span>
-        </button>
-        <button class="nav-segmented-btn" id="tabBtnZones" title="خريطة تونس والأحياء">
-          <span class="nav-seg-icon">🗺️</span>
-          <span class="nav-seg-title">خريطة تونس</span>
-          <span class="nav-seg-badge" id="currentZoneName">تونس</span>
-        </button>
-      </div>
-
       <!-- Éléments système et boutons préservés dans le DOM pour compatibilité JS totale -->
       <div style="display: none !important;">
+        <button id="tabBtnBusinesses"></button>
+        <button id="tabBtnZones"><span id="currentZoneName">تونس</span></button>
         <button id="soundToggleBtn"></button>
         <button id="openGuideBtn"></button>
         <button id="openProfileHeaderBtn"></button>
@@ -2995,13 +2987,13 @@
 
     <!-- PANNEAU 3 : CONQUÊTE DES QUARTIERS ET VILLES TUNISIENNES -->
     <div class="tab-content-panel" id="panelZones">
-      <!-- CARTE GÉOGRAPHIQUE VECTORIELLE DE LA TUNISIE (14 VILLES & ROUTES COMMERCIALES) -->
+      <!-- CARTE GÉOGRAPHIQUE VECTORIELLE DU GRAND MAGHREB & TUNISIE (VILLES & CAPITALES) -->
       <div class="tunisia-map-card">
         <div class="tunisia-map-header">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 22px;">🗺️</span>
             <div style="text-align: right;">
-              <div style="font-weight: 900; font-size: 15px; color: #f8fafc; line-height: 1.4;">خريطة تونس 🇹🇳</div>
+              <div style="font-weight: 900; font-size: 15px; color: #f8fafc; line-height: 1.4;">خريطة تونس والمغرب العربي الكبير 🇹🇳 🇩🇿 🇲🇦 🇱🇾 🇪🇬 🇲🇷</div>
             </div>
             <div id="mapActiveCityBadge" class="badge-tn" style="font-size: 12px; padding: 3px 8px;">تونس العاصمة 🇹🇳</div>
           </div>
