@@ -23,6 +23,7 @@ export class PixiGpuEngine {
     this.time = 0;
     this.currentBizArchetype = null;
 
+    this.buildTextureAtlas();
     this.init();
   }
 
@@ -34,11 +35,14 @@ export class PixiGpuEngine {
     }
 
     try {
-      // Vérifier support WebGL
-      const gl = this.canvas.getContext('webgl2') || this.canvas.getContext('webgl');
-      if (!gl) {
-        this.isSupported = false;
-        return;
+      // Vérifier support WebGL sur un canvas temporaire pour ne pas corrompre le contexte 2D
+      if (typeof document !== 'undefined') {
+        const testCanvas = document.createElement('canvas');
+        const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
+        if (!gl) {
+          this.isSupported = false;
+          return;
+        }
       }
 
       this.PIXI = PIXI;
@@ -52,7 +56,7 @@ export class PixiGpuEngine {
 
   // --- 1. GÉNÉRATION DE TEXTURES VECTORIELLES HD (FINI LES EMOJIS BASIQUES) ---
   buildTextureAtlas() {
-    if (!this.isSupported) return;
+    if (typeof document === 'undefined') return;
     const PIXI = this.PIXI;
 
     // A. Chopes de Celtia & Bière pression
@@ -206,8 +210,10 @@ export class PixiGpuEngine {
     canvas.height = height;
     const ctx = canvas.getContext('2d');
     drawCallback(ctx);
-    if (this.PIXI && this.PIXI.Texture) {
-      return this.PIXI.Texture.from(canvas);
+    if (this.PIXI && this.PIXI.Texture && typeof this.PIXI.Texture.from === 'function') {
+      try {
+        return this.PIXI.Texture.from(canvas);
+      } catch (_) {}
     }
     return canvas;
   }

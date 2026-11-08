@@ -1,10 +1,10 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-08 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v148)
-1. Intégration PixiJS v8 2D HD GPU : bundle local autonome `pixi.min.js` (840 KB, 100% offline sans CDN) et moteur de rendu `pixi_renderer.js`.
-2. Graphismes & Textures HD : atlas vectoriel haute résolution remplaçant les emojis système (chope Celtia dorée et mousseuse, cocktails néons, bambalouni caramélisé au sucre, fricassé tunisien) et éclairage temps réel (3 lasers animés en boîte de nuit, spots de boule à facettes, halo néon chaud au bar cha3bi).
-3. Robustesse & Tests : 84/84 tests unitaires au vert (`npm test`), zéro fuite mémoire, simulation VM de chargement passée avec succès.
+## État en 3 lignes (v149)
+1. Résolution blocage démarrage & rue projets : suppression de l'import synchrone bloquant de `pixi.min.js` dans `<head>` et ajout d'un timeout de secours garanti à 2.2s dans `initWelcomeSplashScreen`.
+2. Intégration rue des projets (`QuartierAnimator`) : ajout des gabarits architecturaux pour `bar_cha3bi` et `boite_de_nuit`, fallback systématique anti-NaN, et synchronisation automatique de tous les projets de `CITY_BUSINESS_MAP` dans le tracé de la rue (`buildZoneLayout`).
+3. Pipeline & Validation : 84/84 tests unitaires réussis (`npm test`), VM sandbox validée, synchronisation des assets `pixi_renderer.js` dans `scripts/ship.ps1`.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).

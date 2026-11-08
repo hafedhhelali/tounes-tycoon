@@ -8,7 +8,7 @@ if ($t -notmatch 'fail 0') { Write-Host (($t -split "`n") | Select-Object -Last 
 node scripts\test_index_html.mjs
 if ($LASTEXITCODE -ne 0) { throw 'Verification chargement index.html & modules KO' }
 
-Copy-Item index.html,engine.js,audio.js,ads_service.js,store_animator.js,motion_engine.js,pixi.min.js,icon.png www -Force
+Copy-Item index.html,engine.js,audio.js,ads_service.js,store_animator.js,motion_engine.js,pixi_renderer.js,pixi.min.js,icon.png www -Force
 if (Test-Path android\app\src\main\assets\public) { Copy-Item www\* android\app\src\main\assets\public -Force }
 
 # MD auto: date HANDOFF + entree CHANGELOG

@@ -6589,7 +6589,9 @@ export class QuartierAnimator {
       boulangerie_artisanale: { id: 'boulangerie_artisanale', width: 175, height: 140, style: 'boulangerie_oven', color: '#fef3c7', roofColor: '#b45309' },
       artisanat_poterie: { id: 'artisanat_poterie', width: 170, height: 138, style: 'pottery_workshop', color: '#fed7aa', roofColor: '#0284c7' },
       huilerie_olive: { id: 'huilerie_olive', width: 195, height: 156, style: 'olive_press', color: '#ecfccb', roofColor: '#3f6212' },
-      centre_thalasso: { id: 'centre_thalasso', width: 220, height: 188, style: 'thalasso_spa', color: '#e0f2fe', roofColor: '#0891b2' }
+      centre_thalasso: { id: 'centre_thalasso', width: 220, height: 188, style: 'thalasso_spa', color: '#e0f2fe', roofColor: '#0891b2' },
+      bar_cha3bi: { id: 'bar_cha3bi', width: 175, height: 142, style: 'bar_cha3bi', color: '#78350f', roofColor: '#dc2626', signText: 'بار شعبي تونسي 🍺' },
+      boite_de_nuit: { id: 'boite_de_nuit', width: 185, height: 155, style: 'boite_de_nuit', color: '#2e1065', roofColor: '#7c3aed', signText: 'ديسكو وسهرية لاونج 🪩' }
     };
 
     this.buildingsConfig = [];
@@ -6923,7 +6925,17 @@ export class QuartierAnimator {
       { type: 'biz', id: 'salle_de_jeux' }
     ];
 
-    let rawItems = zoneSpecs[zoneId] || zoneSpecs.bab_souika;
+    let rawItems = (zoneSpecs[zoneId] || zoneSpecs.bab_souika).slice();
+
+    // Insertion garantie de tous les commerces de la ville configurés dans le moteur
+    const cityBusinesses = (this.engine && this.engine.getCityBusinesses) ? this.engine.getCityBusinesses(zoneId) : null;
+    if (cityBusinesses && Array.isArray(cityBusinesses)) {
+      cityBusinesses.forEach(biz => {
+        if (!rawItems.some(it => it.type === 'biz' && it.id === biz.id)) {
+          rawItems.push({ type: 'biz', id: biz.id });
+        }
+      });
+    }
 
     // Insertion automatique et garantie d'une Banque, d'un Monument Square (Horloge/Statue + Fontaine + Jardin), d'un Poste de Police et d'un Guichet de Tabac dans chaque ville
     const hasBank = rawItems.some(it => it.type === 'bank_branch');
@@ -6989,13 +7001,19 @@ export class QuartierAnimator {
     let curX = 55;
     rawItems.forEach(item => {
       if (item.type === 'biz') {
-        const tpl = this.bizTemplates[item.id];
-        if (tpl) {
-          const entry = { ...tpl, type: 'biz', x: curX };
-          this.streetLayout.push(entry);
-          this.buildingsConfig.push(entry);
-          curX += tpl.width + 26;
-        }
+        const tpl = this.bizTemplates[item.id] || {
+          id: item.id,
+          width: 170,
+          height: 140,
+          style: 'traditional_shop',
+          color: '#e2e8f0',
+          roofColor: '#0284c7',
+          signText: item.id
+        };
+        const entry = { ...tpl, type: 'biz', x: curX };
+        this.streetLayout.push(entry);
+        this.buildingsConfig.push(entry);
+        curX += (tpl.width || 170) + 26;
       } else if (item.type === 'house') {
         const entry = { ...item, x: curX };
         this.streetLayout.push(entry);
@@ -9286,6 +9304,8 @@ export class QuartierAnimator {
     else if (b.id === 'fricasse') doorColor = '#1d4ed8'; // Bleu Sidi Bou Saïd éclatant
     else if (b.id === 'patisserie' || b.id === 'attariya') doorColor = '#059669'; // Vert émeraude médina
     else if (b.id === 'tayaran_el_ghzela' || b.id === 'showroom_auto') doorColor = '#1e293b'; // Noir / Bleu marine luxueux
+    else if (b.id === 'bar_cha3bi') doorColor = '#78350f'; // Bois acajou brasserie
+    else if (b.id === 'boite_de_nuit') doorColor = '#581c87'; // Pourpre VIP nightclub
 
     ctx.fillStyle = doorColor;
     ctx.beginPath();
