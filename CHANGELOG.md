@@ -1,4 +1,25 @@
-﻿## [1.35.0] - 2026-11-06
+﻿## [1.36.0] - 2026-11-08
+### Added & Improved
+- **Moteur Micro-Motion Mobile & Physique de Ressorts** (`motion_engine.js`) :
+  - **Interpolation exponentielle continue** (`exponentialDecay`) : Déplacement de caméra fluide et lissage sans à-coups indépendant des variations de framerate.
+  - **Simulateur de ressort physique** (`SpringSimulator`) : Modèle masse-ressort-amortissement avec intégration Euler semi-implicite pour inertie et rebonds naturels.
+  - **Pool WAAPI GPU Compositor** (`DomCoinPool`) : Recyclage à zéro allocation d'éléments de pièces animées sur le GPU, éliminant tout GC stutter et layout-thrashing lors du tap rapide.
+  - **Squash & Stretch tactile universel** (`triggerTactileSquash`) : Déformation élastique instantanée sur chaque bouton et onglet du jeu.
+- **Rendu Graphique Canvas Haute Fidélité & 60 FPS** (`store_animator.js`) :
+  - **Clamp adaptatif DPR (max 2.5)** : Rendu haute netteté sur écrans mobiles denses (AMOLED / Retina) sans surcharge de fill-rate ni baisse de framerate.
+  - **Ombres de contact radiales douces** (`drawContactShadow`) sous tous les bâtiments, piétons et véhicules pour ancrer les éléments dans la rue.
+  - **Pièces 3D paraboliques** avec projection d'épaisseur, reflets dorés et tranche métallique dynamique.
+  - **Ondes de choc dorées interactives** (`tapRipples`) au toucher sous le doigt du joueur dans la rue.
+  - **Squash & stretch élastique des boutiques** lors des collectes de production.
+  - **Passe d'éclairage atmosphérique** crépuscule et nuit renforçant la profondeur visuelle.
+- **Ergonomie Mobile & Interface Tactile** (`index.html`) :
+  - Intégration safe-area `env(safe-area-inset-*)` et viewport dynamique `100dvh` compatible encoches et barres Android.
+  - Transitions élastiques `var(--spring-bounce)` sur les boutons et fenêtres modales.
+  - Flash doré dynamique sur le solde (`.balance-val.bump`).
+- **Tests Unitaires & Qualité** (`motion_engine.test.js`) :
+  - 4 nouveaux tests unitaires pour le moteur de mouvement, portant la suite à 76/76 tests réussis.
+
+## [1.35.0] - 2026-11-06
 ### Added & Improved
 - **Mode Joujma Mania / Fever Rush Tunisien x3** (`engine.js`, `store_animator.js`, `audio.js`, `index.html`) :
   - **Moteur d'excitation & Jauge d'ambiance 🌶️ جوجمة** : Chaque tap manuel, récolte ou interaction charge la jauge Joujma de 0% à 100%.
@@ -218,6 +239,9 @@
 - Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
 
 # CHANGELOG
+
+## 2026-11-08
+- feat(motion): 60fps mobile motion engine, spring physics, glassmorphism and canvas visual depth
 
 ## 2026-11-06
 - feat(fricasse): sidi bou said authentic shop with 2 frying pans, kais saied portrait and 2026 calendar

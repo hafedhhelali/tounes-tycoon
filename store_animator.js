@@ -113,15 +113,30 @@ export class CanvasStoreEngine {
     this.scale = cssH / this.logicalH;
     this.width = Math.max(300, Math.floor(cssW / this.scale));
     this.height = this.logicalH;
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    this.dpr = Math.min((typeof window !== 'undefined' && window.devicePixelRatio) || 1, 2.5);
 
     this.canvas.width = Math.floor(cssW * this.dpr);
     this.canvas.height = Math.floor(cssH * this.dpr);
     this.canvas.style.width = cssW + 'px';
     this.canvas.style.height = cssH + 'px';
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.scale(this.dpr * this.scale, this.dpr * this.scale);
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
+  }
+
+  drawContactShadow(ctx, x, groundY, rx, ry, alpha = 0.45) {
+    const grad = ctx.createRadialGradient(x, groundY, 0, x, groundY, rx);
+    grad.addColorStop(0, `rgba(0, 0, 0, ${alpha})`);
+    grad.addColorStop(0.55, `rgba(0, 0, 0, ${alpha * 0.4})`);
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(x, groundY, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   start(bizId) {
@@ -5785,6 +5800,8 @@ export class QuartierAnimator {
     this.palms = [];
     this.seagulls = [];
     this.interactiveHitboxes = [];
+    this.tapRipples = [];
+    this.buildingSquash = {};
 
     // Personnages VIP & Joujma Mania
     this.streetVips = [];
@@ -6335,11 +6352,24 @@ export class QuartierAnimator {
     const rect = this.canvas.getBoundingClientRect();
     this.width = rect.width || 800;
     this.height = rect.height || 360;
-    this.dpr = window.devicePixelRatio || 1;
+    this.dpr = Math.min((typeof window !== 'undefined' && window.devicePixelRatio) || 1, 2.5);
 
     this.canvas.width = Math.floor(this.width * this.dpr);
     this.canvas.height = Math.floor(this.height * this.dpr);
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
+  }
+
+  drawContactShadow(ctx, x, groundY, rx, ry, alpha = 0.45) {
+    const grad = ctx.createRadialGradient(x, groundY, 0, x, groundY, rx);
+    grad.addColorStop(0, `rgba(0, 0, 0, ${alpha})`);
+    grad.addColorStop(0.55, `rgba(0, 0, 0, ${alpha * 0.4})`);
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(x, groundY, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   initWorld() {
@@ -6522,6 +6552,17 @@ export class QuartierAnimator {
     this.startCamX = this.cameraX;
     this.targetCameraX = this.cameraX;
     this.hasDraggedSignificantly = false;
+
+    // Ondulation tactile dorée immédiate sur le Canvas
+    const rect = this.canvas.getBoundingClientRect();
+    const scaleX = rect.width > 0 ? (this.width / rect.width) : 1;
+    const scaleY = rect.height > 0 ? (this.height / rect.height) : 1;
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
+    if (!this.tapRipples) this.tapRipples = [];
+    if (this.tapRipples.length < 6) {
+      this.tapRipples.push({ x: clickX, y: clickY, r: 4, maxR: 30, alpha: 0.85 });
+    }
   }
 
   handlePointerMove(e) {
@@ -6686,7 +6727,39 @@ export class QuartierAnimator {
   }
 
   update(dt, timestamp) {
-    this.cameraX += (this.targetCameraX - this.cameraX) * Math.min(1, dt * 10);
+    // Lissage exponentiel exact insensible aux variations de framerate mobile
+    const decay = 12.0;
+    this.cameraX += (this.targetCameraX - this.cameraX) * (1 - Math.exp(-decay * dt));
+
+    // Amortissement inertiel continu lors du fling swipe
+    if (!this.isDragging && Math.abs(this.pointerVelocity || 0) > 2) {
+      this.targetCameraX += (this.pointerVelocity || 0) * dt;
+      this.pointerVelocity *= Math.pow(0.88, dt * 60);
+      this.targetCameraX = Math.max(0, Math.min(this.targetCameraX, this.worldWidth - this.width));
+    }
+
+    // Ondulations tactiles dorées
+    if (this.tapRipples && this.tapRipples.length > 0) {
+      for (let i = this.tapRipples.length - 1; i >= 0; i--) {
+        const tr = this.tapRipples[i];
+        tr.r += 75 * dt;
+        tr.alpha -= 2.6 * dt;
+        if (tr.alpha <= 0 || tr.r >= tr.maxR) {
+          this.tapRipples.splice(i, 1);
+        }
+      }
+    }
+
+    // Effet Squash & Stretch tactile sur les commerces
+    if (this.buildingSquash) {
+      for (const k in this.buildingSquash) {
+        const sq = this.buildingSquash[k];
+        if (sq && sq.timer > 0) {
+          sq.timer -= dt;
+          if (sq.timer <= 0) delete this.buildingSquash[k];
+        }
+      }
+    }
 
     // --- GESTION CYCLE MÉTÉO (PLUIE & SOLEIL) ---
     this.rainTimer -= dt;
@@ -7148,9 +7221,19 @@ export class QuartierAnimator {
 
     for (let i = this.floatingCoins.length - 1; i >= 0; i--) {
       const c = this.floatingCoins[i];
-      c.y += c.vy * dt;
-      c.alpha -= dt * 1.2;
-      if (c.alpha <= 0) this.floatingCoins.splice(i, 1);
+      if (c.gravity) {
+        c.vy += c.gravity * dt;
+        c.x += c.vx * dt;
+        c.y += c.vy * dt;
+        c.rot = (c.rot || 0) + (c.rotSpeed || 6) * dt;
+        c.life -= dt;
+        c.alpha = Math.max(0, c.life / c.maxLife);
+        if (c.life <= 0) this.floatingCoins.splice(i, 1);
+      } else {
+        c.y += c.vy * dt;
+        c.alpha -= dt * 1.2;
+        if (c.alpha <= 0) this.floatingCoins.splice(i, 1);
+      }
     }
 
   }
@@ -7158,13 +7241,25 @@ export class QuartierAnimator {
   spawnGainBubble(bizId, text) {
     const bConf = this.buildingsConfig.find(b => b.id === bizId);
     if (!bConf) return;
+    const startX = bConf.x + bConf.width / 2;
+    const startY = 200 - bConf.height - 12;
     this.floatingCoins.push({
-      x: bConf.x + bConf.width / 2,
-      y: 200 - bConf.height - 15,
-      vy: -45,
+      x: startX,
+      y: startY,
+      vx: (Math.random() - 0.5) * 44,
+      vy: -75 - Math.random() * 25,
+      gravity: 160,
+      rot: Math.random() * Math.PI,
+      rotSpeed: 7 + Math.random() * 6,
       text: text || '+د.ت',
-      alpha: 1.0
+      alpha: 1.0,
+      life: 1.3,
+      maxLife: 1.3
     });
+
+    // Squash tactile sur le commerce
+    if (!this.buildingSquash) this.buildingSquash = {};
+    this.buildingSquash[bizId] = { timer: 0.22, intensity: 0.14 };
 
     // Particules festives dorées si c'est une montée de palier
     if (text && (text.includes('L25') || text.includes('L50') || text.includes('L100') || text.includes('L200'))) {
@@ -7194,6 +7289,8 @@ export class QuartierAnimator {
     const groundY = Math.max(195, Math.min(255, h - 55));
 
     this.interactiveHitboxes = [];
+    this.tapRipples = [];
+    this.buildingSquash = {};
     ctx.clearRect(0, 0, w, h);
 
     // --- CYCLE CIEL PROGRESSIF (Jour / Coucher de Soleil Doré / Nuit Étoilée / Aube) ---
@@ -7363,16 +7460,62 @@ export class QuartierAnimator {
       if (screenX > -50 && screenX < w + 50) {
         ctx.save();
         ctx.globalAlpha = Math.max(0, fc.alpha);
-        ctx.fillStyle = '#fbbf24';
+        ctx.translate(screenX, fc.y);
+
+        // Pièce dorée 3D avec effet de rotation optique
+        if (fc.rot !== undefined) {
+          const flip = Math.cos(fc.rot);
+          ctx.save();
+          ctx.scale(Math.max(0.18, Math.abs(flip)), 1);
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.arc(0, -16, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#fef08a';
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        ctx.fillStyle = '#fef08a';
         ctx.strokeStyle = '#78350f';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 3.2;
         ctx.font = '900 15px "Cairo", sans-serif';
         ctx.textAlign = 'center';
-        ctx.strokeText(fc.text, screenX, fc.y);
-        ctx.fillText(fc.text, screenX, fc.y);
+        ctx.strokeText(fc.text, 0, 0);
+        ctx.fillText(fc.text, 0, 0);
         ctx.restore();
       }
     });
+
+    // Ondulations d'interaction tactile dorées sur le sol
+    if (this.tapRipples && this.tapRipples.length > 0) {
+      ctx.save();
+      for (const tr of this.tapRipples) {
+        ctx.strokeStyle = `rgba(251, 191, 36, ${Math.max(0, tr.alpha)})`;
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(tr.x, tr.y, tr.r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Nuance atmosphérique cinématique (Coucher de soleil doré / Nuit méditerranéenne)
+    const skyCycleProgress = (timestamp % (this.skyCycleDuration * 1000)) / (this.skyCycleDuration * 1000);
+    if (skyCycleProgress >= 0.42 && skyCycleProgress < 0.65) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'color-burn';
+      ctx.fillStyle = 'rgba(249, 115, 22, 0.12)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.restore();
+    } else if (skyCycleProgress >= 0.65 && skyCycleProgress < 0.92) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.22)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.restore();
+    }
 
     // Rideau de pluie fine en diagonale
     if (this.rainIntensity > 0.05) {
@@ -7774,11 +7917,18 @@ export class QuartierAnimator {
 
     ctx.save();
 
-    // Ombre au sol réaliste
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-    ctx.beginPath();
-    ctx.ellipse(x + b.width / 2, groundY, b.width * 0.55, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // Ombre au sol réaliste douce et dégradée (Contact Shadow)
+    this.drawContactShadow(ctx, x + b.width / 2, groundY, b.width * 0.55, 8, 0.45);
+
+    // Squash & Stretch tactile lors de la production ou du tap
+    const sq = this.buildingSquash && this.buildingSquash[b.id];
+    if (sq && sq.timer > 0) {
+      const progress = sq.timer / 0.22;
+      const wave = Math.sin(progress * Math.PI) * sq.intensity;
+      ctx.translate(x + b.width / 2, groundY);
+      ctx.scale(1 + wave * 0.55, 1 - wave * 0.55);
+      ctx.translate(-(x + b.width / 2), -groundY);
+    }
 
     // Cas 0 : نصبة كسكروت عياري تمّ بيعها -> تحوّلت إلى حديقة عمومية خضراء جميلة ونافورة
     const isKaskroutSold = (b.id === 'kaskrout') && ((biz && biz.isSold) || (this.engine.soldBusinesses && this.engine.soldBusinesses.includes('kaskrout')));
@@ -11276,6 +11426,8 @@ export class TunisiaMapEngine {
     this.canvas.height = Math.floor(cssH * this.dpr);
     this.canvas.style.width = cssW + 'px';
     this.canvas.style.height = cssH + 'px';
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
 
     // Échelle équilibrée pour visibilité claire du Maghreb et centrage direct sur la Tunisie
     this.scale = Math.max(0.72, Math.min(1.3, Math.min(cssW / 520, cssH / 660)));
