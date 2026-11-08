@@ -241,6 +241,7 @@
 # CHANGELOG
 
 ## 2026-11-08
+- fix(splash): pure css auto-dismiss and instant tap unlock to prevent any loading overlay freeze
 - fix(loading,street): remove blocking head script, add splash fallback and sync projects in street layout
 - feat(graphics): integrate PixiJS 2D HD GPU engine with vector textures and dynamic lighting
 - fix(loading): resolve syntax error and enforce zero-blank-screen test in CI and ship script

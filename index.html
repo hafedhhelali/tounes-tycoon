@@ -2572,6 +2572,17 @@
     }
 
     /* --- ANIMATION D'ACCUEIL ROYALE (SPLASH SCREEN TYCOON) --- */
+    @keyframes autoDismissSplashKeyframe {
+      0%, 72% { opacity: 1; pointer-events: auto; }
+      92% { opacity: 0; pointer-events: none; }
+      100% { opacity: 0; pointer-events: none; visibility: hidden; display: none; }
+    }
+    @keyframes autoFillProgressKeyframe {
+      0% { width: 0%; }
+      35% { width: 42%; }
+      75% { width: 88%; }
+      100% { width: 100%; }
+    }
     #welcomeSplashScreen {
       position: fixed;
       inset: 0;
@@ -2589,11 +2600,14 @@
       transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
       overflow: hidden;
       user-select: none;
+      animation: autoDismissSplashKeyframe 2.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
     #welcomeSplashScreen.splash-hide {
-      opacity: 0;
-      transform: scale(1.04);
-      pointer-events: none;
+      opacity: 0 !important;
+      transform: scale(1.04) !important;
+      pointer-events: none !important;
+      visibility: hidden !important;
+      display: none !important;
     }
     .splash-CenterStage {
       display: flex;
@@ -2682,6 +2696,7 @@
       box-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
       transition: width 0.12s ease-out;
       position: relative;
+      animation: autoFillProgressKeyframe 1.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
     .splash-footer-small {
       display: flex;
@@ -2864,24 +2879,31 @@
     }
   </style>
   <script>
-    // Sécurité de démarrage Mobile / WebView : fermeture garantie du splash après délai
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const splashEl = document.getElementById('welcomeSplashScreen');
-        if (splashEl && !splashEl.classList.contains('splash-hide')) {
-          splashEl.classList.add('splash-hide');
-          setTimeout(() => { if (splashEl && splashEl.parentNode) splashEl.style.display = 'none'; }, 600);
+    // Sécurité de démarrage Mobile / WebView : fermeture garantie du splash même si événement retardé
+    (function() {
+      function forceDismissSplash() {
+        var s = document.getElementById('welcomeSplashScreen');
+        if (s) {
+          s.classList.add('splash-hide');
+          setTimeout(function() { if (s && s.parentNode) s.style.display = 'none'; }, 200);
         }
-      }, 3500);
-    });
-    window.addEventListener('error', (e) => {
+      }
+      setTimeout(forceDismissSplash, 2200);
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(forceDismissSplash, 1500);
+      } else {
+        window.addEventListener('DOMContentLoaded', function() { setTimeout(forceDismissSplash, 1500); });
+        window.addEventListener('load', function() { setTimeout(forceDismissSplash, 1000); });
+      }
+    })();
+    window.addEventListener('error', function(e) {
       console.error('Unhandled app error:', e.error || e.message);
     });
   </script>
 </head>
 <body>
   <!-- ÉCRAN D'ACCUEIL ANIMÉ AVEC TEXTE DESIGNÉ, BARRE DE PROGRESSION ET PETIT TEXTE EN BAS -->
-  <div id="welcomeSplashScreen" role="dialog" aria-label="شاشة الترحيب تونس تايكون">
+  <div id="welcomeSplashScreen" role="dialog" aria-label="شاشة الترحيب تونس تايكون" onclick="this.classList.add('splash-hide'); this.style.display='none';">
     <div style="height: 8px;"></div>
     <div class="splash-CenterStage">
       <div class="splash-crest-wrap">

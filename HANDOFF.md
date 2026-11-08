@@ -1,10 +1,10 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-08 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v149)
-1. Résolution blocage démarrage & rue projets : suppression de l'import synchrone bloquant de `pixi.min.js` dans `<head>` et ajout d'un timeout de secours garanti à 2.2s dans `initWelcomeSplashScreen`.
-2. Intégration rue des projets (`QuartierAnimator`) : ajout des gabarits architecturaux pour `bar_cha3bi` et `boite_de_nuit`, fallback systématique anti-NaN, et synchronisation automatique de tous les projets de `CITY_BUSINESS_MAP` dans le tracé de la rue (`buildZoneLayout`).
-3. Pipeline & Validation : 84/84 tests unitaires réussis (`npm test`), VM sandbox validée, synchronisation des assets `pixi_renderer.js` dans `scripts/ship.ps1`.
+## État en 3 lignes (v150)
+1. Résolution définitive blocage overlay : ajout d'une animation pure CSS `@keyframes autoDismissSplashKeyframe` (auto-dismiss forcé à 2.3s par le compositeur GPU du navigateur, indépendant du JS).
+2. Déverrouillage tactile & barre de progression CSS : auto-remplissage CSS natif et suppression instantanée au tap sur l'écran d'accueil (`onclick` inline), double sécurité dans `<head>`.
+3. Validation & Tests : 84/84 tests unitaires réussis (`npm test`), simulation VM validée, zéro possibilité de freeze au démarrage.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
