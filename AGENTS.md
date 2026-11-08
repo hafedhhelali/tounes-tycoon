@@ -30,3 +30,10 @@
 
 ## 4. AUTONOMIE
 - Autorisation PERMANENTE de modifier code/textes/docs, commiter et pousser sans demander. Ne pas poser de questions de confirmation. Stop uniquement si action destructive/irréversible ou demande réellement ambiguë.
+
+## 5. RÈGLE CRITIQUE : ZÉRO ÉCRAN BLANC & VALIDATION SYSTÉMATIQUE DU CHARGEMENT
+- **Interdiction formelle de régression sur le chargement (Zero Blank Screen)** :
+  - Tout ajout ou modification dans `store_animator.js`, `engine.js`, `index.html`, `audio.js`, `ads_service.js` DOIT valider `index_loading.test.js` et `node scripts/test_index_html.mjs`.
+  - Aucune livraison (`ship.ps1`) n'est autorisée si l'exécution de `index.html` en VM sandbox échoue ou si un module présente une erreur de syntaxe ou un import non résolu.
+  - Les finders d'événements et objets globaux doivent être protégés par `typeof window !== 'undefined'` pour éviter tout plantage en environnement headless ou test runner.
+

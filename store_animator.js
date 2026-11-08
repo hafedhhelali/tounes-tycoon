@@ -5421,15 +5421,6 @@ export class CanvasStoreEngine {
         ctx.font = '8.5px serif';
         ctx.textAlign = 'center';
         ctx.fillText('📄', -10, -8);
-      } else {
-        ctx.strokeStyle = st.coat;
-        ctx.lineWidth = 2.2;
-        ctx.beginPath();
-        ctx.moveTo(-5, -14);
-        ctx.lineTo(-8, -4);
-        ctx.moveTo(5, -14);
-        ctx.lineTo(8, -4);
-        ctx.stroke();
       } else if (c.state === 'doing_activity' && c.activityType === 'club_dancing') {
         // --- CLIENT DE BOÎTE DE NUIT QUI DANSE EN RYTHME AVEC LES BRAS EN L'AIR ---
         const danceArm = Math.sin(c.walkCycle * 9) * 6;
@@ -5459,6 +5450,15 @@ export class CanvasStoreEngine {
         ctx.stroke();
         ctx.font = '10px serif';
         ctx.fillText('🍺', -8, mugY - 2);
+      } else {
+        ctx.strokeStyle = st.coat;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-8, -4);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(8, -4);
+        ctx.stroke();
       }
 
       // Accessoire tenu à la sortie :
@@ -6431,7 +6431,7 @@ export class QuartierAnimator {
 
     this.animId = null;
     this.lastTime = 0;
-    this.dpr = window.devicePixelRatio || 1;
+    this.dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
     this.width = 800;
     this.height = 360;
 
@@ -7013,20 +7013,24 @@ export class QuartierAnimator {
   }
 
   bindEvents() {
-    this.canvas.addEventListener('pointerdown', this.handlePointerDown);
-    window.addEventListener('pointermove', this.handlePointerMove);
-    window.addEventListener('pointerup', this.handlePointerUp);
-    window.addEventListener('pointercancel', this.handlePointerUp);
-    this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
-    window.addEventListener('resize', () => this.resize());
+    if (this.canvas) this.canvas.addEventListener('pointerdown', this.handlePointerDown);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('pointermove', this.handlePointerMove);
+      window.addEventListener('pointerup', this.handlePointerUp);
+      window.addEventListener('pointercancel', this.handlePointerUp);
+      window.addEventListener('resize', () => this.resize());
+    }
+    if (this.canvas) this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
   }
 
   unbindEvents() {
-    this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
-    window.removeEventListener('pointermove', this.handlePointerMove);
-    window.removeEventListener('pointerup', this.handlePointerUp);
-    window.removeEventListener('pointercancel', this.handlePointerUp);
-    this.canvas.removeEventListener('wheel', this.handleWheel);
+    if (this.canvas) this.canvas.removeEventListener('pointerdown', this.handlePointerDown);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('pointermove', this.handlePointerMove);
+      window.removeEventListener('pointerup', this.handlePointerUp);
+      window.removeEventListener('pointercancel', this.handlePointerUp);
+    }
+    if (this.canvas) this.canvas.removeEventListener('wheel', this.handleWheel);
   }
 
   resize() {
@@ -11971,14 +11975,18 @@ export class TunisiaMapEngine {
     this.handleWheel = this.handleWheel.bind(this);
     this.onWindowResize = () => this.resize();
 
-    this.canvas.addEventListener('pointerdown', this.handlePointerDown);
-    window.addEventListener('pointermove', this.handlePointerMove);
-    window.addEventListener('pointerup', this.handlePointerUp);
-    window.addEventListener('pointercancel', this.handlePointerUp);
-    this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
-    this.canvas.addEventListener('click', this.handleClick);
-    this.canvas.addEventListener('mousemove', this.handleMouseMove);
-    if (typeof window !== 'undefined') window.addEventListener('resize', this.onWindowResize);
+    if (this.canvas) this.canvas.addEventListener('pointerdown', this.handlePointerDown);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('pointermove', this.handlePointerMove);
+      window.addEventListener('pointerup', this.handlePointerUp);
+      window.addEventListener('pointercancel', this.handlePointerUp);
+      window.addEventListener('resize', this.onWindowResize);
+    }
+    if (this.canvas) {
+      this.canvas.addEventListener('wheel', this.handleWheel, { passive: true });
+      this.canvas.addEventListener('click', this.handleClick);
+      this.canvas.addEventListener('mousemove', this.handleMouseMove);
+    }
 
     this.resize();
     this.start();

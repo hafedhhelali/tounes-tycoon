@@ -5,6 +5,9 @@ Set-Location (Split-Path $PSScriptRoot -Parent)
 $t = npm test 2>&1 | Out-String
 if ($t -notmatch 'fail 0') { Write-Host (($t -split "`n") | Select-Object -Last 15); throw 'Tests KO' }
 
+node scripts\test_index_html.mjs
+if ($LASTEXITCODE -ne 0) { throw 'Verification chargement index.html & modules KO' }
+
 Copy-Item index.html,engine.js,audio.js,ads_service.js,store_animator.js,motion_engine.js,icon.png www -Force
 if (Test-Path android\app\src\main\assets\public) { Copy-Item www\* android\app\src\main\assets\public -Force }
 
