@@ -427,6 +427,34 @@ export const BUSINESS_CONFIGS = [
       { name: 'مدام سهام', role: 'مديرة الملاحة', avatar: '👩‍✈️', cost: 2800000000.0 },
       { name: 'سي المنصف البكوش', role: 'الرئيس المدير العام', avatar: '🦅', cost: 6000000000.0 }
     ],
+  },
+  {
+    id: 'bar_cha3bi',
+    name: 'بار شعبي تونسي',
+    tagline: 'كعبة سلتيا باردة تفحفح، كيميا لوز وحمّص وزيتون، قعدة رجالية وجو شعبي أصيل !',
+    icon: '🍺',
+    baseCost: 1800.0,
+    baseRevenue: 110.0,
+    costMultiplier: 1.10,
+    cycleDurationMs: 4000, // 4.0s
+    managers: [
+      { name: 'عمّ خميس السرباي', role: 'سرباي الصالة والبيرّة', avatar: '🍺', cost: 7000.0 },
+      { name: 'سي فتحي البارمان', role: 'سرباي ثانٍ ومعلّم البار', avatar: '🍻', cost: 25000.0 }
+    ],
+  },
+  {
+    id: 'boite_de_nuit',
+    name: 'ديسكو وسهرية لاونج',
+    tagline: 'دي جي لايف، إضاءة ليزر وبستة شطيح، كوكتيل وبيرّة، وڤارديانة على الباب بالفرز والضحكة !',
+    icon: '🪩',
+    baseCost: 28000.0,
+    baseRevenue: 1400.0,
+    costMultiplier: 1.11,
+    cycleDurationMs: 14000, // 14.0s
+    managers: [
+      { name: 'الكابوس كمال الفيدور', role: 'رئيس الحراسة والفرز بالباب', avatar: '🕶️', cost: 120000.0 },
+      { name: 'ريمون الميكسولوغ', role: 'معلّم الكوكتيلات والبار', avatar: '🍸', cost: 400000.0 }
+    ],
   }
 ];
 
@@ -938,23 +966,23 @@ export const TUNISIAN_CITIES = [
 ];
 
 export const CITY_BUSINESS_MAP = {
-  tunis: ['kaskrout', 'fricasse', 'kahwa', 'boulangerie_artisanale', 'superette', 'supermarche', 'agence_voyages'],
+  tunis: ['kaskrout', 'fricasse', 'kahwa', 'bar_cha3bi', 'boite_de_nuit', 'boulangerie_artisanale', 'superette', 'supermarche', 'agence_voyages'],
   bizerte: ['fruits_de_mer', 'attariya', 'supermarche', 'librairie'],
-  nabeul_hammamet: ['librairie', 'artisanat_poterie', 'superette', 'kahwa', 'croisiere_mer', 'centre_thalasso'],
+  nabeul_hammamet: ['librairie', 'artisanat_poterie', 'boite_de_nuit', 'superette', 'kahwa', 'croisiere_mer', 'centre_thalasso'],
   kairouan: ['kahwa', 'patisserie', 'superette', 'boulangerie_artisanale', 'vente_vetements', 'salle_de_jeux'],
-  sbeitla: ['kahwa', 'superette', 'salle_de_jeux', 'vente_vetements', 'librairie', 'attariya'],
+  sbeitla: ['bar_cha3bi', 'kahwa', 'superette', 'salle_de_jeux', 'vente_vetements', 'librairie', 'attariya'],
   sfax: ['fruits_de_mer', 'huilerie_olive', 'librairie', 'vente_vetements', 'kahwa', 'salon_de_the', 'superette'],
   djerba_holding: ['kahwa', 'artisanat_poterie', 'fruits_de_mer', 'hotel', 'centre_thalasso', 'salon_de_the', 'superette', 'croisiere_mer'],
   gabes: ['usine_conserves', 'superette', 'kahwa', 'attariya', 'vente_vetements', 'fricasse'],
-  gafsa: ['emballage_dattes', 'attariya', 'hotel', 'vente_vetements', 'kahwa'],
+  gafsa: ['bar_cha3bi', 'emballage_dattes', 'attariya', 'hotel', 'vente_vetements', 'kahwa'],
   tozeur: ['hotel', 'salon_de_the', 'kahwa', 'attariya', 'superette', 'salle_de_jeux', 'fricasse'],
   beja: ['produits_laitiers', 'boulangerie_artisanale', 'boucherie', 'kahwa', 'attariya', 'superette', 'fricasse'],
-  le_kef: ['boucherie', 'produits_laitiers', 'superette', 'kahwa', 'patisserie', 'salle_de_jeux'],
+  le_kef: ['bar_cha3bi', 'boucherie', 'produits_laitiers', 'superette', 'kahwa', 'patisserie', 'salle_de_jeux'],
   tataouine: ['hotel', 'vente_vetements', 'vente_montres', 'attariya', 'supermarche'],
   medenine_zarzis: ['vente_vetements', 'attariya', 'superette', 'fricasse', 'patisserie', 'salle_de_jeux'],
-  monastir_mahdia: ['hotel', 'huilerie_olive', 'salon_de_the', 'superette', 'supermarche', 'patisserie', 'vente_vetements', 'librairie', 'croisiere_mer'],
+  monastir_mahdia: ['boite_de_nuit', 'hotel', 'huilerie_olive', 'salon_de_the', 'superette', 'supermarche', 'patisserie', 'vente_vetements', 'librairie', 'croisiere_mer'],
   // Compléments pour les autres villes
-  sousse: ['salon_de_the', 'hotel', 'centre_thalasso', 'restaurant', 'supermarche'],
+  sousse: ['boite_de_nuit', 'salon_de_the', 'hotel', 'centre_thalasso', 'restaurant', 'supermarche'],
   annaba: ['fruits_de_mer', 'supermarche', 'usine_conserves', 'agence_voyages'],
   tripoli: ['showroom_auto', 'supermarche', 'promoteur_immobilier', 'hotel']
 };
@@ -2374,6 +2402,16 @@ export class TycoonEngine {
         { item: 'حصة مساج بزيوت الياسمين ومياه البحر', price: 90.0, sharePct: 50 },
         { item: 'دخول حمام ومسبح مياه بحرية دافئة', price: 65.0, sharePct: 35 },
         { item: 'علاج بالطين البحري والأعشاب', price: 120.0, sharePct: 15 }
+      ],
+      bar_cha3bi: [
+        { item: 'كعبة سلتيا باردة تفحفح (Celtia)', price: 3.2, sharePct: 55 },
+        { item: 'كيميا كاملة (لوز، حمص، زيتون، كبار)', price: 2.5, sharePct: 25 },
+        { item: 'صحن كبدة وسكالوب مشوي حار', price: 4.8, sharePct: 20 }
+      ],
+      boite_de_nuit: [
+        { item: 'كوكتيل لاونج بريميوم (Mojito / Blue Lagoon)', price: 18.0, sharePct: 40 },
+        { item: 'بيرّة بريميوم مثلجة بالبار', price: 9.0, sharePct: 35 },
+        { item: 'شوتس تيكيلا وفودكا VIP بالبستة', price: 12.0, sharePct: 25 }
       ]
     };
 

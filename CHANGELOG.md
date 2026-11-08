@@ -241,6 +241,7 @@
 # CHANGELOG
 
 ## 2026-11-08
+- feat(map,projects): realistic cartographic map and new bar cha3bi and nightclub projects
 - fix(boot): resolve app launch freeze by bundling motion primitives and updating apk assets sync
 - feat(motion): 60fps mobile motion engine, spring physics, glassmorphism and canvas visual depth
 

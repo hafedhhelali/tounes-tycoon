@@ -48,6 +48,7 @@ export class CanvasStoreEngine {
     this.cachedDetail = null;
     this.cachedDetailKey = '';
     this.waiter = { x: 118, y: 136, targetX: 140, carryingIcon: '☕', busy: false };
+    this.waiter2 = { x: 148, y: 136, targetX: 170, carryingIcon: '🍺', busy: false };
     this.bankVipClient = null;
 
     // Interaction clickable regions
@@ -89,6 +90,8 @@ export class CanvasStoreEngine {
       artisanat_poterie: ['🏺', '🥣', '🏺', '🎨', '🪔'],
       huilerie_olive: ['🫒', '🧴', '🫒', '🌿', '🥫'],
       centre_thalasso: ['🫧', '💆', '🧖', '🌸', '🧴'],
+      bar_cha3bi: ['🍺', '🍻', '🥜', '🫒', '🥨'],
+      boite_de_nuit: ['🍸', '🍹', '🥂', '🍾', '🎧', '🪩', '🎵'],
       default: ['🛒', '✨', '🪙', '📦']
     };
 
@@ -152,7 +155,8 @@ export class CanvasStoreEngine {
     this.conveyorTimer = 0;
     this.cachedDetail = null;
     this.cachedDetailKey = '';
-    this.waiter = { x: 118, y: 136, targetX: 140, carryingIcon: bizId === 'salon_de_the' ? '🍹' : '☕', busy: false };
+    this.waiter = { x: 118, y: 136, targetX: 140, carryingIcon: bizId === 'salon_de_the' ? '🍹' : (bizId === 'bar_cha3bi' ? '🍺' : '☕'), busy: false };
+    this.waiter2 = { x: 148, y: 136, targetX: 170, carryingIcon: '🍻', busy: false };
     const biz = this.getBiz();
     this.lastProgressMs = biz ? (biz.progressMs || 0) : 0;
     this.spawnTimer = 0.8;
@@ -261,6 +265,8 @@ export class CanvasStoreEngine {
     if (bizId === 'artisanat_poterie') return 'pottery_workshop';
     if (bizId === 'huilerie_olive') return 'olive_press';
     if (bizId === 'centre_thalasso') return 'thalasso_spa';
+    if (bizId === 'bar_cha3bi') return 'bar_cha3bi';
+    if (bizId === 'boite_de_nuit') return 'boite_de_nuit';
     if (['croisiere_mer', 'agence_voyages', 'hotel', 'tayaran_el_ghzela', 'showroom_auto', 'promoteur_immobilier'].includes(bizId)) {
       return 'agency_desks';
     }
@@ -271,6 +277,18 @@ export class CanvasStoreEngine {
 
   getActivitySlotX(archetype, slotIndex) {
     const rightBound = Math.max(210, this.width - 44);
+    if (archetype === 'bar_cha3bi') {
+      // 4 tables bistrot de bar populaire avec chaises
+      const span = Math.max(105, rightBound - 116);
+      return 116 + (slotIndex % 4) * (span / 3);
+    }
+    if (archetype === 'boite_de_nuit') {
+      // Slots 0-1: Bar lounge cocktails/bières
+      // Slots 2-4: Piste de danse rythmée sous la boule à facettes
+      if (slotIndex < 2) return 108 + slotIndex * 34;
+      const danceSpan = Math.max(85, rightBound - 180);
+      return 180 + ((slotIndex - 2) % 3) * (danceSpan / 2);
+    }
     if (archetype === 'boulangerie_oven' || archetype === 'pottery_workshop' || archetype === 'olive_press') {
       const span = Math.max(88, rightBound - 120);
       return 120 + (slotIndex % 4) * (span / 3);
@@ -388,7 +406,7 @@ export class CanvasStoreEngine {
   spawnCustomer() {
     const archetype = this.getBizArchetype(this.bizId);
     if (archetype === 'bank_branch') return;
-    const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'thalasso_spa') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
+    const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'thalasso_spa' || archetype === 'bar_cha3bi' || archetype === 'boite_de_nuit') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
     const activeCustomers = this.customers.filter(c => c.state !== 'walking_out');
     if (activeCustomers.length >= maxActive) return;
 
@@ -456,6 +474,16 @@ export class CanvasStoreEngine {
       activityDuration = 2.4;
       isSeated = true;
       ticketIcon = '💆';
+    } else if (archetype === 'bar_cha3bi') {
+      activityType = 'drinking_beer';
+      activityDuration = 2.4;
+      isSeated = true;
+      needsWaiterService = true;
+      ticketIcon = '🍺';
+    } else if (archetype === 'boite_de_nuit') {
+      activityType = slotIdx < 2 ? 'club_ordering' : 'club_dancing';
+      activityDuration = slotIdx < 2 ? 1.6 : 3.0;
+      ticketIcon = '🪩';
     }
 
     const evolvedUnit = this.getEvolvedUnitPrice(this.bizId);
@@ -482,13 +510,18 @@ export class CanvasStoreEngine {
       servedByWaiter: !needsWaiterService,
       waitServiceTimer: 0,
       state: 'walking_in',
+      isBouncerRejected: (archetype === 'boite_de_nuit' && Math.random() < 0.22),
       orderIcon: archetype === 'kahwa_counter'
         ? (slotIdx % 2 === 0 ? '☕' : '🍵')
         : (archetype === 'tea_lounge'
             ? (this.bizId === 'restaurant'
                 ? ['🍲', '🍛', '🍗', '🥩', '🥘', '🥗'][slotIdx % 6]
                 : ['🍹', '🍸', '☕', '🍰', '🧋'][slotIdx % 5])
-            : this.getOrderIcon()),
+            : (archetype === 'bar_cha3bi'
+                ? ['🍺', '🍻', '🥜', '🫒', '🥨'][slotIdx % 5]
+                : (archetype === 'boite_de_nuit'
+                    ? ['🍸', '🍹', '🥂', '🍾', '🎧'][slotIdx % 5]
+                    : this.getOrderIcon()))),
       ticketIcon,
       isSmoking: archetype === 'kahwa_counter' ? (Math.random() < 0.45) : false,
       talkPhase: Math.random() * Math.PI * 2,
@@ -536,7 +569,9 @@ export class CanvasStoreEngine {
       boulangerie_artisanale: 1.5,
       artisanat_poterie: 18.0,
       huilerie_olive: 35.0,
-      centre_thalasso: 90.0
+      centre_thalasso: 90.0,
+      bar_cha3bi: 4.5,
+      boite_de_nuit: 45.0
     };
     return UNIT_PRICES[bizId] || 10.0;
   }
@@ -867,6 +902,14 @@ export class CanvasStoreEngine {
       wallGrad.addColorStop(0, '#083344');
       wallGrad.addColorStop(0.6, '#0e7490');
       wallGrad.addColorStop(1, '#041f2a');
+    } else if (bizId === 'bar_cha3bi') {
+      wallGrad.addColorStop(0, '#361b0c');
+      wallGrad.addColorStop(0.55, '#221107');
+      wallGrad.addColorStop(1, '#120803');
+    } else if (bizId === 'boite_de_nuit') {
+      wallGrad.addColorStop(0, '#0f051d');
+      wallGrad.addColorStop(0.5, '#1e0836');
+      wallGrad.addColorStop(1, '#08020e');
     } else if (bizId === 'tayaran_el_ghzela' || bizId === 'showroom_auto' || bizId === 'promoteur_immobilier') {
       wallGrad.addColorStop(0, '#0f172a');
       wallGrad.addColorStop(0.6, '#1e293b');
@@ -1833,6 +1876,142 @@ export class CanvasStoreEngine {
       });
     }
 
+    // 17. BAR CHA3BI TUNISIEN (سيلتيا وكمية وأجواء شعبية أصيلة)
+    else if (bizId === 'bar_cha3bi') {
+      const mirX = 114;
+      const mirY = 32;
+      const mirW = Math.min(108, w - 160);
+      const mirH = 34;
+
+      ctx.fillStyle = '#271206';
+      ctx.beginPath();
+      ctx.roundRect(mirX - 2, mirY - 2, mirW + 4, mirH + 4, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      const mGrad = ctx.createLinearGradient(mirX, mirY, mirX + mirW, mirY + mirH);
+      mGrad.addColorStop(0, '#1c1917');
+      mGrad.addColorStop(0.5, '#292524');
+      mGrad.addColorStop(1, '#0c0a09');
+      ctx.fillStyle = mGrad;
+      ctx.fillRect(mirX, mirY, mirW, mirH);
+
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(mirX + mirW / 2, mirY + 12, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 7px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('⭐', mirX + mirW / 2, mirY + 14.5);
+      ctx.font = 'bold 7.5px "Cairo", sans-serif';
+      ctx.fillText('CELTIA • سيلتيا تونسية', mirX + mirW / 2, mirY + 27);
+
+      [mirX - 18, mirX + mirW + 18].forEach(lx => {
+        if (lx > 10 && lx < w - 20) {
+          ctx.strokeStyle = '#d97706';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(lx, 0);
+          ctx.lineTo(lx, 26);
+          ctx.stroke();
+          ctx.fillStyle = '#f59e0b';
+          ctx.beginPath();
+          ctx.arc(lx, 28, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+          const glow = ctx.createRadialGradient(lx, 28, 2, lx, 28, 24);
+          glow.addColorStop(0, 'rgba(251, 191, 36, 0.28)');
+          glow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(lx, 28, 24, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      ctx.fillStyle = '#451a03';
+      ctx.fillRect(mirX - 10, 72, mirW + 20, 3);
+      ctx.font = '10px serif';
+      for (let bx = mirX - 6; bx < mirX + mirW + 10; bx += 14) {
+        ctx.fillText('🍺', bx, 70);
+      }
+    }
+
+    // 18. BOÎTE DE NUIT & SOIRÉE LOUNGE (ديسكو، أضواء ليزر وبوول دو كريستال)
+    else if (bizId === 'boite_de_nuit') {
+      const discoX = Math.min(w - 75, Math.max(160, Math.floor(w * 0.58)));
+      const discoY = 22;
+
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(discoX, 0);
+      ctx.lineTo(discoX, discoY);
+      ctx.stroke();
+
+      const ballGrad = ctx.createRadialGradient(discoX - 2, discoY - 2, 1, discoX, discoY, 10);
+      ballGrad.addColorStop(0, '#ffffff');
+      ballGrad.addColorStop(0.4, '#cbd5e1');
+      ballGrad.addColorStop(1, '#475569');
+      ctx.fillStyle = ballGrad;
+      ctx.beginPath();
+      ctx.arc(discoX, discoY, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#f8fafc';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      for (let f = 0; f < 8; f++) {
+        const ang = (timeSec * 1.8 + f * (Math.PI / 4)) % (Math.PI * 2);
+        const fx = discoX + Math.cos(ang) * 6;
+        const fy = discoY + Math.sin(ang) * 6;
+        ctx.fillStyle = (f % 2 === 0) ? '#38bdf8' : '#f43f5e';
+        ctx.fillRect(fx - 1, fy - 1, 2, 2);
+      }
+
+      const laserColors = ['rgba(6, 182, 212, 0.22)', 'rgba(244, 63, 94, 0.22)', 'rgba(168, 85, 247, 0.24)'];
+      laserColors.forEach((lCol, lIdx) => {
+        const sweep = Math.sin(timeSec * 2.2 + lIdx * 1.5) * 60;
+        ctx.save();
+        ctx.fillStyle = lCol;
+        ctx.beginPath();
+        ctx.moveTo(discoX, discoY);
+        ctx.lineTo(discoX - 70 + sweep, h - 30);
+        ctx.lineTo(discoX - 45 + sweep, h - 30);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      });
+
+      const djX = 108;
+      const djY = 48;
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.roundRect(djX, djY, 48, 22, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#a855f7';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#1e1b4b';
+      ctx.beginPath();
+      ctx.arc(djX + 12, djY + 11, 7, 0, Math.PI * 2);
+      ctx.arc(djX + 34, djY + 11, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.stroke();
+      ctx.font = '10px serif';
+      ctx.fillText('🎧', djX + 18, djY + 8);
+
+      for (let eq = 0; eq < 7; eq++) {
+        const barH = 3 + Math.abs(Math.sin(timeSec * 7 + eq * 0.9)) * 10;
+        ctx.fillStyle = eq < 4 ? '#10b981' : (eq < 6 ? '#f59e0b' : '#ef4444');
+        ctx.fillRect(djX + 6 + eq * 5.2, djY + 20 - barH, 3.8, barH);
+      }
+    }
+
     // 15. DÉFAUT ÉPURÉ
     else {
       ctx.fillStyle = '#334155';
@@ -2538,6 +2717,30 @@ export class CanvasStoreEngine {
       ctx.fillText('🥚', counterX + 28, 72);
       ctx.fillText('🫒', counterX + 48, 72);
       ctx.fillText('🍩', counterX + 68, 72);
+    } else if (currentBizId === 'bar_cha3bi') {
+      ctx.fillStyle = '#1c1917';
+      ctx.beginPath();
+      ctx.roundRect(counterX + 4, 46, deskW - 8, 36, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.font = '12px serif';
+      ctx.fillText('🍺', counterX + 14, 68);
+      ctx.fillText('⭐', counterX + 38, 68);
+      ctx.fillText('🍻', counterX + 62, 68);
+    } else if (currentBizId === 'boite_de_nuit') {
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.roundRect(counterX + 4, 46, deskW - 8, 36, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#a855f7';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.font = '12px serif';
+      ctx.fillText('🍸', counterX + 14, 68);
+      ctx.fillText('🍾', counterX + 38, 68);
+      ctx.fillText('🍹', counterX + 62, 68);
     } else {
       ctx.fillStyle = '#1e293b';
       ctx.beginPath();
@@ -2786,6 +2989,138 @@ export class CanvasStoreEngine {
           type: 'employee_info',
           name: waiterSlot.name,
           role: waiterSlot.role
+        });
+      }
+      return;
+    }
+
+    // 2.C CAS BAR CHA3BI TUNISIEN (`bar_cha3bi`) :
+    // 1 serveur d'office (Serveur 1) + 1 second serveur recruté (Serveur 2) !
+    if (archetype === 'bar_cha3bi') {
+      const staffSlots = detail.staffSlots || [];
+      const hiredCount = Math.min(2, biz ? (biz.hiredManagersCount ?? (biz.hasManager ? 1 : 0)) : 1);
+
+      const tapX = 108;
+      this.drawMachineProp(ctx, this.bizId, tapX, baseY + 2, isBusy, timeSec);
+
+      // Serveur 1 (سرباي 1) - Toujours actif dès le départ
+      const wx1 = this.waiter ? this.waiter.x : 138;
+      const wy1 = 140;
+      this.drawWorker(ctx, wx1, wy1, 1, true, timeSec, true);
+
+      ctx.save();
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.ellipse(wx1 + 11, wy1 - 20, 7.5, 2.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = '9.5px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(this.waiter ? this.waiter.carryingIcon : '🍺', wx1 + 11, wy1 - 22);
+      ctx.restore();
+
+      if (staffSlots[0]) {
+        this.clickZones.push({
+          x: wx1 - 16,
+          y: wy1 - 48,
+          width: 34,
+          height: 48,
+          type: 'employee_info',
+          name: staffSlots[0].name,
+          role: staffSlots[0].role
+        });
+      }
+
+      // Serveur 2 (سرباي 2) - Si recruté ou bouton de recrutement
+      if (hiredCount >= 2) {
+        const wx2 = this.waiter2 ? this.waiter2.x : 168;
+        const wy2 = 142;
+        this.drawWorker(ctx, wx2, wy2, 2, true, timeSec, true);
+
+        ctx.save();
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.ellipse(wx2 + 11, wy2 - 20, 7.5, 2.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = '9.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.waiter2 ? this.waiter2.carryingIcon : '🍻', wx2 + 11, wy2 - 22);
+        ctx.restore();
+
+        if (staffSlots[1]) {
+          this.clickZones.push({
+            x: wx2 - 16,
+            y: wy2 - 48,
+            width: 34,
+            height: 48,
+            type: 'employee_info',
+            name: staffSlots[1].name,
+            role: staffSlots[1].role
+          });
+        }
+      } else if (staffSlots[1]) {
+        // Bouton de recrutement du 2ème serveur ergonomique
+        const recruitX = 188;
+        const recruitY = 114;
+        const s2 = staffSlots[1];
+        this.drawHireButton(ctx, recruitX, recruitY, 68, 26, `+ ${s2.name}`, 1, 'manager_hire', s2.cost, now);
+      }
+      return;
+    }
+
+    // 2.D CAS BOÎTE DE NUIT & SOIRÉE LOUNGE (`boite_de_nuit`) :
+    // Deux portiers / videurs d'élite à l'entrée qui régulent les flux et refoulent les perturbateurs !
+    if (archetype === 'boite_de_nuit') {
+      const doorX = this.width - 34;
+      const bouncer1X = doorX - 16;
+      const bouncer2X = doorX + 12;
+      const bouncerY = 144;
+
+      // Portier 1 & Portier 2
+      this.drawWorker(ctx, bouncer1X, bouncerY, 3, true, timeSec, true);
+      this.drawWorker(ctx, bouncer2X, bouncerY, 4, true, timeSec, true);
+
+      // Accessoires sécurité : Lunettes noires et oreillettes
+      [bouncer1X, bouncer2X].forEach(bx => {
+        ctx.save();
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(bx - 4, bouncerY - 33, 8, 3);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 0.6;
+        ctx.strokeRect(bx - 4, bouncerY - 33, 8, 3);
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(bx + 5, bouncerY - 30, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Cordon VIP velours rouge
+      ctx.save();
+      ctx.fillStyle = '#d97706';
+      ctx.fillRect(bouncer1X - 14, bouncerY - 14, 3, 14);
+      ctx.fillRect(bouncer1X + 4, bouncerY - 14, 3, 14);
+      ctx.beginPath();
+      ctx.arc(bouncer1X - 12.5, bouncerY - 14, 2.5, 0, Math.PI * 2);
+      ctx.arc(bouncer1X + 5.5, bouncerY - 14, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(bouncer1X - 12.5, bouncerY - 12);
+      ctx.quadraticCurveTo(bouncer1X - 4, bouncerY - 7, bouncer1X + 5.5, bouncerY - 12);
+      ctx.stroke();
+      ctx.restore();
+
+      const staffSlots = detail.staffSlots || [];
+      if (staffSlots[0]) {
+        this.clickZones.push({
+          x: bouncer1X - 14,
+          y: bouncerY - 48,
+          width: 32,
+          height: 48,
+          type: 'employee_info',
+          name: staffSlots[0].name,
+          role: staffSlots[0].role
         });
       }
       return;
@@ -3060,6 +3395,89 @@ export class CanvasStoreEngine {
         ctx.fillRect(csX + scrW / 2 - 5, scrY + scrH + 9, 10, 1.6);
         ctx.restore();
       }
+
+      ctx.restore();
+      return;
+    }
+
+    // 1.B BOÎTE DE NUIT & SOIRÉE LOUNGE (`boite_de_nuit`) :
+    // Comptoir bar à cocktails à gauche + Grande Piste de danse LED rythmée à droite
+    if (archetype === 'boite_de_nuit') {
+      const barX = leftX;
+      const barW = 58;
+      const barY = 138;
+
+      // 1. Comptoir Bar Lounge avec rétro-éclairage néon
+      const bGrad = ctx.createLinearGradient(barX, barY, barX, barY + 12);
+      bGrad.addColorStop(0, '#38bdf8');
+      bGrad.addColorStop(0.3, '#1e1b4b');
+      bGrad.addColorStop(1, '#090d16');
+      ctx.fillStyle = bGrad;
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barW, 14, [4, 4, 2, 2]);
+      ctx.fill();
+      ctx.strokeStyle = '#a855f7';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      // Shaker et verres à cocktail sur le comptoir
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillRect(barX + 8, barY - 7, 4, 7);
+      ctx.font = '8px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🍸', barX + 22, barY - 1);
+      ctx.fillText('🍹', barX + 38, barY - 1);
+      ctx.fillText('🍾', barX + 50, barY - 1);
+
+      // 2. Grande Piste de danse (Dancefloor) LED à dalles lumineuses rythmées
+      const danceX = barX + barW + 10;
+      const danceW = Math.max(78, rightX - danceX - 22);
+      const danceY = 135;
+      const danceH = 18;
+
+      // Cadre de la piste en aluminium brossé
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.roundRect(danceX - 2, danceY - 2, danceW + 4, danceH + 4, 3);
+      ctx.fill();
+      ctx.strokeStyle = '#ec4899';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Dalles de sol interactives LED 4x2
+      const cols = 4;
+      const rows = 2;
+      const tileW = (danceW - 4) / cols;
+      const tileH = (danceH - 4) / rows;
+      const neonPalette = ['#06b6d4', '#ec4899', '#a855f7', '#f43f5e', '#10b981', '#f59e0b'];
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const tX = danceX + 2 + c * tileW;
+          const tY = danceY + 2 + r * tileH;
+          const pulse = Math.sin(timeSec * 7 + (c + r * cols) * 1.2) * 0.5 + 0.5;
+          const color = neonPalette[(c + r * 2 + Math.floor(timeSec * 2)) % neonPalette.length];
+          ctx.fillStyle = color;
+          ctx.globalAlpha = 0.25 + pulse * 0.45;
+          ctx.fillRect(tX + 1, tY + 1, tileW - 2, tileH - 2);
+          ctx.globalAlpha = 1.0;
+        }
+      }
+
+      // Enceintes acoustiques de concert (Club Speaker Towers) aux deux coins de la piste
+      [danceX - 7, danceX + danceW + 1].forEach((spX) => {
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(spX, danceY - 14, 6, 30);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 0.8;
+        ctx.strokeRect(spX, danceY - 14, 6, 30);
+        const bassThump = Math.abs(Math.sin(timeSec * 8)) * 1.2;
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(spX + 3, danceY - 8, 2 + bassThump * 0.3, 0, Math.PI * 2);
+        ctx.arc(spX + 3, danceY + 4, 2.5 + bassThump * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+      });
 
       ctx.restore();
       return;
@@ -4049,6 +4467,56 @@ export class CanvasStoreEngine {
       ctx.fillRect(x + 34, y - 16, 2.5, 2.5);
     }
 
+    // TIREUSE À BIÈRE CELTIA PRESSION (BAR CHA3BI)
+    else if (bizId === 'bar_cha3bi') {
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(x + 6, y - 18, 34, 18);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + 6, y - 18, 34, 18);
+
+      ctx.fillStyle = '#cbd5e1';
+      ctx.fillRect(x + 18, y - 36, 10, 18);
+      ctx.strokeStyle = '#f8fafc';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 18, y - 36, 10, 18);
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(x + 15, y - 30, 4, 3);
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(x + 23, y - 32, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      const leverAngle = isBusy ? 0.35 : 0;
+      ctx.save();
+      ctx.translate(x + 23, y - 36);
+      ctx.rotate(leverAngle);
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(-2, -12, 4, 12);
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(0, -12, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(x + 12, y - 20, 22, 3);
+
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(x + 12, y - 14, 8, 12);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x + 11, y - 16, 10, 3);
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x + 8, y - 12, 4, 8);
+
+      if (isBusy) {
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(x + 15, y - 27, 2, 12);
+      }
+    }
+
     // POISSONNERIE / MARÉE (FRUITS DE MER) : Étal de glace pilée scintillante, poissons sautillants et citron
     else if (bizId === 'fruits_de_mer' || bizId === 'croisiere_mer') {
       // Bac réfrigéré inox & glace pilée
@@ -4710,10 +5178,11 @@ export class CanvasStoreEngine {
     for (const c of this.customers) {
       ctx.save();
       const seatedNow = c.isSeated && (c.state === 'waiting_service' || c.state === 'doing_activity');
-      const isWalking = !seatedNow && (c.state === 'walking_in' || c.state === 'walking_out' || (c.state === 'queued' && Math.abs(c.x - c.targetX) > 1.5));
-      const bounce = isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 2.6 : 0;
+      const isWalking = !seatedNow && (c.state === 'walking_in' || c.state === 'walking_out' || c.state === 'bounced_door' || (c.state === 'queued' && Math.abs(c.x - c.targetX) > 1.5));
+      const isDancing = c.state === 'doing_activity' && c.activityType === 'club_dancing';
+      const bounce = isDancing ? (Math.abs(Math.sin(c.walkCycle * 9)) * 3.8) : (isWalking ? Math.abs(Math.sin(c.walkCycle * 6)) * 2.6 : 0);
       const isBilliard = c.state === 'doing_activity' && c.activityType === 'billiard';
-      const tilt = isWalking ? Math.sin(c.walkCycle * 6) * 0.05 : (isBilliard ? -0.14 : 0);
+      const tilt = isDancing ? Math.sin(c.walkCycle * 9) * 0.12 : (isWalking ? Math.sin(c.walkCycle * 6) * 0.05 : (isBilliard ? -0.14 : 0));
       const baseFootY = seatedNow ? (c.y - 8) : c.y;
 
       ctx.fillStyle = 'rgba(0, 0, 0, 0.38)';
@@ -4723,7 +5192,7 @@ export class CanvasStoreEngine {
 
       ctx.save();
       ctx.translate(c.x + 12, baseFootY - 6 - bounce);
-      if (c.state === 'walking_out') {
+      if (c.state === 'walking_out' || c.state === 'bounced_door') {
         ctx.scale(-1, 1);
       }
       ctx.rotate(tilt);
@@ -4961,6 +5430,35 @@ export class CanvasStoreEngine {
         ctx.moveTo(5, -14);
         ctx.lineTo(8, -4);
         ctx.stroke();
+      } else if (c.state === 'doing_activity' && c.activityType === 'club_dancing') {
+        // --- CLIENT DE BOÎTE DE NUIT QUI DANSE EN RYTHME AVEC LES BRAS EN L'AIR ---
+        const danceArm = Math.sin(c.walkCycle * 9) * 6;
+        ctx.strokeStyle = st.coat;
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-10, -24 + danceArm);
+        ctx.lineTo(-7, -29 + danceArm);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(10, -24 - danceArm);
+        ctx.lineTo(7, -29 - danceArm);
+        ctx.stroke();
+        ctx.font = '8.5px serif';
+        ctx.fillText(seed % 2 === 0 ? '🎵' : '💃', 0, -32 + danceArm * 0.4);
+      } else if (c.state === 'doing_activity' && c.activityType === 'drinking_beer') {
+        // --- CLIENT DE BAR CHA3BI QUI DÉGUSTE SA BIÈRE CELTIA ---
+        const sip = Math.max(0, Math.sin(c.activityTimer * 3.5 + seed));
+        const mugY = -10 - sip * 10;
+        ctx.strokeStyle = st.coat;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(-5, -14);
+        ctx.lineTo(-8, mugY);
+        ctx.moveTo(5, -14);
+        ctx.lineTo(2, -8);
+        ctx.stroke();
+        ctx.font = '10px serif';
+        ctx.fillText('🍺', -8, mugY - 2);
       }
 
       // Accessoire tenu à la sortie :
@@ -5040,6 +5538,10 @@ export class CanvasStoreEngine {
       if (c.state === 'paying') {
         const payRatio = Math.min(1, c.payTimer / Math.max(0.1, c.payDuration));
         this.drawRadialGauge(ctx, c.x + 12, baseFootY - 36 - bounce, 5, payRatio, '#10b981', '✓');
+      } else if (c.reaction) {
+        ctx.font = '11px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(c.reaction, c.x + 12, baseFootY - 36 - bounce);
       }
 
       ctx.restore();
@@ -5053,7 +5555,78 @@ export class CanvasStoreEngine {
 
   drawForegroundFurniture(ctx, bizId, now) {
     const archetype = this.getBizArchetype(bizId);
-    if (archetype !== 'tea_lounge') return;
+    if (archetype !== 'tea_lounge' && archetype !== 'bar_cha3bi') return;
+
+    if (archetype === 'bar_cha3bi') {
+      ctx.save();
+      for (let tIdx = 0; tIdx < 4; tIdx++) {
+        const tx = this.getActivitySlotX('bar_cha3bi', tIdx) + 12;
+        const ty = 145;
+
+        // Pied central de table bistrot en fonte noire
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(tx - 1.5, ty, 3, 9);
+        ctx.beginPath();
+        ctx.ellipse(tx, ty + 9, 7, 2.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Plateau de table rond en bois bistrot foncé verni
+        ctx.fillStyle = '#451a03';
+        ctx.beginPath();
+        ctx.ellipse(tx, ty, 15, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Sous-bock Celtia rouge et or
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.ellipse(tx - 6, ty - 1, 4.5, 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Bouteille de Celtia verte emblématique (capsule dorée)
+        ctx.fillStyle = '#14532d';
+        ctx.fillRect(tx - 7.5, ty - 9, 3, 8);
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(tx - 7.5, ty - 6, 3, 3);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(tx - 7, ty - 10.5, 2, 1.5);
+
+        // Chope de bière pression dorée avec col de mousse
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(tx + 3, ty - 7, 5, 7);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(tx + 2.5, ty - 9, 6, 2.5);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 0.8;
+        ctx.strokeRect(tx + 6.5, ty - 6, 2.5, 5);
+
+        // Coupelle de Kemia (Amandes salées louz + olives)
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.ellipse(tx, ty + 1, 5, 2.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+        ctx.font = '6.5px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(tIdx % 2 === 0 ? '🥜' : '🫒', tx, ty + 2);
+
+        // Bulles montantes animées si un client est attablé
+        const seatedCust = this.customers.find(c => c.stationSlot === tIdx && (c.state === 'waiting_service' || c.state === 'doing_activity'));
+        if (seatedCust) {
+          const bubbleLift = ((now * 0.02 + tIdx * 3) % 10);
+          ctx.fillStyle = 'rgba(254, 240, 138, 0.7)';
+          ctx.beginPath();
+          ctx.arc(tx + 5.5, ty - 9 - bubbleLift, 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+      return;
+    }
 
     const isResto = bizId === 'restaurant';
     ctx.save();
@@ -5491,7 +6064,7 @@ export class CanvasStoreEngine {
 
     // 2. Spawner de clients
     if (archetype !== 'bank_branch') {
-      const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'thalasso_spa') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
+      const maxActive = (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'thalasso_spa' || archetype === 'bar_cha3bi' || archetype === 'boite_de_nuit') ? 5 : (archetype === 'supermarket_checkout' || archetype === 'tobacco_kiosk' ? 3 : 4);
       const maxTotal = maxActive + 2;
       this.spawnTimer += dt;
       const spawnThreshold = isProducing ? (archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'tobacco_kiosk' ? 1.15 : 1.45) : 1.95;
@@ -5502,12 +6075,13 @@ export class CanvasStoreEngine {
       }
     }
 
-    // 2.b Animation du Serveur (`سرباي`) qui amène les boissons ou plats aux clients (Café, Salon de thé & Restaurant)
-    if ((archetype === 'kahwa_counter' || archetype === 'tea_lounge') && this.waiter) {
+    // 2.b Animation du Serveur (`سرباي`) qui amène les boissons ou plats aux clients (Café, Salon de thé, Restaurant & Bar Cha3bi)
+    if ((archetype === 'kahwa_counter' || archetype === 'tea_lounge' || archetype === 'bar_cha3bi') && this.waiter) {
+      const isBar = archetype === 'bar_cha3bi';
       const waitingCust = this.customers.find(c => c.state === 'waiting_service');
       if (waitingCust) {
         this.waiter.targetX = waitingCust.x + 6;
-        this.waiter.carryingIcon = waitingCust.orderIcon || (this.bizId === 'restaurant' ? '🍲' : (archetype === 'tea_lounge' ? '🍹' : '☕'));
+        this.waiter.carryingIcon = waitingCust.orderIcon || (isBar ? '🍺' : (this.bizId === 'restaurant' ? '🍲' : (archetype === 'tea_lounge' ? '🍹' : '☕')));
         const wSpeed = 96;
         if (Math.abs(this.waiter.x - this.waiter.targetX) > 2) {
           this.waiter.x += Math.sign(this.waiter.targetX - this.waiter.x) * wSpeed * dt;
@@ -5518,10 +6092,33 @@ export class CanvasStoreEngine {
           waitingCust.activityTimer = 0;
         }
       } else {
-        // Retour vers la machine espresso / kanoun
+        // Retour vers la machine espresso / kanoun / tireuse
         const homeX = 122;
         if (Math.abs(this.waiter.x - homeX) > 2) {
           this.waiter.x += Math.sign(homeX - this.waiter.x) * 58 * dt;
+        }
+      }
+    }
+
+    // 2.b2 Second Serveur recruté dans le Bar Cha3bi (`waiter2`)
+    if (archetype === 'bar_cha3bi' && this.waiter2 && biz && (biz.hiredManagersCount >= 2)) {
+      const waitingCust2 = this.customers.find(c => c.state === 'waiting_service' && c.stationSlot % 2 === 1);
+      if (waitingCust2) {
+        this.waiter2.targetX = waitingCust2.x + 6;
+        this.waiter2.carryingIcon = waitingCust2.orderIcon || '🍻';
+        const wSpeed = 96;
+        if (Math.abs(this.waiter2.x - this.waiter2.targetX) > 2) {
+          this.waiter2.x += Math.sign(this.waiter2.targetX - this.waiter2.x) * wSpeed * dt;
+        } else {
+          this.waiter2.x = this.waiter2.targetX;
+          waitingCust2.servedByWaiter = true;
+          waitingCust2.state = 'doing_activity';
+          waitingCust2.activityTimer = 0;
+        }
+      } else {
+        const homeX2 = 168;
+        if (Math.abs(this.waiter2.x - homeX2) > 2) {
+          this.waiter2.x += Math.sign(homeX2 - this.waiter2.x) * 58 * dt;
         }
       }
     }
@@ -5596,8 +6193,37 @@ export class CanvasStoreEngine {
     for (let i = this.customers.length - 1; i >= 0; i--) {
       const c = this.customers[i];
       c.walkCycle += dt;
+      const seed = Math.floor(Math.abs(c.id * 1000));
 
       if (c.state === 'walking_in') {
+        // Filtrage des portiers à l'entrée de la boîte de nuit
+        if (c.archetype === 'boite_de_nuit' && c.x <= this.width - 24) {
+          if (c.isBouncerRejected && !c.bouncedHandled) {
+            c.bouncedHandled = true;
+            c.state = 'bounced_door';
+            c.reaction = '😤';
+            this.pushMoneyPuff({
+              x: c.x - 14,
+              y: c.y - 48,
+              vy: -20,
+              text: '⛔ ممنوع الدخول - Désolé !',
+              life: 1.2,
+              maxLife: 1.2
+            });
+          } else if (!c.bouncerWelcomed && !c.isBouncerRejected) {
+            c.bouncerWelcomed = true;
+            this.doorSwing = 1.0;
+            this.pushMoneyPuff({
+              x: c.x - 14,
+              y: c.y - 48,
+              vy: -20,
+              text: '✨ مرحباً بكم في السهرة !',
+              life: 1.0,
+              maxLife: 1.0
+            });
+          }
+        }
+
         const speed = isProducing ? 82 : 68;
         if (c.x > c.stationX + 1) {
           c.x = Math.max(c.stationX, c.x - speed * dt);
@@ -5620,6 +6246,56 @@ export class CanvasStoreEngine {
         }
       } else if (c.state === 'doing_activity') {
         c.activityTimer += dt;
+
+        // Transition commande bar -> piste de danse dans la boîte de nuit
+        if (c.activityType === 'club_ordering' && c.activityTimer >= c.activityDuration) {
+          c.activityType = 'club_dancing';
+          c.stationSlot = 2 + Math.floor(Math.random() * 3);
+          c.stationX = this.getActivitySlotX('boite_de_nuit', c.stationSlot);
+          c.targetX = c.stationX;
+          c.state = 'walking_in';
+          c.activityTimer = 0;
+          c.activityDuration = 3.2;
+          c.reaction = '🍸';
+          continue;
+        }
+
+        if (c.activityType === 'club_dancing') {
+          c.steamTimer = (c.steamTimer || 0) + dt;
+          if (c.steamTimer >= 0.75) {
+            c.steamTimer = 0;
+            this.pushParticle({
+              x: c.x + 8,
+              y: c.y - 30,
+              vx: Math.random() * 4 - 2,
+              vy: -18 - Math.random() * 8,
+              color: seed % 2 === 0 ? '#38bdf8' : '#ec4899',
+              radius: 2,
+              life: 0.7,
+              maxLife: 0.7,
+              isSparkle: true
+            });
+          }
+        }
+
+        if (c.activityType === 'drinking_beer') {
+          c.steamTimer = (c.steamTimer || 0) + dt;
+          if (c.steamTimer >= 0.75) {
+            c.steamTimer = 0;
+            this.pushParticle({
+              x: c.x + 6,
+              y: c.y - 20,
+              vx: Math.random() * 2 - 1,
+              vy: -14 - Math.random() * 6,
+              color: '#fef08a',
+              radius: 1.4,
+              life: 0.6,
+              maxLife: 0.6,
+              isSparkle: false
+            });
+          }
+        }
+
         if (c.activityType === 'drinking') {
           c.steamTimer = (c.steamTimer || 0) + dt;
           if (c.steamTimer >= 0.75) {
@@ -5665,6 +6341,12 @@ export class CanvasStoreEngine {
           c.hasBag = (archetype === 'retail_shop' || archetype === 'food_counter' || archetype === 'industrial_belt');
           c.state = 'walking_out';
           c.reaction = this.happyReactions[Math.floor(Math.random() * this.happyReactions.length)];
+        }
+      } else if (c.state === 'bounced_door') {
+        c.x += 64 * dt;
+        if (c.x > this.width + 16) {
+          this.customers.splice(i, 1);
+          continue;
         }
       } else if (c.state === 'walking_out') {
         c.x += 76 * dt;
@@ -10952,7 +11634,7 @@ export class TunisiaMapEngine {
         fullName: 'تونس العاصمة',
         icon: '🕌',
         x: 440,
-        y: 115,
+        y: 112,
         tagline: 'نقطة البداية، أصل التجارة، نصبة كسكروت وفريكاسي في قلب المدينة العربي',
         reqDinars: 0,
         bonusDesc: 'مشاريع العاصمة : كسكروت، فريكاسي، قهوة (+25%)',
@@ -10963,8 +11645,8 @@ export class TunisiaMapEngine {
         name: 'بنزرت',
         fullName: 'بنزرت',
         icon: '⛵',
-        x: 410,
-        y: 60,
+        x: 400,
+        y: 52,
         tagline: 'قنال بنزرت، الحوت المشوي، الكورنيش العتيق وحركة الميناء',
         reqDinars: 2500,
         bonusDesc: 'مشاريع بنزرت والميناء (+25%)',
@@ -10975,8 +11657,8 @@ export class TunisiaMapEngine {
         name: 'نابل',
         fullName: 'نابل',
         icon: '🏖️',
-        x: 508,
-        y: 135,
+        x: 492,
+        y: 142,
         tagline: 'الفخار، ياسمين الحمامات، زهر نابل والنزل السياحية الفاخرة',
         reqDinars: 8000,
         bonusDesc: 'سياحة الحمامات وحلويات نابل (+30%)',
@@ -11011,8 +11693,8 @@ export class TunisiaMapEngine {
         name: 'سوسة',
         fullName: 'سوسة',
         icon: '💎',
-        x: 488,
-        y: 215,
+        x: 476,
+        y: 212,
         tagline: 'بوجعفر، القنطاوي، التجارة البحرية وصالونات الشاي العصرية',
         reqDinars: 150000,
         bonusDesc: 'صالونات سوسة والمطاعم الفاخرة (+35%)',
@@ -11023,8 +11705,8 @@ export class TunisiaMapEngine {
         name: 'المنستير',
         fullName: 'المنستير',
         icon: '⚓',
-        x: 512,
-        y: 238,
+        x: 498,
+        y: 236,
         tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الشامي الأزرق',
         reqDinars: 350000,
         bonusDesc: 'مشاريع الساحل والنزل الكبرى (+40%)',
@@ -11047,8 +11729,8 @@ export class TunisiaMapEngine {
         name: 'سبيطلة',
         fullName: 'سبيطلة',
         icon: '🏛️',
-        x: 380,
-        y: 285,
+        x: 375,
+        y: 282,
         tagline: 'عاصمة سفيطلة الرومانية، المعابد الثلاثة، الكابيتول التاريخي وزيت الزيتون العريق',
         reqDinars: 600000,
         bonusDesc: 'الآثار والتجارة الفلاحية الرومانية (+40%)',
@@ -11060,7 +11742,7 @@ export class TunisiaMapEngine {
         fullName: 'عنابة (الجزائر)',
         icon: '🇩🇿',
         x: 275,
-        y: 115,
+        y: 76,
         tagline: 'بونة الجزائرية، الميناء التجاري العريق، الفولاذ وسوق التبادل الحدودي المغاربي',
         reqDinars: 80000000,
         bonusDesc: 'التجارة المغاربية والاستيراد والتصدير مع الجزائر (x2.5)',
@@ -11071,8 +11753,8 @@ export class TunisiaMapEngine {
         name: 'طرابلس',
         fullName: 'طرابلس (ليبيا)',
         icon: '🇱🇾',
-        x: 645,
-        y: 340,
+        x: 580,
+        y: 442,
         tagline: 'عروس البحر، باب البحر، أسواق الذهب والتجارة والعبور الدولي المغاربي',
         reqDinars: 120000000,
         bonusDesc: 'التجارة والعبور الدولي مع ليبيا الشقيقة (x3)',
@@ -11083,8 +11765,8 @@ export class TunisiaMapEngine {
         name: 'صفاقس',
         fullName: 'صفاقس',
         icon: '🏭',
-        x: 482,
-        y: 320,
+        x: 468,
+        y: 318,
         tagline: 'باب الديوان، الزيتونة المباركة، الصناعات الكبرى والخدمة الحارة',
         reqDinars: 2000000,
         bonusDesc: 'الصناعات الصفاقسية والتجارة الكبرى (+50%)',
@@ -11119,8 +11801,8 @@ export class TunisiaMapEngine {
         name: 'قابس',
         fullName: 'قابس',
         icon: '🌊',
-        x: 435,
-        y: 400,
+        x: 424,
+        y: 395,
         tagline: 'الحناء الجبسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
         reqDinars: 25000000,
         bonusDesc: 'سوق قابس والمجمعات الصناعية (+75%)',
@@ -11155,8 +11837,8 @@ export class TunisiaMapEngine {
         name: 'جربة',
         fullName: 'جربة',
         icon: '👑',
-        x: 530,
-        y: 440,
+        x: 528,
+        y: 436,
         tagline: 'جزيرة الأحلام ومقر الهولدينغ التونسي الوطني الدولي الشامل',
         reqDinars: 150000000,
         bonusDesc: 'مضاعف الهولدينغ الوطني الشامل لجميع المداخيل (x5) !',
@@ -11173,7 +11855,7 @@ export class TunisiaMapEngine {
         flag: '🇹🇳',
         icon: '🏛️',
         x: 440,
-        y: 115,
+        y: 112,
         tagline: 'عاصمة الجمهورية التونسية، قلب الإمبراطورية التجارية الوطنية وملتقى الحضارات الإقليمية',
         isPlayable: true,
         playableId: 'tunis'
@@ -11184,8 +11866,8 @@ export class TunisiaMapEngine {
         country: 'الجمهورية الجزائرية',
         flag: '🇩🇿',
         icon: '🏛️',
-        x: 235,
-        y: 125,
+        x: 255,
+        y: 84,
         tagline: 'عاصمة الجمهورية الجزائرية الديمقراطية الشعبية، البهجة، ميناء الجزائر العريق والتجارة الاستراتيجية المغاربية',
         bonusDesc: 'شراكة تجارية مغاربية كبرى واستيراد مواد أولية وصناعات كبرى (x2.5)'
       },
@@ -11206,8 +11888,8 @@ export class TunisiaMapEngine {
         country: 'ليبيا',
         flag: '🇱🇾',
         icon: '🏛️',
-        x: 645,
-        y: 340,
+        x: 580,
+        y: 442,
         tagline: 'عاصمة دولة ليبيا الشقيقة، عروس البحر وسوق التجارة الإقليمية ومعبر رأس جدير الدولي',
         isPlayable: true,
         playableId: 'tripoli',
@@ -11219,8 +11901,8 @@ export class TunisiaMapEngine {
         country: 'مصر',
         flag: '🇪🇬',
         icon: '🕌',
-        x: 900,
-        y: 285,
+        x: 896,
+        y: 450,
         tagline: 'عاصمة جمهورية مصر العربية، قاهرة المعز، أهرامات الجيزة، مهد النيل وقناة السويس شريان الملاحة الدولية',
         bonusDesc: 'طريق التجارة البحرية وقناة السويس نحو أسواق الشرق الأوسط والخليج (x4)'
       },
@@ -11243,8 +11925,8 @@ export class TunisiaMapEngine {
       { from: 'beja', to: 'tunis', name: 'A3' },
       { from: 'le_kef', to: 'beja', name: 'GP5' },
       { from: 'tunis', to: 'nabeul_hammamet', name: 'A1 Cap Bon' },
+      { from: 'nabeul_hammamet', to: 'sousse', name: 'A1 Sahel' },
       { from: 'tunis', to: 'kairouan', name: 'RN3' },
-      { from: 'tunis', to: 'sousse', name: 'A1 Nord' },
       { from: 'sousse', to: 'monastir_mahdia', name: 'C57 Sahel' },
       { from: 'sousse', to: 'kairouan', name: 'GP2' },
       { from: 'le_kef', to: 'kairouan', name: 'GP12' },
@@ -12381,18 +13063,73 @@ export class TunisiaMapEngine {
     landGrad.addColorStop(0.85, '#a16c27'); // Sud et Chotts
     landGrad.addColorStop(1.0, '#c77e26'); // Sahara et dunes de Tataouine
 
-    // Tracé fidèle des côtes et frontières de la Tunisie
+    // Tracé fidèle des côtes et frontières de la Tunisie (Haute Définition Cartographique Réelle)
     ctx.fillStyle = landGrad;
     ctx.strokeStyle = '#f59e0b';
     ctx.lineWidth = 2.2;
     ctx.beginPath();
 
     const coastline = [
-      [95, 70], [145, 55], [198, 40], [230, 65], [236, 100], [260, 110], [320, 92], [330, 115],
-      [295, 145], [275, 165], [268, 190], [280, 215], [305, 235], [315, 265], [300, 288],
-      [275, 320], [245, 355], [228, 395], [248, 410], [270, 425], [310, 465], [325, 485],
-      [290, 515], [230, 545], [180, 535], [150, 490], [65, 405], [60, 390], [80, 360],
-      [95, 325], [90, 270], [75, 215], [80, 170], [82, 110], [95, 70]
+      [95, 70],   // Tabarka (frontière algérienne nord)
+      [118, 58],  // Cap Djebara
+      [145, 50],  // Cap Serrat
+      [172, 42],  // Sidi Mechreg
+      [195, 36],  // Ras Angela (Pointe la plus septentrionale d'Afrique)
+      [205, 42],  // Chenal et port de Bizerte
+      [220, 50],  // Ras Djebel
+      [228, 62],  // Ghar El Melh / Porto Farina
+      [234, 82],  // Golfe de Tunis nord
+      [238, 98],  // La Goulette / Lac de Tunis
+      [244, 110], // Hammam Lif / Rades
+      [262, 108], // Korbous
+      [284, 98],  // Haouaria ouest
+      [318, 92],  // Kélibia
+      [328, 112], // Cap Bon oriental
+      [316, 132], // Korba
+      [298, 142], // Nabeul
+      [290, 150], // Hammamet
+      [278, 168], // Bouficha
+      [270, 190], // Hergla
+      [276, 206], // Port El Kantaoui
+      [282, 214], // Sousse (Corniche Boujaafar)
+      [304, 234], // Monastir (Presqu'île et Ribat)
+      [314, 252], // Téboulba / Bekalta
+      [322, 258], // Mahdia (Cap d'Afrique)
+      [318, 272], // Salakta
+      [314, 280], // Chebba (Ras Kaboudia)
+      [304, 296], // Melloulèche
+      [296, 308], // Djebeniana
+      [282, 318], // Sidi Mansour
+      [274, 324], // Port de Sfax
+      [268, 334], // Thyna
+      [258, 348], // Nakta / Mahres
+      [242, 366], // La Skhira
+      [230, 384], // Ghannouch
+      [224, 396], // Golfe de Gabès
+      [236, 408], // Zarat
+      [246, 420], // El Jorf
+      [254, 432], // Golfe de Bougrara
+      [268, 436], // Zarzis Ouest
+      [280, 442], // Zarzis ville
+      [292, 452], // Ras Marmour
+      [312, 470], // Bahiret El Bibane
+      [325, 485], // Ras Jedir (Poste frontière libyen)
+      [308, 502], // Ben Guerdane sud
+      [290, 515], // Dehiba
+      [270, 528], // Remada
+      [230, 545], // Borj El Khadra (Triangle méridional saharien)
+      [180, 535], // Frontière algérienne sud
+      [150, 490], // Grand Erg Oriental
+      [105, 445], // El Borma nord
+      [65, 405],  // Chott El Gharsa / Nefta
+      [60, 390],  // Tozeur ouest
+      [80, 360],  // Moularès / Redeyef
+      [95, 325],  // Gafsa ouest
+      [90, 270],  // Kasserine / Sbeitla ouest
+      [75, 215],  // Le Kef ouest / Tajerouine
+      [80, 170],  // Ghardimaou / Jendouba
+      [82, 110],  // Aïn Draham / Forêts de Kroumirie
+      [95, 70]    // Boucle vers Tabarka
     ];
 
     coastline.forEach((pt, idx) => {
@@ -12425,7 +13162,7 @@ export class TunisiaMapEngine {
     ctx.lineWidth = 1.4;
     ctx.beginPath();
     ctx.moveTo(314 + ox, 448);
-    ctx.lineTo(270 + ox, 425);
+    ctx.lineTo(280 + ox, 442);
     ctx.stroke();
 
     // Île de La Galite (أرخبيل جالطة - Nord de Bizerte / Tabarka)

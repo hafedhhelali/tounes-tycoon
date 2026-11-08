@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TycoonEngine } from './engine.js';
+import { TycoonEngine, BUSINESS_CONFIGS, CITY_BUSINESS_MAP } from './engine.js';
 
 test('Initial state & first business purchase', () => {
   const engine = new TycoonEngine();
@@ -637,6 +637,54 @@ test('Street VIPs: claiming tourist, critic and wedding awards dinars and bonuse
   const restored = new TycoonEngine(saved);
   assert.equal(restored.isJoujmaActive(t0), true);
   assert.equal(restored.joujmaGauge, 100);
+});
+
+test('New Projects: Bar Cha3bi and Boite de Nuit configs, cities, recipes and staff', () => {
+  const engine = new TycoonEngine();
+
+  // 1. Bar Cha3bi config & presence in Tunis, Le Kef, Sbeitla, Gafsa
+  const barConfig = BUSINESS_CONFIGS.find(b => b.id === 'bar_cha3bi');
+  assert.ok(barConfig, 'bar_cha3bi must be configured');
+  assert.equal(barConfig.managers.length, 2, 'bar_cha3bi has 2 managers (waiters)');
+
+  const barCities = ['tunis', 'le_kef', 'sbeitla', 'gafsa'];
+  barCities.forEach(cId => {
+    const list = CITY_BUSINESS_MAP[cId] || [];
+    assert.ok(list.includes('bar_cha3bi'), `bar_cha3bi must be available in ${cId}`);
+  });
+
+  // 2. Boite de Nuit config & presence in Tunis, Sousse, Monastir, Nabeul
+  const clubConfig = BUSINESS_CONFIGS.find(b => b.id === 'boite_de_nuit');
+  assert.ok(clubConfig, 'boite_de_nuit must be configured');
+  assert.equal(clubConfig.managers.length, 2, 'boite_de_nuit has 2 managers (bouncers)');
+
+  const clubCities = ['tunis', 'sousse', 'monastir_mahdia', 'nabeul_hammamet'];
+  clubCities.forEach(cId => {
+    const list = CITY_BUSINESS_MAP[cId] || [];
+    assert.ok(list.includes('boite_de_nuit'), `boite_de_nuit must be available in ${cId}`);
+  });
+
+  // 3. getBusinessDetail recipe breakdown
+  const barBiz = engine.businesses.find(b => b.id === 'bar_cha3bi');
+  assert.ok(barBiz, 'bar_cha3bi initialized in tunis');
+  const barDetail = engine.getBusinessDetail('bar_cha3bi');
+  assert.ok(barDetail.recipeBreakdown.length >= 3, 'bar_cha3bi has recipes');
+  assert.ok(barDetail.recipeBreakdown.some(r => r.item.includes('Celtia')), 'bar_cha3bi serves Celtia');
+
+  const clubBiz = engine.businesses.find(b => b.id === 'boite_de_nuit');
+  assert.ok(clubBiz, 'boite_de_nuit initialized in tunis');
+  const clubDetail = engine.getBusinessDetail('boite_de_nuit');
+  assert.ok(clubDetail.recipeBreakdown.length >= 3, 'boite_de_nuit has recipes');
+
+  // 4. Multi-waiter recruitment for bar_cha3bi
+  engine.dinars = 100000;
+  barBiz.level = 1;
+  const hire1 = engine.hireManager('bar_cha3bi');
+  assert.ok(hire1);
+  assert.equal(barBiz.hiredManagersCount, 1);
+  const hire2 = engine.hireManager('bar_cha3bi');
+  assert.ok(hire2);
+  assert.equal(barBiz.hiredManagersCount, 2);
 });
 
 
