@@ -1,10 +1,10 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-08 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v150)
-1. Résolution définitive blocage overlay : ajout d'une animation pure CSS `@keyframes autoDismissSplashKeyframe` (auto-dismiss forcé à 2.3s par le compositeur GPU du navigateur, indépendant du JS).
-2. Déverrouillage tactile & barre de progression CSS : auto-remplissage CSS natif et suppression instantanée au tap sur l'écran d'accueil (`onclick` inline), double sécurité dans `<head>`.
-3. Validation & Tests : 84/84 tests unitaires réussis (`npm test`), simulation VM validée, zéro possibilité de freeze au démarrage.
+## État en 3 lignes (v151)
+1. Résolution root-cause du crash chargement : inclusion autonome de `PixiGpuEngine` dans `store_animator.js` et ajout de `*.js` dans le workflow APK (`build-apk.yml`), éliminant l'erreur 404 de module WebView qui bloquait tout le JS.
+2. Rétablissement navigation & démarrage : réactivation de la barre de navigation segmentée visible (`tabBtnBusinesses`, `tabBtnZones`, `tabBtnTactics`) et appel explicite de `switchTab('businesses')` avec redimensionnement immédiat des canvas au boot.
+3. Carte Tunisie & Maghreb ultra-réaliste : correction des coordonnées côtières (Gabès, Annaba, Tripoli), suppression des routes traversant la mer, ajout de la Sicile, Pantelleria, Lampedusa, rose des vents dorée et fond marin étendu sans bordure vide.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).

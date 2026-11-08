@@ -241,6 +241,8 @@
 # CHANGELOG
 
 ## 2026-11-08
+- fix(loading,map): fix webview module 404, restore visible nav tabs and realistic tunisia map
+- fix(loading,map): fix webview module 404, restore visible nav tabs and realistic tunisia map
 - fix(splash): pure css auto-dismiss and instant tap unlock to prevent any loading overlay freeze
 - fix(loading,street): remove blocking head script, add splash fallback and sync projects in street layout
 - feat(graphics): integrate PixiJS 2D HD GPU engine with vector textures and dynamic lighting

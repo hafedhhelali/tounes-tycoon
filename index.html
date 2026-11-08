@@ -3052,15 +3052,29 @@
         </div>
       </div>
 
+      <!-- BARRE DE NAVIGATION PRINCIPALE (شارع المشاريع / خريطة تونس / التطويرات) -->
+      <div class="header-nav-switcher">
+        <button class="nav-segmented-btn active" id="tabBtnBusinesses" data-tab="businesses">
+          <span class="nav-seg-icon">🏘️</span>
+          <span>شارع المشاريع</span>
+        </button>
+        <button class="nav-segmented-btn" id="tabBtnZones" data-tab="zones">
+          <span class="nav-seg-icon">🗺️</span>
+          <span>خريطة تونس</span>
+          <span class="nav-seg-badge" id="currentZoneName">تونس</span>
+        </button>
+        <button class="nav-segmented-btn" id="tabBtnTactics" data-tab="tactics">
+          <span class="nav-seg-icon">⚡</span>
+          <span>التطويرات</span>
+        </button>
+      </div>
+
       <!-- Éléments système et boutons préservés dans le DOM pour compatibilité JS totale -->
       <div style="display: none !important;">
-        <button id="tabBtnBusinesses"></button>
-        <button id="tabBtnZones"><span id="currentZoneName">تونس</span></button>
         <button id="soundToggleBtn"></button>
         <button id="openGuideBtn"></button>
         <button id="openProfileHeaderBtn"></button>
         <button id="headerExitBtn"></button>
-        <button id="tabBtnTactics"></button>
         <button id="openZoneMapBtn"></button>
         <button id="adBoostBtn"><span id="adBoostStatus"></span></button>
         <button id="adCashBtn"><span id="cashRewardHint"></span></button>
@@ -4738,6 +4752,15 @@
       panelZones.classList.toggle('active', tabName === 'zones');
       if (panelLeague) panelLeague.classList.toggle('active', tabName === 'league');
 
+      if (tabName === 'businesses') {
+        renderDOM();
+        requestAnimationFrame(() => {
+          if (quartierEngine) {
+            quartierEngine.resize();
+            quartierEngine.start();
+          }
+        });
+      }
       if (tabName === 'tactics') renderTacticalUpgradesUI();
       if (tabName === 'zones') {
         renderZonesUI();
@@ -5370,6 +5393,11 @@
     renderDOM();
     updateSynergiesUI();
     updateWheelBtnState();
+    switchTab('businesses');
+    if (quartierEngine) {
+      quartierEngine.resize();
+      quartierEngine.start();
+    }
 
     // --- GESTION DU PROFIL & PARAMÈTRES DE L'EMPIRE ---
     const openProfileHeaderBtn = document.getElementById('openProfileHeaderBtn');

@@ -6,7 +6,297 @@
  * © EOLabs 2026. Pur JavaScript, zéro dépendance, gestion DPR fluide, 60 FPS garanti.
  */
 
-import { PixiGpuEngine } from './pixi_renderer.js';
+export class PixiGpuEngine {
+  constructor(canvasEl) {
+    this.canvas = canvasEl;
+    this.isSupported = false;
+    this.app = null;
+    this.stage = null;
+    this.layers = {};
+    this.textureCache = new Map();
+    this.lasers = [];
+    this.discoSpots = [];
+    this.particles = [];
+    this.time = 0;
+    this.currentBizArchetype = null;
+
+    this.buildTextureAtlas();
+    this.init();
+  }
+
+  init() {
+    const PIXI = (typeof window !== 'undefined' && window.PIXI) || (typeof globalThis !== 'undefined' && globalThis.PIXI);
+    if (!PIXI || !this.canvas) {
+      this.isSupported = false;
+      return;
+    }
+
+    try {
+      if (typeof document !== 'undefined') {
+        const testCanvas = document.createElement('canvas');
+        const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
+        if (!gl) {
+          this.isSupported = false;
+          return;
+        }
+      }
+
+      this.PIXI = PIXI;
+      this.isSupported = true;
+      this.buildTextureAtlas();
+    } catch (e) {
+      console.warn('PixiGpuEngine WebGL unavailable, falling back cleanly:', e);
+      this.isSupported = false;
+    }
+  }
+
+  buildTextureAtlas() {
+    if (typeof document === 'undefined') return;
+    const PIXI = this.PIXI;
+
+    this.textureCache.set('celtia_mug', this.createVectorTexture(64, 64, (ctx) => {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(14, 18, 32, 40, [2, 2, 8, 8]);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(14, 38, 10, Math.PI * 0.5, Math.PI * 1.5, false);
+      ctx.stroke();
+
+      const beerGrad = ctx.createLinearGradient(16, 26, 44, 56);
+      beerGrad.addColorStop(0, '#fef08a');
+      beerGrad.addColorStop(0.3, '#f59e0b');
+      beerGrad.addColorStop(1, '#b45309');
+      ctx.fillStyle = beerGrad;
+      ctx.beginPath();
+      ctx.roundRect(16, 26, 28, 30, [0, 0, 6, 6]);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(22, 24, 7, 0, Math.PI * 2);
+      ctx.arc(30, 22, 8, 0, Math.PI * 2);
+      ctx.arc(38, 24, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.roundRect(22, 36, 16, 10, 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 6px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('CELTIA', 30, 44);
+    }));
+
+    this.textureCache.set('neon_cocktail', this.createVectorTexture(64, 64, (ctx) => {
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(12, 16);
+      ctx.lineTo(32, 38);
+      ctx.lineTo(52, 16);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(32, 38);
+      ctx.lineTo(32, 54);
+      ctx.moveTo(22, 54);
+      ctx.lineTo(42, 54);
+      ctx.stroke();
+
+      const liquidGrad = ctx.createLinearGradient(18, 20, 46, 34);
+      liquidGrad.addColorStop(0, '#ec4899');
+      liquidGrad.addColorStop(1, '#8b5cf6');
+      ctx.fillStyle = liquidGrad;
+      ctx.beginPath();
+      ctx.moveTo(18, 22);
+      ctx.lineTo(32, 36);
+      ctx.lineTo(46, 22);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#84cc16';
+      ctx.beginPath();
+      ctx.arc(14, 16, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }));
+
+    this.textureCache.set('bambalouni', this.createVectorTexture(64, 64, (ctx) => {
+      ctx.save();
+      ctx.translate(32, 32);
+      const crust = ctx.createRadialGradient(0, 0, 10, 0, 0, 26);
+      crust.addColorStop(0, '#fef08a');
+      crust.addColorStop(0.7, '#f59e0b');
+      crust.addColorStop(1, '#b45309');
+      ctx.fillStyle = crust;
+      ctx.beginPath();
+      ctx.arc(0, 0, 24, 0, Math.PI * 2);
+      ctx.arc(0, 0, 9, 0, Math.PI * 2, true);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      for (let i = 0; i < 8; i++) {
+        const ang = (i / 8) * Math.PI * 2;
+        const rad = 16 + (i % 2) * 3;
+        ctx.fillRect(Math.cos(ang) * rad, Math.sin(ang) * rad, 2.5, 2.5);
+      }
+      ctx.restore();
+    }));
+
+    this.textureCache.set('fricasse', this.createVectorTexture(64, 64, (ctx) => {
+      const breadGrad = ctx.createLinearGradient(12, 18, 52, 46);
+      breadGrad.addColorStop(0, '#fde68a');
+      breadGrad.addColorStop(0.5, '#f59e0b');
+      breadGrad.addColorStop(1, '#92400e');
+      ctx.fillStyle = breadGrad;
+      ctx.beginPath();
+      ctx.ellipse(32, 32, 24, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.ellipse(32, 32, 18, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(26, 32, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath();
+      ctx.arc(26, 32, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#18181b';
+      ctx.beginPath();
+      ctx.arc(38, 31, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }));
+  }
+
+  createVectorTexture(width, height, drawCallback) {
+    if (typeof document === 'undefined') return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    drawCallback(ctx);
+    if (this.PIXI && this.PIXI.Texture && typeof this.PIXI.Texture.from === 'function') {
+      try {
+        return this.PIXI.Texture.from(canvas);
+      } catch (_) {}
+    }
+    return canvas;
+  }
+
+  renderLightingFx(ctx, archetype, width, height, dt) {
+    if (!ctx || typeof ctx.save !== 'function') return;
+    this.time += dt || 0.016;
+
+    if (archetype === 'boite_de_nuit') {
+      this.renderNightclubLasers(ctx, width, height);
+    } else if (archetype === 'bar_cha3bi') {
+      this.renderWarmBistroGlow(ctx, width, height);
+    }
+  }
+
+  renderNightclubLasers(ctx, width, height) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+
+    const t = this.time;
+    const laserColors = [
+      'rgba(0, 240, 255, 0.65)',
+      'rgba(255, 0, 128, 0.65)',
+      'rgba(57, 255, 20, 0.65)'
+    ];
+
+    const sourceX = width * 0.5;
+    const sourceY = 32;
+
+    for (let i = 0; i < 3; i++) {
+      const sweepAngle = Math.sin(t * 1.8 + i * 1.4) * 0.75 + (i - 1) * 0.45;
+      const targetX = sourceX + Math.sin(sweepAngle) * width * 0.8;
+      const targetY = height * 0.85;
+
+      const grad = ctx.createLinearGradient(sourceX, sourceY, targetX, targetY);
+      grad.addColorStop(0, laserColors[i]);
+      grad.addColorStop(0.7, laserColors[i].replace('0.65', '0.25'));
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 3.5 + Math.sin(t * 8 + i) * 1.2;
+      ctx.beginPath();
+      ctx.moveTo(sourceX, sourceY);
+      ctx.lineTo(targetX, targetY);
+      ctx.stroke();
+
+      ctx.fillStyle = laserColors[i].replace('0.65', '0.4');
+      ctx.beginPath();
+      ctx.ellipse(targetX, targetY, 20, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const discoRadius = 14;
+    for (let j = 0; j < 12; j++) {
+      const ang = (j / 12) * Math.PI * 2 + t * 0.8;
+      const spotDist = 80 + (j % 4) * 45;
+      const sx = sourceX + Math.cos(ang) * spotDist;
+      const sy = 40 + Math.sin(ang) * (spotDist * 0.45) + (j % 3) * 20;
+
+      const sparkle = Math.max(0, Math.sin(t * 4 + j));
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.15 + sparkle * 0.35})`;
+      ctx.beginPath();
+      ctx.arc(sx, sy, 3 + sparkle * 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  renderWarmBistroGlow(ctx, width, height) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+
+    const t = this.time;
+    const pulse = Math.sin(t * 2.5) * 0.1 + 0.9;
+    const signX = width * 0.5;
+    const signY = 48;
+
+    const radial = ctx.createRadialGradient(signX, signY, 5, signX, signY, 120 * pulse);
+    radial.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
+    radial.addColorStop(0.5, 'rgba(245, 158, 11, 0.15)');
+    radial.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = radial;
+    ctx.beginPath();
+    ctx.arc(signX, signY, 120 * pulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  drawHdItem(ctx, itemId, x, y, size = 28) {
+    const tex = this.textureCache.get(itemId);
+    if (tex && tex.width) {
+      ctx.drawImage(tex, x - size / 2, y - size / 2, size, size);
+      return true;
+    }
+    return false;
+  }
+
+  destroy() {
+    this.textureCache.clear();
+    this.lasers = [];
+    this.particles = [];
+  }
+}
 
 // Polyfill Canvas roundRect pour garantir 100% de compatibilité mobile & WebView
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
@@ -11835,8 +12125,8 @@ export class TunisiaMapEngine {
         name: 'قابس',
         fullName: 'قابس',
         icon: '🌊',
-        x: 424,
-        y: 395,
+        x: 414,
+        y: 398,
         tagline: 'الحناء الجبسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
         reqDinars: 25000000,
         bonusDesc: 'سوق قابس والمجمعات الصناعية (+75%)',
@@ -11977,12 +12267,10 @@ export class TunisiaMapEngine {
       { from: 'sfax', to: 'gabes', name: 'A1 Sud' },
       { from: 'gabes', to: 'medenine_zarzis', name: 'A1 Sud' },
       { from: 'medenine_zarzis', to: 'tataouine', name: 'GP19 القصور' },
-      { from: 'tataouine', to: 'djerba_holding', name: 'طريق أجيم وبوغارطة' },
       { from: 'medenine_zarzis', to: 'djerba_holding', name: 'Voie Romaine El Kantara' },
       { from: 'annaba', to: 'cap_alger', name: 'الطريق السيار المغاربي A1 شرق-غرب' },
       { from: 'cap_alger', to: 'cap_rabat', name: 'الطريق الدولي نحو المغرب الشقيق' },
-      { from: 'cap_rabat', to: 'cap_nouakchott', name: 'طريق المحيط الأطلسي وقوافل موريتانيا' },
-      { from: 'tripoli', to: 'cap_cairo', name: 'الطريق الساحلي نحو مصر وبوابة الشرق' }
+      { from: 'cap_rabat', to: 'cap_nouakchott', name: 'طريق المحيط الأطلسي وقوافل موريتانيا' }
     ];
 
     // Particules de caravanes commerciales en mouvement le long des autoroutes
@@ -12657,14 +12945,14 @@ export class TunisiaMapEngine {
   }
 
   drawSeaBackground(ctx, t) {
-    // Fond océanique riche avec dégradé radial et abyssal
-    const seaGrad = ctx.createRadialGradient(this.width * 0.5, this.height * 0.4, 60, this.width * 0.5, this.height * 0.5, this.width * 0.75);
-    seaGrad.addColorStop(0, '#0a2542');
+    // Fond océanique riche avec dégradé radial et abyssal centré sur la Méditerranée
+    const seaGrad = ctx.createRadialGradient(500, 240, 80, 500, 300, 1400);
+    seaGrad.addColorStop(0, '#0a2e52');
     seaGrad.addColorStop(0.35, '#071c35');
     seaGrad.addColorStop(0.7, '#051427');
     seaGrad.addColorStop(1, '#020b15');
     ctx.fillStyle = seaGrad;
-    ctx.fillRect(0, 0, this.width, this.height);
+    ctx.fillRect(-1200, -800, 3400, 2600);
 
     // Coordonnées cartographiques / Graticule nautique subtil
     ctx.save();
@@ -12877,6 +13165,7 @@ export class TunisiaMapEngine {
     ctx.lineTo(190, 85); // Baie d'Oran
     ctx.lineTo(235, 80); // Tipaza
     ctx.lineTo(260, 78); // Baie d'Alger
+    ctx.lineTo(275, 68); // Golfe d'Annaba (côte au nord de la ville)
     ctx.lineTo(295, 70); // Frontière tunisienne Tabarka
     ctx.lineTo(282, 110);
     ctx.lineTo(280, 170);
@@ -12939,7 +13228,9 @@ export class TunisiaMapEngine {
     ctx.lineWidth = 1.6;
     ctx.beginPath();
     ctx.moveTo(525, 485); // Ras Jedir
-    ctx.lineTo(580, 440); // Tripoli
+    ctx.lineTo(550, 460); // Zouara
+    ctx.lineTo(580, 434); // Corniche côtière de Tripoli
+    ctx.lineTo(595, 436); // Tajoura
     ctx.lineTo(630, 430); // Misrata
     ctx.lineTo(670, 450); // Arc de Syrte
     ctx.lineTo(715, 440); // Benghazi
@@ -13077,6 +13368,100 @@ export class TunisiaMapEngine {
     ctx.moveTo(750, 470);
     ctx.lineTo(750, 750);
     ctx.stroke();
+
+    // 6. ITALIE DU SUD & SICILE (جزيرة صقلية وقوسرة)
+    ctx.save();
+    const sicilyGrad = ctx.createLinearGradient(590, 40, 710, 110);
+    sicilyGrad.addColorStop(0, '#1e3a2b');
+    sicilyGrad.addColorStop(1, '#2c402e');
+    ctx.fillStyle = sicilyGrad;
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(595, 75); // Marsala
+    ctx.lineTo(630, 48); // Palerme
+    ctx.lineTo(690, 52); // Messine
+    ctx.lineTo(695, 95); // Catane
+    ctx.lineTo(655, 115); // Raguse
+    ctx.lineTo(605, 96); // Agrigente
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Mont Etna
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(682, 68, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.beginPath();
+    ctx.arc(682, 64, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pantelleria (جزيرة قوسرة)
+    ctx.fillStyle = '#334155';
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(545, 118, 5, 3.5, 0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Lampedusa (جزيرة لومبادوزا)
+    ctx.beginPath();
+    ctx.ellipse(565, 205, 4.5, 2.5, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // 7. ROSE DES VENTS NAUTIQUE (وردة الرياح البحرية)
+    const crX = 640;
+    const crY = 240;
+    const crR = 24;
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(crX, crY, crR, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(crX, crY, crR * 0.45, 0, Math.PI * 2);
+    ctx.stroke();
+
+    const ptsCompass = [
+      { ang: -Math.PI / 2, label: 'شمال', len: crR + 8, gold: true },
+      { ang: Math.PI / 2, label: 'جنوب', len: crR + 4 },
+      { ang: 0, label: 'شرق', len: crR + 4 },
+      { ang: Math.PI, label: 'غرب', len: crR + 4 }
+    ];
+    for (const cp of ptsCompass) {
+      const cosA = Math.cos(cp.ang);
+      const sinA = Math.sin(cp.ang);
+      const perpA = cp.ang + Math.PI / 2;
+      const cosP = Math.cos(perpA) * 3;
+      const sinP = Math.sin(perpA) * 3;
+
+      ctx.fillStyle = cp.gold ? '#fbbf24' : '#f59e0b';
+      ctx.beginPath();
+      ctx.moveTo(crX, crY);
+      ctx.lineTo(crX + cosP, crY + sinP);
+      ctx.lineTo(crX + cosA * cp.len, crY + sinA * cp.len);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#78350f';
+      ctx.beginPath();
+      ctx.moveTo(crX, crY);
+      ctx.lineTo(crX - cosP, crY - sinP);
+      ctx.lineTo(crX + cosA * cp.len, crY + sinA * cp.len);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = '700 8.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(cp.label, crX + cosA * (cp.len + 9), crY + sinA * (cp.len + 9));
+    }
+    ctx.restore();
 
     ctx.setLineDash([]);
     ctx.shadowBlur = 0;
@@ -14089,5 +14474,4 @@ export class DomCoinPool {
   }
 }
 
-export { PixiGpuEngine };
 
