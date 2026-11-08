@@ -241,6 +241,7 @@
 # CHANGELOG
 
 ## 2026-11-08
+- feat(graphics): integrate PixiJS 2D HD GPU engine with vector textures and dynamic lighting
 - fix(loading): resolve syntax error and enforce zero-blank-screen test in CI and ship script
 - feat(map,projects): realistic cartographic map and new bar cha3bi and nightclub projects
 - fix(boot): resolve app launch freeze by bundling motion primitives and updating apk assets sync

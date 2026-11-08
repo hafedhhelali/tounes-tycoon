@@ -6,6 +6,8 @@
  * © EOLabs 2026. Pur JavaScript, zéro dépendance, gestion DPR fluide, 60 FPS garanti.
  */
 
+import { PixiGpuEngine } from './pixi_renderer.js';
+
 // Polyfill Canvas roundRect pour garantir 100% de compatibilité mobile & WebView
 if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, radii) {
@@ -50,6 +52,7 @@ export class CanvasStoreEngine {
     this.waiter = { x: 118, y: 136, targetX: 140, carryingIcon: '☕', busy: false };
     this.waiter2 = { x: 148, y: 136, targetX: 170, carryingIcon: '🍺', busy: false };
     this.bankVipClient = null;
+    this.pixiGpu = new PixiGpuEngine(this.canvas);
 
     // Interaction clickable regions
     this.clickZones = [];
@@ -219,6 +222,10 @@ export class CanvasStoreEngine {
 
   destroy() {
     this.stop();
+    if (this.pixiGpu) {
+      this.pixiGpu.destroy();
+      this.pixiGpu = null;
+    }
     if (this.canvas) {
       this.canvas.removeEventListener('click', this.handleCanvasClick);
     }
@@ -6417,6 +6424,9 @@ export class CanvasStoreEngine {
 
     this.drawCustomers(this.ctx);
     this.drawForegroundFurniture(this.ctx, this.bizId, now);
+    if (this.pixiGpu) {
+      this.pixiGpu.renderLightingFx(this.ctx, archetype, this.width, this.height, dt);
+    }
     this.drawParticles(this.ctx);
     this.drawVignette(this.ctx);
   }
@@ -14059,6 +14069,5 @@ export class DomCoinPool {
   }
 }
 
-
-
+export { PixiGpuEngine };
 

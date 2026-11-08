@@ -24,7 +24,8 @@ import {
   triggerTactileSquash,
   SpringSimulator,
   exponentialDecay,
-  Easing
+  Easing,
+  PixiGpuEngine
 } from './store_animator.js';
 
 test('All core game modules import cleanly without syntax or linking errors', () => {
@@ -41,6 +42,7 @@ test('All core game modules import cleanly without syntax or linking errors', ()
   assert.ok(SpringSimulator);
   assert.ok(exponentialDecay);
   assert.ok(Easing);
+  assert.ok(PixiGpuEngine);
 });
 
 function createMockElement(tag = 'DIV', id = '') {
@@ -209,6 +211,7 @@ function runIndexScriptWithMockStorage(initialData = null) {
     TunisiaMapEngine,
     DomCoinPool,
     triggerTactileSquash,
+    PixiGpuEngine,
     console
   });
 

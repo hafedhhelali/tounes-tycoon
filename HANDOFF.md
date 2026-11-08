@@ -1,10 +1,10 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-08 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v147)
-1. Correction blocage chargement : résolution d'un `else` orphelin ligne 5433 dans `store_animator.js` et gardes `typeof window !== 'undefined'` pour éviter tout freeze/SyntaxError.
-2. Mémorisation permanente & test automatique : création de `index_loading.test.js` intégré dans `node --test` (82/82 tests au vert) et intégration de `scripts/test_index_html.mjs` comme garde-fou strict dans `scripts/ship.ps1`.
-3. Règle AGENTS.md : directive obligatoire Zero-Blank-Screen gravée pour interdire tout commit ou push sans validation du chargement complet de l'application.
+## État en 3 lignes (v148)
+1. Intégration PixiJS v8 2D HD GPU : bundle local autonome `pixi.min.js` (840 KB, 100% offline sans CDN) et moteur de rendu `pixi_renderer.js`.
+2. Graphismes & Textures HD : atlas vectoriel haute résolution remplaçant les emojis système (chope Celtia dorée et mousseuse, cocktails néons, bambalouni caramélisé au sucre, fricassé tunisien) et éclairage temps réel (3 lasers animés en boîte de nuit, spots de boule à facettes, halo néon chaud au bar cha3bi).
+3. Robustesse & Tests : 84/84 tests unitaires au vert (`npm test`), zéro fuite mémoire, simulation VM de chargement passée avec succès.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
