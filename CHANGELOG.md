@@ -241,6 +241,7 @@
 # CHANGELOG
 
 ## 2026-11-08
+- fix(boot): resolve app launch freeze by bundling motion primitives and updating apk assets sync
 - feat(motion): 60fps mobile motion engine, spring physics, glassmorphism and canvas visual depth
 
 ## 2026-11-06

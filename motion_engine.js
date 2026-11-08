@@ -66,50 +66,64 @@ export class SpringSimulator {
 
 // --- 4. SQUASH & STRETCH TACTILE POUR ÉLÉMENTS DOM ---
 export function triggerTactileSquash(element, scaleX = 1.08, scaleY = 0.92) {
-  if (!element) return;
-  element.style.transition = 'transform 0.07s cubic-bezier(0.2, 0.9, 0.3, 1.3)';
-  element.style.transform = `scale3d(${scaleX}, ${scaleY}, 1)`;
+  if (!element || !element.style) return;
+  try {
+    element.style.transition = 'transform 0.07s cubic-bezier(0.2, 0.9, 0.3, 1.3)';
+    element.style.transform = `scale3d(${scaleX}, ${scaleY}, 1)`;
 
-  setTimeout(() => {
-    element.style.transition = 'transform 0.22s cubic-bezier(0.18, 1.25, 0.32, 1.2)';
-    element.style.transform = `scale3d(${scaleY}, ${scaleX}, 1)`;
     setTimeout(() => {
-      element.style.transition = 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)';
-      element.style.transform = 'scale3d(1, 1, 1)';
-    }, 110);
-  }, 70);
+      if (!element || !element.style) return;
+      element.style.transition = 'transform 0.22s cubic-bezier(0.18, 1.25, 0.32, 1.2)';
+      element.style.transform = `scale3d(${scaleY}, ${scaleX}, 1)`;
+      setTimeout(() => {
+        if (!element || !element.style) return;
+        element.style.transition = 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        element.style.transform = 'scale3d(1, 1, 1)';
+      }, 110);
+    }, 70);
+  } catch (e) {}
 }
 
 // --- 5. POOL DOM HAUTE PERFORMANCE COMPOSITEUR GPU (WAAPI) ---
 export class DomCoinPool {
   constructor(size = 24) {
     this.pool = [];
-    if (typeof document === 'undefined') return;
-    let container = document.getElementById('dom-fx-overlay');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'dom-fx-overlay';
-      container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:hidden;';
-      document.body.appendChild(container);
-    }
-    this.container = container;
+    if (typeof document === 'undefined' || !document.body) return;
+    try {
+      let container = document.getElementById('dom-fx-overlay');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'dom-fx-overlay';
+        container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:hidden;';
+        document.body.appendChild(container);
+      }
+      this.container = container;
 
-    for (let i = 0; i < size; i++) {
-      const el = document.createElement('div');
-      el.innerText = '🪙';
-      el.style.cssText = 'position:absolute;top:0;left:0;font-size:22px;will-change:transform,opacity;opacity:0;pointer-events:none;';
-      this.container.appendChild(el);
-      this.pool.push({ el, busy: false });
-    }
+      for (let i = 0; i < size; i++) {
+        const el = document.createElement('div');
+        el.innerText = '🪙';
+        el.style.cssText = 'position:absolute;top:0;left:0;font-size:22px;will-change:transform,opacity;opacity:0;pointer-events:none;';
+        this.container.appendChild(el);
+        this.pool.push({ el, busy: false });
+      }
+    } catch (e) {}
   }
 
   spawnBurst(startX, startY, targetEl, count = 7) {
-    if (!this.pool || this.pool.length === 0) return;
-    const rect = targetEl ? targetEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: 32, width: 20, height: 20 };
+    if (!this.pool || this.pool.length === 0) return false;
+    const rect = targetEl && typeof targetEl.getBoundingClientRect === 'function'
+      ? targetEl.getBoundingClientRect()
+      : { left: (typeof window !== 'undefined' ? window.innerWidth : 400) / 2, top: 32, width: 20, height: 20 };
     const destX = rect.left + rect.width / 2;
     const destY = rect.top + rect.height / 2;
 
     const available = this.pool.filter(p => !p.busy).slice(0, count);
+    if (available.length === 0) return false;
+
+    const testEl = available[0].el;
+    const hasWaapi = testEl && typeof testEl.animate === 'function';
+    if (!hasWaapi) return false;
+
     available.forEach((p, idx) => {
       p.busy = true;
       p.el.style.opacity = '1';
@@ -118,26 +132,31 @@ export class DomCoinPool {
       const midX = startX + Math.cos(angle) * force;
       const midY = startY - Math.sin(angle) * force - 30;
 
-      // Animation WAAPI exécutée 100% sur le GPU Compositor sans layout-thrashing
-      const anim = p.el.animate([
-        { transform: `translate3d(${startX}px, ${startY}px, 0) scale(0.6)`, opacity: 1 },
-        { transform: `translate3d(${midX}px, ${midY}px, 0) scale(1.35) rotate(${idx * 50}deg)`, opacity: 1, offset: 0.35 },
-        { transform: `translate3d(${destX}px, ${destY}px, 0) scale(0.85) rotate(720deg)`, opacity: 0.95, offset: 0.92 },
-        { transform: `translate3d(${destX}px, ${destY}px, 0) scale(0.2)`, opacity: 0 }
-      ], {
-        duration: 520 + Math.random() * 140,
-        easing: 'cubic-bezier(0.18, 0.85, 0.25, 1)'
-      });
+      try {
+        const anim = p.el.animate([
+          { transform: `translate3d(${startX}px, ${startY}px, 0) scale(0.6)`, opacity: 1 },
+          { transform: `translate3d(${midX}px, ${midY}px, 0) scale(1.35) rotate(${idx * 50}deg)`, opacity: 1, offset: 0.35 },
+          { transform: `translate3d(${destX}px, ${destY}px, 0) scale(0.85) rotate(720deg)`, opacity: 0.95, offset: 0.92 },
+          { transform: `translate3d(${destX}px, ${destY}px, 0) scale(0.2)`, opacity: 0 }
+        ], {
+          duration: 520 + Math.random() * 140,
+          easing: 'cubic-bezier(0.18, 0.85, 0.25, 1)'
+        });
 
-      anim.onfinish = () => {
+        anim.onfinish = () => {
+          p.busy = false;
+          p.el.style.opacity = '0';
+          if (idx === 0 && targetEl && targetEl.classList) {
+            targetEl.classList.remove('bump');
+            void targetEl.offsetWidth;
+            targetEl.classList.add('bump');
+          }
+        };
+      } catch (err) {
         p.busy = false;
         p.el.style.opacity = '0';
-        if (idx === 0 && targetEl) {
-          targetEl.classList.remove('bump');
-          void targetEl.offsetWidth; // trigger reflow
-          targetEl.classList.add('bump');
-        }
-      };
+      }
     });
+    return true;
   }
 }

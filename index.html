@@ -3901,13 +3901,20 @@
     import { TycoonEngine, DAILY_LOGIN_REWARDS } from './engine.js';
     import { soundEngine } from './audio.js';
     import { AdsService } from './ads_service.js';
-    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine } from './store_animator.js';
-    import { DomCoinPool, triggerTactileSquash } from './motion_engine.js';
+    import { CanvasStoreEngine, QuartierAnimator, TunisiaMapEngine, DomCoinPool, triggerTactileSquash } from './store_animator.js';
 
     if (typeof window !== 'undefined') {
       window.soundEngine = soundEngine;
-      window.domCoinPool = new DomCoinPool();
-      window.triggerTactileSquash = triggerTactileSquash;
+      try {
+        if (typeof DomCoinPool === 'function') {
+          window.domCoinPool = new DomCoinPool();
+        }
+      } catch (err) {
+        console.warn('DomCoinPool init skipped:', err);
+      }
+      if (typeof triggerTactileSquash === 'function') {
+        window.triggerTactileSquash = triggerTactileSquash;
+      }
     }
 
     const adsService = new AdsService();
@@ -4312,10 +4319,11 @@
     // --- MOTEUR DE PARTICULES PHYSIQUES TYCOON (COIN PARABOLA CANNON) ---
     function launchCoinShower(startX, startY, count = 7) {
       const dinarsEl = document.getElementById('dinarsDisplay');
-      if (window.domCoinPool) {
-        window.domCoinPool.spawnBurst(startX, startY, dinarsEl, count);
-        return;
-      }
+      try {
+        if (window.domCoinPool && window.domCoinPool.spawnBurst(startX, startY, dinarsEl, count)) {
+          return;
+        }
+      } catch (err) {}
       const targetRect = dinarsEl ? dinarsEl.getBoundingClientRect() : { left: window.innerWidth / 2, top: 30 };
       const targetX = targetRect.left + (targetRect.width / 2);
       const targetY = targetRect.top + (targetRect.height / 2);
