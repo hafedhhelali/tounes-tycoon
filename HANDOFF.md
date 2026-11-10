@@ -1,5 +1,5 @@
 ﻿# HANDOFF - Tounes Tycoon
-MAJ: 2026-11-08 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-11-10 - etat = HEAD de main (voir git log -n1)
 
 ## État en 3 lignes (v151)
 1. Résolution root-cause du crash chargement : inclusion autonome de `PixiGpuEngine` dans `store_animator.js` et ajout de `*.js` dans le workflow APK (`build-apk.yml`), éliminant l'erreur 404 de module WebView qui bloquait tout le JS.

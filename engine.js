@@ -455,6 +455,20 @@ export const BUSINESS_CONFIGS = [
       { name: 'الكابوس كمال الفيدور', role: 'رئيس الحراسة والفرز بالباب', avatar: '🕶️', cost: 120000.0 },
       { name: 'ريمون الميكسولوغ', role: 'معلّم الكوكتيلات والبار', avatar: '🍸', cost: 400000.0 }
     ],
+  },
+  {
+    id: 'studio_jeux_video',
+    name: 'ستوديو ألعاب تايكون EOLabs',
+    tagline: 'فريق ديزاين UI/UX يرسّم والحلم يطير وخبير ألعاب تايكون يضبط الإيكونومي، ولعبتنا تكبّر وتكسّر السيرفر !',
+    icon: '🎮',
+    baseCost: 45000.0,
+    baseRevenue: 2300.0,
+    costMultiplier: 1.11,
+    cycleDurationMs: 16000, // 16.0s
+    managers: [
+      { name: 'أمير آرت ديركتور', role: 'قرميد فريق الديزاين UI/UX', avatar: '🎨', cost: 180000.0 },
+      { name: 'أنيس مطيّار تايكون', role: 'خبير ألعاب تايكون', avatar: '💻', cost: 600000.0 }
+    ],
   }
 ];
 
@@ -486,6 +500,20 @@ export const TUNISIAN_EVENTS = [
     description: 'التاكسيات واقفة والموتورات تزمّر ! الكشك يخدم بالواقفة والناس تستنّى.',
     durationMs: 25000,
     multipliers: { kaskrout: 2.5, taxi_collectif: 0.3 }
+  },
+  {
+    id: 'gamers_sousse',
+    title: '🎮 معرض جيمنغ سوسة : اللايّة تضرب في الرياضة !',
+    description: 'لاعبة البرازيل والفيراج فواريغ معبّين ماكينات، الستوديو تكاكون أردور خوارزمية !',
+    durationMs: 35000,
+    multipliers: { studio_jeux_video: 3.0, salle_de_jeux: 2.2, kahwa: 1.5 }
+  },
+  {
+    id: 'hackathon_monitoring',
+    title: '💻 هاكاثون دام 48 ساعة وفريقك مقفّل على الأوتور!',
+    description: 'طاكسي إلى المنستير معلبة قهوة وألواح شوكولاتة، ستور الديزاين يخدم 24/7 !',
+    durationMs: 30000,
+    multipliers: { studio_jeux_video: 2.5, superette: 1.8, attariya: 1.6 }
   }
 ];
 
@@ -966,7 +994,7 @@ export const TUNISIAN_CITIES = [
 ];
 
 export const CITY_BUSINESS_MAP = {
-  tunis: ['kaskrout', 'fricasse', 'kahwa', 'bar_cha3bi', 'boite_de_nuit', 'boulangerie_artisanale', 'superette', 'supermarche', 'agence_voyages'],
+  tunis: ['kaskrout', 'fricasse', 'kahwa', 'bar_cha3bi', 'boite_de_nuit', 'boulangerie_artisanale', 'superette', 'supermarche', 'agence_voyages', 'studio_jeux_video'],
   bizerte: ['fruits_de_mer', 'attariya', 'supermarche', 'librairie'],
   nabeul_hammamet: ['librairie', 'artisanat_poterie', 'boite_de_nuit', 'superette', 'kahwa', 'croisiere_mer', 'centre_thalasso'],
   kairouan: ['kahwa', 'patisserie', 'superette', 'boulangerie_artisanale', 'vente_vetements', 'salle_de_jeux'],
@@ -982,7 +1010,7 @@ export const CITY_BUSINESS_MAP = {
   medenine_zarzis: ['vente_vetements', 'attariya', 'superette', 'fricasse', 'patisserie', 'salle_de_jeux'],
   monastir_mahdia: ['boite_de_nuit', 'hotel', 'huilerie_olive', 'salon_de_the', 'superette', 'supermarche', 'patisserie', 'vente_vetements', 'librairie', 'croisiere_mer'],
   // Compléments pour les autres villes
-  sousse: ['boite_de_nuit', 'salon_de_the', 'hotel', 'centre_thalasso', 'restaurant', 'supermarche'],
+  sousse: ['boite_de_nuit', 'salon_de_the', 'hotel', 'centre_thalasso', 'restaurant', 'supermarche', 'studio_jeux_video'],
   annaba: ['fruits_de_mer', 'supermarche', 'usine_conserves', 'agence_voyages'],
   tripoli: ['showroom_auto', 'supermarche', 'promoteur_immobilier', 'hotel']
 };
@@ -2412,6 +2440,11 @@ export class TycoonEngine {
         { item: 'كوكتيل لاونج بريميوم (Mojito / Blue Lagoon)', price: 18.0, sharePct: 40 },
         { item: 'بيرّة بريميوم مثلجة بالبار', price: 9.0, sharePct: 35 },
         { item: 'شوتس تيكيلا وفودكا VIP بالبستة', price: 12.0, sharePct: 25 }
+      ],
+      studio_jeux_video: [
+        { item: 'تصميم واجهات UI/UX وويرفرامينق اللعبة', price: 135.0, sharePct: 50 },
+        { item: 'ديفلوبر ميكانيكات تايكون (إيكونومي وسبانك)', price: 95.0, sharePct: 30 },
+        { item: 'بيع سكنات وحزم أوفرايت للاعبين', price: 240.0, sharePct: 20 }
       ]
     };
 

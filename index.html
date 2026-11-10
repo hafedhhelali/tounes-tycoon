@@ -879,6 +879,30 @@
       50% { transform: scale(1.25) rotate(180deg); opacity: 1; filter: drop-shadow(0 0 6px #fde047); }
     }
 
+    /* Néon RGB « coder » pour le Studio de jeux vidéo (équipe UI/UX + experts tycoon) */
+    .biz-card[data-biz-id="studio_jeux_video"] .biz-avatar {
+      animation: coderGlow 2.4s infinite ease-in-out;
+    }
+    @keyframes coderGlow {
+      0%, 100% { filter: drop-shadow(0 0 4px #818cf8) brightness(1); }
+      33% { filter: drop-shadow(0 0 12px #22d3ee) drop-shadow(0 0 18px #a855f7) brightness(1.2); }
+      66% { filter: drop-shadow(0 0 10px #f472b6) brightness(1.1); }
+    }
+    .biz-card[data-biz-id="studio_jeux_video"] .biz-avatar::before {
+      content: '🎮';
+      position: absolute;
+      top: -9px;
+      right: -4px;
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      animation: studioBounce 1.9s infinite ease-in-out;
+    }
+    @keyframes studioBounce {
+      0%, 100% { transform: translateY(0) rotate(-8deg); opacity: 0.25; }
+      45% { transform: translateY(-9px) rotate(10deg) scale(1.15); opacity: 1; filter: drop-shadow(0 0 6px #818cf8); }
+    }
+
     /* PARTICULES FLOTTANTES AU TAP (+X د.ت) */
     .floating-coin-text {
       position: fixed;

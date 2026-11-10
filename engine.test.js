@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TycoonEngine, BUSINESS_CONFIGS, CITY_BUSINESS_MAP } from './engine.js';
+import { TycoonEngine, BUSINESS_CONFIGS, CITY_BUSINESS_MAP, TUNISIAN_EVENTS } from './engine.js';
 
 test('Initial state & first business purchase', () => {
   const engine = new TycoonEngine();
@@ -685,6 +685,42 @@ test('New Projects: Bar Cha3bi and Boite de Nuit configs, cities, recipes and st
   const hire2 = engine.hireManager('bar_cha3bi');
   assert.ok(hire2);
   assert.equal(barBiz.hiredManagersCount, 2);
+});
+
+test('Studio de jeux vidéo : recrutement équipe UI/UX + expert tycoon', () => {
+  // 1. Config studio (UI/UX + expert tycoon)
+  const studioConfig = BUSINESS_CONFIGS.find(b => b.id === 'studio_jeux_video');
+  assert.ok(studioConfig, 'studio_jeux_video must be configured');
+  assert.equal(studioConfig.managers.length, 2, 'studio has 2 experts (UI/UX + tycoon)');
+
+  const studioCities = ['tunis', 'sousse'];
+  studioCities.forEach(cId => {
+    const list = CITY_BUSINESS_MAP[cId] || [];
+    assert.ok(list.includes('studio_jeux_video'), `studio_jeux_video must be available in ${cId}`);
+  });
+
+  // 2. Achat + recrutement des deux experts
+  const engine = new TycoonEngine();
+  const studioBiz = engine.businesses.find(b => b.id === 'studio_jeux_video');
+  assert.ok(studioBiz, 'studio_jeux_video initialized in tunis');
+  engine.dinars = 2000000.0;
+  assert.equal(engine.buyBusiness('studio_jeux_video'), true);
+  const hireUX = engine.hireManager('studio_jeux_video');
+  assert.ok(hireUX, 'UI/UX designer team hireable');
+  const hireTycoon = engine.hireManager('studio_jeux_video');
+  assert.ok(hireTycoon, 'tycoon game expert hireable');
+  assert.equal(studioBiz.hiredManagersCount, 2);
+  assert.equal(studioBiz.hasManager, true);
+
+  // 3. Recettes studio dans le détail commerce
+  const studioDetail = engine.getBusinessDetail('studio_jeux_video');
+  assert.ok(studioDetail.recipeBreakdown.some(r => r.item.includes('UI/UX')), 'studio has UI/UX recipe');
+});
+
+test('Événements graphistes/gaming appliquent les multiplicateurs studio', () => {
+  const gamingEvents = TUNISIAN_EVENTS.filter(e => e.multipliers && e.multipliers['studio_jeux_video'] > 1);
+  assert.ok(gamingEvents.length >= 2, 'at least 2 events boost the game studio');
+  gamingEvents.forEach(e => assert.ok(e.durationMs > 0, `${e.id} has positive duration`));
 });
 
 

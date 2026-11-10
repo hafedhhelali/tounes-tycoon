@@ -385,6 +385,7 @@ export class CanvasStoreEngine {
       centre_thalasso: ['🫧', '💆', '🧖', '🌸', '🧴'],
       bar_cha3bi: ['🍺', '🍻', '🥜', '🫒', '🥨'],
       boite_de_nuit: ['🍸', '🍹', '🥂', '🍾', '🎧', '🪩', '🎵'],
+      studio_jeux_video: ['🎮', '🕹️', '💻', '🎨', '🎧', '✨'],
       default: ['🛒', '✨', '🪙', '📦']
     };
 
@@ -6881,7 +6882,8 @@ export class QuartierAnimator {
       huilerie_olive: { id: 'huilerie_olive', width: 195, height: 156, style: 'olive_press', color: '#ecfccb', roofColor: '#3f6212' },
       centre_thalasso: { id: 'centre_thalasso', width: 220, height: 188, style: 'thalasso_spa', color: '#e0f2fe', roofColor: '#0891b2' },
       bar_cha3bi: { id: 'bar_cha3bi', width: 175, height: 142, style: 'bar_cha3bi', color: '#78350f', roofColor: '#dc2626', signText: 'بار شعبي تونسي 🍺' },
-      boite_de_nuit: { id: 'boite_de_nuit', width: 185, height: 155, style: 'boite_de_nuit', color: '#2e1065', roofColor: '#7c3aed', signText: 'ديسكو وسهرية لاونج 🪩' }
+      boite_de_nuit: { id: 'boite_de_nuit', width: 185, height: 155, style: 'boite_de_nuit', color: '#2e1065', roofColor: '#7c3aed', signText: 'ديسكو وسهرية لاونج 🪩' },
+      studio_jeux_video: { id: 'studio_jeux_video', width: 195, height: 158, style: 'gaming_room', color: '#111827', roofColor: '#4338ca', signText: 'ستوديو ألعاب تايكون 🎮' }
     };
 
     this.buildingsConfig = [];
@@ -6988,6 +6990,7 @@ export class QuartierAnimator {
       { type: 'crossroad', streetName: 'بطحاء باب سويقة', width: 125, nextZoneId: 'bizerte', nextZoneLabel: 'بنزرت' },
       { type: 'biz', id: 'supermarche' },
       { type: 'biz', id: 'agence_voyages' },
+      { type: 'biz', id: 'studio_jeux_video' },
       { type: 'house', style: 'medina', name: 'دار سيدي محرز', width: 115, height: 120, wallColor: '#f8fafc', doorColor: '#0284c7' }
     ];
     zoneSpecs.bab_souika = zoneSpecs.tunis;
@@ -7001,7 +7004,8 @@ export class QuartierAnimator {
       { type: 'house', style: 'goulette', name: 'دار القنطاوي', width: 130, height: 135, wallColor: '#fffbeb', doorColor: '#059669' },
       { type: 'biz', id: 'restaurant' },
       { type: 'crossroad', streetName: 'باب بحر سوسة', width: 130, nextZoneId: 'monastir_mahdia', nextZoneLabel: 'المنستير' },
-      { type: 'biz', id: 'supermarche' }
+      { type: 'biz', id: 'supermarche' },
+      { type: 'biz', id: 'studio_jeux_video' }
     ];
 
     zoneSpecs.annaba = [

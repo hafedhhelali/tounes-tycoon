@@ -240,6 +240,9 @@
 
 # CHANGELOG
 
+## 2026-11-10
+- feat(studio): recrutement equipe graphistes UI/UX + expert jeux tycoon, studio_jeux_video a Tunis/Sousse, 2 nouveaux evenements gaming, neon coder studio
+
 ## 2026-11-08
 - fix(loading,map): fix webview module 404, restore visible nav tabs and realistic tunisia map
 - fix(loading,map): fix webview module 404, restore visible nav tabs and realistic tunisia map
