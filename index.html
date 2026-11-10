@@ -9,8 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- GOOGLE ADS / ADMOB SDK (AVEC GESTION RGPD & FALLBACK SÉCURISÉ) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000" crossorigin="anonymous"></script>
+  <!-- PIXI GPU LAYER ACTIVÉ (window.PIXI -> PixiGpuEngine.isSupported, fallback Canvas 2D intact) -->
+  <script src="pixi.min.js"></script>
+  <!-- ZÉRO PUB SDK EXTERNE : script AdSense retiré (v153). Funnel AdMob prêt derrière AdPolicy.ADS_ENABLED dans ads_service.js -->
   <style>
     :root {
       --sat: env(safe-area-inset-top, 0px);

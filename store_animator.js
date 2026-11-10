@@ -203,6 +203,12 @@ export class PixiGpuEngine {
       this.renderNightclubLasers(ctx, width, height);
     } else if (archetype === 'bar_cha3bi') {
       this.renderWarmBistroGlow(ctx, width, height);
+    } else if (archetype === 'kahwa') {
+      this.renderChichaEmberGlow(ctx, width, height);
+    } else if (archetype === 'studio_jeux_video') {
+      this.renderCoderNeonGrid(ctx, width, height);
+    } else if (archetype === 'hotel' || archetype === 'centre_thalasso') {
+      this.renderAquaHalo(ctx, width, height);
     }
   }
 
@@ -279,6 +285,57 @@ export class PixiGpuEngine {
     ctx.arc(signX, signY, 120 * pulse, 0, Math.PI * 2);
     ctx.fill();
 
+    ctx.restore();
+  }
+
+  renderChichaEmberGlow(ctx, width, height) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const fy = height * 0.42 + Math.sin(this.time * 1.3) * 6;
+    const ember = ctx.createRadialGradient(width * 0.30, fy, 4, width * 0.30, fy, 90);
+    ember.addColorStop(0, 'rgba(251, 100, 43, 0.30)');
+    ember.addColorStop(0.6, 'rgba(245, 158, 11, 0.12)');
+    ember.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = ember;
+    ctx.beginPath();
+    ctx.arc(width * 0.30, fy, 90, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  renderCoderNeonGrid(ctx, width, height) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = `rgba(129, 140, 248, ${0.10 + Math.sin(this.time * 2.2) * 0.05})`;
+    ctx.lineWidth = 1;
+    const rows = 9;
+    for (let i = 0; i <= rows; i++) {
+      const gy = height * 0.55 + (i / rows) * (height * 0.45);
+      ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(width, gy); ctx.stroke();
+    }
+    const neon = ctx.createRadialGradient(width * 0.5, height * 0.18, 3, width * 0.5, height * 0.18, 100);
+    neon.addColorStop(0, 'rgba(34, 211, 238, 0.28)');
+    neon.addColorStop(0.5, 'rgba(168, 85, 247, 0.14)');
+    neon.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = neon;
+    ctx.beginPath();
+    ctx.arc(width * 0.5, height * 0.18, 100, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  renderAquaHalo(ctx, width, height) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const ay = height * 0.62 + Math.sin(this.time * 0.9) * 4;
+    const aqua = ctx.createRadialGradient(width * 0.5, ay, 10, width * 0.5, ay, 130);
+    aqua.addColorStop(0, 'rgba(125, 211, 252, 0.22)');
+    aqua.addColorStop(0.6, 'rgba(14, 165, 233, 0.10)');
+    aqua.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = aqua;
+    ctx.beginPath();
+    ctx.arc(width * 0.5, ay, 130, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
 
