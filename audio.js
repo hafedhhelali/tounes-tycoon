@@ -32,6 +32,26 @@ class SoundEngine {
 
           this.masterGain.connect(this.masterCompressor);
           this.masterCompressor.connect(this.ctx.destination);
+
+          // Reverb hall procédurale (zéro asset) : profondeur & spaâce pour les SFX
+          this.reverb = this.ctx.createConvolver();
+          const sr = this.ctx.sampleRate;
+          const len = Math.max(1, Math.floor(sr * 0.85));
+          const impulse = this.ctx.createBuffer(2, len, sr);
+          for (let ch = 0; ch < 2; ch++) {
+            const d = impulse.getChannelData(ch);
+            for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
+          }
+          this.reverb.buffer = impulse;
+          this.reverbGain = this.ctx.createGain();
+          this.reverbGain.gain.value = 0.16;
+          this.reverbGain.connect(this.reverb);
+          this.reverb.connect(this.ctx.destination);
+
+          // Bus SFX partagé : sortie sèche MASTER + envoi réverb
+          this.sfxBus = this.ctx.createGain();
+          this.sfxBus.connect(this.masterGain);
+          this.sfxBus.connect(this.reverbGain);
         } catch (_) {}
       }
     }
@@ -42,6 +62,11 @@ class SoundEngine {
 
   get destination() {
     return this.masterGain || (this.ctx ? this.ctx.destination : null);
+  }
+
+  // Cible de branchement des SFX : bus sec + envoi réverb (fallback sécurité si init partiel)
+  get sfxTarget() {
+    return this.sfxBus || this.destination;
   }
 
   // Enregistrement et libération automatique des nœuds audio pour garantir zéro fuite mémoire
@@ -77,7 +102,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.18);
@@ -110,7 +135,7 @@ class SoundEngine {
 
     osc1.connect(filter1);
     filter1.connect(gain1);
-    gain1.connect(this.destination);
+    gain1.connect(this.sfxTarget);
 
     osc1.start(now);
     osc1.stop(now + 0.07);
@@ -128,7 +153,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.28);
@@ -137,6 +162,68 @@ class SoundEngine {
   }
 
   // 3. Verre de thé tunisien à la menthe (tasse fine cristalline)
+  // 2bis. Chambre forte du guichet bancaire (clac cadenas + rouleau blindé + carillon marbre doré)
+  playBankVault() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    // A. Clac mécanique du volet blindé
+    const clunk = this.ctx.createOscillator();
+    const clunkFilter = this.ctx.createBiquadFilter();
+    const clunkGain = this.ctx.createGain();
+    clunk.type = 'square';
+    clunk.frequency.setValueAtTime(120, now);
+    clunk.frequency.exponentialRampToValueAtTime(48, now + 0.09);
+    clunkFilter.type = 'lowpass';
+    clunkFilter.frequency.value = 420;
+    clunkGain.gain.setValueAtTime(0.2, now);
+    clunkGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+    clunk.connect(clunkFilter);
+    clunkFilter.connect(clunkGain);
+    clunkGain.connect(this.sfxTarget);
+    clunk.start(now);
+    clunk.stop(now + 0.12);
+    this.registerNode(clunk, now + 0.12);
+
+    // B. Grincement du rouleau cadenassé (lent et lourd)
+    [0.08, 0.16, 0.27].forEach((shift, grIdx) => {
+      const grind = this.ctx.createOscillator();
+      const grindFilter = this.ctx.createBiquadFilter();
+      const grindGain = this.ctx.createGain();
+      grind.type = 'sawtooth';
+      grind.frequency.setValueAtTime(140 + grIdx * 30, now + shift);
+      grind.frequency.linearRampToValueAtTime(96 + grIdx * 22, now + shift + 0.09);
+      grindFilter.type = 'bandpass';
+      grindFilter.frequency.value = 300 + grIdx * 90;
+      grindGain.gain.setValueAtTime(0.07, now + shift);
+      grindGain.gain.exponentialRampToValueAtTime(0.0001, now + shift + 0.1);
+      grind.connect(grindFilter);
+      grindFilter.connect(grindGain);
+      grindGain.connect(this.sfxTarget);
+      grind.start(now + shift);
+      grind.stop(now + shift + 0.1);
+      this.registerNode(grind, now + shift + 0.1);
+    });
+
+    // C. Carillon doré de confirmation (métal poli sur marbre)
+    [1318.51, 1760.00, 2349.32].forEach((freq, idx) => {
+      const ding = this.ctx.createOscillator();
+      const dingGain = this.ctx.createGain();
+      const t = now + 0.3 + idx * 0.045;
+      ding.type = 'sine';
+      ding.frequency.setValueAtTime(freq, t);
+      dingGain.gain.setValueAtTime(0.1, t);
+      dingGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
+      ding.connect(dingGain);
+      dingGain.connect(this.sfxTarget);
+      ding.start(t);
+      ding.stop(t + 0.34);
+      this.registerNode(ding, t + 0.34);
+    });
+  }
+
   playTeaCup() {
     if (this.muted) return;
     this.init();
@@ -156,7 +243,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.15);
@@ -210,7 +297,7 @@ class SoundEngine {
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     noise.start(now);
     noise.stop(now + 0.16);
@@ -242,7 +329,7 @@ class SoundEngine {
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     noise.start(now);
     noise.stop(now + 0.14);
@@ -266,7 +353,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.038);
 
     osc.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     osc.start(now);
     osc.stop(now + 0.038);
@@ -306,7 +393,7 @@ class SoundEngine {
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     noise.start(now + 0.05);
     noise.stop(now + 0.24);
@@ -332,7 +419,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.35);
@@ -359,7 +446,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(now);
       osc.stop(now + 0.2);
@@ -385,7 +472,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.52);
 
     osc.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     osc.start(now);
     osc.stop(now + 0.52);
@@ -412,7 +499,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.16);
@@ -446,7 +533,7 @@ class SoundEngine {
         gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
 
         osc.connect(gain);
-        gain.connect(this.destination);
+        gain.connect(this.sfxTarget);
 
         osc.start(t);
         osc.stop(t + 0.35);
@@ -495,7 +582,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.22);
@@ -523,7 +610,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.22);
@@ -548,7 +635,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.028);
 
     osc.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     osc.start(now);
     osc.stop(now + 0.028);
@@ -577,7 +664,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
 
     osc.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     osc.start(now);
     osc.stop(now + 0.16);
@@ -609,7 +696,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(now);
       osc.stop(now + 0.07);
@@ -627,7 +714,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(now);
       osc.stop(now + 0.12);
@@ -697,7 +784,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(time);
       osc.stop(time + duration + 0.04);
@@ -724,7 +811,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(time);
       osc.stop(time + duration + 0.04);
@@ -760,7 +847,7 @@ class SoundEngine {
 
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       lfo.start(time);
       osc.start(time);
@@ -791,7 +878,7 @@ class SoundEngine {
       }
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(time);
       osc.stop(time + (isDoum ? 0.1 : 0.06));
@@ -876,7 +963,7 @@ class SoundEngine {
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
 
     osc.connect(gain);
-    gain.connect(this.destination);
+    gain.connect(this.sfxTarget);
 
     osc.start(now);
     osc.stop(now + 0.055);
@@ -905,7 +992,7 @@ class SoundEngine {
       gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
 
       osc.connect(gain);
-      gain.connect(this.destination);
+      gain.connect(this.sfxTarget);
 
       osc.start(t);
       osc.stop(t + 0.14);

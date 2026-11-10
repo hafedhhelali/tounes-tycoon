@@ -241,6 +241,7 @@
 # CHANGELOG
 
 ## 2026-11-10
+- feat(banque,tabac,audio): guichets banque visibles rue, hygiaphone+file tabac, reverb sfx+playBankVault cable
 - feat(graphics): couche pixi GPU activee (pixi.min.js -> window.PIXI), 3 FX nouveaux archetypes kahwa/studio/hotel, SDK AdSense externe retire
 - feat(graphics): activez couche Pixar GPU (pixi.min.js charge, window.PIXI branche) + 3 FX nouveaux archetypes kahwa/studio/hotel, SDK AdSense externe retire
 - docs(handoff): reprise v153 zero pub, 116/116 tests
