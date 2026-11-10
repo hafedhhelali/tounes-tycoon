@@ -241,6 +241,7 @@
 # CHANGELOG
 
 ## 2026-11-10
+- docs(handoff): reprise v152 studio jeux video UI/UX, 110/110 tests
 - feat(studio): recrutement equipe graphistes UI/UX + expert jeux tycoon, studio_jeux_video a Tunis/Sousse, 2 nouveaux evenements gaming, neon coder studio
 
 ## 2026-11-08
