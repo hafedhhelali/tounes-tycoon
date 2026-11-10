@@ -2721,7 +2721,7 @@ export class CanvasStoreEngine {
       ctx.fillStyle = '#fef08a';
       ctx.font = 'bold 6.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🚭 قمريڨ تونس • Kiosque', kx + kw / 2, 52.5);
+      ctx.fillText('🚭 قمريڨ تونس', kx + kw / 2, 52.5);
 
       // Rangées de paquets de cigarettes
       const packColors = ['#dc2626', '#2563eb', '#16a34a', '#d97706', '#9333ea'];
@@ -2740,8 +2740,8 @@ export class CanvasStoreEngine {
         }
       }
 
-      // 2. Caissier unique en poste
-      this.drawWorker(ctx, kx + 36, ky + 8, 3, true, timeSec);
+      // 2. Caissier unique en poste (zéro effet flamme ✨ au-dessus de la tête : workFx=false)
+      this.drawWorker(ctx, kx + 36, ky + 8, 3, true, timeSec, false, false);
 
       // 3. Comptoir du Kiosque avec finition bois rouge bordeaux
       const kGrad = ctx.createLinearGradient(kx, ky, kx, ky + kh);
@@ -2816,8 +2816,7 @@ export class CanvasStoreEngine {
       ctx.ellipse(bx + 58, by - 22, 54, 48, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Banquier professionnel actif derrière le guichet - POSITION PARFAITEMENT DÉGAGÉE ET VISIBLE (zéro effet flamme ✨ au-dessus de la tête)
-      this.drawWorker(ctx, bx + 58, by - 2, 0, true, timeSec, false, false);
+      // 2. Banquier professionnel derrière le guichet — dessiné APRÈS l'arche/comptoir (ligne 2902+) pour zéro recouvrement de tête
 
       // Compteuse de billets automatique à côté du banquier avec billets animés
       ctx.fillStyle = '#1e293b';
@@ -2899,6 +2898,10 @@ export class CanvasStoreEngine {
       ctx.font = 'bold 6px "Cairo", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(isAccepted ? '✓ الشباك 1' : 'الشباك 1', bx + 58, by + 21);
+
+      // 2. Banquier professionnel derrière le guichet — dessiné en dernier (après arche/comptoir/compteuse)
+      // pour zéro recouvrement de tête, zéro flamme ✨ (workFx=false)
+      this.drawWorker(ctx, bx + 58, by - 2, 0, true, timeSec, false, false);
 
       // 5. Client VIP arrivant avec mallette de documents
       if (this.bankVipClient) {
@@ -10476,12 +10479,6 @@ export class QuartierAnimator {
     ctx.textAlign = 'center';
     ctx.fillText('🏦 البنك الشعبي', x + w / 2, y + 23);
 
-    // Vitrines et baies vitrées sécurisées
-    ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
-    ctx.fillRect(x + 12, y + 36, w - 24, 22);
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
-    ctx.strokeRect(x + 12, y + 36, w - 24, 22);
-
     // Porte d'entrée sécurisée / Guichet central avec bouton interactif
     const doorW = 42;
     const doorH = 32;
@@ -10498,92 +10495,6 @@ export class QuartierAnimator {
     ctx.fillStyle = '#fbbf24';
     ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.fillText('ادخل 🚪', doorX + doorW / 2, doorY + 18);
-
-    // Distributeur automatique DAB / GAB
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(x + 8, groundY - 38, 22, 38);
-    ctx.fillStyle = '#38bdf8';
-    ctx.fillRect(x + 11, groundY - 33, 16, 10);
-    ctx.fillStyle = '#fef08a';
-    ctx.font = '700 6.5px "Cairo", sans-serif';
-    ctx.fillText('DAB', x + 19, groundY - 25);
-
-    // GUICHE VISIBLES (الشباك 1 & 2) : vitres blindées + banquier derrière + cadre laiton + lueur animée
-    const tellerH = 26;
-    const tellerY = groundY - 16 - tellerH;
-    for (let g = 0; g < 2; g++) {
-      const guiW = 26;
-      const guiX = x + w - 62 + g * 30;
-
-      // Cadre diplômé en laiton
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.4;
-      ctx.fillStyle = '#081021';
-      ctx.beginPath();
-      ctx.roundRect(guiX, tellerY - 4, guiW, tellerH + 4, [3, 3, 0, 0]);
-      ctx.fill();
-      ctx.stroke();
-
-      // Banquier derrière la vitre (silhouette visible + buste)
-      const inkT = Math.sin(timestamp / 620 + g * 2.2);
-      ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(guiX + 2, tellerY - 2);
-      ctx.lineTo(guiX + 2, groundY - 14);
-      ctx.moveTo(guiX + guiW - 2, tellerY - 2);
-      ctx.lineTo(guiX + guiW - 2, groundY - 14);
-      ctx.stroke();
-
-      // Silhouette banquier + micro hygiaphone doré
-      ctx.fillStyle = '#93c5fd';
-      ctx.beginPath();
-      ctx.arc(guiX + guiW / 2, tellerY + 8, 5.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#60a5fa';
-      ctx.beginPath();
-      ctx.roundRect(guiX + guiW / 2 - 6, tellerY + 14, 12, tellerH - 16, 3);
-      ctx.fill();
-      ctx.fillStyle = '#fbbf24';
-      ctx.beginPath();
-      ctx.arc(guiX + guiW / 2 + 5, tellerY + 9, 2.2 + inkT * 0.3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Vitre blindée semi-reflet + lueur neon pulsée
-      const glassGlow = ctx.createLinearGradient(guiX, tellerY, guiX, groundY - 14);
-      glassGlow.addColorStop(0, `rgba(56, 189, 248, ${0.30 + (inkT + 1) * 0.06})`);
-      glassGlow.addColorStop(1, 'rgba(56, 189, 248, 0.08)');
-      ctx.fillStyle = glassGlow;
-      ctx.fillRect(guiX + 2, tellerY - 2, guiW - 4, tellerH + 2);
-
-      // Plateau du guichet au sol
-      ctx.fillStyle = '#f1f5f9';
-      ctx.fillRect(guiX - 1.5, groundY - 16, guiW + 3, 2.4);
-      ctx.fillStyle = '#334155';
-      ctx.fillRect(guiX - 1.5, groundY - 13.6, guiW + 3, 1.2);
-
-      // Label guichet lumineux
-      ctx.fillStyle = '#7dd3fc';
-      ctx.font = '700 5.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`الشباك ${g + 1}`, guiX + guiW / 2, tellerY - 6.5);
-      ctx.textAlign = 'left';
-    }
-
-    // File de clients qui attendent devant le DAB (bulle d'attente animée)
-    const queueBob = Math.sin(timestamp / 480) * 2.2;
-    ctx.fillStyle = '#0f172a';
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.ellipse(x + 26, groundY + 9, 7, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.font = '7.5px serif';
-    ctx.fillText('🧍', x + 22, groundY + 11 + queueBob);
-    ctx.fillStyle = '#fef08a';
-    ctx.font = '600 5px "Cairo", sans-serif';
-    ctx.fillText('⏳ في الانتظار...', x + 30, groundY + 13 + queueBob);
 
     // Enregistrement de la hitbox cliquable pour entrer dans la banque
     this.interactiveHitboxes.push({
@@ -10714,7 +10625,7 @@ export class QuartierAnimator {
     ctx.fillStyle = '#fbbf24';
     ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🚬 قمريڨ • بيع التبغ والوقيد', x + w / 2, y + 10.5);
+    ctx.fillText('🚬 قمريڨ • الوقيد', x + w / 2, y + 10.5);
 
     // Vitrine avec paquets de cigarettes, tabac et timbres fiscaux
     ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
@@ -10728,10 +10639,6 @@ export class QuartierAnimator {
     ctx.fillText('🚬', x + 24, y + 36);
     ctx.fillText('🔥', x + w / 2, y + 36);
     ctx.fillText('🎟️', x + w - 24, y + 36);
-
-    ctx.fillStyle = '#fde047';
-    ctx.font = '800 7px "Cairo", sans-serif';
-    ctx.fillText('20 مارص • كريستال • طوابع جبائية', x + w / 2, y + 50);
 
     // Guichet de vente ouvert en bas
     const counterW = 46;
@@ -10778,20 +10685,7 @@ export class QuartierAnimator {
     ctx.lineWidth = 1.2;
     ctx.strokeRect(counterX, counterY, counterW, counterH);
 
-    // Vitre blindée du guichet (hygiaphone) avec reflet animé bordeaux/or
-    const hatchT = Math.sin(timestamp / 520) * 0.5 + 0.5;
-    const glassGrad = ctx.createLinearGradient(counterX, counterY - 20, counterX, counterY + counterH);
-    glassGrad.addColorStop(0, `rgba(253, 224, 71, ${0.10 + hatchT * 0.06})`);
-    glassGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
-    glassGrad.addColorStop(1, `rgba(244, 63, 94, ${0.10 + hatchT * 0.05})`);
-    ctx.fillStyle = glassGrad;
-    ctx.fillRect(counterX + 2, counterY - 20, counterW - 4, counterH + 18);
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.55)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(counterX + 2, counterY - 20, counterW - 4, counterH + 18);
-
-    // Plateau coulissant passe-documents en laiton avec timbre fiscal vibreur
-    const stampT = Math.sin(timestamp / 260);
+    // Plateau coulissant passe-documents en laiton (zéro débordement, rien au-dessus de la tête du buraliste)
     ctx.fillStyle = '#090d16';
     ctx.fillRect(counterX + 8, counterY - 4, counterW - 16, 5);
     ctx.strokeStyle = '#fbbf24';
@@ -10799,26 +10693,6 @@ export class QuartierAnimator {
     ctx.strokeRect(counterX + 8, counterY - 4, counterW - 16, 5);
     ctx.fillStyle = '#fef08a';
     ctx.fillRect(counterX + 12, counterY - 2.6, counterW - 24, 1.8);
-    ctx.font = '7px serif';
-    ctx.fillText('🎟️', counterX + counterW / 2 + stampT * 1.6, counterY + 10);
-
-    // File d'attente devant le guichet (2 silhouettes bobbing)
-    for (let q = 0; q < 2; q++) {
-      const qb = Math.abs(Math.sin(timestamp / 430 + q * 1.7)) * 1.8;
-      const qx = counterX + counterW / 2 - 30 - q * 14;
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.roundRect(qx - 4, groundY - 20 - qb, 8, 13, 2.5);
-      ctx.fill();
-      ctx.fillStyle = '#fde68a';
-      ctx.beginPath();
-      ctx.arc(qx, groundY - 24 - qb, 4, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 8px "Cairo", sans-serif';
-    ctx.fillText('شباك البيع 🪙', counterX + counterW / 2, counterY + 16);
 
     // Client piéton au guichet (s'arrête, commande, paie et s'en va)
     if (to && to.state !== 'idle') {

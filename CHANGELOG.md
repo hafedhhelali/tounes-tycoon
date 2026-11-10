@@ -1,4 +1,12 @@
-﻿## [1.36.0] - 2026-11-08
+﻿## [1.37.0] - 2026-11-10
+### Fixed & Improved
+- **Scène intérieure & façades de rue épurées** (`store_animator.js`) :
+  - **Banquier & Buraliste dégagés sans flamme** : Le banquier dans la scène de banque est désormais dessiné après l'arche et le comptoir avec `workFx=false`, éliminant tout recouvrement de tête et l'effet flamme ✨ au-dessus du crâne. De même pour le caissier du kiosque avec l'enseigne `🚭 قمريڨ تونس`.
+  - **Suppression du fouillis visuel dans la rue** : Nettoyage des façades de la banque et du kiosque de tabac dans `QuartierAnimator` (`drawBank`, `drawTobaccoKiosk`) ; suppression des reflets hygiaphones superflus, des étiquettes débordantes et des silhouettes redondantes qui encombraient la visibilité des piétons.
+- **Support debug quartier** (`index.html`) :
+  - Exposition de `window.__quartierEngine` pour inspection et capture sans altération du DOM.
+
+## [1.36.0] - 2026-11-08
 ### Added & Improved
 - **Moteur Micro-Motion Mobile & Physique de Ressorts** (`motion_engine.js`) :
   - **Interpolation exponentielle continue** (`exponentialDecay`) : Déplacement de caméra fluide et lissage sans à-coups indépendant des variations de framerate.
@@ -241,6 +249,7 @@
 # CHANGELOG
 
 ## 2026-11-10
+- fix(ui,anim): banquier & buraliste nets sans flamme ni superposition, facades rue epurees
 - fix(banque,uiux): flamme tete banquier supprimee (workFx), badge chobbek1 petit en bas sur comptoir, bulles texte raccourcies, debug hook scene sims
 - feat(banque,tabac,audio): guichets banque visibles rue, hygiaphone+file tabac, reverb sfx+playBankVault cable
 - feat(graphics): couche pixi GPU activee (pixi.min.js -> window.PIXI), 3 FX nouveaux archetypes kahwa/studio/hotel, SDK AdSense externe retire

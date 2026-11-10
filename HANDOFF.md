@@ -1,32 +1,15 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-10 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v156)
-1. **Scène banque intérieure épurée** (retour visuel utilisateur) : flamme ✨ au-dessus de la tête du banquier supprimée via `drawWorker(..., workFx=false)` (paramètre optionnel, autres métiers inchangés) ; enseigne LED volante retirée — badge compact `الشباك 1` posé en bas sur la façade du comptoir (6px, plus de masquage de tête).
-2. Textes de bulles banque short : `🏦 ✓` / `✓ 💼💵` (moins de texte). Debug hook `window.__bankSceneSims.bank` ajouté à `openBankModalUI` pour forcer le rendu rAF en onglet arrière-plan / headless.
-3. Validation visuelle CDP headless (Chrome `Page.captureScreenshot` via script temporaire, supprimé après usage) : badge sous la tête, zéro flamme, scène propre.
+## État en 3 lignes (v157)
+1. **Scènes banque & kiosque épurées à 100%** (`store_animator.js`) : banquier derrière le guichet dessiné après l'arche/comptoir pour zéro recouvrement de tête avec `workFx=false` (zéro flamme ✨ au-dessus de la tête) ; buraliste du kiosque nettoyé de la même façon avec enseigne `🚭 قمريڨ تونس`.
+2. **Façades de rue dépouillées du bruit visuel** (`store_animator.js`) : suppression des vitres blindées superflues, des textes débordants et des files d'attente redondantes sur la banque et le kiosque de tabac dans la rue (`drawBank`, `drawTobaccoKiosk`).
+3. **Tests & Intégrité** : 129/129 tests au vert (`npm test`), exécution sandbox `node scripts/test_index_html.mjs` 100% OK sans écran blanc.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
-1. **Banque guichets visibles** : le bâtiment de rue `drawBankBranch` affiche maintenant 2 guichets vitrés (الشباك 1/2) avec banquier derrière la vitre, micro hygiaphone, lueur néon pulsée, plateau passe-documents laiton, file d'attente animée devant le DAB.
-2. **Sons améliorés** : réverbération procédurale (impulse 0.85s) + bus SFX sec/humide (`playBankVault` nouveau : clac cadenas + grincement rouleau + carillon marbre). Routage 42 call sites → `sfxTarget` ; son câblé à l'ouverture/fermeture modale banque + dépôts + retraits. `audio.test.js` (2 tests).
-3. **Guichet tabac amélioré** : vitre blindée hygiaphone avec reflet animé bordeaux/or, plateau passe-documents avec timbre fiscal vibreur (🎟️), file d'attente de 2 clients bobbing devant le comptoir — la garde `250`.
-
-## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
-1. **Couche Pixar GPU activée** : `pixi.min.js` chargé dans `index.html` → `window.PIXI` branché, `PixiGpuEngine.isSupported = true` sous WebGL (fallback Canvas 2D intact en headless). C'était la lib avancée déjà en dépôt — jamais branchée.
-2. **FX éclairage étendus** à 3 nouveaux archétypes (canonique `pixi_renderer.js` ET doublon `store_animator.js` synchronisés) : `kahwa` braise chicha pulsante, `studio_jeux_video` grille néon RGB coder + halo cyan/violet, `hotel`/`centre_thalasso` halo aquatique. Pipeline unique rAF dt-driven, 0 fuite mémoire (`cancelAnimationFrame` + `destroy()`).
-3. **SDK pub externe retiré** : script AdSense `adsbygoogle` supprimé du `<head>` (zéro requête réseau publicitaire). Funnel AdMob reste derrière `AdPolicy.ADS_ENABLED`.
-
-## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
-1. **Zéro publicité** : kill-switch `AdPolicy.ADS_ENABLED = false` dans `ads_service.js`. `showRewardedBoost()` retourne `true` immédiatement (récompense accordée sans aucun affichage) → AdMob natif ET lecteur intégré neutralisés. Tous les boutons "watched ?" du jeu fonctionnent normalement.
-2. Architecture pubs prête : flip `ADS_ENABLED = true` réactive le funnel complet (1. pont natif Capacitor AdMob → 2. lecteur intégré 3s). Aucune autre modification requise, interface unique `showRewardedBoost(contextLabel)` respectée par ~12 call sites dans `index.html`.
-3. Tests : `ads_service.test.js` (2 tests — kill-switch + cohérence politiques boost). Suite 116/116 au vert, sandbox `test_index_html.mjs` OK.
-
-## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
-- Historique v152 : commerce `studio_jeux_video` (recrutement équipe UI/UX 180K + expert tycoon 600K) à Tunis/Sousse; événements gaming `gamers_sousse` (studio x3) et `hackathon_monitoring` (studio x2.5); graphisme studio (template indigo, néon RGB `coderGlow`).
-- Historique v154 : couche Pixi GPU activée (`pixi.min.js` → `window.PIXI`), +3 FX archétypes (kahwa/studio/hotel), SDK AdSense externe retiré.
-- Historique v153 : kill-switch `AdPolicy.ADS_ENABLED = false` (zéro pub affichée, récompenses libres), funnel AdMob prêt au flip.
 - Dépôt : `c:\Projects\tounes-tycoon` (branche `main`, synchronisée avec `origin/main` et `www/`).
-- Fichiers modifiés (v155) : `store_animator.js` (guichets banque rue + hygiaphone tabac), `audio.js` (réverb + bus SFX + `playBankVault`), `audio.test.js` (nouveau), `index.html` (câblage son banque).
-- Suite de tests : 125/125 au vert (`npm test`), validation VM sandbox `scripts/test_index_html.mjs` OK.
+- Fichiers modifiés : `store_animator.js`, `index.html`, `.gitignore`, `HANDOFF.md`, `CHANGELOG.md`.
+- Suite de tests : 129/129 tests au vert (`npm test`).
+- Validation VM sandbox : `node scripts/test_index_html.mjs` OK.
 - Outil de livraison obligatoire : `scripts/ship.ps1 "<type>(<scope>): <msg>"`.
 - Copyright : `© EOLabs 2026`.

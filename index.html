@@ -5281,6 +5281,7 @@
 
     if (quartierCanvas) {
       quartierEngine = new QuartierAnimator(quartierCanvas, engine);
+      window.__quartierEngine = quartierEngine;
       quartierEngine.setCallbacks({
         onInspect: (bizId) => {
           soundEngine.playCoin();
