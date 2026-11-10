@@ -2816,8 +2816,8 @@ export class CanvasStoreEngine {
       ctx.ellipse(bx + 58, by - 22, 54, 48, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Banquier professionnel actif derrière le guichet - POSITION PARFAITEMENT DÉGAGÉE ET VISIBLE
-      this.drawWorker(ctx, bx + 58, by - 2, 0, true, timeSec);
+      // 2. Banquier professionnel actif derrière le guichet - POSITION PARFAITEMENT DÉGAGÉE ET VISIBLE (zéro effet flamme ✨ au-dessus de la tête)
+      this.drawWorker(ctx, bx + 58, by - 2, 0, true, timeSec, false, false);
 
       // Compteuse de billets automatique à côté du banquier avec billets animés
       ctx.fillStyle = '#1e293b';
@@ -2887,18 +2887,18 @@ export class CanvasStoreEngine {
       ctx.fillStyle = '#fbbf24';
       ctx.fillRect(bx - 1, by + 1.5, bw + 2, 1);
 
-      // Enseigne lumineuse LED du guichet
-      ctx.fillStyle = isAccepted ? '#064e3b' : 'rgba(15, 23, 42, 0.92)';
+      // Étiquette compacte du guichet posée sur la façade du comptoir (EN BAS, petite, zéro masquage de la tête du banquier)
+      ctx.fillStyle = isAccepted ? '#064e3b' : 'rgba(15, 23, 42, 0.88)';
       ctx.beginPath();
-      ctx.roundRect(bx + 18, by - 60, 80, 14, 4);
+      ctx.roundRect(bx + 36, by + 13, 44, 11, 3);
       ctx.fill();
       ctx.strokeStyle = isAccepted ? '#10b981' : '#38bdf8';
-      ctx.lineWidth = 1.2;
+      ctx.lineWidth = 0.8;
       ctx.stroke();
       ctx.fillStyle = isAccepted ? '#34d399' : '#7dd3fc';
-      ctx.font = 'bold 8px "Cairo", sans-serif';
+      ctx.font = 'bold 6px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(isAccepted ? '✓ جاري المعاملة' : '🏛️ الوكالة البنكية • الشباك 1', bx + 58, by - 50);
+      ctx.fillText(isAccepted ? '✓ الشباك 1' : 'الشباك 1', bx + 58, by + 21);
 
       // 5. Client VIP arrivant avec mallette de documents
       if (this.bankVipClient) {
@@ -5276,7 +5276,7 @@ export class CanvasStoreEngine {
   }
 
   // --- PERSONNAGE VECTORIEL ULTRA-RÉALISTE : employé animé ---
-  drawWorker(ctx, x, footY, seed, isBusy, timeSec, showLegs = false) {
+  drawWorker(ctx, x, footY, seed, isBusy, timeSec, showLegs = false, workFx = true) {
     const palettes = [
       { coat: '#1e3a8a', pants: '#1e293b', skin: '#fcd34d', skinShadow: '#f59e0b', apron: '#f8fafc', shoes: '#0f172a' },
       { coat: '#065f46', pants: '#0f172a', skin: '#f59e0b', skinShadow: '#d97706', apron: '#fef3c7', shoes: '#1e293b' },
@@ -5451,8 +5451,8 @@ export class CanvasStoreEngine {
     ctx.arc(1.5, -37.5, 2.2, 0.2, Math.PI - 0.2);
     ctx.stroke();
 
-    // 10. Effet de concentration / brillance de savoir-faire lors de la production
-    if (isBusy) {
+    // 10. Effet de concentration / brillance de savoir-faire lors de la production (désactivable : banquier = zéro flamme au-dessus de la tête)
+    if (isBusy && workFx) {
       ctx.fillStyle = 'rgba(251, 191, 36, 0.9)';
       ctx.font = '8px sans-serif';
       ctx.fillText('✨', 8, -46 + Math.sin(phase * 2) * 2);
@@ -6349,7 +6349,7 @@ export class CanvasStoreEngine {
             x: vc.x - 10,
             y: vc.y - 54,
             vy: -22,
-            text: '🏦 مرحباً بك في الشباك ✓',
+            text: '🏦 ✓',
             life: 1.4,
             maxLife: 1.4
           });
@@ -6362,7 +6362,7 @@ export class CanvasStoreEngine {
             x: vc.x - 8,
             y: vc.y - 48,
             vy: -20,
-            text: '✓ سحب وقبض ناجح 💼',
+            text: '✓ 💼💵',
             life: 1.2,
             maxLife: 1.2
           });

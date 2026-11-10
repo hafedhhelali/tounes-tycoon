@@ -1,7 +1,12 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-10 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v155)
+## État en 3 lignes (v156)
+1. **Scène banque intérieure épurée** (retour visuel utilisateur) : flamme ✨ au-dessus de la tête du banquier supprimée via `drawWorker(..., workFx=false)` (paramètre optionnel, autres métiers inchangés) ; enseigne LED volante retirée — badge compact `الشباك 1` posé en bas sur la façade du comptoir (6px, plus de masquage de tête).
+2. Textes de bulles banque short : `🏦 ✓` / `✓ 💼💵` (moins de texte). Debug hook `window.__bankSceneSims.bank` ajouté à `openBankModalUI` pour forcer le rendu rAF en onglet arrière-plan / headless.
+3. Validation visuelle CDP headless (Chrome `Page.captureScreenshot` via script temporaire, supprimé après usage) : badge sous la tête, zéro flamme, scène propre.
+
+## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
 1. **Banque guichets visibles** : le bâtiment de rue `drawBankBranch` affiche maintenant 2 guichets vitrés (الشباك 1/2) avec banquier derrière la vitre, micro hygiaphone, lueur néon pulsée, plateau passe-documents laiton, file d'attente animée devant le DAB.
 2. **Sons améliorés** : réverbération procédurale (impulse 0.85s) + bus SFX sec/humide (`playBankVault` nouveau : clac cadenas + grincement rouleau + carillon marbre). Routage 42 call sites → `sfxTarget` ; son câblé à l'ouverture/fermeture modale banque + dépôts + retraits. `audio.test.js` (2 tests).
 3. **Guichet tabac amélioré** : vitre blindée hygiaphone avec reflet animé bordeaux/or, plateau passe-documents avec timbre fiscal vibreur (🎟️), file d'attente de 2 clients bobbing devant le comptoir — la garde `250`.

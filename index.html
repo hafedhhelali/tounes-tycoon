@@ -5695,6 +5695,8 @@
         if (!bankSceneSim) bankSceneSim = new CanvasStoreEngine(bankCanvasEl, engine);
         bankSceneSim.start('bank_branch');
       }
+      window.__bankSceneSims = window.__bankSceneSims || {};
+      window.__bankSceneSims.bank = bankSceneSim;
     }
 
     function closeBankModalUI() {
