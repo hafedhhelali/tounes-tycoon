@@ -241,6 +241,7 @@
 # CHANGELOG
 
 ## 2026-11-10
+- docs(handoff): reprise v153 zero pub, 116/116 tests
 - feat(ads): kill-switch ADS_ENABLED=false zéro pub affichée, récompenses accordées sans vidéo, funnel AdMob complet prêt derriere le drapeau
 - feat(ads): kill-switch ADS_ENABLED=false zéro pub affichée, récompenses accordées sans vidéo, funnel AdMob complet prêt derriere le drapeau
 - docs(handoff): reprise v152 studio jeux video UI/UX, 110/110 tests
