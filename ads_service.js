@@ -5,6 +5,14 @@
  */
 
 export class AdPolicy {
+  /**
+   * Interrupteur maître publicités (v152) :
+   * false = packaging 100% SANS pubs — `showRewardedBoost()` accorde la récompense
+   * immédiatement sans aucun affichage (pont AdMob natif ET lecteur intégré neutralisés).
+   * Architecture prête : mettre `true` pour réactiver le funnel AdMob complet
+   * (1. pont natif Capacitor AdMob -> 2. lecteur publicitaire intégré 3s avec barre de progression).
+   */
+  static ADS_ENABLED = false;
   // Boost x2 temporaire (4 heures)
   static BOOST_DURATION_MS = 4 * 60 * 60 * 1000;
   // Plafond de boost cumulable (max 24h)
@@ -29,6 +37,10 @@ export class AdsService {
    */
   async showRewardedBoost(contextLabel = 'تيربو ومضاعفة الإنتاج ⚡') {
     if (this.isShowingAd) return false;
+
+    // OFF (ADS_ENABLED = false) : zéro pub affichée — récompense accordée directement.
+    // Tous les boutons "watched ?" du jeu reçoivent true et fonctionnent normalement.
+    if (!AdPolicy.ADS_ENABLED) return true;
 
     // 1. Pont natif Capacitor AdMob si disponible sur Android
     if (typeof window !== 'undefined' && window.Capacitor?.Plugins?.AdMob?.showRewardVideoAd) {
