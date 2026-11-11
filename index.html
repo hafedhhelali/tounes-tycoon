@@ -3083,11 +3083,6 @@
           <span class="nav-seg-icon">🏘️</span>
           <span>شارع المشاريع</span>
         </button>
-        <button class="nav-segmented-btn" id="tabBtnZones" data-tab="zones">
-          <span class="nav-seg-icon">🗺️</span>
-          <span>خريطة تونس</span>
-          <span class="nav-seg-badge" id="currentZoneName">تونس</span>
-        </button>
         <button class="nav-segmented-btn" id="tabBtnTactics" data-tab="tactics">
           <span class="nav-seg-icon">⚡</span>
           <span>التطويرات</span>
@@ -3172,6 +3167,9 @@
             <div id="mapActiveCityBadge" class="badge-tn" style="font-size: 12px; padding: 3px 8px;">تونس العاصمة 🇹🇳</div>
           </div>
         </div>
+        <button class="return-street-btn" id="returnToStreetBtn" title="الرجوع إلى شارع المشاريع">
+          <span>🏪</span><span>رجوع للشارع ←</span>
+        </button>
         <div class="tunisia-map-canvas-wrap" id="tunisiaMapCanvasWrap">
           <canvas id="tunisiaMapCanvas"></canvas>
         </div>
@@ -4766,7 +4764,7 @@
     function switchTab(tabName) {
       tabBtnBusinesses.classList.toggle('active', tabName === 'businesses');
       tabBtnTactics.classList.toggle('active', tabName === 'tactics');
-      tabBtnZones.classList.toggle('active', tabName === 'zones');
+      if (tabBtnZones) tabBtnZones.classList.toggle('active', tabName === 'zones');
       if (tabBtnLeague) tabBtnLeague.classList.toggle('active', tabName === 'league');
 
       panelBusinesses.classList.toggle('active', tabName === 'businesses');
@@ -4799,7 +4797,7 @@
 
     tabBtnBusinesses.onclick = () => switchTab('businesses');
     tabBtnTactics.onclick = () => switchTab('tactics');
-    tabBtnZones.onclick = () => switchTab('zones');
+    if (tabBtnZones) tabBtnZones.onclick = () => switchTab('zones');
     if (tabBtnLeague) tabBtnLeague.onclick = () => switchTab('league');
     const returnToStreetBtn = document.getElementById('returnToStreetBtn');
     if (returnToStreetBtn) returnToStreetBtn.onclick = () => switchTab('businesses');

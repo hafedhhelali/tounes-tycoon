@@ -254,6 +254,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- fix(map,ui): suppression bouton 'map' (tab خريطة تونس), restoration bouton retour en haut
 - fix(map,ui): recentrer carte sur Tunis (zoom 1.3, pan 40) + suppression bouton retour en haut
 - fix(map,ui): recentrer carte sur Tunis (zoom 1.3, pan 40) + suppression bouton retour en haut
 - fix(tabac,uiux): enseigne kiosque 'بيع الفواكه الجافة'

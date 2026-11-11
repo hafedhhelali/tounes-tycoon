@@ -1,6 +1,11 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
+## État en 3 lignes (v161)
+1. **Bouton "map" supprimé** (`index.html`) : l'onglet `خريطة تونس` retiré de la barre de navigation ; `returnToStreetBtn` restauré ; wiring JS gardé (`if (tabBtnZones)`).
+2. **Carte recentrée sur Tunis** : zoom 1.3 + pan 40, bouton 🇹🇳 cohérent.
+3. **Tests & Intégrité** : 129/129 tests au vert, sandbox OK.
+
 ## État en 3 lignes (v160)
 1. **Carte recentrée sur Tunis** (`store_animator.js`) : vue initiale zoom 1.3 + pan 40 (Tunis au centre), bouton 🇹🇳 centrage Tunisie cohérent ; minPanX -100.
 2. **Bouton retour en haut supprimé** (`index.html`) : seul le bouton de navigation onglet reste.
