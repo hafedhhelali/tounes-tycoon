@@ -1,4 +1,9 @@
-﻿## [1.37.0] - 2026-11-10
+﻿## [1.38.0] - 2026-11-11
+### Added
+- **Config OpenCode projet** (`opencode.json`) : modèle par défaut `opencode-go/beam-free` (illimité/gratuit) pour le dev jeu, instructions AGENTS.md + ARCH.md chargées, watcher ignore dist/www/node_modules/*.apk.
+- **Docs** : HANDOFF.md + CHANGELOG.md mis à jour.
+
+## [1.37.0] - 2026-11-10
 ### Fixed & Improved
 - **Scène intérieure & façades de rue épurées** (`store_animator.js`) :
   - **Banquier & Buraliste dégagés sans flamme** : Le banquier dans la scène de banque est désormais dessiné après l'arche et le comptoir avec `workFx=false`, éliminant tout recouvrement de tête et l'effet flamme ✨ au-dessus du crâne. De même pour le caissier du kiosque avec l'enseigne `🚭 قمريڨ تونس`.
@@ -247,6 +252,9 @@
 - Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
 
 # CHANGELOG
+
+## 2026-11-11
+- chore(config): opencode.json model beam-free illimite pour dev jeu
 
 ## 2026-11-10
 - fix(ui,anim): banquier & buraliste nets sans flamme ni superposition, facades rue epurees

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode-go/beam-free",
+  "instructions": ["AGENTS.md", "ARCH.md"],
+  "watcher": {
+    "ignore": ["dist/**", "www/**", "node_modules/**", "*.apk"]
+  }
+}
