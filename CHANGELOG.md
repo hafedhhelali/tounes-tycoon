@@ -262,6 +262,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- fix(ui): renommage bouton retour en haut a droite en 'الخريطة'
 - feat(anim): interaction taxi rue - pieton hele, taxi s'arrete, mekech fi thniti, repart
 - fix(ui): suppression bouton settings (⚙️) et bouton piment (joujma) inutile
 - fix(ui): suppression bouton settings (⚙️) et bouton piment (joujma) inutile

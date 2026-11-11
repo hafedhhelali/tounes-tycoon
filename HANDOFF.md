@@ -1,6 +1,11 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
+## État en 3 lignes (v164)
+1. **Bouton retour renommé** (`index.html`) : `returnToStreetBtn` libellé `الخريطة` (🗺️).
+2. **Animation taxi** + carte recentrée + UI tweaks (v160-v163).
+3. **Tests & Intégrité** : 129/129 tests au vert, sandbox OK.
+
 ## État en 3 lignes (v163)
 1. **Animation rue taxi** (`store_animator.js`) : piéton héle un taxi, taxi s’arrête, bulle "mekech fi thniti", repart ; bras levé.
 2. **Carte recentrée sur Tunis** + bouton map supprimé + bouton retour restauré.
