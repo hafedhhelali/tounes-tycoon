@@ -11971,7 +11971,7 @@ export class QuartierAnimator {
     ctx.stroke();
     ctx.fillStyle = '#fef08a';
     ctx.font = '900 10.5px "Cairo", sans-serif';
-    ctx.fillText('خريطة تونس 🇹🇳', mapBtnX, mapBtnY + 27);
+    ctx.fillText('الخريطة 🇹🇳', mapBtnX, mapBtnY + 27);
     ctx.restore();
 
     this.interactiveHitboxes.push({
@@ -12476,6 +12476,8 @@ export class TunisiaMapEngine {
     this.isPanning = true;
     this.startPanY = e.clientY;
     this.startPanX = e.clientX;
+    this.downClientX = e.clientX;
+    this.downClientY = e.clientY;
     this.lastPointerY = e.clientY;
     this.lastPointerX = e.clientX;
     this.lastPointerTime = performance.now();
@@ -12519,8 +12521,8 @@ export class TunisiaMapEngine {
     this.lastPointerX = e.clientX;
     this.lastPointerTime = now;
 
-    const dragDist = Math.hypot(e.clientX - this.startPanX, e.clientY - this.startPanY);
-    if (dragDist > 6) {
+    const dragDist = Math.hypot(e.clientX - (this.downClientX || this.startPanX), e.clientY - (this.downClientY || this.startPanY));
+    if (dragDist > 16) {
       this.hasDraggedMap = true;
     }
     this.panY = Math.max(this.minPanY, Math.min(this.maxPanY, this.startOriginPanY + dy));
@@ -12542,6 +12544,7 @@ export class TunisiaMapEngine {
     }
 
     if (!this.hasDraggedMap) {
+      this.lastPointerUpClickTime = performance.now();
       this.handleClick(e);
       return;
     }
@@ -12612,6 +12615,8 @@ export class TunisiaMapEngine {
   }
 
   onOpen() {
+    this.caravan = null;
+    this.arrivalEffect = null;
     this.resize();
     const activeCity = this.getActiveCity();
     this.selectedCityId = activeCity ? activeCity.id : 'tunis';
@@ -12648,6 +12653,7 @@ export class TunisiaMapEngine {
 
   start() {
     this.stop();
+    if (typeof requestAnimationFrame === 'undefined') return;
     this.lastTime = performance.now();
     this.loop = (now) => {
       try {
@@ -12655,14 +12661,16 @@ export class TunisiaMapEngine {
       } catch (err) {
         console.error('TunisiaMapEngine frame error', err);
       }
-      this.animId = requestAnimationFrame(this.loop);
+      this.animId = (typeof requestAnimationFrame !== 'undefined') ? requestAnimationFrame(this.loop) : null;
     };
     this.animId = requestAnimationFrame(this.loop);
   }
 
   stop() {
     if (this.animId) {
-      cancelAnimationFrame(this.animId);
+      if (typeof cancelAnimationFrame !== 'undefined') {
+        cancelAnimationFrame(this.animId);
+      }
       this.animId = null;
     }
   }
@@ -12804,20 +12812,29 @@ export class TunisiaMapEngine {
   }
 
   handleClick(e) {
-    if (this.caravan || this.arrivalEffect) return; // Bloquer les clics pendant le trajet et la célébration d'arrivée
+    if (e && e.type === 'click' && performance.now() - (this.lastPointerUpClickTime || 0) < 350) return;
+
+    // Auto-récupération sécurisée si une caravane/effet a dépassé son temps
+    const now = performance.now();
+    if (this.caravan && (now - this.caravan.startTime > (this.caravan.duration + 500))) {
+      this.caravan = null;
+    }
+    if (this.arrivalEffect && (now - this.arrivalEffect.startTime > (this.arrivalEffect.duration + 500))) {
+      this.arrivalEffect = null;
+    }
+    if (this.caravan || this.arrivalEffect) return;
+
+    if (!e || typeof e.clientX !== 'number') return;
     const rect = this.canvas.getBoundingClientRect();
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
 
-    const baseScale = Math.max(0.001, this.scale || 1);
-    const currentZoom = this.zoom || 1;
-    const totalScale = baseScale * currentZoom;
+    const vpW = this.canvas.width / this.dpr;
+    const vpH = this.canvas.height / this.dpr;
 
-    // 1. Détection de clic sur les éléments de l'interface HUD (coordonnées écran fixes)
-    const hudX = (clientX - (this.offsetX || 0)) / baseScale;
-    const hudY = (clientY - (this.offsetY || 0)) / baseScale;
-    const vpW = this.canvas.width / (this.dpr * baseScale);
-    const vpH = this.canvas.height / (this.dpr * baseScale);
+    // 1. Détection de clic sur les éléments de l'interface HUD (coordonnées écran directes)
+    const hudX = clientX;
+    const hudY = clientY;
 
     // Boutons de Zoom à droite
     const btnSize = 34;
@@ -12830,9 +12847,9 @@ export class TunisiaMapEngine {
     }
     // Bouton Centrage Tunisie (🇹🇳)
     if (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 88 && hudY <= 88 + btnSize) {
-      this.targetZoom = 1.3;
-      this.targetPanX = 40;
-      this.targetPanY = 0;
+      this.targetZoom = 1.25;
+      const activeCity = this.getActiveCity();
+      this.focusCity(activeCity ? activeCity.id : 'tunis', false);
       if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
       return;
     }
@@ -12878,6 +12895,16 @@ export class TunisiaMapEngine {
 
       if (hudX >= cardX && hudX <= cardX + cardW && hudY >= cardY && hudY <= cardY + cardH) {
         const c = this.cities.find(item => item.id === this.selectedCityId);
+        if (c && c.id === this.getActiveCity().id) {
+          // Clic sur la carte de la ville active -> retour direct à la rue
+          if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
+          if (this.onTravel) {
+            this.onTravel(c, false);
+          } else if (typeof window !== 'undefined' && window.switchTab) {
+            window.switchTab('businesses');
+          }
+          return;
+        }
         if (c && (this.isCityUnlocked(c) || this.canUnlockCity(c)) && c.id !== this.getActiveCity().id) {
           this.travelTo(c.id);
         } else if (c && !this.isCityUnlocked(c) && !this.canUnlockCity(c)) {
@@ -12896,6 +12923,7 @@ export class TunisiaMapEngine {
     }
 
     // 3. Détection de clic sur les nœuds de la carte (coordonnées monde 2D prenant en compte le zoom et le pan)
+    const totalScale = Math.max(0.001, (this.scale || 1) * (this.zoom || 1));
     const mapScreenX = (clientX - (this.offsetX || 0)) / totalScale;
     const mapScreenY = (clientY - (this.offsetY || 0)) / totalScale;
     const mapX = mapScreenX - (this.panX || 0);
@@ -12903,28 +12931,31 @@ export class TunisiaMapEngine {
 
     for (const c of this.cities) {
       const dist = Math.hypot(mapX - c.x, mapY - c.y);
-      if (dist <= 42) {
+      if (dist <= 52) {
         const isUnlocked = this.isCityUnlocked(c);
         const canUnlock = this.canUnlockCity(c);
         const diag = this.engine.getCityLockDiagnosis ? this.engine.getCityLockDiagnosis(c.id) : c.tagline;
 
-        if (!isUnlocked && !canUnlock) {
+        this.selectedCityId = c.id;
+        if (this.onSelect) this.onSelect(c);
+
+        if (c.id === this.getActiveCity().id) {
+          if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
+          if (typeof window !== 'undefined' && window.showFeedbackToast) {
+            window.showFeedbackToast(`📍 أنت حالياً في ${c.name} ! (اضغط على رجوع للشارع للعب)`, '📍');
+          }
+        } else if (isUnlocked || canUnlock) {
+          this.travelTo(c.id);
+        } else {
           if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playBuzzer) {
             window.soundEngine.playBuzzer();
           }
           if (typeof window !== 'undefined' && window.showFeedbackToast) {
             window.showFeedbackToast(`🔒 ${c.name} مقفلة : ${diag}`, '🔒');
           }
-          if (this.selectedCityId === c.id && typeof window !== 'undefined' && window.showRewardModalUI) {
+          if (typeof window !== 'undefined' && window.showRewardModalUI) {
             window.showRewardModalUI('🔒', `ولاية ${c.name} مقفلة !`, `الشروط اللازمة باش تحلّ ${c.name} :`, `⚠️ ${diag}`);
           }
-        }
-
-        this.selectedCityId = c.id;
-        if (this.onSelect) this.onSelect(c);
-
-        if ((isUnlocked || canUnlock) && c.id !== this.getActiveCity().id) {
-          this.travelTo(c.id);
         }
         return;
       }
@@ -12966,16 +12997,13 @@ export class TunisiaMapEngine {
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
 
-    const baseScale = Math.max(0.001, this.scale || 1);
-    const currentZoom = this.zoom || 1;
-    const totalScale = baseScale * currentZoom;
-
-    // Survol HUD
-    const hudX = (clientX - (this.offsetX || 0)) / baseScale;
-    const hudY = (clientY - (this.offsetY || 0)) / baseScale;
-    const vpW = this.canvas.width / (this.dpr * baseScale);
+    const vpW = this.canvas.width / this.dpr;
     const btnSize = 34;
     const btnX = vpW - btnSize - 12;
+
+    // Survol HUD (espace écran direct)
+    const hudX = clientX;
+    const hudY = clientY;
 
     const isHoverZoom = (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 48 && hudY <= 170);
     const isHoverPill = (hudY >= 8 && hudY <= 42 && hudX >= 10 && hudX <= vpW - 10);
@@ -12985,6 +13013,7 @@ export class TunisiaMapEngine {
       return;
     }
 
+    const totalScale = Math.max(0.001, (this.scale || 1) * (this.zoom || 1));
     const mapScreenX = (clientX - (this.offsetX || 0)) / totalScale;
     const mapScreenY = (clientY - (this.offsetY || 0)) / totalScale;
     const x = mapScreenX - (this.panX || 0);
@@ -12992,7 +13021,7 @@ export class TunisiaMapEngine {
 
     let hovered = null;
     for (const c of this.cities) {
-      if (Math.hypot(x - c.x, y - c.y) <= 24) {
+      if (Math.hypot(x - c.x, y - c.y) <= 36) {
         hovered = c.id;
         break;
       }
@@ -13030,11 +13059,12 @@ export class TunisiaMapEngine {
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     const currentZoom = this.zoom || 1;
-    ctx.scale(this.dpr, this.dpr);
-    ctx.translate(this.offsetX, this.offsetY);
-    ctx.scale(this.scale * currentZoom, this.scale * currentZoom);
 
+    // --- MONDE CARTE 2D (avec zoom, translation offset et défilement pan) ---
     ctx.save();
+    ctx.scale(this.dpr, this.dpr);
+    ctx.translate(this.offsetX || 0, this.offsetY || 0);
+    ctx.scale(this.scale * currentZoom, this.scale * currentZoom);
     ctx.translate(this.panX || 0, this.panY || 0);
 
     // Fondu doux au démarrage
@@ -13079,17 +13109,20 @@ export class TunisiaMapEngine {
     }
     ctx.restore();
 
+    // --- INTERFACE HUD & OVERLAYS ÉCRAN (espace écran net, non affecté par le zoom du monde) ---
+    ctx.save();
+    ctx.scale(this.dpr, this.dpr);
     // 8. Commandes HUD tactiles (Zoom in, Zoom out, Reset, Pills pays)
     this.drawMapHUD(ctx);
 
     // 9. Carte flottante de la ville sélectionnée (fixée en bas)
     this.drawSelectedCityOverlay(ctx);
+    ctx.restore();
   }
 
   drawMapHUD(ctx) {
-    const baseScale = Math.max(0.001, this.scale || 1);
-    const vpW = this.canvas.width / (this.dpr * baseScale);
-    const vpH = this.canvas.height / (this.dpr * baseScale);
+    const vpW = this.canvas.width / this.dpr;
+    const vpH = this.canvas.height / this.dpr;
 
     ctx.save();
 
@@ -14396,9 +14429,8 @@ export class TunisiaMapEngine {
     ctx.save();
 
     // Boîte Popover en bas de la carte, centrée sur la largeur visible
-    const scale = Math.max(0.001, this.scale || 1);
-    const vpW = this.canvas.width / (this.dpr * scale);
-    const vpH = this.canvas.height / (this.dpr * scale);
+    const vpW = this.canvas.width / this.dpr;
+    const vpH = this.canvas.height / this.dpr;
     const cardW = Math.min(420, vpW - 24);
     const cardH = 110;
     const cardX = Math.max(12, (vpW - cardW) / 2);

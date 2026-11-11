@@ -1,4 +1,19 @@
-﻿## [1.39.0] - 2026-11-11
+﻿## [1.40.0] - 2026-11-11
+### Fixed & Improved
+- **Restauration de l'onglet 'الخريطة' & unification visuelle** (`index.html`) :
+  - Bouton d'onglet `#tabBtnZones` restauré avec le label exact `الخريطة` et badge dynamique de la ville courante.
+  - Titres et headers unifiés sous le nom `الخريطة 🇹🇳 🇩🇿 🇲🇦 🇱🇾 🇪🇬 🇲🇷`.
+  - Bouton retour `#returnToStreetBtn` ("🏪 رجوع للشارع ←") intégré dans le header de la carte pour éviter tout chevauchement avec le canvas.
+  - Pill header `#openMapBtn` câblé sur `switchTab('zones')`.
+- **Correction intégrale des clics carte & HUD** (`store_animator.js`) :
+  - Découplage strict des coordonnées : le monde 2D (autoroutes, villes, caravanes) est rendu et cliqué en coordonnées monde scalées, tandis que le HUD (boutons zoom `+`, `🇹🇳`, `-`, pilules pays, carte de détails basse) est rendu et cliqué au pixel près en espace écran direct (indépendant du zoom/pan).
+  - Hitbox des villes élargie de 42 à 52px pour une détection tactile fluide et sans ratés sur mobile.
+  - Clic sur la ville active dans la popover ou sur la carte offre un feedback chaleureux et un retour direct au gameplay rue.
+  - Détection de glissement `hasDraggedMap` avec seuil élevé (16px) pour éviter toute confusion entre tap tactile et pan.
+- **Tests unitaires et de non-régression** :
+  - Ajout de la suite de tests automatisés `tunisia_map.test.js` couvrant l'ensemble des interactions HUD et monde (136/136 tests passants).
+
+## [1.39.0] - 2026-11-11
 ### Added & Fixed
 - **Bouton carte visible** (`index.html`) : ajout `#openMapBtn` "🗺️ الخريطة" dans `header-system-actions`, câblé à `#zonesModal`.
 - **Bouton profil visible** (`index.html`) : ajout `#openProfileBtn` "👤 البروفيل" ouvrant le modal profil/settings.
@@ -262,6 +277,8 @@
 # CHANGELOG
 
 ## 2026-11-11
+- fix(map,ui): restauration onglet 'الخريطة' et correction complete des clics carte et HUD
+- fix(map,ui): restauration onglet 'الخريطة' et correction complete des clics carte et HUD
 - fix(bank,map): degager le guichet banque (grille 2 col) et fluidifier la carte a 60fps avec centrage direct
 - fix(ui): renommage bouton retour en haut a droite en 'الخريطة'
 - feat(anim): interaction taxi rue - pieton hele, taxi s'arrete, mekech fi thniti, repart

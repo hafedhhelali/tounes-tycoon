@@ -3082,11 +3082,16 @@
         </div>
       </div>
 
-      <!-- BARRE DE NAVIGATION PRINCIPALE (شارع المشاريع / خريطة تونس / التطويرات) -->
+      <!-- BARRE DE NAVIGATION PRINCIPALE (شارع المشاريع / الخريطة / التطويرات) -->
       <div class="header-nav-switcher">
         <button class="nav-segmented-btn active" id="tabBtnBusinesses" data-tab="businesses">
           <span class="nav-seg-icon">🏘️</span>
           <span>شارع المشاريع</span>
+        </button>
+        <button class="nav-segmented-btn" id="tabBtnZones" data-tab="zones">
+          <span class="nav-seg-icon">🗺️</span>
+          <span>الخريطة</span>
+          <span class="nav-seg-badge" id="currentZoneName">تونس</span>
         </button>
         <button class="nav-segmented-btn" id="tabBtnTactics" data-tab="tactics">
           <span class="nav-seg-icon">⚡</span>
@@ -3167,14 +3172,14 @@
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 22px;">🗺️</span>
             <div style="text-align: right;">
-              <div style="font-weight: 900; font-size: 15px; color: #f8fafc; line-height: 1.4;">خريطة تونس والمغرب العربي الكبير 🇹🇳 🇩🇿 🇲🇦 🇱🇾 🇪🇬 🇲🇷</div>
+              <div style="font-weight: 900; font-size: 15px; color: #f8fafc; line-height: 1.4;">الخريطة 🇹🇳 🇩🇿 🇲🇦 🇱🇾 🇪🇬 🇲🇷</div>
             </div>
             <div id="mapActiveCityBadge" class="badge-tn" style="font-size: 12px; padding: 3px 8px;">تونس العاصمة 🇹🇳</div>
           </div>
+          <button class="return-street-btn" id="returnToStreetBtn" title="الرجوع إلى شارع المشاريع">
+            <span>🏪</span><span>رجوع للشارع ←</span>
+          </button>
         </div>
-        <button class="return-street-btn" id="returnToStreetBtn" title="الرجوع إلى شارع المشاريع">
-          <span>🗺️</span><span>الخريطة</span>
-        </button>
         <div class="tunisia-map-canvas-wrap" id="tunisiaMapCanvasWrap">
           <canvas id="tunisiaMapCanvas"></canvas>
         </div>
@@ -3368,7 +3373,7 @@
       <div style="display: flex; align-items: center; gap: 8px;">
         <div class="modal-icon-glow" style="font-size: 28px;">🗺️</div>
         <div style="text-align: right;">
-          <div class="modal-title" style="font-size: 16px;">خريطة تونس والاستثمار</div>
+          <div class="modal-title" style="font-size: 16px;">الخريطة والاستثمار</div>
           <div class="modal-subtitle" style="font-size: 10.5px;">كل حيّ تفتحه يعطيك بونيس إنتاج وطابع تونسي فريد !</div>
         </div>
       </div>
@@ -5016,7 +5021,7 @@
       zonesModal.classList.add('active');
     };
     if (openZoneMapBtn) openZoneMapBtn.onclick = openZoneMapHandler;
-    if (openMapBtn) openMapBtn.onclick = openZoneMapHandler;
+    if (openMapBtn) openMapBtn.onclick = () => switchTab('zones');
     closeZonesModalBtn.onclick = () => {
       zonesModal.classList.remove('active');
     };

@@ -1,6 +1,11 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
+## État en 3 lignes (v166)
+1. **Onglet 'الخريطة' restauré & unifié** (`index.html`) : onglet nav `#tabBtnZones` libellé `الخريطة` avec badge ville active, titres unifiés, header pill `#openMapBtn` câblé sur `switchTab('zones')`, et bouton retour `#returnToStreetBtn` ("🏪 رجوع للشارع ←") propre dans le header sans collision canvas.
+2. **Clics carte & HUD 100% opérationnels** (`store_animator.js`) : séparation stricte monde 2D (zoom/pan/offset) vs écran HUD/overlays (boutons zoom, pilules pays, carte basse cliqués et dessinés en espace écran direct). Hitboxes villes élargies (52px), clic ville active avec retour direct rue, seuil drag 16px anti-jitter.
+3. **Tests & Intégrité** : 136/136 tests au vert (`npm test`), suite `tunisia_map.test.js` complète, sandbox VM `node scripts/test_index_html.mjs` 100% OK, zéro régression.
+
 ## État en 3 lignes (v165)
 1. **Guichet de banque dégagé** (`store_animator.js` & `index.html`) : guichet surélevé (`by=86`, sol dégagé à 50px), actions Dépôt/Retrait compactées en grille 2 colonnes ergonomique (hauteur divisée par 2, zéro masquage ni défilement).
 2. **Carte démarrage & fluidité 60 FPS** (`store_animator.js` & `index.html`) : échelle responsive (`0.48..1.25`), centrage auto direct sur la ville active (`onOpen()`, `focusCity()`), mise en cache offscreen (`bgCanvas`) et élimination des `shadowBlur` (rendu à 60-120 FPS constant).
