@@ -12066,19 +12066,19 @@ export class TunisiaMapEngine {
     // Caravan transport animation for seamless travel
     this.caravan = null;
 
-    // Pan & Zoom interactifs 2D pour exploration fluide de toute l'Afrique du Nord (Maroc/Mauritanie -> Tunisie -> Libye/Égypte)
-    this.panX = 40;
-    this.targetPanX = 40;
-    this.minPanX = -650;
-    this.maxPanX = 260;
+    // Pan & Zoom interactifs 2D centrés exclusivement sur la Tunisie
+    this.panX = 0;
+    this.targetPanX = 0;
+    this.minPanX = -180;
+    this.maxPanX = 180;
     this.panY = 0;
     this.targetPanY = 0;
-    this.minPanY = -420;
-    this.maxPanY = 140;
-    this.zoom = 1.25;
-    this.targetZoom = 1.25;
-    this.minZoom = 0.55;
-    this.maxZoom = 2.6;
+    this.minPanY = -170;
+    this.maxPanY = 170;
+    this.zoom = 1.15;
+    this.targetZoom = 1.15;
+    this.minZoom = 0.85;
+    this.maxZoom = 2.8;
     this.pointerVelocityX = 0;
     this.pointerVelocityY = 0;
     this.lastPointerTime = 0;
@@ -12097,15 +12097,16 @@ export class TunisiaMapEngine {
     // Effet d'arrivée dans la ville (onde de choc dorée & flash cinématique)
     this.arrivalEffect = null;
 
-    // Les 18 Villes Jouables centrées sur la Tunisie et connectées au Maghreb
+    // Les Villes et Gouvernorats de Tunisie (Cartographie Réaliste 100% Tunisienne)
     this.cities = [
       {
         id: 'tunis',
         name: 'تونس',
         fullName: 'تونس العاصمة',
         icon: '🕌',
-        x: 440,
-        y: 112,
+        region: 'north',
+        x: 438,
+        y: 104,
         tagline: 'نقطة البداية، أصل التجارة، نصبة كسكروت وفريكاسي في قلب المدينة العربي',
         reqDinars: 0,
         bonusDesc: 'مشاريع العاصمة : كسكروت، فريكاسي، قهوة (+25%)',
@@ -12116,19 +12117,60 @@ export class TunisiaMapEngine {
         name: 'بنزرت',
         fullName: 'بنزرت',
         icon: '⛵',
-        x: 400,
-        y: 52,
+        region: 'north',
+        x: 405,
+        y: 44,
         tagline: 'قنال بنزرت، الحوت المشوي، الكورنيش العتيق وحركة الميناء',
         reqDinars: 2500,
         bonusDesc: 'مشاريع بنزرت والميناء (+25%)',
         themeClass: 'zone-bizerte'
       },
       {
+        id: 'tabarka',
+        name: 'طبرقة',
+        fullName: 'طبرقة وعين دراهم',
+        icon: '🦞',
+        region: 'north',
+        x: 295,
+        y: 68,
+        tagline: 'مرجان طبرقة، صخور الإبر، شلالات وغابات خمير وسياحة الغوص',
+        reqDinars: 18000,
+        bonusDesc: 'سياحة المرجان والمطاعم البحرية (+35%)',
+        themeClass: 'zone-tabarka'
+      },
+      {
+        id: 'beja',
+        name: 'باجة',
+        fullName: 'باجة',
+        icon: '🧀',
+        region: 'north',
+        x: 340,
+        y: 108,
+        tagline: 'مطمورة الشمال، قمح وسمن، مخارق وزلابية وجبن باجة المعتّق',
+        reqDinars: 22000,
+        bonusDesc: 'الخيرات والمخبوزات الباجية (+30%)',
+        themeClass: 'zone-beja'
+      },
+      {
+        id: 'jendouba',
+        name: 'جندوبة',
+        fullName: 'جندوبة وبلاريجيا',
+        icon: '🌾',
+        region: 'north',
+        x: 295,
+        y: 125,
+        tagline: 'سهول مجردة الخصبة، رخام شمتو التاريخي ومواقع بلاريجيا الأثرية',
+        reqDinars: 35000,
+        bonusDesc: 'فلاحة الحبوب والرخام الطبيعي (+35%)',
+        themeClass: 'zone-jendouba'
+      },
+      {
         id: 'nabeul_hammamet',
         name: 'نابل',
-        fullName: 'نابل',
+        fullName: 'نابل والحمامات',
         icon: '🏖️',
-        x: 492,
+        region: 'north',
+        x: 498,
         y: 142,
         tagline: 'الفخار، ياسمين الحمامات، زهر نابل والنزل السياحية الفاخرة',
         reqDinars: 8000,
@@ -12136,22 +12178,37 @@ export class TunisiaMapEngine {
         themeClass: 'zone-hammamet'
       },
       {
-        id: 'beja',
-        name: 'باجة',
-        fullName: 'باجة',
-        icon: '🧀',
-        x: 340,
-        y: 110,
-        tagline: 'مطماطة الشمال، قمح وسمن، مخارق وزلابية وجبن باجة المعتّق',
-        reqDinars: 22000,
-        bonusDesc: 'الخيرات والمخبوزات الباجية (+30%)',
-        themeClass: 'zone-beja'
+        id: 'zaghouan',
+        name: 'زغوان',
+        fullName: 'زغوان',
+        icon: '⛲',
+        region: 'north',
+        x: 420,
+        y: 155,
+        tagline: 'معبد المياه، الحنايا الرومانية العظيمة، زهر النسري وكعك الورقة',
+        reqDinars: 45000,
+        bonusDesc: 'المياه العذبة والحلويات الأندلسية (+35%)',
+        themeClass: 'zone-zaghouan'
+      },
+      {
+        id: 'siliana',
+        name: 'سليانة',
+        fullName: 'سليانة ومكثر',
+        icon: '🏔️',
+        region: 'north',
+        x: 360,
+        y: 172,
+        tagline: 'جبل برقو، عين بوسعدية، الزيتون البري وآثار زامة ومكثر',
+        reqDinars: 50000,
+        bonusDesc: 'الفلاحة الجبلية والمياه المعدنية (+35%)',
+        themeClass: 'zone-siliana'
       },
       {
         id: 'le_kef',
         name: 'الكاف',
         fullName: 'الكاف',
         icon: '🏰',
+        region: 'north',
         x: 315,
         y: 180,
         tagline: 'القصبة العالية، سيدي بومخلوف، برنوس الجبل والتجارة العريقة',
@@ -12162,10 +12219,11 @@ export class TunisiaMapEngine {
       {
         id: 'sousse',
         name: 'سوسة',
-        fullName: 'سوسة',
+        fullName: 'سوسة جوهرة الساحل',
         icon: '💎',
-        x: 476,
-        y: 212,
+        region: 'sahel',
+        x: 482,
+        y: 214,
         tagline: 'بوجعفر، القنطاوي، التجارة البحرية وصالونات الشاي العصرية',
         reqDinars: 150000,
         bonusDesc: 'صالونات سوسة والمطاعم الفاخرة (+35%)',
@@ -12176,18 +12234,33 @@ export class TunisiaMapEngine {
         name: 'المنستير',
         fullName: 'المنستير',
         icon: '⚓',
-        x: 498,
-        y: 236,
+        region: 'sahel',
+        x: 504,
+        y: 234,
         tagline: 'رباط المنستير، سقيفة المهدية الكحلة والحوت الشامي الأزرق',
         reqDinars: 350000,
         bonusDesc: 'مشاريع الساحل والنزل الكبرى (+40%)',
         themeClass: 'zone-monastir'
       },
       {
+        id: 'mahdia',
+        name: 'المهدية',
+        fullName: 'المهدية',
+        icon: '🏛️',
+        region: 'sahel',
+        x: 522,
+        y: 258,
+        tagline: 'عاصمة الفاطميين، برج الرأس، السقيفة الكحلة وصيد السردينة الحرة',
+        reqDinars: 500000,
+        bonusDesc: 'صيد الأسماك والحرير المطرز (+40%)',
+        themeClass: 'zone-mahdia'
+      },
+      {
         id: 'kairouan',
         name: 'القيروان',
-        fullName: 'القيروان',
+        fullName: 'القيروان رابعة الثلاث',
         icon: '🕌',
+        region: 'centre',
         x: 415,
         y: 230,
         tagline: 'فسقية الأغالبة، مقروض القيروان والزرابي الصوفية الفاخرة',
@@ -12198,8 +12271,9 @@ export class TunisiaMapEngine {
       {
         id: 'sbeitla',
         name: 'سبيطلة',
-        fullName: 'سبيطلة',
+        fullName: 'سبيطلة التاريخية',
         icon: '🏛️',
+        region: 'centre',
         x: 375,
         y: 282,
         tagline: 'عاصمة سفيطلة الرومانية، المعابد الثلاثة، الكابيتول التاريخي وزيت الزيتون العريق',
@@ -12208,36 +12282,39 @@ export class TunisiaMapEngine {
         themeClass: 'zone-sbeitla'
       },
       {
-        id: 'annaba',
-        name: 'عنابة',
-        fullName: 'عنابة (الجزائر)',
-        icon: '🇩🇿',
-        x: 275,
-        y: 76,
-        tagline: 'بونة الجزائرية، الميناء التجاري العريق، الفولاذ وسوق التبادل الحدودي المغاربي',
-        reqDinars: 80000000,
-        bonusDesc: 'التجارة المغاربية والاستيراد والتصدير مع الجزائر (x2.5)',
-        themeClass: 'zone-annaba'
+        id: 'kasserine',
+        name: 'القصرين',
+        fullName: 'القصرين والشعانبي',
+        icon: '⛰️',
+        region: 'centre',
+        x: 335,
+        y: 265,
+        tagline: 'جبل الشعانبي 1544م، الحلفاء والسيليلوز وعاصمة الثورة الأبية',
+        reqDinars: 1200000,
+        bonusDesc: 'صناعة الحلفاء والخيرات الجبلية (+45%)',
+        themeClass: 'zone-kasserine'
       },
       {
-        id: 'tripoli',
-        name: 'طرابلس',
-        fullName: 'طرابلس (ليبيا)',
-        icon: '🇱🇾',
-        x: 580,
-        y: 442,
-        tagline: 'عروس البحر، باب البحر، أسواق الذهب والتجارة والعبور الدولي المغاربي',
-        reqDinars: 120000000,
-        bonusDesc: 'التجارة والعبور الدولي مع ليبيا الشقيقة (x3)',
-        themeClass: 'zone-tripoli'
+        id: 'sidi_bouzid',
+        name: 'سيدي بوزيد',
+        fullName: 'سيدي بوزيد الفلاحية',
+        icon: '🍈',
+        region: 'centre',
+        x: 380,
+        y: 318,
+        tagline: 'عاصمة الفلاحة التونسية، الباكورات، اللوز، الدواجن وزيت الزيتون الممتاز',
+        reqDinars: 1600000,
+        bonusDesc: 'الفلاحة الحديثة والإنتاج الوطني (+45%)',
+        themeClass: 'zone-sidi-bouzid'
       },
       {
         id: 'sfax',
         name: 'صفاقس',
-        fullName: 'صفاقس',
+        fullName: 'صفاقس عاصمة الجنوب',
         icon: '🏭',
-        x: 468,
-        y: 318,
+        region: 'centre',
+        x: 474,
+        y: 324,
         tagline: 'باب الديوان، الزيتونة المباركة، الصناعات الكبرى والخدمة الحارة',
         reqDinars: 2000000,
         bonusDesc: 'الصناعات الصفاقسية والتجارة الكبرى (+50%)',
@@ -12248,6 +12325,7 @@ export class TunisiaMapEngine {
         name: 'قفصة',
         fullName: 'قفصة',
         icon: '⛏️',
+        region: 'south',
         x: 345,
         y: 345,
         tagline: 'الحوض المنجمي، البركة الرومانية ونخيل قفصة الجبلي التاريخي',
@@ -12258,8 +12336,9 @@ export class TunisiaMapEngine {
       {
         id: 'tozeur',
         name: 'توزر',
-        fullName: 'توزر',
+        fullName: 'توزر بلاد الجريد',
         icon: '🌴',
+        region: 'south',
         x: 295,
         y: 400,
         tagline: 'دقلة النور، الشبيكة وتامغزة، والواحات الصحراوية العالمية',
@@ -12268,25 +12347,66 @@ export class TunisiaMapEngine {
         themeClass: 'zone-tozeur'
       },
       {
+        id: 'kebili_douz',
+        name: 'قبلي ودوز',
+        fullName: 'قبلي ودوز بوابة الصحراء',
+        icon: '🐪',
+        region: 'south',
+        x: 335,
+        y: 435,
+        tagline: 'بوابة الصحراء الكبرى، واحات النخيل، رمال العرق الشرقي ومهرجان الصحراء الدولي',
+        reqDinars: 15000000,
+        bonusDesc: 'تمور دقلة النور وسياحة القوافل والرمال (+65%)',
+        themeClass: 'zone-kebili'
+      },
+      {
         id: 'gabes',
         name: 'قابس',
         fullName: 'قابس',
         icon: '🌊',
-        x: 414,
-        y: 398,
-        tagline: 'الحناء الجبسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
+        region: 'south',
+        x: 424,
+        y: 396,
+        tagline: 'الحنّة القابسية، واحة قابس الشاطئية والموانئ التجارية الجنوبية',
         reqDinars: 25000000,
         bonusDesc: 'سوق قابس والمجمعات الصناعية (+75%)',
         themeClass: 'zone-gabes'
       },
       {
+        id: 'djerba_holding',
+        name: 'جربة',
+        fullName: 'جربة جزيرة الأحلام',
+        icon: '👑',
+        region: 'south',
+        x: 528,
+        y: 436,
+        tagline: 'جزيرة الأحلام ومقر الهولدينغ التونسي الوطني الدولي الشامل',
+        reqDinars: 150000000,
+        bonusDesc: 'مضاعف الهولدينغ الوطني الشامل لجميع المداخيل (x5) !',
+        themeClass: 'zone-djerba'
+      },
+      {
+        id: 'zarzis',
+        name: 'جرجيس',
+        fullName: 'جرجيس',
+        icon: '🧽',
+        region: 'south',
+        x: 480,
+        y: 442,
+        tagline: 'عروس الجنوب، صيد الإسفنج، ميناء جرجيس وغابات الزياتين البحرية',
+        reqDinars: 35000000,
+        bonusDesc: 'التجارة البحرية وزيت الزيتون الساحلي (+75%)',
+        themeClass: 'zone-zarzis'
+      },
+      {
         id: 'medenine_zarzis',
         name: 'مدنين',
-        fullName: 'مدنين',
+        fullName: 'مدنين والقصور',
         icon: '🏺',
+        region: 'south',
         x: 460,
         y: 465,
-        tagline: 'قصور مدنين، بحر جرجيس والزيتون الروماني العريق',
+        tagline: 'قصور مدنين التاريخية، معبر التجارة والزيتون الروماني العريق',
         reqDinars: 60000000,
         bonusDesc: 'الموانئ والتجارة المغاربية الجنوبية (x2)',
         themeClass: 'zone-medenine'
@@ -12294,8 +12414,9 @@ export class TunisiaMapEngine {
       {
         id: 'tataouine',
         name: 'تطاوين',
-        fullName: 'تطاوين',
+        fullName: 'تطاوين عاصمة القصور',
         icon: '🏰',
+        region: 'south',
         x: 430,
         y: 515,
         tagline: 'قصور تطاوين الصحراوية، الديناصورات وقرماسة، عاصمة الجنوب الأشم',
@@ -12304,120 +12425,62 @@ export class TunisiaMapEngine {
         themeClass: 'zone-tataouine'
       },
       {
-        id: 'djerba_holding',
-        name: 'جربة',
-        fullName: 'جربة',
-        icon: '👑',
-        x: 528,
-        y: 436,
-        tagline: 'جزيرة الأحلام ومقر الهولدينغ التونسي الوطني الدولي الشامل',
-        reqDinars: 150000000,
-        bonusDesc: 'مضاعف الهولدينغ الوطني الشامل لجميع المداخيل (x5) !',
-        themeClass: 'zone-djerba'
-      }
-    ];
-
-    // Les 6 Grandes Capitales d'Afrique du Nord (Algérie, Maroc, Libye, Égypte, Mauritanie, Tunisie)
-    this.regionalCapitals = [
-      {
-        id: 'cap_tunis',
-        name: 'تونس العاصمة',
-        country: 'الجمهورية التونسية',
-        flag: '🇹🇳',
-        icon: '🏛️',
-        x: 440,
-        y: 112,
-        tagline: 'عاصمة الجمهورية التونسية، قلب الإمبراطورية التجارية الوطنية وملتقى الحضارات الإقليمية',
-        isPlayable: true,
-        playableId: 'tunis'
-      },
-      {
-        id: 'cap_alger',
-        name: 'الجزائر العاصمة',
-        country: 'الجمهورية الجزائرية',
-        flag: '🇩🇿',
-        icon: '🏛️',
-        x: 255,
-        y: 84,
-        tagline: 'عاصمة الجمهورية الجزائرية الديمقراطية الشعبية، البهجة، ميناء الجزائر العريق والتجارة الاستراتيجية المغاربية',
-        bonusDesc: 'شراكة تجارية مغاربية كبرى واستيراد مواد أولية وصناعات كبرى (x2.5)'
-      },
-      {
-        id: 'cap_rabat',
-        name: 'الرباط',
-        country: 'المغرب',
-        flag: '🇲🇦',
-        icon: '👑',
-        x: 85,
-        y: 165,
-        tagline: 'عاصمة المملكة المغربية الشريفة، صومعة حسان، بوابة المحيط الأطلسي والتجارة العالمية',
-        bonusDesc: 'خط تجاري بحري عبر مضيق جبل طارق وأسواق الموانئ الأطلسية (x3)'
-      },
-      {
-        id: 'cap_tripoli',
-        name: 'طرابلس',
-        country: 'ليبيا',
-        flag: '🇱🇾',
-        icon: '🏛️',
-        x: 580,
-        y: 442,
-        tagline: 'عاصمة دولة ليبيا الشقيقة، عروس البحر وسوق التجارة الإقليمية ومعبر رأس جدير الدولي',
-        isPlayable: true,
-        playableId: 'tripoli',
-        bonusDesc: 'شريان التجارة المشتركة والعبور الدولي السريع (x3)'
-      },
-      {
-        id: 'cap_cairo',
-        name: 'القاهرة',
-        country: 'مصر',
-        flag: '🇪🇬',
-        icon: '🕌',
-        x: 896,
-        y: 450,
-        tagline: 'عاصمة جمهورية مصر العربية، قاهرة المعز، أهرامات الجيزة، مهد النيل وقناة السويس شريان الملاحة الدولية',
-        bonusDesc: 'طريق التجارة البحرية وقناة السويس نحو أسواق الشرق الأوسط والخليج (x4)'
-      },
-      {
-        id: 'cap_nouakchott',
-        name: 'نواكشوط',
-        country: 'موريتانيا',
-        flag: '🇲🇷',
+        id: 'remada',
+        name: 'رمادة',
+        fullName: 'رمادة وبرج الخضراء',
         icon: '🏜️',
-        x: 65,
+        region: 'south',
+        x: 435,
         y: 560,
-        tagline: 'عاصمة الجمهورية الإسلامية الموريتانية، منارة بلاد شنقيط وقوافل المحيط والصحراء الإفريقية الكبرى',
-        bonusDesc: 'طريق القوافل الصحراوية والتجارة الإفريقية والأطلسية (x3.5)'
+        tagline: 'العمق الصحراوي التونسي، بوابة الذهب الأسود وأقصى نقطة تونسية جنوبية',
+        reqDinars: 80000000,
+        bonusDesc: 'الطاقة والاستكشاف الصحراوي الكبير (x2.5)',
+        themeClass: 'zone-remada'
       }
     ];
 
-    // Réseau des Autoroutes & Voies Commerciales Dorées (Golden Highway Network)
+    this.regionalCapitals = [];
+
+    // Réseau Réaliste des Autoroutes (A) et Routes Nationales (RN/GP) de Tunisie
     this.highways = [
-      { from: 'bizerte', to: 'tunis', name: 'A4' },
-      { from: 'beja', to: 'tunis', name: 'A3' },
-      { from: 'le_kef', to: 'beja', name: 'GP5' },
-      { from: 'tunis', to: 'nabeul_hammamet', name: 'A1 Cap Bon' },
-      { from: 'nabeul_hammamet', to: 'sousse', name: 'A1 Sahel' },
-      { from: 'tunis', to: 'kairouan', name: 'RN3' },
-      { from: 'sousse', to: 'monastir_mahdia', name: 'C57 Sahel' },
-      { from: 'sousse', to: 'kairouan', name: 'GP2' },
-      { from: 'le_kef', to: 'kairouan', name: 'GP12' },
-      { from: 'kairouan', to: 'sfax', name: 'A1 Centre' },
-      { from: 'sousse', to: 'sfax', name: 'A1 Côtière' },
-      { from: 'annaba', to: 'beja', name: 'الطريق المغاربي A3 Ouest' },
-      { from: 'annaba', to: 'le_kef', name: 'طريق الحدود الجزائرية GP17' },
-      { from: 'kairouan', to: 'sbeitla', name: 'GP3 سفيطلة' },
-      { from: 'sbeitla', to: 'gafsa', name: 'GP12 الوسط الغربي' },
-      { from: 'medenine_zarzis', to: 'tripoli', name: 'الطريق الساحلي المغاربي رأس جدير' },
-      { from: 'kairouan', to: 'gafsa', name: 'GP3' },
-      { from: 'gafsa', to: 'tozeur', name: 'GP16 Oasis' },
-      { from: 'gafsa', to: 'gabes', name: 'GP15' },
-      { from: 'sfax', to: 'gabes', name: 'A1 Sud' },
-      { from: 'gabes', to: 'medenine_zarzis', name: 'A1 Sud' },
+      // Autoroutes Principales (A)
+      { from: 'tunis', to: 'bizerte', name: 'A4 الشمال' },
+      { from: 'tunis', to: 'beja', name: 'A3 مجردة' },
+      { from: 'beja', to: 'jendouba', name: 'A3 الغرب' },
+      { from: 'tunis', to: 'nabeul_hammamet', name: 'A1 الوطن القبلي' },
+      { from: 'nabeul_hammamet', to: 'sousse', name: 'A1 الساحل' },
+      { from: 'sousse', to: 'sfax', name: 'A1 صفاقس' },
+      { from: 'sfax', to: 'gabes', name: 'A1 الجنوب' },
+      { from: 'gabes', to: 'medenine_zarzis', name: 'A1 مدنين' },
+      // Routes Nationales & Régionales Majeures (RN / GP)
+      { from: 'bizerte', to: 'tabarka', name: 'RN7 الساحلية' },
+      { from: 'tabarka', to: 'jendouba', name: 'RN17 طبرقة-عين دراهم' },
+      { from: 'jendouba', to: 'le_kef', name: 'RN17 جندوبة-الكاف' },
+      { from: 'beja', to: 'le_kef', name: 'GP5 باجة-الكاف' },
+      { from: 'tunis', to: 'zaghouan', name: 'GP3 زغوان' },
+      { from: 'zaghouan', to: 'siliana', name: 'GP4 سليانة' },
+      { from: 'siliana', to: 'le_kef', name: 'GP18 الكاف' },
+      { from: 'zaghouan', to: 'kairouan', name: 'GP3 القيروان' },
+      { from: 'siliana', to: 'kairouan', name: 'GP12 الوسط' },
+      { from: 'sousse', to: 'monastir_mahdia', name: 'C57 الساحلية' },
+      { from: 'monastir_mahdia', to: 'mahdia', name: 'C82 المهدية' },
+      { from: 'mahdia', to: 'sfax', name: 'C82 الشابة-صفاقس' },
+      { from: 'sousse', to: 'kairouan', name: 'GP2 القيروان' },
+      { from: 'kairouan', to: 'sbeitla', name: 'GP3 سبيطلة' },
+      { from: 'sbeitla', to: 'kasserine', name: 'GP13 القصرين' },
+      { from: 'kasserine', to: 'gafsa', name: 'GP12 الشعانبي-قفصة' },
+      { from: 'kairouan', to: 'sidi_bouzid', name: 'GP3 سيدي بوزيد' },
+      { from: 'sidi_bouzid', to: 'sfax', name: 'GP13 صفاقس' },
+      { from: 'sidi_bouzid', to: 'gafsa', name: 'GP3 قفصة' },
+      { from: 'gafsa', to: 'tozeur', name: 'GP16 واحات الجريد' },
+      { from: 'tozeur', to: 'kebili_douz', name: 'GP16 طريق شط الجريد' },
+      { from: 'kebili_douz', to: 'gabes', name: 'GP20 قابس' },
+      { from: 'gafsa', to: 'gabes', name: 'GP15 الحامة' },
+      { from: 'medenine_zarzis', to: 'zarzis', name: 'RN1 جرجيس' },
+      { from: 'zarzis', to: 'djerba_holding', name: 'القنطرة الرومانية جربة' },
+      { from: 'gabes', to: 'djerba_holding', name: 'طريق الجرف بطاح جربة' },
       { from: 'medenine_zarzis', to: 'tataouine', name: 'GP19 القصور' },
-      { from: 'medenine_zarzis', to: 'djerba_holding', name: 'Voie Romaine El Kantara' },
-      { from: 'annaba', to: 'cap_alger', name: 'الطريق السيار المغاربي A1 شرق-غرب' },
-      { from: 'cap_alger', to: 'cap_rabat', name: 'الطريق الدولي نحو المغرب الشقيق' },
-      { from: 'cap_rabat', to: 'cap_nouakchott', name: 'طريق المحيط الأطلسي وقوافل موريتانيا' }
+      { from: 'tataouine', to: 'remada', name: 'GP19 رمادة والصحراء' }
     ];
 
     // Particules de caravanes commerciales en mouvement le long des autoroutes
@@ -12598,11 +12661,11 @@ export class TunisiaMapEngine {
     const city = this.cities.find(c => c.id === cityId) || this.getActiveCity();
     if (!city) return;
     const baseScale = Math.max(0.001, this.scale || 1);
-    const curZoom = this.zoom || 1.25;
+    const curZoom = this.zoom || 1.15;
     const vpW = this.canvas.width / (this.dpr * baseScale * curZoom);
     const vpH = this.canvas.height / (this.dpr * baseScale * curZoom);
-    const targetX = Math.max(this.minPanX || -650, Math.min(this.maxPanX || 260, (vpW / 2) - city.x));
-    const targetY = Math.max(this.minPanY || -420, Math.min(this.maxPanY || 140, (vpH / 2) - city.y));
+    const targetX = Math.max(this.minPanX || -180, Math.min(this.maxPanX || 180, (vpW / 2) - city.x));
+    const targetY = Math.max(this.minPanY || -170, Math.min(this.maxPanY || 170, (vpH / 2) - city.y));
     if (immediate) {
       this.panX = targetX;
       this.targetPanX = targetX;
@@ -12620,8 +12683,8 @@ export class TunisiaMapEngine {
     this.resize();
     const activeCity = this.getActiveCity();
     this.selectedCityId = activeCity ? activeCity.id : 'tunis';
-    this.targetZoom = 1.25;
-    this.zoom = 1.25;
+    this.targetZoom = 1.15;
+    this.zoom = 1.15;
     this.focusCity(this.selectedCityId, true);
     this.startupFade = 0.0;
     this.bgNeedsRedraw = true;
@@ -12639,13 +12702,10 @@ export class TunisiaMapEngine {
     const bgCtx = this.bgCtx;
     bgCtx.clearRect(0, 0, 1100, 800);
 
-    // 1. Fond Mer Méditerranée & Océan Atlantique avec reflets bioluminescents & coordonnées
+    // 1. Fond Mer Méditerranée avec teintes profondes et graticule marin
     this.drawSeaBackground(bgCtx, 0);
 
-    // 2. Silhouette Vectorielle des Pays du Grand Maghreb & Égypte
-    this.drawNeighboringCountries(bgCtx, 0);
-
-    // 3. Silhouette Vectorielle Haute Définition de la Tunisie
+    // 2. Silhouette Vectorielle Haute Définition de la Tunisie (GARDER QUE LA TUNISIE)
     this.drawTunisiaLandmass(bgCtx, 0);
 
     this.bgNeedsRedraw = false;
@@ -12847,9 +12907,9 @@ export class TunisiaMapEngine {
     }
     // Bouton Centrage Tunisie (🇹🇳)
     if (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 88 && hudY <= 88 + btnSize) {
-      this.targetZoom = 1.25;
-      const activeCity = this.getActiveCity();
-      this.focusCity(activeCity ? activeCity.id : 'tunis', false);
+      this.targetZoom = 1.15;
+      this.targetPanX = 0;
+      this.targetPanY = 0;
       if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
       return;
     }
@@ -12860,26 +12920,25 @@ export class TunisiaMapEngine {
       return;
     }
 
-    // Pilules de navigation rapide vers les pays en haut (y: 10 à 38)
+    // Pilules de navigation régionale tunisienne en haut
     if (hudY >= 8 && hudY <= 42) {
-      const pills = [
-        { id: 'tn', name: 'تونس', flag: '🇹🇳', x: -130, y: 0, zoom: 1.15 },
-        { id: 'dz', name: 'الجزائر', flag: '🇩🇿', x: 60, y: 20, zoom: 1.1 },
-        { id: 'ma', name: 'المغرب', flag: '🇲🇦', x: 220, y: 0, zoom: 1.1 },
-        { id: 'ly', name: 'ليبيا', flag: '🇱🇾', x: -280, y: -140, zoom: 1.05 },
-        { id: 'eg', name: 'مصر', flag: '🇪🇬', x: -540, y: -140, zoom: 1.05 },
-        { id: 'mr', name: 'موريتانيا', flag: '🇲🇷', x: 240, y: -280, zoom: 1.05 }
+      const regions = [
+        { id: 'all', name: 'تونس كاملة 🇹🇳', panX: 0, panY: 0, zoom: 1.15 },
+        { id: 'north', name: '🌾 الشمال', panX: 10, panY: 130, zoom: 1.6 },
+        { id: 'sahel', name: '🏖️ الساحل', panX: -50, panY: 50, zoom: 1.7 },
+        { id: 'centre', name: '🏛️ الوسط', panX: 0, panY: -10, zoom: 1.6 },
+        { id: 'south', name: '🌴 الجنوب', panX: -10, panY: -140, zoom: 1.5 }
       ];
-      const pillW = Math.min(62, Math.floor((vpW - 24) / pills.length));
-      const totalW = pillW * pills.length;
+      const pillW = Math.min(84, Math.floor((vpW - 24) / regions.length));
+      const totalW = pillW * regions.length;
       const startX = Math.max(10, Math.floor((vpW - totalW) / 2));
-      for (let i = 0; i < pills.length; i++) {
+      for (let i = 0; i < regions.length; i++) {
         const px = startX + i * pillW;
         if (hudX >= px && hudX <= px + pillW) {
-          const p = pills[i];
-          this.targetPanX = p.x;
-          this.targetPanY = p.y;
-          this.targetZoom = p.zoom;
+          const r = regions[i];
+          this.targetPanX = r.panX;
+          this.targetPanY = r.panY;
+          this.targetZoom = r.zoom;
           if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
           return;
         }
@@ -12961,35 +13020,6 @@ export class TunisiaMapEngine {
       }
     }
 
-    // 4. Détection de clic sur les 6 Grandes Capitales régionales d'Afrique du Nord
-    for (const cap of (this.regionalCapitals || [])) {
-      const dist = Math.hypot(mapX - cap.x, mapY - cap.y);
-      if (dist <= 38) {
-        if (cap.playableId) {
-          const matchC = this.cities.find(c => c.id === cap.playableId);
-          if (matchC) {
-            this.selectedCityId = matchC.id;
-            if (this.onSelect) this.onSelect(matchC);
-            if ((this.isCityUnlocked(matchC) || this.canUnlockCity(matchC)) && matchC.id !== this.getActiveCity().id) {
-              this.travelTo(matchC.id);
-            }
-            return;
-          }
-        }
-
-        if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playCelebrationChord) {
-          window.soundEngine.playCelebrationChord();
-        } else if (typeof window !== 'undefined' && window.soundFX && window.soundFX.playCoin) {
-          window.soundFX.playCoin();
-        }
-        if (typeof window !== 'undefined' && window.showRewardModalUI) {
-          window.showRewardModalUI(cap.flag, `${cap.name} - ${cap.country}`, cap.tagline, `🌍 شريان التجارة الإقليمية : ${cap.bonusDesc}`);
-        } else if (typeof window !== 'undefined' && window.showFeedbackToast) {
-          window.showFeedbackToast(`${cap.flag} ${cap.name}: ${cap.bonusDesc}`, '🌍');
-        }
-        return;
-      }
-    }
   }
 
   handleMouseMove(e) {
@@ -13024,14 +13054,6 @@ export class TunisiaMapEngine {
       if (Math.hypot(x - c.x, y - c.y) <= 36) {
         hovered = c.id;
         break;
-      }
-    }
-    if (!hovered && this.regionalCapitals) {
-      for (const cap of this.regionalCapitals) {
-        if (Math.hypot(x - cap.x, y - cap.y) <= 24) {
-          hovered = cap.id;
-          break;
-        }
       }
     }
     this.hoverCityId = hovered;
@@ -13126,26 +13148,25 @@ export class TunisiaMapEngine {
 
     ctx.save();
 
-    // 1. Barre supérieure : Pilules de saut rapide vers chaque pays
-    const pills = [
-      { id: 'tn', name: 'تونس', flag: '🇹🇳' },
-      { id: 'dz', name: 'الجزائر', flag: '🇩🇿' },
-      { id: 'ma', name: 'المغرب', flag: '🇲🇦' },
-      { id: 'ly', name: 'ليبيا', flag: '🇱🇾' },
-      { id: 'eg', name: 'مصر', flag: '🇪🇬' },
-      { id: 'mr', name: 'موريتانيا', flag: '🇲🇷' }
+    // 1. Barre supérieure : Pilules de saut rapide par région tunisienne
+    const regions = [
+      { id: 'all', name: 'تونس كاملة 🇹🇳' },
+      { id: 'north', name: '🌾 الشمال' },
+      { id: 'sahel', name: '🏖️ الساحل' },
+      { id: 'centre', name: '🏛️ الوسط' },
+      { id: 'south', name: '🌴 الجنوب' }
     ];
-    const pillW = Math.min(62, Math.floor((vpW - 24) / pills.length));
+    const pillW = Math.min(84, Math.floor((vpW - 24) / regions.length));
     const pillH = 26;
-    const totalW = pillW * pills.length;
+    const totalW = pillW * regions.length;
     const startX = Math.max(10, Math.floor((vpW - totalW) / 2));
     const pillY = 10;
 
-    for (let i = 0; i < pills.length; i++) {
-      const p = pills[i];
+    for (let i = 0; i < regions.length; i++) {
+      const p = regions[i];
       const px = startX + i * pillW;
 
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
       ctx.beginPath();
       ctx.roundRect(px + 2, pillY, pillW - 4, pillH, 8);
       ctx.fill();
@@ -13157,7 +13178,7 @@ export class TunisiaMapEngine {
       ctx.font = '900 10.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`${p.flag} ${p.name}`, px + pillW / 2, pillY + pillH / 2);
+      ctx.fillText(p.name, px + pillW / 2, pillY + pillH / 2);
     }
 
     // 2. Boutons de Zoom flottants sur le côté droit
@@ -13235,11 +13256,11 @@ export class TunisiaMapEngine {
 
     // Lignes de longitude
     const longitudes = [
-      { x: 80, label: '0° Greenwich' },
-      { x: 260, label: '5° E (الجزائر)' },
-      { x: 470, label: '10° E (تونس العاصمة)' },
-      { x: 670, label: '15° E (طرابلس)' },
-      { x: 900, label: '30° E (القاهرة والنيل)' }
+      { x: 295, label: '8.5° E (طبرقة والكاف)' },
+      { x: 360, label: '9.5° E (باجة وسبيطلة)' },
+      { x: 438, label: '10° E (تونس والقيروان)' },
+      { x: 485, label: '10.8° E (سوسة وصفاقس)' },
+      { x: 530, label: '11° E (جربة والمهدية)' }
     ];
     for (const lon of longitudes) {
       ctx.beginPath();
@@ -13313,7 +13334,7 @@ export class TunisiaMapEngine {
   }
 
   drawNeighboringCountries(ctx, t) {
-    ctx.save();
+    return; // Mode Tunisie Exclusive : seuls la République Tunisienne, ses golfes, îles et chotts sont représentés
 
     // --- HALO LUMINEUX DES CÔTES (AQUAMARINE SHELF GLOW) ---
     // Donne l'effet de haut-fond turquoise et de relief insulaire luxueux
@@ -13909,7 +13930,7 @@ export class TunisiaMapEngine {
 
   drawHighwaysNetwork(ctx, dt, t) {
     ctx.save();
-    const findNode = (id) => this.cities.find(c => c.id === id) || (this.regionalCapitals && this.regionalCapitals.find(c => c.id === id));
+    const findNode = (id) => this.cities.find(c => c.id === id);
 
     // 1. Tracé des autoroutes dorées élégantes
     ctx.shadowBlur = 0;
@@ -14097,87 +14118,13 @@ export class TunisiaMapEngine {
         ctx.fillText(shortLockReason, c.x, c.y + pinRadius + 11.5);
       }
 
-      ctx.restore();
-    }
-
-    // Nœuds des 6 Grandes Capitales Régionales d'Afrique du Nord (Algérie, Maroc, Libye, Égypte, Mauritanie, Tunisie)
-    for (const cap of (this.regionalCapitals || [])) {
-      const isHovered = this.hoverCityId === cap.id;
-      const isTunis = cap.id === 'cap_tunis';
-
-      // Pour Tunis (déjà représentée dans cities), ajouter la couronne royale de capitale
-      if (isTunis) {
-        ctx.save();
+      // Couronne de capitale nationale pour Tunis
+      if (c.id === 'tunis') {
         ctx.fillStyle = '#fbbf24';
-        ctx.font = '12px sans-serif';
+        ctx.font = '13px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('👑', cap.x, cap.y - 28);
-        ctx.restore();
-        continue;
+        ctx.fillText('👑', c.x, c.y - pinRadius - 22);
       }
-
-      ctx.save();
-
-      // Halo pulsant doré autour de la capitale internationale
-      const capPulse = (t * 18) % 24;
-      const capAlpha = Math.max(0, 0.7 - capPulse / 24);
-      ctx.strokeStyle = `rgba(251, 191, 36, ${capAlpha})`;
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.arc(cap.x, cap.y, 16 + capPulse, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Pin doré de la capitale
-      const pinR = isHovered ? 18 : 16;
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-      ctx.shadowBlur = 10;
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.beginPath();
-      ctx.ellipse(cap.x, cap.y + pinR + 2, pinR * 0.8, 4, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Fond du Pin doré avec bordure ambre
-      const capGrad = ctx.createRadialGradient(cap.x - 3, cap.y - 3, 2, cap.x, cap.y, pinR);
-      capGrad.addColorStop(0, '#fef08a');
-      capGrad.addColorStop(0.6, '#f59e0b');
-      capGrad.addColorStop(1, '#b45309');
-      ctx.fillStyle = capGrad;
-      ctx.beginPath();
-      ctx.arc(cap.x, cap.y, pinR, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#fef08a';
-      ctx.lineWidth = 2.2;
-      ctx.stroke();
-
-      // Émoji drapeau
-      ctx.font = '14px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(cap.flag, cap.x, cap.y);
-
-      // Étiquette du nom de la capitale
-      ctx.textBaseline = 'alphabetic';
-      ctx.font = '900 12px "Cairo", sans-serif';
-      const capLbl = `🏛️ ${cap.name}`;
-      const lblW = ctx.measureText(capLbl).width;
-      const bH = 18;
-      const bY = cap.y - pinR - 19;
-
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
-      ctx.beginPath();
-      ctx.roundRect(cap.x - lblW / 2 - 8, bY, lblW + 16, bH, 6);
-      ctx.fill();
-      ctx.strokeStyle = '#fbbf24';
-      ctx.lineWidth = 1.4;
-      ctx.stroke();
-
-      ctx.fillStyle = '#fef08a';
-      ctx.fillText(capLbl, cap.x, bY + 13);
-
-      // Sous-titre pays
-      ctx.fillStyle = '#cbd5e1';
-      ctx.font = '800 8.5px "Cairo", sans-serif';
-      ctx.fillText(cap.country, cap.x, cap.y + pinR + 12);
 
       ctx.restore();
     }

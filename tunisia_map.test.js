@@ -117,30 +117,32 @@ test('TunisiaMapEngine: clics sur les boutons HUD de zoom (+ / 🇹🇳 / -)', (
 
   // Bouton Centrage Tunisie (🇹🇳) à (btnX + 10, 88 + 10)
   map.handleClick({ clientX: btnX + 10, clientY: 98 });
-  assert.equal(map.targetZoom, 1.25, 'Zoom centré Tunisie doit être 1.25');
+  assert.equal(map.targetZoom, 1.15, 'Zoom centré Tunisie doit être 1.15');
 });
 
-test('TunisiaMapEngine: clic sur les pilules de navigation de pays', () => {
+test('TunisiaMapEngine: clic sur les pilules de navigation par région tunisienne', () => {
   const { canvas } = createMockCanvas(400, 700, 1);
   const engine = createMockEngine('tunis');
   const map = new TunisiaMapEngine(canvas, engine);
   map.onOpen();
 
   const vpW = 400;
-  const pillW = Math.min(62, Math.floor((vpW - 24) / 6)); // 62
-  const totalW = pillW * 6; // 372
-  const startX = Math.floor((vpW - totalW) / 2); // 14
+  const pillW = Math.min(84, Math.floor((vpW - 24) / 5));
+  const totalW = pillW * 5;
+  const startX = Math.floor((vpW - totalW) / 2);
 
-  // Clic sur l'Algérie (index 1)
-  const dzX = startX + 1 * pillW + 10;
-  map.handleClick({ clientX: dzX, clientY: 20 });
-  assert.equal(map.targetPanX, 60, 'targetPanX pour Algérie doit être 60');
-  assert.equal(map.targetPanY, 20, 'targetPanY pour Algérie doit être 20');
+  // Clic sur le Nord (index 1)
+  const northX = startX + 1 * pillW + 10;
+  map.handleClick({ clientX: northX, clientY: 20 });
+  assert.equal(map.targetPanX, 10, 'targetPanX pour le Nord doit être 10');
+  assert.equal(map.targetPanY, 130, 'targetPanY pour le Nord doit être 130');
+  assert.equal(map.targetZoom, 1.6, 'targetZoom pour le Nord doit être 1.6');
 
-  // Clic sur le Maroc (index 2)
-  const maX = startX + 2 * pillW + 10;
-  map.handleClick({ clientX: maX, clientY: 20 });
-  assert.equal(map.targetPanX, 220, 'targetPanX pour Maroc doit être 220');
+  // Clic sur le Sud (index 4)
+  const southX = startX + 4 * pillW + 10;
+  map.handleClick({ clientX: southX, clientY: 20 });
+  assert.equal(map.targetPanX, -10, 'targetPanX pour le Sud doit être -10');
+  assert.equal(map.targetPanY, -140, 'targetPanY pour le Sud doit être -140');
 });
 
 test('TunisiaMapEngine: clic sur la carte Popover en bas', () => {

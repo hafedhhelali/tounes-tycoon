@@ -1,4 +1,17 @@
-﻿## [1.40.0] - 2026-11-11
+﻿## [1.41.0] - 2026-11-11
+### Added & Improved
+- **Suppression de la liste des pays & recentrage 100% Tunisie** (`store_animator.js` & `index.html`) :
+  - Suppression intégrale des pays voisins (Algérie, Maroc, Libye, Égypte, Mauritanie) et de leurs capitales.
+  - Titre épuré : `خريطة تونس الخضراء 🇹🇳`.
+  - La carte est calibrée et bornée exclusivement sur la géographie tunisienne, éliminant toute dérive de caméra.
+- **Ajout des gouvernorats et villes tunisiennes & routes réalistes** (`store_animator.js`) :
+  - 26 villes et gouvernorats tunisiens intégrés avec coordonnées réelles, icônes, tags culturels et bonis : Tabarka, Béja, Jendouba, Siliana, Zaghouan, Le Kef, Nabeul, Sousse, Monastir, Mahdia, Kairouan, Sbeitla, Kasserine, Sidi Bouzid, Sfax, Gafsa, Tozeur, Kébili/Douz, Gabès, Djerba, Zarzis, Médenine, Tataouine, Remada/Borj El Khadra.
+  - Réseau routier réaliste tunisien complet : A1, A3, A4, RN7, RN17, GP3, GP4, GP5, GP12, GP13, GP15, traversée du Chott El Jerid GP16, Voie Romaine El Kantara, Bac Jorf, GP19.
+- **Navigation par régions tunisiennes** (`store_animator.js` & `tunisia_map.test.js`) :
+  - Bandeau supérieur de sauts rapides par zone : `تونس كاملة 🇹🇳`, `الشمال 🌾`, `الساحل 🏖️`, `الوسط 🏛️`, `الجنوب 🌴` avec zoom et centrage automatique fluide.
+  - Graticule nautique et longitudes mis à jour avec les repères côtiers tunisiens.
+
+## [1.40.0] - 2026-11-11
 ### Fixed & Improved
 - **Restauration de l'onglet 'الخريطة' & unification visuelle** (`index.html`) :
   - Bouton d'onglet `#tabBtnZones` restauré avec le label exact `الخريطة` et badge dynamique de la ville courante.
@@ -277,6 +290,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- feat(map): focus exclusif Tunisie, suppression pays etrangers, routes realistes et 26 villes tunisiennes
 - fix(map,ui): restauration onglet 'الخريطة' et correction complete des clics carte et HUD
 - fix(map,ui): restauration onglet 'الخريطة' et correction complete des clics carte et HUD
 - fix(bank,map): degager le guichet banque (grille 2 col) et fluidifier la carte a 60fps avec centrage direct

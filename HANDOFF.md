@@ -1,6 +1,11 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
+## État en 3 lignes (v167)
+1. **Suppression pays étrangers & focus 100% Tunisie** (`store_animator.js` & `index.html`) : suppression de la liste des pays voisins (pilules et silhouettes Maroc, Algérie, Libye, Égypte, Mauritanie supprimées). Carte et titre unifiés : `خريطة تونس الخضراء 🇹🇳`.
+2. **Navigation régionale optimisée & routes réelles** (`store_animator.js`) : chips de navigation par région (`تونس كاملة 🇹🇳`, `الشمال 🌾`, `الساحل 🏖️`, `الوسط 🏛️`, `الجنوب 🌴`), 26 villes et gouvernorats tunisiens intégrés (Tabarka, Jendouba, Zaghouan, Siliana, Mahdia, Kasserine, Sidi Bouzid, Kébili/Douz, Zarzis, Remada...) et réseau routier réaliste (A1, A3, A4, GP16 Chott El Jerid, Voie Romaine El Kantara, Bac Jorf...).
+3. **Tests & Intégrité** : 150/150 tests au vert (`npm test`), sandbox VM `node scripts/test_index_html.mjs` 100% OK, zéro régression.
+
 ## État en 3 lignes (v166)
 1. **Onglet 'الخريطة' restauré & unifié** (`index.html`) : onglet nav `#tabBtnZones` libellé `الخريطة` avec badge ville active, titres unifiés, header pill `#openMapBtn` câblé sur `switchTab('zones')`, et bouton retour `#returnToStreetBtn` ("🏪 رجوع للشارع ←") propre dans le header sans collision canvas.
 2. **Clics carte & HUD 100% opérationnels** (`store_animator.js`) : séparation stricte monde 2D (zoom/pan/offset) vs écran HUD/overlays (boutons zoom, pilules pays, carte basse cliqués et dessinés en espace écran direct). Hitboxes villes élargies (52px), clic ville active avec retour direct rue, seuil drag 16px anti-jitter.
