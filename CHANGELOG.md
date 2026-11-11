@@ -254,6 +254,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- fix(tabac,uiux): enseigne kiosque 'bay3 fewekh jaffa'
 - fix(tabac,uiux): enseigne kiosque 'قمر vaping' sans ي
 - fix(tabac,uiux): enseigne kiosque reduite a '🚬 قمريڨ' seule
 - chore(dev,debug): hooks CDP headless __bankSceneSims/__quartierEngine/__tobaccoSceneSim + verif pixel CDP scenes epurees
