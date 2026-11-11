@@ -254,6 +254,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- docs(gdd): houma hustle game design doc
 - feat(tabac,uiux): petite affiche paquet de cigarettes sur facade kiosque
 - fix(tabac,uiux): enseigne kiosque 'bay3 fewekh jaffa'
 - fix(tabac,uiux): enseigne kiosque 'قمر vaping' sans ي
