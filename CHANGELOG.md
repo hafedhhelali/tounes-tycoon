@@ -262,6 +262,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- fix(bank,map): degager le guichet banque (grille 2 col) et fluidifier la carte a 60fps avec centrage direct
 - fix(ui): renommage bouton retour en haut a droite en 'الخريطة'
 - feat(anim): interaction taxi rue - pieton hele, taxi s'arrete, mekech fi thniti, repart
 - fix(ui): suppression bouton settings (⚙️) et bouton piment (joujma) inutile

@@ -462,8 +462,8 @@ export class CanvasStoreEngine {
     if (!this.canvas) return;
     const parent = this.canvas.parentElement;
     const cssW = Math.max(300, parent ? parent.clientWidth : 360);
-    const cssH = Math.max(180, parent ? parent.clientHeight : 200);
-    this.logicalH = 200;
+    const cssH = Math.max(140, parent ? parent.clientHeight : 170);
+    this.logicalH = 180;
     this.scale = cssH / this.logicalH;
     this.width = Math.max(300, Math.floor(cssW / this.scale));
     this.height = this.logicalH;
@@ -516,7 +516,7 @@ export class CanvasStoreEngine {
       this.doorSwing = 1.0;
       this.bankVipClient = {
         x: this.width - 26,
-        y: 154,
+        y: 124,
         targetX: 148,
         state: 'entering',
         walkCycle: 0,
@@ -2781,28 +2781,28 @@ export class CanvasStoreEngine {
     if (archetype === 'bank_branch') {
       ctx.save();
       const bx = 24;
-      const by = 118;
-      const bw = 116;
-      const bh = 38;
+      const by = 86;
+      const bw = 118;
+      const bh = 40;
 
       // 1. Tapis rouge d'honneur menant de l'entrée au guichet
       ctx.fillStyle = '#991b1b';
-      ctx.fillRect(bx + bw - 4, by + 12, this.width - (bx + bw), 20);
+      ctx.fillRect(bx + bw - 4, by + 14, this.width - (bx + bw), 20);
       ctx.fillStyle = '#f59e0b';
-      ctx.fillRect(bx + bw - 4, by + 11, this.width - (bx + bw), 1.5);
-      ctx.fillRect(bx + bw - 4, by + 31, this.width - (bx + bw), 1.5);
+      ctx.fillRect(bx + bw - 4, by + 13, this.width - (bx + bw), 1.5);
+      ctx.fillRect(bx + bw - 4, by + 33, this.width - (bx + bw), 1.5);
 
       // Logo bancaire officiel en médaillon doré au mur
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
-      ctx.arc(216, 68, 22, 0, Math.PI * 2);
+      ctx.arc(216, 48, 20, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#fbbf24';
       ctx.lineWidth = 2.2;
       ctx.stroke();
-      ctx.font = '14px sans-serif';
+      ctx.font = '13px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🏛️', 216, 73);
+      ctx.fillText('🏛️', 216, 53);
 
       const isAccepted = this.bankVipClient && this.bankVipClient.state === 'accepted';
 
@@ -6347,7 +6347,7 @@ export class CanvasStoreEngine {
     // 0. Animation continue des clients à la Banque (`bank_branch`)
     if (archetype === 'bank_branch') {
       if (!this.bankVipClient) {
-        this.bankVipClient = { x: this.width - 26, y: 154, targetX: 148, state: 'entering', walkCycle: 0, timer: 0 };
+        this.bankVipClient = { x: this.width - 26, y: 124, targetX: 148, state: 'entering', walkCycle: 0, timer: 0 };
       }
       const vc = this.bankVipClient;
       vc.walkCycle += dt;
@@ -12069,13 +12069,14 @@ export class TunisiaMapEngine {
     // Pan & Zoom interactifs 2D pour exploration fluide de toute l'Afrique du Nord (Maroc/Mauritanie -> Tunisie -> Libye/Égypte)
     this.panX = 40;
     this.targetPanX = 40;
-    this.minPanX = -100;
-    this.maxPanX = 720;
+    this.minPanX = -650;
+    this.maxPanX = 260;
     this.panY = 0;
     this.targetPanY = 0;
-    this.maxPanY = 320;
-    this.zoom = 1.3;
-    this.targetZoom = 1.3;
+    this.minPanY = -420;
+    this.maxPanY = 140;
+    this.zoom = 1.25;
+    this.targetZoom = 1.25;
     this.minZoom = 0.55;
     this.maxZoom = 2.6;
     this.pointerVelocityX = 0;
@@ -12086,6 +12087,12 @@ export class TunisiaMapEngine {
     this.pointers = new Map();
     this.initialPinchDist = null;
     this.initialPinchZoom = 1;
+
+    // Cache hors-ligne pour fluidité 60-120 FPS
+    this.bgCanvas = null;
+    this.bgCtx = null;
+    this.bgNeedsRedraw = true;
+    this.startupFade = 1.0;
 
     // Effet d'arrivée dans la ville (onde de choc dorée & flash cinématique)
     this.arrivalEffect = null;
@@ -12516,8 +12523,8 @@ export class TunisiaMapEngine {
     if (dragDist > 6) {
       this.hasDraggedMap = true;
     }
-    this.panY = Math.max(-this.maxPanY, Math.min(180, this.startOriginPanY + dy));
-    this.panX = Math.max(-this.maxPanX, Math.min(this.minPanX, this.startOriginPanX + dx));
+    this.panY = Math.max(this.minPanY, Math.min(this.maxPanY, this.startOriginPanY + dy));
+    this.panX = Math.max(this.minPanX, Math.min(this.maxPanX, this.startOriginPanX + dx));
     this.targetPanY = this.panY;
     this.targetPanX = this.panX;
   }
@@ -12542,11 +12549,11 @@ export class TunisiaMapEngine {
     // Fling / Inertie dynamique 2D
     if (Math.abs(this.pointerVelocityY || 0) > 30) {
       const flingDistY = (this.pointerVelocityY || 0) * 0.35;
-      this.targetPanY = Math.max(-this.maxPanY, Math.min(180, (this.panY || 0) + flingDistY));
+      this.targetPanY = Math.max(this.minPanY, Math.min(this.maxPanY, (this.panY || 0) + flingDistY));
     }
     if (Math.abs(this.pointerVelocityX || 0) > 30) {
       const flingDistX = (this.pointerVelocityX || 0) * 0.35;
-      this.targetPanX = Math.max(-this.maxPanX, Math.min(this.minPanX, (this.panX || 0) + flingDistX));
+      this.targetPanX = Math.max(this.minPanX, Math.min(this.maxPanX, (this.panX || 0) + flingDistX));
     }
   }
 
@@ -12563,8 +12570,8 @@ export class TunisiaMapEngine {
     let cssW = (parent && parent.clientWidth) || rect.width || (typeof window !== 'undefined' ? window.innerWidth : 440);
     let cssH = (parent && parent.clientHeight) || rect.height || (typeof window !== 'undefined' ? 680 : 680);
     
-    cssW = Math.max(320, cssW);
-    cssH = Math.max(520, cssH);
+    cssW = Math.max(300, cssW);
+    cssH = Math.max(400, cssH);
 
     this.width = 1040;
     this.height = 760;
@@ -12577,10 +12584,66 @@ export class TunisiaMapEngine {
     this.ctx.imageSmoothingEnabled = true;
     this.ctx.imageSmoothingQuality = 'high';
 
-    // Échelle équilibrée pour visibilité claire du Maghreb et centrage direct sur la Tunisie
-    this.scale = Math.max(0.72, Math.min(1.3, Math.min(cssW / 520, cssH / 660)));
+    // Échelle responsive équilibrée pour visibilité claire du Maghreb et centrage direct sur la Tunisie
+    this.scale = Math.max(0.48, Math.min(1.25, Math.min(cssW / 520, cssH / 620)));
     this.offsetX = Math.max(0, (cssW - 520 * this.scale) / 2);
-    this.offsetY = Math.max(0, (cssH - 660 * this.scale) / 2);
+    this.offsetY = Math.max(0, (cssH - 620 * this.scale) / 2);
+    this.bgNeedsRedraw = true;
+  }
+
+  focusCity(cityId, immediate = false) {
+    const city = this.cities.find(c => c.id === cityId) || this.getActiveCity();
+    if (!city) return;
+    const baseScale = Math.max(0.001, this.scale || 1);
+    const curZoom = this.zoom || 1.25;
+    const vpW = this.canvas.width / (this.dpr * baseScale * curZoom);
+    const vpH = this.canvas.height / (this.dpr * baseScale * curZoom);
+    const targetX = Math.max(this.minPanX || -650, Math.min(this.maxPanX || 260, (vpW / 2) - city.x));
+    const targetY = Math.max(this.minPanY || -420, Math.min(this.maxPanY || 140, (vpH / 2) - city.y));
+    if (immediate) {
+      this.panX = targetX;
+      this.targetPanX = targetX;
+      this.panY = targetY;
+      this.targetPanY = targetY;
+    } else {
+      this.targetPanX = targetX;
+      this.targetPanY = targetY;
+    }
+  }
+
+  onOpen() {
+    this.resize();
+    const activeCity = this.getActiveCity();
+    this.selectedCityId = activeCity ? activeCity.id : 'tunis';
+    this.targetZoom = 1.25;
+    this.zoom = 1.25;
+    this.focusCity(this.selectedCityId, true);
+    this.startupFade = 0.0;
+    this.bgNeedsRedraw = true;
+  }
+
+  renderStaticBackground() {
+    if (!this.canvas) return;
+    if (typeof document === 'undefined') return;
+    if (!this.bgCanvas) {
+      this.bgCanvas = document.createElement('canvas');
+      this.bgCtx = this.bgCanvas.getContext('2d');
+    }
+    this.bgCanvas.width = 1100;
+    this.bgCanvas.height = 800;
+    const bgCtx = this.bgCtx;
+    bgCtx.clearRect(0, 0, 1100, 800);
+
+    // 1. Fond Mer Méditerranée & Océan Atlantique avec reflets bioluminescents & coordonnées
+    this.drawSeaBackground(bgCtx, 0);
+
+    // 2. Silhouette Vectorielle des Pays du Grand Maghreb & Égypte
+    this.drawNeighboringCountries(bgCtx, 0);
+
+    // 3. Silhouette Vectorielle Haute Définition de la Tunisie
+    this.drawTunisiaLandmass(bgCtx, 0);
+
+    this.bgNeedsRedraw = false;
   }
 
   start() {
@@ -12974,14 +13037,32 @@ export class TunisiaMapEngine {
     ctx.save();
     ctx.translate(this.panX || 0, this.panY || 0);
 
-    // 1. Fond Mer Méditerranée & Océan Atlantique avec reflets bioluminescents & coordonnées
-    this.drawSeaBackground(ctx, t);
+    // Fondu doux au démarrage
+    if (this.startupFade < 1.0) {
+      this.startupFade = Math.min(1.0, this.startupFade + dt * 4.0);
+    }
+    ctx.globalAlpha = this.startupFade;
 
-    // 2. Silhouette Vectorielle Réelle des Pays du Grand Maghreb & Égypte
-    this.drawNeighboringCountries(ctx, t);
+    // 1. Fond Mer, Pays voisins & Tunisie mis en cache offscreen (0.2ms au lieu de 12ms !)
+    if (this.bgNeedsRedraw || !this.bgCanvas) {
+      this.renderStaticBackground();
+    }
+    if (this.bgCanvas) {
+      ctx.drawImage(this.bgCanvas, 0, 0);
+    }
 
-    // 3. Silhouette Vectorielle Haute Définition de la Tunisie
-    this.drawTunisiaLandmass(ctx, t);
+    // Ondulations marines légères animées
+    ctx.save();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+    ctx.lineWidth = 1.2;
+    for (let wave = 0; wave < 4; wave++) {
+      const wy = 60 + wave * 140 + Math.sin(t * 0.8 + wave) * 4;
+      ctx.beginPath();
+      ctx.moveTo(30, wy);
+      ctx.bezierCurveTo(360, wy - 6, 720, wy + 6, 1020, wy);
+      ctx.stroke();
+    }
+    ctx.restore();
 
     // 4. Réseau des Autoroutes & Voies Commerciales Dorées animées
     this.drawHighwaysNetwork(ctx, dt, t);
@@ -13203,8 +13284,7 @@ export class TunisiaMapEngine {
 
     // --- HALO LUMINEUX DES CÔTES (AQUAMARINE SHELF GLOW) ---
     // Donne l'effet de haut-fond turquoise et de relief insulaire luxueux
-    ctx.shadowColor = 'rgba(56, 189, 248, 0.55)';
-    ctx.shadowBlur = 14;
+    ctx.shadowBlur = 0;
 
     // 1. MAROC 🇲🇦 (المملكة المغربية - الأطلسي، الريف وجبال الأطلس)
     const moroccoGrad = ctx.createLinearGradient(10, 80, 160, 390);
@@ -13612,10 +13692,8 @@ export class TunisiaMapEngine {
     ctx.save();
     const ox = 200; // Décalage pour centrer la Tunisie dans la carte élargie du Grand Maghreb
 
-    // Ombre portée et lueur côtière aquamarine de la Tunisie
-    ctx.shadowColor = 'rgba(56, 189, 248, 0.65)';
-    ctx.shadowBlur = 16;
-    ctx.shadowOffsetY = 2;
+    // Double halo aquamarine et or haute définition sans shadowBlur
+    ctx.shadowBlur = 0;
 
     // Dégradé topographique réaliste (Verts du Nord -> Sahelo-steppes -> Sables dorés du Sahara)
     const landGrad = ctx.createLinearGradient(ox + 20, 40, ox + 20, 560);
@@ -13701,6 +13779,11 @@ export class TunisiaMapEngine {
     });
     ctx.closePath();
     ctx.fill();
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+    ctx.lineWidth = 4.8;
+    ctx.stroke();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.8;
     ctx.stroke();
 
     ctx.shadowBlur = 0;
@@ -13796,9 +13879,7 @@ export class TunisiaMapEngine {
     const findNode = (id) => this.cities.find(c => c.id === id) || (this.regionalCapitals && this.regionalCapitals.find(c => c.id === id));
 
     // 1. Tracé des autoroutes dorées élégantes
-    // Base avec lueur dorée
-    ctx.shadowColor = '#f59e0b';
-    ctx.shadowBlur = 4;
+    ctx.shadowBlur = 0;
     ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
@@ -13816,7 +13897,6 @@ export class TunisiaMapEngine {
     }
 
     // 2. Ligne centrale ruban néon ambre
-    ctx.shadowBlur = 0;
     ctx.strokeStyle = '#fef08a';
     ctx.lineWidth = 1.6;
     for (const h of this.highways) {
@@ -13840,11 +13920,14 @@ export class TunisiaMapEngine {
       const px = c1.x + (c2.x - c1.x) * p.progress;
       const py = c1.y + (c2.y - c1.y) * p.progress;
 
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = '#fbbf24';
-      ctx.shadowBlur = 6;
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.35)';
       ctx.beginPath();
-      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx.arc(px, py, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = p.color || '#fef08a';
+      ctx.beginPath();
+      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -14106,12 +14189,15 @@ export class TunisiaMapEngine {
       ctx.fill();
     }
 
-    // 2. Halo d'énergie autour du véhicule
-    ctx.shadowColor = '#f59e0b';
-    ctx.shadowBlur = 18;
+    // 2. Halo d'énergie autour du véhicule (vectoriel net sans shadowBlur)
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.beginPath();
+    ctx.arc(curX, curY, 15, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = '#fbbf24';
     ctx.beginPath();
-    ctx.arc(curX, curY, 11, 0, Math.PI * 2);
+    ctx.arc(curX, curY, 10, 0, Math.PI * 2);
     ctx.fill();
 
     // 3. Faisceau de phares avant et véhicule
@@ -14166,7 +14252,6 @@ export class TunisiaMapEngine {
     const caravanTxt = `في الثنيّة لـ ${cleanCityName} (${kmPct}%)`;
     ctx.font = '900 9.5px "Cairo", sans-serif';
     const bubbleW = Math.max(92, Math.min(160, Math.ceil(ctx.measureText(caravanTxt).width + 18)));
-    ctx.shadowBlur = 6;
     ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
     ctx.strokeStyle = '#fbbf24';
     ctx.lineWidth = 1.5;

@@ -1,6 +1,11 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
+## État en 3 lignes (v165)
+1. **Guichet de banque dégagé** (`store_animator.js` & `index.html`) : guichet surélevé (`by=86`, sol dégagé à 50px), actions Dépôt/Retrait compactées en grille 2 colonnes ergonomique (hauteur divisée par 2, zéro masquage ni défilement).
+2. **Carte démarrage & fluidité 60 FPS** (`store_animator.js` & `index.html`) : échelle responsive (`0.48..1.25`), centrage auto direct sur la ville active (`onOpen()`, `focusCity()`), mise en cache offscreen (`bgCanvas`) et élimination des `shadowBlur` (rendu à 60-120 FPS constant).
+3. **Tests & Intégrité** : 129/129 tests au vert, sandbox VM OK, code synchronisé.
+
 ## État en 3 lignes (v164)
 1. **Bouton retour renommé** (`index.html`) : `returnToStreetBtn` libellé `الخريطة` (🗺️).
 2. **Animation taxi** + carte recentrée + UI tweaks (v160-v163).

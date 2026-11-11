@@ -3395,7 +3395,7 @@
       </div>
 
       <!-- Scène d'animation intérieure de la Banque (Entrée client + Agent guichet) -->
-      <div style="position: relative; width: 100%; height: 170px; border-radius: 10px; overflow: hidden; border: 1.5px solid #38bdf8; background: #090d16; box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);">
+      <div style="position: relative; width: 100%; height: 165px; border-radius: 10px; overflow: hidden; border: 1.5px solid #38bdf8; background: #090d16; box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);">
         <canvas id="bankSceneCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
       </div>
 
@@ -3411,22 +3411,24 @@
         </div>
       </div>
 
-      <!-- Actions de Dépôt / Retrait rapides -->
-      <div style="background: rgba(30, 41, 59, 0.6); border-radius: 8px; padding: 4px 6px; display: flex; flex-direction: column; gap: 3px; width: 100%;">
-        <div style="font-size: 9.5px; font-weight: 800; color: #f8fafc;">📥 إيداع في البنك (حفظ السيولة)</div>
-        <div style="display: flex; gap: 4px;">
-          <button class="modal-btn" id="bankDeposit10PctBtn" style="flex: 1; padding: 3px 3px; font-size: 9.5px; background: rgba(2, 132, 199, 0.4); border-color: #38bdf8;">25%</button>
-          <button class="modal-btn" id="bankDeposit50PctBtn" style="flex: 1; padding: 3px 3px; font-size: 9.5px; background: rgba(2, 132, 199, 0.6); border-color: #38bdf8;">50%</button>
-          <button class="modal-btn" id="bankDepositAllBtn" style="flex: 1.5; padding: 3px 3px; font-size: 10px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: #38bdf8; font-weight: 900;">📥 صبّ الكلّ</button>
+      <!-- Actions de Dépôt / Retrait rapides en 2 colonnes ergonomiques (zéro masquage) -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%;">
+        <div style="background: rgba(30, 41, 59, 0.6); border-radius: 8px; padding: 4px 6px; display: flex; flex-direction: column; gap: 3px;">
+          <div style="font-size: 9px; font-weight: 800; color: #7dd3fc; text-align: center;">📥 إيداع (صبّ في البنك)</div>
+          <div style="display: flex; gap: 3px;">
+            <button class="modal-btn" id="bankDeposit10PctBtn" style="flex: 1; padding: 3px 2px; font-size: 9px; background: rgba(2, 132, 199, 0.4); border-color: #38bdf8;">25%</button>
+            <button class="modal-btn" id="bankDeposit50PctBtn" style="flex: 1; padding: 3px 2px; font-size: 9px; background: rgba(2, 132, 199, 0.6); border-color: #38bdf8;">50%</button>
+            <button class="modal-btn" id="bankDepositAllBtn" style="flex: 1.4; padding: 3px 2px; font-size: 9.5px; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: #38bdf8; font-weight: 900;">📥 الكلّ</button>
+          </div>
         </div>
-      </div>
 
-      <div style="background: rgba(30, 41, 59, 0.6); border-radius: 8px; padding: 4px 6px; display: flex; flex-direction: column; gap: 3px; width: 100%;">
-        <div style="font-size: 9.5px; font-weight: 800; color: #f8fafc;">📤 سحب من البنك (إلى السيولة)</div>
-        <div style="display: flex; gap: 4px;">
-          <button class="modal-btn" id="bankWithdraw10PctBtn" style="flex: 1; padding: 3px 3px; font-size: 9.5px; background: rgba(217, 119, 6, 0.35); border-color: #f59e0b;">25%</button>
-          <button class="modal-btn" id="bankWithdraw50PctBtn" style="flex: 1; padding: 3px 3px; font-size: 9.5px; background: rgba(217, 119, 6, 0.55); border-color: #f59e0b;">50%</button>
-          <button class="modal-btn" id="bankWithdrawAllBtn" style="flex: 1.5; padding: 3px 3px; font-size: 10px; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); border-color: #f59e0b; font-weight: 900;">📤 اجبد الكلّ</button>
+        <div style="background: rgba(30, 41, 59, 0.6); border-radius: 8px; padding: 4px 6px; display: flex; flex-direction: column; gap: 3px;">
+          <div style="font-size: 9px; font-weight: 800; color: #fde047; text-align: center;">📤 سحب (اجبد للسيولة)</div>
+          <div style="display: flex; gap: 3px;">
+            <button class="modal-btn" id="bankWithdraw10PctBtn" style="flex: 1; padding: 3px 2px; font-size: 9px; background: rgba(217, 119, 6, 0.35); border-color: #f59e0b;">25%</button>
+            <button class="modal-btn" id="bankWithdraw50PctBtn" style="flex: 1; padding: 3px 2px; font-size: 9px; background: rgba(217, 119, 6, 0.55); border-color: #f59e0b;">50%</button>
+            <button class="modal-btn" id="bankWithdrawAllBtn" style="flex: 1.4; padding: 3px 2px; font-size: 9.5px; background: linear-gradient(135deg, #d97706 0%, #b45309 100%); border-color: #f59e0b; font-weight: 900;">📤 الكلّ</button>
+          </div>
         </div>
       </div>
 
@@ -4796,7 +4798,7 @@
         initTunisiaMap();
         requestAnimationFrame(() => {
           if (tunisiaMap) {
-            tunisiaMap.resize();
+            tunisiaMap.onOpen();
             tunisiaMap.start();
           }
         });
@@ -5070,7 +5072,7 @@
           }
         });
       } else {
-        tunisiaMap.resize();
+        tunisiaMap.onOpen();
       }
     }
 
