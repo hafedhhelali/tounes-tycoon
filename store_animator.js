@@ -10625,7 +10625,7 @@ export class QuartierAnimator {
     ctx.fillStyle = '#fbbf24';
     ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🚬 قمريڨ • الوقيد', x + w / 2, y + 10.5);
+    ctx.fillText('🚬 قمريڨ', x + w / 2, y + 10.5);
 
     // Vitrine avec paquets de cigarettes, tabac et timbres fiscaux
     ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
