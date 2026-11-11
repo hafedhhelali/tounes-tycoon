@@ -2899,6 +2899,15 @@ export class CanvasStoreEngine {
       ctx.textAlign = 'center';
       ctx.fillText(isAccepted ? '✓ الشباك 1' : 'الشباك 1', bx + 58, by + 21);
 
+      // Guichet vitré (cadre doré visible, sans masquage de tête — fond transparent très léger)
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.roundRect(bx + 8, by - 34, bw - 16, 32, 4);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.05)';
+      ctx.fillRect(bx + 9, by - 33, bw - 18, 30);
+
       // 2. Banquier professionnel derrière le guichet — dessiné en dernier (après arche/comptoir/compteuse)
       // pour zéro recouvrement de tête, zéro flamme ✨ (workFx=false)
       this.drawWorker(ctx, bx + 58, by - 2, 0, true, timeSec, false, false);
@@ -10625,7 +10634,7 @@ export class QuartierAnimator {
     ctx.fillStyle = '#fbbf24';
     ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('bay3 fewekh jaffa', x + w / 2, y + 10.5);
+    ctx.fillText('بيع الفواكه الجافة', x + w / 2, y + 10.5);
 
     // Petite affiche paquet de cigarettes (panneau publicitaire mural)
     ctx.fillStyle = "#fef3c7";

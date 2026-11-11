@@ -1052,6 +1052,10 @@ export class TycoonEngine {
 
     // Événement actif
     this.activeEvent = null; // { event: TUNISIAN_EVENTS[i], endsAt: timestamp }
+
+    // Contrôle fiscal (inspecteur)
+    this.activeFiscal = null; // { fine: number, deadline: timestamp }
+    this.nextFiscalCheck = Infinity; // désactivé jusqu'à l'UI modale
     this.nextEventCheck = Date.now() + 15000; // Premier check après 15s
 
     // Google Ads Rewarded Boost (ex: x2 pendant 4 heures)
@@ -1686,6 +1690,39 @@ export class TycoonEngine {
     return { success: true, choice, dilemma };
   }
 
+  // --- CONTRÔLE FISCAL (inspecteur) ---
+  triggerRandomFiscal(now = Date.now()) {
+    if (this.activeFiscal) return null;
+    const totalWealth = (this.dinars || 0) + (this.bankBalance || 0);
+    const fine = Math.max(500, Math.min(50000, Math.round(totalWealth * 0.10)));
+    this.activeFiscal = { fine: fine, deadline: now + 30000 };
+    return this.activeFiscal;
+  }
+
+  resolveFiscal(choice, now = Date.now()) {
+    if (!this.activeFiscal) return null;
+    const f = this.activeFiscal;
+    if (choice === 'pay') {
+      if ((this.bankBalance || 0) >= f.fine) {
+        this.bankBalance -= f.fine;
+      } else {
+        const rest = f.fine - (this.bankBalance || 0);
+        this.bankBalance = 0;
+        this.dinars = Math.max(0, (this.dinars || 0) - rest);
+      }
+      this.activeFiscal = null;
+      this.nextFiscalCheck = now + 120000 + Math.random() * 60000;
+      return { success: true, waived: false, fine: f.fine };
+    }
+    if (Math.random() < 0.5) {
+      this.activeFiscal = null;
+      this.nextFiscalCheck = now + 120000 + Math.random() * 60000;
+      return { success: true, waived: true, fine: f.fine };
+    }
+    f.fine = Math.round(f.fine * 2);
+    f.deadline = now + 20000;
+    return { success: false, waived: false, doubled: true, fine: f.fine };
+  }
   // --- SYNERGIES & COMBOS ---
   getActiveCombos() {
     return TUNISIAN_COMBOS.filter(combo => {
@@ -1760,6 +1797,8 @@ export class TycoonEngine {
     this.totalDinarsEarned = 5.0;
     this.manualServesCount = 0;
     this.activeEvent = null;
+    this.activeFiscal = null;
+    this.nextFiscalCheck = Infinity; // désactivé jusqu'à l'UI modale
     this.currentCityId = 'tunis';
     this.currentZoneId = 'tunis';
     this.unlockedCityIds = ['tunis'];
@@ -2696,6 +2735,17 @@ export class TycoonEngine {
       this.triggerRandomEvent(now);
     }
 
+    // Contrôle fiscal occasionnel
+    if (!this.activeFiscal && now >= (this.nextFiscalCheck || 0)) {
+      this.triggerRandomFiscal(now);
+    }
+
+    // Expiration du contrôle fiscal (amende double si non payé à temps)
+    if (this.activeFiscal && now >= this.activeFiscal.deadline) {
+      this.activeFiscal.fine = Math.round(this.activeFiscal.fine * 2);
+      this.activeFiscal.deadline = now + 15000;
+    }
+
     // Déclenchement occasionnel de dilemmes moraux du quartier
     if (!this.activeDilemma && now >= (this.nextDilemmaCheck || 0)) {
       this.triggerRandomDilemma(now);
@@ -3082,6 +3132,8 @@ export class TycoonEngine {
       prestigeLevel: this.prestigeLevel || 0,
       lastTimestamp: this.lastTimestamp,
       activeEvent: this.activeEvent,
+      activeFiscal: this.activeFiscal,
+      nextFiscalCheck: this.nextFiscalCheck,
       adBoostEndsAt: this.adBoostEndsAt,
       speedBoostEndsAt: this.speedBoostEndsAt || 0,
       joujmaGauge: this.joujmaGauge || 0,
@@ -3150,6 +3202,8 @@ export class TycoonEngine {
     this.prestigeLevel = state.prestigeLevel ?? 0;
     this.lastTimestamp = state.lastTimestamp ?? Date.now();
     this.activeEvent = state.activeEvent ?? null;
+    this.activeFiscal = state.activeFiscal ?? null;
+    this.nextFiscalCheck = state.nextFiscalCheck ?? (Date.now() + 90000);
     this.adBoostEndsAt = state.adBoostEndsAt ?? 0;
     this.speedBoostEndsAt = state.speedBoostEndsAt ?? 0;
     this.joujmaGauge = state.joujmaGauge ?? 0;
