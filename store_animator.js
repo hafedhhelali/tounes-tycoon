@@ -10627,6 +10627,26 @@ export class QuartierAnimator {
     ctx.textAlign = 'center';
     ctx.fillText('bay3 fewekh jaffa', x + w / 2, y + 10.5);
 
+    // Petite affiche paquet de cigarettes (panneau publicitaire mural)
+    ctx.fillStyle = "#fef3c7";
+    ctx.strokeStyle = "#9f1239";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y + 17, 20, 40, 3);
+    ctx.fill();
+    ctx.stroke();
+    // Paquet de cigarettes dessine sur l affiche
+    ctx.fillStyle = "#dc2626";
+    ctx.fillRect(x + 5, y + 22, 14, 18);
+    ctx.fillStyle = "#f8fafc";
+    ctx.fillRect(x + 5, y + 22, 14, 4);
+    ctx.fillStyle = "#fde047";
+    ctx.font = "900 7px \"Cairo\", sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("20", x + 12, y + 36);
+    ctx.font = "10px sans-serif";
+    ctx.fillText("🚬", x + 12, y + 54);
+
     // Vitrine avec paquets de cigarettes, tabac et timbres fiscaux
     ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
     ctx.strokeStyle = '#fda4af';
