@@ -254,6 +254,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- chore(dev,debug): hooks CDP headless __bankSceneSims/__quartierEngine/__tobaccoSceneSim + verif pixel CDP scenes epurees
 - chore(config): opencode.json model beam-free illimite pour dev jeu
 
 ## 2026-11-10

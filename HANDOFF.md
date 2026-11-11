@@ -1,9 +1,9 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v158)
-1. **Config OpenCode projet** (`opencode.json`) : modèle par défaut `opencode-go/beam-free` (illimité/gratuit) pour le dev jeu, instructions AGENTS.md + ARCH.md chargées, watcher ignore dist/www/node_modules/*.apk.
-2. **Scènes banque & kiosque épurées à 100%** (`store_animator.js`) : banquier derrière le guichet dessiné après l'arche/comptoir pour zéro recouvrement de tête avec `workFx=false` ; buraliste du kiosque nettoyé de la même façon avec enseigne `🚭 قمريڨ تونس`.
+## État en 3 lignes (v159)
+1. **Hooks debug CDP headless** (`index.html`) : `window.__bankSceneSims.bank`, `window.__tobaccoSceneSim`, `window.__quartierEngine` exposés pour forcer le rendu rAF en onglet arrière-plan et vérifier les scènes hors UI.
+2. **Vérification pixel CDP** : banque intérieure agent visible (peau 47 px + chéchia 23 px + buste 28 px), zéro flamme au-dessus (0 px), badge `الشباك 1` compact en bas ; banque extérieure épuree (DAB 0 px, guichets 0 px, porte conservée) ; kiosque tabac (buraliste 78 px visible, file 0 px, texte rayon 0 px).
 3. **Tests & Intégrité** : 129/129 tests au vert (`npm test`), exécution sandbox `node scripts/test_index_html.mjs` 100% OK sans écran blanc.
 
 ## Contexte pour reprise immédiate (Nouvelle fenêtre / Agent suivant)
