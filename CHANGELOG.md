@@ -262,6 +262,8 @@
 # CHANGELOG
 
 ## 2026-11-11
+- fix(ui): suppression bouton settings (⚙️) et bouton piment (joujma) inutile
+- fix(ui): suppression bouton settings (⚙️) et bouton piment (joujma) inutile
 - feat(ui): bouton carte/profil visibles, sortie prime, banque compacte
 - fix(map,ui): suppression bouton 'map' (tab خريطة تونس), restoration bouton retour en haut
 - fix(map,ui): recentrer carte sur Tunis (zoom 1.3, pan 40) + suppression bouton retour en haut

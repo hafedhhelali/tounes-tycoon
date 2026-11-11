@@ -3079,7 +3079,6 @@
           <button class="icon-pill-btn" id="openProfileBtn" title="البروفيل والإعدادات" style="border-color: rgba(16, 185, 129, 0.5); background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.25) 100%);">
             <span>👤</span><span style="font-weight: 900; color: #6ee7b7; font-size: 11px;">البروفيل</span>
           </button>
-          <button class="icon-pill-btn" id="openSettingsBtn" title="إعدادات الإمبراطورية">⚙️</button>
         </div>
       </div>
 
@@ -4813,19 +4812,6 @@
     const returnToStreetBtn = document.getElementById('returnToStreetBtn');
     if (returnToStreetBtn) returnToStreetBtn.onclick = () => switchTab('businesses');
 
-    const joujmaPillBtn = document.getElementById('joujmaHeroPill');
-    if (joujmaPillBtn) {
-      joujmaPillBtn.onclick = () => {
-        const res = engine.addJoujmaHeat(7);
-        if (res.triggered) {
-          soundEngine.playJoujmaFanfare();
-          showRewardModalUI('🔥', 'جوجمة تايم x3 ! 🔥', 'الشارع شعل نار ومداخيل المشاريع تضاعفت 3 مرات !', '🔥 فرجة حية');
-        } else {
-          soundEngine.playTap();
-          spawnFloatText(window.innerWidth * 0.45, 60, '+7% جوجمة 🔥');
-        }
-      };
-    }
 
     // --- RENDU DU PANNEAU LIGUE, مربوح النهار & التحديات ---
     function renderLeagueTabUI() {
