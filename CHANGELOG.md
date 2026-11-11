@@ -1,4 +1,12 @@
-﻿## [1.38.0] - 2026-11-11
+﻿## [1.39.0] - 2026-11-11
+### Added & Fixed
+- **Bouton carte visible** (`index.html`) : ajout `#openMapBtn` "🗺️ الخريطة" dans `header-system-actions`, câblé à `#zonesModal`.
+- **Bouton profil visible** (`index.html`) : ajout `#openProfileBtn` "👤 البروفيل" ouvrant le modal profil/settings.
+- **Prime : bouton de sortie** (`index.html`) : ajout `#closeLeaguePanelBtn` "رجوع للشارع" dans `#panelLeague`.
+- **Banque compacte** (`index.html`) : canvas agrandi à 170px, boutons/textes réduits pour ne plus masquer l'agent guichet.
+- **Docs** : HANDOFF.md + CHANGELOG.md mis à jour.
+
+## [1.38.0] - 2026-11-11
 ### Added
 - **Config OpenCode projet** (`opencode.json`) : modèle par défaut `opencode-go/beam-free` (illimité/gratuit) pour le dev jeu, instructions AGENTS.md + ARCH.md chargées, watcher ignore dist/www/node_modules/*.apk.
 - **Docs** : HANDOFF.md + CHANGELOG.md mis à jour.
@@ -254,6 +262,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- feat(ui): bouton carte/profil visibles, sortie prime, banque compacte
 - fix(map,ui): suppression bouton 'map' (tab خريطة تونس), restoration bouton retour en haut
 - fix(map,ui): recentrer carte sur Tunis (zoom 1.3, pan 40) + suppression bouton retour en haut
 - fix(map,ui): recentrer carte sur Tunis (zoom 1.3, pan 40) + suppression bouton retour en haut

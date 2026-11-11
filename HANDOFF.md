@@ -1,6 +1,13 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
+## État en 3 lignes (v162)
+1. **Bouton carte visible** (`index.html`) : ajout `#openMapBtn` "🗺️ الخريطة" dans `header-system-actions`, câblé à l'ouverture de `#zonesModal`.
+2. **Bouton profil visible** (`index.html`) : ajout `#openProfileBtn` "👤 البروفيل" ouvrant le modal profil/settings (settings à l'intérieur).
+3. **Prime + sortie** (`index.html`) : ajout bouton `#closeLeaguePanelBtn` "رجوع للشارع" dans `#panelLeague` pour revenir au tab businesses.
+4. **Banque compacte** (`index.html`) : canvas agrandi (170px), boutons/textes réduits pour ne plus masquer l'agent.
+5. **Tests & Intégrité** : 129/129 tests au vert, sandbox OK.
+
 ## État en 3 lignes (v161)
 1. **Bouton "map" supprimé** (`index.html`) : l'onglet `خريطة تونس` retiré de la barre de navigation ; `returnToStreetBtn` restauré ; wiring JS gardé (`if (tabBtnZones)`).
 2. **Carte recentrée sur Tunis** : zoom 1.3 + pan 40, bouton 🇹🇳 cohérent.
