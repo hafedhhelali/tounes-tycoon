@@ -1,7 +1,11 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
 
-## État en 3 lignes (v162)
+## État en 3 lignes (v163)
+1. **Animation rue taxi** (`store_animator.js`) : piéton héle un taxi, taxi s’arrête, bulle "mekech fi thniti", repart ; bras levé.
+2. **Carte recentrée sur Tunis** + bouton map supprimé + bouton retour restauré.
+3. **Tests & Intégrité** : 129/129 tests au vert, sandbox OK.
+
 1. **Bouton carte visible** (`index.html`) : ajout `#openMapBtn` "🗺️ الخريطة" dans `header-system-actions`, câblé à l'ouverture de `#zonesModal`.
 2. **Bouton profil visible** (`index.html`) : ajout `#openProfileBtn` "👤 البروفيل" ouvrant le modal profil/settings (settings à l'intérieur).
 3. **Prime + sortie** (`index.html`) : ajout bouton `#closeLeaguePanelBtn` "رجوع للشارع" dans `#panelLeague` pour revenir au tab businesses.

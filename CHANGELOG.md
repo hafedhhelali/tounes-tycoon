@@ -262,6 +262,7 @@
 # CHANGELOG
 
 ## 2026-11-11
+- feat(anim): interaction taxi rue - pieton hele, taxi s'arrete, mekech fi thniti, repart
 - fix(ui): suppression bouton settings (⚙️) et bouton piment (joujma) inutile
 - fix(ui): suppression bouton settings (⚙️) et bouton piment (joujma) inutile
 - feat(ui): bouton carte/profil visibles, sortie prime, banque compacte

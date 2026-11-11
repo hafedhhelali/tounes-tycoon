@@ -6844,7 +6844,9 @@ export class QuartierAnimator {
 
     // Entities
     this.pedestrians = [];
+    this.taxiInteraction = null;
     this.taxis = [];
+    this.taxiInteraction = null;
     this.cats = [];
     this.clouds = [];
     this.floatingCoins = [];
@@ -7901,8 +7903,40 @@ export class QuartierAnimator {
       if (s.x > this.worldWidth + 100) s.x = -80;
     });
 
+    // Animation : piéton demande un taxi -> taxi s'arrête -> "mekech fi thniti" -> repart
+    if (!this.taxiInteraction && Math.random() < 0.0006) {
+      const taxi = this.taxis.find(t => !t.interaction && Math.abs(t.speed) > 10);
+      if (taxi) {
+        const ped = this.pedestrians.find(p => Math.abs(p.x - taxi.x) < 90);
+        if (ped) {
+          this.taxiInteraction = { taxi: taxi, ped: ped, timer: 0, phase: 'stopping', origSpeed: taxi.speed };
+          taxi.interaction = this.taxiInteraction;
+          ped.isFlaggingTaxi = true;
+        }
+      }
+    }
+    if (this.taxiInteraction) {
+      const it = this.taxiInteraction;
+      it.timer += dt;
+      const taxi = it.taxi;
+      if (it.phase === 'stopping') {
+        taxi.speed = 0;
+        if (it.timer > 0.6) { it.phase = 'stopped'; it.timer = 0; }
+      } else if (it.phase === 'stopped') {
+        taxi.speed = 0;
+        if (it.timer > 2.2) { it.phase = 'leaving'; it.timer = 0; }
+      } else if (it.phase === 'leaving') {
+        taxi.speed = it.origSpeed || 60;
+        if (it.timer > 0.8) {
+          if (it.ped) it.ped.isFlaggingTaxi = false;
+          taxi.interaction = null;
+          this.taxiInteraction = null;
+        }
+      }
+    }
+
     this.taxis.forEach((t, idx) => {
-      t.x += t.speed * t.dir * dt;
+      if (!t.interaction) t.x += t.speed * t.dir * dt;
       if (t.isOneShot) {
         if (t.dir > 0 && t.x > this.worldWidth + 120) this.taxis.splice(idx, 1);
         if (t.dir < 0 && t.x < -120) this.taxis.splice(idx, 1);
@@ -8495,6 +8529,21 @@ export class QuartierAnimator {
       const screenX = t.x - camX;
       if (screenX > -100 && screenX < w + 100) {
         this.drawVehicle(ctx, screenX, groundY + 42, t, timestamp);
+        if (t.interaction && t.interaction.phase === 'stopped') {
+          ctx.save();
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+          ctx.beginPath();
+          ctx.roundRect(screenX + 8, groundY + 2, 104, 16, 4);
+          ctx.fill();
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.fillStyle = '#fef08a';
+          ctx.font = 'bold 8px "Cairo", sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('mekech fi thniti 🚖', screenX + 60, groundY + 13);
+          ctx.restore();
+        }
       }
     });
 
@@ -11616,6 +11665,18 @@ export class QuartierAnimator {
     ctx.beginPath();
     ctx.roundRect(-4.5, -14, 9, 11, 3.5);
     ctx.fill();
+
+    // Bras levé pour héler un taxi (animation piéton)
+    if (p.isFlaggingTaxi) {
+      ctx.strokeStyle = p.coat || '#0284c7';
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(3, -12);
+      ctx.lineTo(6, -20);
+      ctx.lineTo(9, -18);
+      ctx.stroke();
+    }
 
     // Bras oscillant ou protection sous la pluie
     ctx.strokeStyle = p.coat || '#0284c7';
