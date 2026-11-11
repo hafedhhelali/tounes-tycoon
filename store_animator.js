@@ -2721,7 +2721,7 @@ export class CanvasStoreEngine {
       ctx.fillStyle = '#fef08a';
       ctx.font = 'bold 6.5px "Cairo", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('🚭 قمريڨ تونس', kx + kw / 2, 52.5);
+      ctx.fillText('🚭 قمرڨ تونس', kx + kw / 2, 52.5);
 
       // Rangées de paquets de cigarettes
       const packColors = ['#dc2626', '#2563eb', '#16a34a', '#d97706', '#9333ea'];
@@ -7314,7 +7314,7 @@ export class QuartierAnimator {
           augmented.push({ type: 'monument_square', width: 155, name: 'ساحة الساعة والنافورة' });
           monumentInserted = true;
         }
-        // Insérer le guichet de tabac (قمريڨ ومكتب التبغ والوقيد) après le 4ème élément
+        // Insérer le guichet de tabac (قمرڨ ومكتب التبغ والوقيد) après le 4ème élément
         if (!tobaccoInserted && idx === 4) {
           augmented.push({ type: 'tobacco_kiosk', width: 125 });
           tobaccoInserted = true;
@@ -7713,7 +7713,7 @@ export class QuartierAnimator {
     } else if (action === 'open_tobacco' && this.onOpenTobacco) {
       this.onOpenTobacco();
     } else if (action === 'open_tobacco') {
-      // Action par défaut : petit pourboire / تفتوفة سريعة من القمريڨ
+      // Action par défaut : petit pourboire / تفتوفة سريعة من القمرڨ
       if (this.onHudAction) this.onHudAction('hud_tobacco');
     } else if (action === 'claim_golden_cloud') {
       if (this.goldenCloud && !this.goldenCloud.claimed) {
@@ -10605,7 +10605,7 @@ export class QuartierAnimator {
     const y = groundY - h;
     ctx.save();
 
-    // Façade officielle bordeaux & blanc d'un guichet / bureau de tabac tunisien (قمريڨ ومكتب التبغ والوقيد)
+    // Façade officielle bordeaux & blanc d'un guichet / bureau de tabac tunisien (قمرڨ ومكتب التبغ والوقيد)
     ctx.fillStyle = '#831843';
     ctx.strokeStyle = '#f43f5e';
     ctx.lineWidth = 1.8;
@@ -10625,7 +10625,7 @@ export class QuartierAnimator {
     ctx.fillStyle = '#fbbf24';
     ctx.font = '900 8.5px "Cairo", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🚬 قمريڨ', x + w / 2, y + 10.5);
+    ctx.fillText('🚬 قمرڨ', x + w / 2, y + 10.5);
 
     // Vitrine avec paquets de cigarettes, tabac et timbres fiscaux
     ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
