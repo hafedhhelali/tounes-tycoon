@@ -254,6 +254,8 @@
 # CHANGELOG
 
 ## 2026-11-11
+- fix(map,ui): recentrer carte sur Tunis (zoom 1.3, pan 40) + suppression bouton retour en haut
+- fix(map,ui): recentrer carte sur Tunis (zoom 1.3, pan 40) + suppression bouton retour en haut
 - fix(tabac,uiux): enseigne kiosque 'بيع الفواكه الجافة'
 - docs(gdd): houma hustle game design doc
 - feat(tabac,uiux): petite affiche paquet de cigarettes sur facade kiosque

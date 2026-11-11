@@ -12006,15 +12006,15 @@ export class TunisiaMapEngine {
     this.caravan = null;
 
     // Pan & Zoom interactifs 2D pour exploration fluide de toute l'Afrique du Nord (Maroc/Mauritanie -> Tunisie -> Libye/Égypte)
-    this.panX = -130;
-    this.targetPanX = -130;
-    this.minPanX = 280;
+    this.panX = 40;
+    this.targetPanX = 40;
+    this.minPanX = -100;
     this.maxPanX = 720;
     this.panY = 0;
     this.targetPanY = 0;
     this.maxPanY = 320;
-    this.zoom = 1.0;
-    this.targetZoom = 1.0;
+    this.zoom = 1.3;
+    this.targetZoom = 1.3;
     this.minZoom = 0.55;
     this.maxZoom = 2.6;
     this.pointerVelocityX = 0;
@@ -12706,8 +12706,8 @@ export class TunisiaMapEngine {
     }
     // Bouton Centrage Tunisie (🇹🇳)
     if (hudX >= btnX && hudX <= btnX + btnSize && hudY >= 88 && hudY <= 88 + btnSize) {
-      this.targetZoom = 1.0;
-      this.targetPanX = -130;
+      this.targetZoom = 1.3;
+      this.targetPanX = 40;
       this.targetPanY = 0;
       if (typeof window !== 'undefined' && window.soundEngine && window.soundEngine.playTap) window.soundEngine.playTap();
       return;
