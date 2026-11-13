@@ -3082,17 +3082,8 @@
         </div>
       </div>
 
-      <!-- BARRE DE NAVIGATION PRINCIPALE (شارع المشاريع / الخريطة / التطويرات) -->
+      <!-- BARRE DE NAVIGATION PRINCIPALE (التطويرات) -->
       <div class="header-nav-switcher">
-        <button class="nav-segmented-btn active" id="tabBtnBusinesses" data-tab="businesses">
-          <span class="nav-seg-icon">🏘️</span>
-          <span>شارع المشاريع</span>
-        </button>
-        <button class="nav-segmented-btn" id="tabBtnZones" data-tab="zones">
-          <span class="nav-seg-icon">🗺️</span>
-          <span>الخريطة</span>
-          <span class="nav-seg-badge" id="currentZoneName">تونس</span>
-        </button>
         <button class="nav-segmented-btn" id="tabBtnTactics" data-tab="tactics">
           <span class="nav-seg-icon">⚡</span>
           <span>التطويرات</span>
@@ -3101,6 +3092,8 @@
 
       <!-- Éléments système et boutons préservés dans le DOM pour compatibilité JS totale -->
       <div style="display: none !important;">
+        <button id="tabBtnBusinesses" data-tab="businesses"></button>
+        <button id="tabBtnZones" data-tab="zones"><span id="currentZoneName">تونس</span></button>
         <button id="soundToggleBtn"></button>
         <button id="openGuideBtn"></button>
         <button id="openProfileHeaderBtn"></button>
@@ -3158,8 +3151,11 @@
 
     <!-- PANNEAU 2 : AMÉLIORATIONS TACTIQUES DU QUARTIER -->
     <div class="tab-content-panel" id="panelTactics">
-      <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #94a3b8; text-align: right;">
-        💡 <b>أسرار وتكتيكات تونسية :</b> اشري خلطات ونيونات وموتورات باش تضاعف مداخيل مشاريعك للأبد !
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #94a3b8; text-align: right;">
+        <span>💡 <b>أسرار وتكتيكات تونسية :</b> اشري خلطات ونيونات وموتورات باش تضاعف مداخيل مشاريعك للأبد !</span>
+        <button class="return-street-btn" id="closeTacticsPanelBtn" title="الرجوع إلى شارع المشاريع" style="flex-shrink: 0;">
+          <span>🏪</span><span>رجوع للشارع ←</span>
+        </button>
       </div>
       <div id="tacticalUpgradesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
     </div>
@@ -4778,8 +4774,8 @@
     const closeLeaguePanelBtn = document.getElementById('closeLeaguePanelBtn');
 
     function switchTab(tabName) {
-      tabBtnBusinesses.classList.toggle('active', tabName === 'businesses');
-      tabBtnTactics.classList.toggle('active', tabName === 'tactics');
+      if (tabBtnBusinesses) tabBtnBusinesses.classList.toggle('active', tabName === 'businesses');
+      if (tabBtnTactics) tabBtnTactics.classList.toggle('active', tabName === 'tactics');
       if (tabBtnZones) tabBtnZones.classList.toggle('active', tabName === 'zones');
       if (tabBtnLeague) tabBtnLeague.classList.toggle('active', tabName === 'league');
 
@@ -4811,11 +4807,13 @@
       if (tabName === 'league') renderLeagueTabUI();
     }
 
-    tabBtnBusinesses.onclick = () => switchTab('businesses');
-    tabBtnTactics.onclick = () => switchTab('tactics');
+    if (tabBtnBusinesses) tabBtnBusinesses.onclick = () => switchTab('businesses');
+    if (tabBtnTactics) tabBtnTactics.onclick = () => switchTab(panelTactics.classList.contains('active') ? 'businesses' : 'tactics');
     if (tabBtnZones) tabBtnZones.onclick = () => switchTab('zones');
     if (tabBtnLeague) tabBtnLeague.onclick = () => switchTab('league');
     if (closeLeaguePanelBtn) closeLeaguePanelBtn.onclick = () => switchTab('businesses');
+    const closeTacticsPanelBtn = document.getElementById('closeTacticsPanelBtn');
+    if (closeTacticsPanelBtn) closeTacticsPanelBtn.onclick = () => switchTab('businesses');
     const returnToStreetBtn = document.getElementById('returnToStreetBtn');
     if (returnToStreetBtn) returnToStreetBtn.onclick = () => switchTab('businesses');
 

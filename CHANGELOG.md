@@ -1,4 +1,10 @@
-﻿## [1.42.0] - 2026-11-13
+﻿## [1.42.1] - 2026-11-13
+### Fixed & Improved
+- **Épuration de la barre d'onglets supérieure** (`index.html`) :
+  - Suppression des boutons `🏘️ شارع المشاريع` (`#tabBtnBusinesses`) et `🗺️ الخريطة` (`#tabBtnZones`) de `.header-nav-switcher` (le bouton `🗺️ الخريطة` tout en haut à côté de `بريم` est conservé).
+  - Ajout du bouton `🏪 رجوع للشارع ←` (`#closeTacticsPanelBtn`) et du toggle sur `⚡ التطويرات` pour revenir directement à la rue.
+
+## [1.42.0] - 2026-11-13
 ### Added, Animated & Cleaned
 - **Nouvelles Épreuves Tycoon & Événements Dynamiques** (`engine.js`) :
   - 4 nouveaux événements tunisiens : `festival_carthage` (🎭 مهرجان قرطاج الدولي), `saison_zitouna` (🫒 موسم جني الزيتون), `sahriyet_ramadan` (🌙 سهريات المدينة والمولد), `panne_steg` (⚡ قصّان ضو مفاجئ في الحومة).
@@ -304,6 +310,8 @@
 # CHANGELOG
 
 ## 2026-11-13
+- fix(ui): suppression boutons chara3 et kharita de la barre d'onglets
+- fix(ui): suppression boutons chara3 et kharita de la barre d'onglets
 - feat(gameplay,fx): nouvelles epreuves tycoon, evenements, combos, vips et effets visuels animes
 - feat(gameplay,fx): nouvelles epreuves tycoon, evenements, combos, vips et effets visuels animes
 

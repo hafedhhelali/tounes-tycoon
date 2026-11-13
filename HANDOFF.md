@@ -1,6 +1,11 @@
 ﻿# HANDOFF - Tounes Tycoon
 MAJ: 2026-11-13 - etat = HEAD de main (voir git log -n1)
 
+## État en 3 lignes (v169)
+1. **Suppression des boutons « شارع المشاريع » et « الخريطة » de la barre d'onglets** (`index.html`) : retrait des onglets `#tabBtnBusinesses` et `#tabBtnZones` de `.header-nav-switcher` (accès carte via `#openMapBtn` en haut à côté de بريم, et retour rue via `#returnToStreetBtn` / `#closeTacticsPanelBtn` / toggle `#tabBtnTactics`).
+2. **Compatibilité DOM & Zéro Régression** (`index.html`) : conservation des IDs cachés dans le bloc de compatibilité et vérifications `if (tabBtnBusinesses)` pour empêcher toute erreur JS au chargement.
+3. **Tests & Intégrité** : 153/153 tests au vert (`npm test`), sandbox VM `node scripts/test_index_html.mjs` 100% OK.
+
 ## État en 3 lignes (v168)
 1. **Nouvelles Épreuves Tycoon, Événements, Combos, Dilemmes & VIPs** (`engine.js`) : ajout de 4 événements tunisiens (`festival_carthage`, `saison_zitouna`, `sahriyet_ramadan`, `panne_steg`), 2 combos de synergie (`combo_sahriya_folla` x2.5, `combo_terroir_zitouna` x2.4), 4 dilemmes interactifs (`dil_coupure_steg`, `dil_influenceur_food`, `dil_commande_mariage`, `dil_festival_stand`), 2 défis quotidiens (`dc_vip`, `dc_dilemma`) et 2 VIPs de rue (`influencer`, `express_scooter`).
 2. **Animations, Effets Atmosphériques & Clean Code** (`store_animator.js`) : ajout de `drawEventAtmosphereOverlay()` (vagues chaleur Chheli, faisceaux projecteurs Festival/Derby, feuilles d'olivier, lanternes Ramadan, tension STEG), rendu vectoriel des nouveaux VIPs (Ring-Light TikTok, Scooter livraison express), notes musicales nocturnes (`🎵🎶`) et badge `🔗 كومبو` sur les toits, correction du bug de reset `tapRipples`/`buildingSquash` dans `render()`, et purge de 12.4 Ko de code mort dans `drawNeighboringCountries`.
