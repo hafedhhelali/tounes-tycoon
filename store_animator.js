@@ -8071,7 +8071,9 @@ export class QuartierAnimator {
         { type: 'tourist', name: 'سائح ألماني', icon: '📸', badge: 'بوربوار 📸', speed: 18 },
         { type: 'critic', name: 'ناقد الماكلة', icon: '🧐', badge: '5 نجوم 🧐', speed: 16 },
         { type: 'wedding', name: 'كرهبة العروسة', icon: '👰', badge: 'كلولولوش 💍', speed: 28 },
-        { type: 'artisan', name: 'صنايعي الحومة', icon: '🧰', badge: 'تيربو 🧰', speed: 22 }
+        { type: 'artisan', name: 'صنايعي الحومة', icon: '🧰', badge: 'تيربو 🧰', speed: 22 },
+        { type: 'influencer', name: 'مؤثّر تيك توك', icon: '📱', badge: 'لايف تيربو 📱', speed: 20 },
+        { type: 'express_scooter', name: 'توصيل فيسع', icon: '🛵', badge: 'تيربو x2.5 🛵', speed: 34 }
       ];
       const proto = vipPrototypes[Math.floor(Math.random() * vipPrototypes.length)];
       const fromLeft = Math.random() > 0.5;
@@ -8400,8 +8402,6 @@ export class QuartierAnimator {
     const groundY = Math.max(195, Math.min(255, h - 55));
 
     this.interactiveHitboxes = [];
-    this.tapRipples = [];
-    this.buildingSquash = {};
     ctx.clearRect(0, 0, w, h);
 
     // --- CYCLE CIEL PROGRESSIF (Jour / Coucher de Soleil Doré / Nuit Étoilée / Aube) ---
@@ -8660,6 +8660,9 @@ export class QuartierAnimator {
 
     this.drawMinimapTrack(ctx, w, h);
     this.drawInCanvasOffersHUD(ctx, w, h, timestamp);
+
+    // Superposition atmosphérique des événements tunisiens actifs
+    this.drawEventAtmosphereOverlay(ctx, w, h, groundY, timestamp);
 
     // Superposition festive Joujma Time (Fever Mode x3)
     this.drawJoujmaOverlay(ctx, w, h, timestamp);
@@ -9661,6 +9664,43 @@ export class QuartierAnimator {
     const tierIcon = level >= 200 ? '👑' : level >= 100 ? '💎' : level >= 50 ? '⭐' : level >= 25 ? '⚡' : '';
     ctx.fillText(`${tierIcon} L${level}`, lvlX + lvlW / 2, lvlY + 12);
     ctx.restore();
+
+    // Badge Synergie Combo Actif (🔗 كومبو) et Notes Musicales Nocturnes
+    if (this.engine && this.engine.getComboMultiplier && this.engine.getComboMultiplier(b.id) > 1.0) {
+      const cbX = lvlX + lvlW + 4;
+      const cbY = lvlY;
+      const cbW = 42;
+      const cbH = 16;
+      const cbPulse = (Math.sin(timestamp * 0.008) + 1) * 0.5;
+      ctx.save();
+      ctx.fillStyle = `rgba(180, 83, 9, ${0.88 + cbPulse * 0.12})`;
+      ctx.beginPath();
+      ctx.roundRect(cbX, cbY, cbW, cbH, 5);
+      ctx.fill();
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.fillStyle = '#fef08a';
+      ctx.font = '900 8.5px "Cairo", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🔗 كومبو', cbX + cbW / 2, cbY + 11.5);
+      ctx.restore();
+    }
+
+    if (b.id === 'bar_cha3bi' || b.id === 'boite_de_nuit') {
+      ctx.save();
+      const noteIcons = ['🎵', '🎶', '🎷'];
+      for (let ni = 0; ni < 2; ni++) {
+        const nPhase = ((timestamp * 0.0012 + ni * 0.5) % 1);
+        const nx = x + b.width * (0.3 + ni * 0.4) + Math.sin(timestamp * 0.004 + ni * 2) * 8;
+        const ny = y - 8 - nPhase * 26;
+        ctx.globalAlpha = Math.sin(nPhase * Math.PI) * 0.85;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(noteIcons[(ni + (b.id === 'boite_de_nuit' ? 1 : 0)) % noteIcons.length], nx, ny);
+      }
+      ctx.restore();
+    }
 
     // L'enseigne utilise TOUTE la largeur disponible sans coupure de texte
     ctx.fillStyle = '#fef08a';
@@ -11448,6 +11488,64 @@ export class QuartierAnimator {
         ctx.beginPath();
         ctx.arc(-4, -14, 3, 0, Math.PI * 2);
         ctx.fill();
+      } else if (vip.type === 'influencer') {
+        // Influenceur TikTok avec perche Ring-Light lumineuse et coeurs en direct
+        ctx.strokeStyle = '#312e81';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-1, -4); ctx.lineTo(-1 - stride * 0.8, 5);
+        ctx.moveTo(1, -4); ctx.lineTo(1 + stride * 0.8, 5);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ec4899';
+        ctx.beginPath();
+        ctx.roundRect(-4.5, -14, 9, 11, 3);
+        ctx.fill();
+
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.arc(0, -18, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Bras + Ring light glowing
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(3, -11);
+        ctx.lineTo(10, -19);
+        ctx.stroke();
+
+        const ringPulse = 0.7 + Math.sin(timestamp * 0.015) * 0.3;
+        ctx.strokeStyle = `rgba(56, 189, 248, ${ringPulse})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(11, -21, 4, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (vip.type === 'express_scooter') {
+        // Scooter de livraison express rapide (توصيل فيسع)
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(-9, 3, 4.5, 0, Math.PI * 2);
+        ctx.arc(9, 3, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Carrosserie scooter rouge/or
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.roundRect(-11, -5, 20, 7, 3);
+        ctx.fill();
+
+        // Caisson livraison jaune à l'arrière
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(-13, -13, 8, 8);
+
+        // Livreur + casque
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-2, -14, 6, 9);
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath();
+        ctx.arc(1, -17, 4, 0, Math.PI * 2);
+        ctx.fill();
       } else {
         ctx.strokeStyle = '#1d4ed8';
         ctx.lineWidth = 3;
@@ -11519,6 +11617,86 @@ export class QuartierAnimator {
         bizId: vip.id
       });
     });
+  }
+
+  drawEventAtmosphereOverlay(ctx, w, h, groundY, timestamp) {
+    if (!this.engine || !this.engine.activeEvent || !this.engine.activeEvent.event) return;
+    if (Date.now() >= (this.engine.activeEvent.endsAt || 0)) return;
+    const evId = this.engine.activeEvent.event.id;
+    ctx.save();
+
+    if (evId === 'chheli') {
+      // Vagues de chaleur dorées du Sirocco (الشهيلي) + poussière saharienne
+      const heatAlpha = 0.08 + Math.sin(timestamp * 0.004) * 0.03;
+      const heatGrad = ctx.createLinearGradient(0, 0, 0, h);
+      heatGrad.addColorStop(0, `rgba(245, 158, 11, ${heatAlpha})`);
+      heatGrad.addColorStop(1, `rgba(217, 119, 6, ${heatAlpha * 1.4})`);
+      ctx.fillStyle = heatGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = 'rgba(253, 224, 71, 0.16)';
+      ctx.lineWidth = 1.5;
+      for (let wy = 70; wy < groundY; wy += 45) {
+        ctx.beginPath();
+        for (let wx = 0; wx <= w; wx += 20) {
+          const dy = Math.sin(wx * 0.04 + timestamp * 0.006 + wy) * 3.5;
+          if (wx === 0) ctx.moveTo(wx, wy + dy);
+          else ctx.lineTo(wx, wy + dy);
+        }
+        ctx.stroke();
+      }
+    } else if (evId === 'festival_carthage' || evId === 'derby' || evId === 'aaras' || evId === 'gamers_sousse') {
+      // Faisceaux projecteurs de scène / stade balayant le ciel + confettis festifs
+      const beamColors = evId === 'derby'
+        ? ['rgba(239, 68, 68, 0.14)', 'rgba(250, 204, 21, 0.14)']
+        : ['rgba(168, 85, 247, 0.14)', 'rgba(56, 189, 248, 0.14)'];
+      for (let bi = 0; bi < 2; bi++) {
+        const baseX = w * (0.25 + bi * 0.5);
+        const sway = Math.sin(timestamp * 0.0025 + bi * 2.1) * (w * 0.28);
+        ctx.fillStyle = beamColors[bi % 2];
+        ctx.beginPath();
+        ctx.moveTo(baseX, groundY);
+        ctx.lineTo(baseX + sway - 45, 0);
+        ctx.lineTo(baseX + sway + 45, 0);
+        ctx.closePath();
+        ctx.fill();
+      }
+    } else if (evId === 'saison_zitouna') {
+      // Feuilles d'olivier et gouttes d'or vert flottant dans la brise
+      const icons = ['🫒', '🍃', '✨'];
+      ctx.font = '12px sans-serif';
+      for (let oi = 0; oi < 5; oi++) {
+        const ox = ((timestamp * 0.035 + oi * 97) % (w + 40)) - 20;
+        const oy = 35 + ((timestamp * 0.02 + oi * 53) % (groundY - 50));
+        ctx.fillText(icons[oi % icons.length], ox, oy);
+      }
+    } else if (evId === 'sahriyet_ramadan') {
+      // Guirlandes lumineuses et lanternes de la Médina en haut de l'écran
+      ctx.strokeStyle = 'rgba(250, 204, 21, 0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let lx = 0; lx <= w; lx += 16) {
+        const sag = Math.sin((lx / w) * Math.PI * 3) * 10;
+        if (lx === 0) ctx.moveTo(lx, 18 + sag);
+        else ctx.lineTo(lx, 18 + sag);
+      }
+      ctx.stroke();
+
+      for (let lx = 28; lx < w - 20; lx += 56) {
+        const glow = 0.65 + Math.sin(timestamp * 0.008 + lx) * 0.35;
+        ctx.fillStyle = `rgba(253, 224, 71, ${glow})`;
+        ctx.beginPath();
+        ctx.arc(lx, 24, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (evId === 'panne_steg') {
+      // Léger grésillement ambré de tension électrique
+      const flicker = Math.sin(timestamp * 0.035) > 0.82 ? 0.14 : 0.03;
+      ctx.fillStyle = `rgba(15, 23, 42, ${flicker})`;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    ctx.restore();
   }
 
   drawJoujmaOverlay(ctx, w, h, timestamp) {
@@ -13334,412 +13512,7 @@ export class TunisiaMapEngine {
   }
 
   drawNeighboringCountries(ctx, t) {
-    return; // Mode Tunisie Exclusive : seuls la République Tunisienne, ses golfes, îles et chotts sont représentés
-
-    // --- HALO LUMINEUX DES CÔTES (AQUAMARINE SHELF GLOW) ---
-    // Donne l'effet de haut-fond turquoise et de relief insulaire luxueux
-    ctx.shadowBlur = 0;
-
-    // 1. MAROC 🇲🇦 (المملكة المغربية - الأطلسي، الريف وجبال الأطلس)
-    const moroccoGrad = ctx.createLinearGradient(10, 80, 160, 390);
-    moroccoGrad.addColorStop(0, '#1d3e2b'); // Rif et détroit
-    moroccoGrad.addColorStop(0.4, '#244b34'); // Plaines atlantiques
-    moroccoGrad.addColorStop(0.7, '#42371e'); // Haut Atlas
-    moroccoGrad.addColorStop(1, '#2f2416'); // Désert
-    ctx.fillStyle = moroccoGrad;
-    ctx.strokeStyle = '#4ade80';
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.moveTo(10, 110);
-    ctx.lineTo(45, 95);
-    ctx.lineTo(80, 85); // Détroit de Gibraltar
-    ctx.lineTo(130, 92);
-    ctx.lineTo(155, 125);
-    ctx.lineTo(145, 230);
-    ctx.lineTo(140, 360);
-    ctx.lineTo(15, 385);
-    ctx.lineTo(10, 260);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Crêtes des montagnes de l'Atlas marocain
-    ctx.strokeStyle = 'rgba(74, 222, 128, 0.35)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(70, 110);
-    ctx.lineTo(110, 160);
-    ctx.lineTo(125, 240);
-    ctx.stroke();
-
-    // Médaillon national Maroc
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-    ctx.beginPath();
-    ctx.roundRect(35, 215, 105, 23, 7);
-    ctx.fill();
-    ctx.strokeStyle = '#4ade80';
-    ctx.lineWidth = 1.3;
-    ctx.stroke();
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = '900 11.5px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('المملكة المغربية 🇲🇦', 87, 231);
-
-    // 2. MAURITANIE 🇲🇷 (الجمهورية الإسلامية الموريتانية - شنقيط والمحيط الأطلسي)
-    const maurGrad = ctx.createLinearGradient(10, 390, 180, 750);
-    maurGrad.addColorStop(0, '#382a17');
-    maurGrad.addColorStop(0.5, '#2c2214');
-    maurGrad.addColorStop(1, '#1e170e');
-    ctx.fillStyle = maurGrad;
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.moveTo(10, 390);
-    ctx.lineTo(140, 365);
-    ctx.lineTo(195, 415);
-    ctx.lineTo(200, 750);
-    ctx.lineTo(10, 750);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Dunes de sable de Mauritanie
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
-    ctx.lineWidth = 1.2;
-    for (let d = 0; d < 4; d++) {
-      ctx.beginPath();
-      ctx.arc(60 + d * 30, 480 + d * 55, 35, 0.3, Math.PI - 0.3);
-      ctx.stroke();
-    }
-
-    // Médaillon national Mauritanie
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-    ctx.beginPath();
-    ctx.roundRect(32, 625, 95, 23, 7);
-    ctx.fill();
-    ctx.strokeStyle = '#fbbf24';
-    ctx.lineWidth = 1.3;
-    ctx.stroke();
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = '900 11.5px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('موريتانيا 🇲🇷', 79, 641);
-
-    // 3. ALGÉRIE 🇩🇿 (الجمهورية الجزائرية - البهجة، الأطلس والصحراء الشاسعة)
-    const algeriaGrad = ctx.createLinearGradient(155, 80, 370, 750);
-    algeriaGrad.addColorStop(0, '#1c3e2b'); // Tell et Méditerranée
-    algeriaGrad.addColorStop(0.25, '#244d34'); // Hauts Plateaux
-    algeriaGrad.addColorStop(0.65, '#3a2d19'); // Sahara septentrional
-    algeriaGrad.addColorStop(1, '#241b10'); // Grand Sud
-    ctx.fillStyle = algeriaGrad;
-    ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.moveTo(155, 125);
-    ctx.lineTo(190, 85); // Baie d'Oran
-    ctx.lineTo(235, 80); // Tipaza
-    ctx.lineTo(260, 78); // Baie d'Alger
-    ctx.lineTo(275, 68); // Golfe d'Annaba (côte au nord de la ville)
-    ctx.lineTo(295, 70); // Frontière tunisienne Tabarka
-    ctx.lineTo(282, 110);
-    ctx.lineTo(280, 170);
-    ctx.lineTo(275, 215);
-    ctx.lineTo(290, 270);
-    ctx.lineTo(295, 325);
-    ctx.lineTo(280, 360);
-    ctx.lineTo(260, 390);
-    ctx.lineTo(265, 405);
-    ctx.lineTo(350, 490);
-    ctx.lineTo(380, 535);
-    ctx.lineTo(370, 750);
-    ctx.lineTo(200, 750);
-    ctx.lineTo(195, 415);
-    ctx.lineTo(140, 360);
-    ctx.lineTo(145, 230);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Relief de l'Atlas tellien et saharien
-    ctx.strokeStyle = 'rgba(74, 222, 128, 0.3)';
-    ctx.lineWidth = 2.2;
-    ctx.beginPath();
-    ctx.moveTo(180, 105);
-    ctx.lineTo(240, 100);
-    ctx.lineTo(270, 95);
-    ctx.stroke();
-
-    // Chott Melrhir (lac salé algérien face au Chott el Djerid)
-    ctx.fillStyle = 'rgba(186, 230, 253, 0.45)';
-    ctx.beginPath();
-    ctx.ellipse(225, 365, 28, 12, 0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Médaillon national Algérie
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-    ctx.beginPath();
-    ctx.roundRect(175, 335, 118, 24, 7);
-    ctx.fill();
-    ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 1.4;
-    ctx.stroke();
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = '900 12px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('الجمهورية الجزائرية 🇩🇿', 234, 351);
-
-    // 4. LIBYE 🇱🇾 (دولة ليبيا - طرابلس، خليج سرت والجبل الأخضر)
-    const libyaGrad = ctx.createLinearGradient(430, 440, 750, 750);
-    libyaGrad.addColorStop(0, '#312519');
-    libyaGrad.addColorStop(0.3, '#3a2b1b');
-    libyaGrad.addColorStop(0.7, '#2a1f13');
-    libyaGrad.addColorStop(1, '#1c140c');
-    ctx.fillStyle = libyaGrad;
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.moveTo(525, 485); // Ras Jedir
-    ctx.lineTo(550, 460); // Zouara
-    ctx.lineTo(580, 434); // Corniche côtière de Tripoli
-    ctx.lineTo(595, 436); // Tajoura
-    ctx.lineTo(630, 430); // Misrata
-    ctx.lineTo(670, 450); // Arc de Syrte
-    ctx.lineTo(715, 440); // Benghazi
-    ctx.lineTo(750, 470);
-    ctx.lineTo(750, 750);
-    ctx.lineTo(430, 750);
-    ctx.lineTo(430, 545);
-    ctx.lineTo(490, 515);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Oasis et massif du Jebel Akhdar libyen
-    ctx.fillStyle = 'rgba(74, 222, 128, 0.2)';
-    ctx.beginPath();
-    ctx.ellipse(710, 460, 24, 14, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Médaillon national Libye
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-    ctx.beginPath();
-    ctx.roundRect(580, 535, 95, 24, 7);
-    ctx.fill();
-    ctx.strokeStyle = '#f59e0b';
-    ctx.lineWidth = 1.4;
-    ctx.stroke();
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = '900 12px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('دولة ليبيا 🇱🇾', 627, 551);
-
-    // 5. ÉGYPTE 🇪🇬 (جمهورية مصر العربية - القاهرة، النيل العظيم والأهرامات)
-    const egyptGrad = ctx.createLinearGradient(750, 420, 1030, 750);
-    egyptGrad.addColorStop(0, '#36231c');
-    egyptGrad.addColorStop(0.4, '#2d1c16');
-    egyptGrad.addColorStop(1, '#1c110d');
-    ctx.fillStyle = egyptGrad;
-    ctx.strokeStyle = '#eab308';
-    ctx.lineWidth = 1.6;
-    ctx.beginPath();
-    ctx.moveTo(750, 470);
-    ctx.lineTo(815, 435); // Alexandrie
-    ctx.lineTo(875, 410); // Delta du Nil Ouest
-    ctx.lineTo(925, 410); // Delta du Nil Est
-    ctx.lineTo(965, 425); // Port-Saïd & Canal de Suez
-    ctx.lineTo(1030, 415); // Sinaï
-    ctx.lineTo(1030, 750);
-    ctx.lineTo(750, 750);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // DELTA DU NIL VERT ÉMERAUDE (دلتا النيل الخضراء الخصبة)
-    ctx.fillStyle = '#166534';
-    ctx.beginPath();
-    ctx.moveTo(890, 445); // Apex à Alexandrie / Le Caire
-    ctx.lineTo(875, 410);
-    ctx.lineTo(925, 410);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = '#22c55e';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // LE FLEUVE DU NIL ÉCLATANT (شريان نهر النيل الأزرق)
-    ctx.strokeStyle = '#38bdf8';
-    ctx.lineWidth = 3.2;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(898, 445);
-    ctx.bezierCurveTo(905, 480, 892, 530, 902, 590);
-    ctx.bezierCurveTo(915, 640, 900, 680, 908, 740);
-    ctx.stroke();
-
-    // Reflet cyan au cœur du Nil
-    ctx.strokeStyle = '#e0f2fe';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-
-    // LES 3 GRANDES PYRAMIDES DE GIZEH 🔺🔺🔺 (أهرامات الجيزة الخالدة)
-    const pyrX = 878;
-    const pyrY = 460;
-    // Grande Pyramide
-    ctx.fillStyle = '#f59e0b';
-    ctx.beginPath();
-    ctx.moveTo(pyrX, pyrY);
-    ctx.lineTo(pyrX - 9, pyrY + 12);
-    ctx.lineTo(pyrX + 9, pyrY + 12);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = '#d97706';
-    ctx.beginPath();
-    ctx.moveTo(pyrX, pyrY);
-    ctx.lineTo(pyrX + 9, pyrY + 12);
-    ctx.lineTo(pyrX, pyrY + 12);
-    ctx.closePath();
-    ctx.fill();
-    // Deuxième Pyramide
-    ctx.fillStyle = '#f59e0b';
-    ctx.beginPath();
-    ctx.moveTo(pyrX + 13, pyrY + 4);
-    ctx.lineTo(pyrX + 6, pyrY + 14);
-    ctx.lineTo(pyrX + 20, pyrY + 14);
-    ctx.closePath();
-    ctx.fill();
-
-    // Médaillon national Égypte
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-    ctx.beginPath();
-    ctx.roundRect(830, 485, 126, 24, 7);
-    ctx.fill();
-    ctx.strokeStyle = '#eab308';
-    ctx.lineWidth = 1.4;
-    ctx.stroke();
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = '900 12px "Cairo", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('جمهورية مصر العربية 🇪🇬', 893, 501);
-
-    // Frontières régionales en pointillés dorés
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
-    ctx.lineWidth = 1.8;
-    ctx.setLineDash([4, 4]);
-
-    // Frontière Maroc - Algérie
-    ctx.beginPath();
-    ctx.moveTo(155, 125);
-    ctx.lineTo(145, 230);
-    ctx.lineTo(140, 360);
-    ctx.lineTo(195, 415);
-    ctx.stroke();
-
-    // Frontière Libye - Égypte
-    ctx.beginPath();
-    ctx.moveTo(750, 470);
-    ctx.lineTo(750, 750);
-    ctx.stroke();
-
-    // 6. ITALIE DU SUD & SICILE (جزيرة صقلية وقوسرة)
-    ctx.save();
-    const sicilyGrad = ctx.createLinearGradient(590, 40, 710, 110);
-    sicilyGrad.addColorStop(0, '#1e3a2b');
-    sicilyGrad.addColorStop(1, '#2c402e');
-    ctx.fillStyle = sicilyGrad;
-    ctx.strokeStyle = '#475569';
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.moveTo(595, 75); // Marsala
-    ctx.lineTo(630, 48); // Palerme
-    ctx.lineTo(690, 52); // Messine
-    ctx.lineTo(695, 95); // Catane
-    ctx.lineTo(655, 115); // Raguse
-    ctx.lineTo(605, 96); // Agrigente
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Mont Etna
-    ctx.fillStyle = '#ef4444';
-    ctx.beginPath();
-    ctx.arc(682, 68, 2.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.beginPath();
-    ctx.arc(682, 64, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Pantelleria (جزيرة قوسرة)
-    ctx.fillStyle = '#334155';
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.ellipse(545, 118, 5, 3.5, 0.4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // Lampedusa (جزيرة لومبادوزا)
-    ctx.beginPath();
-    ctx.ellipse(565, 205, 4.5, 2.5, 0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // 7. ROSE DES VENTS NAUTIQUE (وردة الرياح البحرية)
-    const crX = 640;
-    const crY = 240;
-    const crR = 24;
-    ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(crX, crY, crR, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(crX, crY, crR * 0.45, 0, Math.PI * 2);
-    ctx.stroke();
-
-    const ptsCompass = [
-      { ang: -Math.PI / 2, label: 'شمال', len: crR + 8, gold: true },
-      { ang: Math.PI / 2, label: 'جنوب', len: crR + 4 },
-      { ang: 0, label: 'شرق', len: crR + 4 },
-      { ang: Math.PI, label: 'غرب', len: crR + 4 }
-    ];
-    for (const cp of ptsCompass) {
-      const cosA = Math.cos(cp.ang);
-      const sinA = Math.sin(cp.ang);
-      const perpA = cp.ang + Math.PI / 2;
-      const cosP = Math.cos(perpA) * 3;
-      const sinP = Math.sin(perpA) * 3;
-
-      ctx.fillStyle = cp.gold ? '#fbbf24' : '#f59e0b';
-      ctx.beginPath();
-      ctx.moveTo(crX, crY);
-      ctx.lineTo(crX + cosP, crY + sinP);
-      ctx.lineTo(crX + cosA * cp.len, crY + sinA * cp.len);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#78350f';
-      ctx.beginPath();
-      ctx.moveTo(crX, crY);
-      ctx.lineTo(crX - cosP, crY - sinP);
-      ctx.lineTo(crX + cosA * cp.len, crY + sinA * cp.len);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#fbbf24';
-      ctx.font = '700 8.5px "Cairo", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(cp.label, crX + cosA * (cp.len + 9), crY + sinA * (cp.len + 9));
-    }
-    ctx.restore();
-
-    ctx.setLineDash([]);
-    ctx.shadowBlur = 0;
-    ctx.restore();
+    // Mode Tunisie Exclusive : seuls la République Tunisienne, ses golfes, îles et chotts sont représentés
   }
 
   drawTunisiaLandmass(ctx, t) {

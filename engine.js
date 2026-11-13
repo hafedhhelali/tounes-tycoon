@@ -514,6 +514,34 @@ export const TUNISIAN_EVENTS = [
     description: 'طاكسي إلى المنستير معلبة قهوة وألواح شوكولاتة، ستور الديزاين يخدم 24/7 !',
     durationMs: 30000,
     multipliers: { studio_jeux_video: 2.5, superette: 1.8, attariya: 1.6 }
+  },
+  {
+    id: 'festival_carthage',
+    title: '🎭 مهرجان قرطاج الدولي وسهريات الصيف شاعلة !',
+    description: 'المسرح الأثري معبّي للآخر والسيّاح في كل بلاصة ! البار، الديسكو، المطاعم والنزل يخدمو بـ x2.5 !',
+    durationMs: 40000,
+    multipliers: { bar_cha3bi: 2.5, boite_de_nuit: 2.8, restaurant: 2.4, hotel: 2.5, salon_de_the: 2.2 }
+  },
+  {
+    id: 'saison_zitouna',
+    title: '🫒 موسم جني الزيتون والذهب الأخضر التونسي !',
+    description: 'الصابة مباركة والمعاصر تخدم ليل ونهار ! زيت الزيتون والمصبّرات والعطارة يضربو رقم قياسي x2.8 !',
+    durationMs: 40000,
+    multipliers: { huilerie_olive: 2.8, usine_conserves: 2.5, attariya: 2.0, boulangerie_artisanale: 2.0 }
+  },
+  {
+    id: 'sahriyet_ramadan',
+    title: '🌙 سهريات المدينة والمولد النبوي الشريف !',
+    description: 'ريحة الزهر، المقروض والخبز السخون في الحومة ! القهاوي، الحلويات والتمور يخدمو للصباح x2.5 !',
+    durationMs: 45000,
+    multipliers: { kahwa: 2.5, patisserie: 2.8, boulangerie_artisanale: 2.4, emballage_dattes: 2.5, salon_de_the: 2.2 }
+  },
+  {
+    id: 'panne_steg',
+    title: '⚡ ضغط عالي وقصّان ضو مفاجئ في الحومة !',
+    description: 'الكليماتيزورات الكل شاعلة والضو رمش ! قاعات الألعاب والسوبيرات تباطأت شوية أما الكسكروت والقهوة العربي يخدمو نار !',
+    durationMs: 25000,
+    multipliers: { kaskrout: 2.2, kahwa: 2.0, salle_de_jeux: 0.65, superette: 0.75 }
   }
 ];
 
@@ -652,6 +680,24 @@ export const TUNISIAN_COMBOS = [
     businessIds: ['centre_thalasso', 'hotel', 'croisiere_mer'],
     multiplier: 3.2,
     bonusDesc: 'مداخيل المنتجعات والفنادق والرحلات x3.2'
+  },
+  {
+    id: 'combo_sahriya_folla',
+    name: 'سهرية وفرحة الليل',
+    tagline: 'من قعدة البار الشعبي والكيميا الباهية لأجواء السهرية واللاونج، الليل التونسي الزاهي',
+    icon: '🍺🪩',
+    businessIds: ['bar_cha3bi', 'boite_de_nuit'],
+    multiplier: 2.5,
+    bonusDesc: 'مداخيل البار والعلبة الليلية x2.5'
+  },
+  {
+    id: 'combo_terroir_zitouna',
+    name: 'الذهب الأخضر التونسي',
+    tagline: 'من معصرة الزيتون البكر الممتاز لمصنع المصبّرات والتصدير، ثروة البلاد الفلاحية',
+    icon: '🫒🥫',
+    businessIds: ['huilerie_olive', 'usine_conserves'],
+    multiplier: 2.4,
+    bonusDesc: 'مداخيل المعاصر والمصبرات x2.4'
   }
 ];
 
@@ -728,7 +774,9 @@ export const DAILY_CHALLENGES_POOL = [
   { id: 'dc_serves', title: 'سربيس سخون', desc: 'سربّي 30 حريف يدويّا باليد', target: 30, type: 'serves', rewardDinars: 500, rewardPrestige: 2 },
   { id: 'dc_upgrades', title: 'عمارة واستثمار', desc: 'اشري أو طلّع 3 مستويات في المشاريع', target: 3, type: 'upgrades', rewardDinars: 1200, rewardPrestige: 3 },
   { id: 'dc_chkobba', title: 'معلّم كارطة', desc: 'اربح طرح شكبة في القهوة', target: 1, type: 'chkobba_wins', rewardDinars: 2500, rewardPrestige: 5 },
-  { id: 'dc_spin', title: 'عجلة الحظ', desc: 'دوّر عجلة الحظ مرّة اليوم', target: 1, type: 'wheel_spins', rewardDinars: 800, rewardPrestige: 2 }
+  { id: 'dc_spin', title: 'عجلة الحظ', desc: 'دوّر عجلة الحظ مرّة اليوم', target: 1, type: 'wheel_spins', rewardDinars: 800, rewardPrestige: 2 },
+  { id: 'dc_vip', title: 'كرم الضيافة VIP', desc: 'استقبل شخصيتين VIP في الشارع', target: 2, type: 'vip_claims', rewardDinars: 1800, rewardPrestige: 4 },
+  { id: 'dc_dilemma', title: 'حكمة التاجر', desc: 'حلّ تحدّي أو إشكالية تسيير في الحومة', target: 1, type: 'dilemmas_resolved', rewardDinars: 1500, rewardPrestige: 3 }
 ];
 
 export const PRESTIGE_RANKS = [
@@ -1655,6 +1703,101 @@ export class TycoonEngine {
             engine.totalDinarsEarned += 110.0;
           }
         }
+      },
+      {
+        id: 'dil_coupure_steg',
+        title: '⚡ قصّان ضو مفاجئ في عزّ السهرية والحركة !',
+        desc: 'الشارع مظلم والحرفاء يستنّاو في الطواول والمحلاّت. شنوّة القرار يا معلّم ؟',
+        choiceA: {
+          text: '🔋 اكري موتور ضو (جينيرتور) كبير وشعّل المحلاّت الكل',
+          cost: 30.0,
+          effectDesc: 'شارعك الوحيد اللي يشعل بالضو ! تيربو x2.5 لمدّة 45 ثانية',
+          action: (engine, now) => {
+            engine.speedBoostEndsAt = Math.max(now, engine.speedBoostEndsAt) + 45000;
+            engine.speedBoostMultiplier = 2.5;
+          }
+        },
+        choiceB: {
+          text: '🕯️ شعل الفوانيس التونسية والشموع وأعمل قعدة شاعرية',
+          cost: 0,
+          effectDesc: 'الحرفاء عجبتهم الأجواء التقليدية ! +85 د.ت وحرارة جوجمة +35%',
+          action: (engine, now) => {
+            engine.dinars += 85.0;
+            engine.totalDinarsEarned += 85.0;
+            engine.addJoujmaHeat(35, now);
+          }
+        }
+      },
+      {
+        id: 'dil_influenceur_food',
+        title: '📱 مؤثّر تيك توك مشهور جا يجرّب في مشاريعك على المباشر !',
+        desc: 'معاه 500 ألف متفرّج في اللايف ويحب يذوق أحسن ما عندك في الحومة.',
+        choiceA: {
+          text: '👑 حضّرلو طاولة ملكية بالبستة والذهبيات مع هدية',
+          cost: 40.0,
+          effectDesc: 'الفيديو ضرب مليون مشاهدة ! جوجمة تايم x3 تلهلب على البلاصة !',
+          action: (engine, now) => {
+            engine.joujmaActive = true;
+            engine.joujmaEndsAt = now + (engine.joujmaDurationMs || 15000);
+            engine.joujmaGauge = 100;
+          }
+        },
+        choiceB: {
+          text: '🌶️ قدّملو الصنعة التونسية الأصيلة بالهريسة العربي بلاش تزويق',
+          cost: 0,
+          effectDesc: 'الجمهور حيّا الأصالة والبنّة ! +125 د.ت كاش فوري',
+          action: (engine) => {
+            engine.dinars += 125.0;
+            engine.totalDinarsEarned += 125.0;
+          }
+        }
+      },
+      {
+        id: 'dil_commande_mariage',
+        title: '💍 طلبية عرس كبيرة مستعجلة لـ 300 ضيف الليلة !',
+        desc: 'أهل العروسة حيروا في الحلو والماكلة والوقت ضيّق برشا.',
+        choiceA: {
+          text: '👨‍🍳 خدّم الفِرقة الكل سوايع إضافية بضعف الخلاص',
+          cost: 35.0,
+          effectDesc: 'الطلبية حضرت في الوقت والناس الكل تشكرك ! +220 د.ت صافي',
+          action: (engine) => {
+            engine.dinars += 220.0;
+            engine.totalDinarsEarned += 220.0;
+          }
+        },
+        choiceB: {
+          text: '🤝 قسّم الطلبية مع تجار الحومة وعاونو بعضكم',
+          cost: 0,
+          effectDesc: 'بركة التعاون ! تيربو x2.2 على كل المشاريع لمدّة 50 ثانية',
+          action: (engine, now) => {
+            engine.speedBoostEndsAt = Math.max(now, engine.speedBoostEndsAt) + 50000;
+            engine.speedBoostMultiplier = 2.2;
+          }
+        }
+      },
+      {
+        id: 'dil_festival_stand',
+        title: '🎭 عرض كراء جناح VIP في مهرجان المدينة الصيفي !',
+        desc: 'اللجنة المنظّمة عرضت عليك البلاصة الأولى قدّام المسرح الكبير.',
+        choiceA: {
+          text: '🎪 احجز الجناح الملكي وزيّنو بالرايات التونسية',
+          cost: 50.0,
+          effectDesc: 'مبيعات قياسية في السهرية ! +300 د.ت وحرارة جوجمة +50%',
+          action: (engine, now) => {
+            engine.dinars += 300.0;
+            engine.totalDinarsEarned += 300.0;
+            engine.addJoujmaHeat(50, now);
+          }
+        },
+        choiceB: {
+          text: '🎁 وزّع عيّنات مجانية للجمهور قدّام البيبان',
+          cost: 0,
+          effectDesc: 'الناس الكل عرفت الماركة متاعك ! تيربو x3 لمدّة 35 ثانية',
+          action: (engine, now) => {
+            engine.speedBoostEndsAt = Math.max(now, engine.speedBoostEndsAt) + 35000;
+            engine.speedBoostMultiplier = 3.0;
+          }
+        }
       }
     ];
   }
@@ -1687,6 +1830,7 @@ export class TycoonEngine {
     this.resolvedDilemmas.push(dilemma.id);
     this.activeDilemma = null;
     this.nextDilemmaCheck = now + 40000 + Math.random() * 30000; // Prochain dans 40-70s
+    this.recordChallengeProgress('dilemmas_resolved', 1);
     return { success: true, choice, dilemma };
   }
 
@@ -2102,6 +2246,24 @@ export class TycoonEngine {
       this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
       this.addJoujmaHeat(20, now);
       message = `الصنايعي عمل دورة وتفقّد الماتريال والمحلاّت ! (+${reward} د.ت)`;
+    } else if (vipType === 'influencer') {
+      reward = Math.max(35.0, Math.floor(ratePerSec * 55));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
+      const res = this.addJoujmaHeat(50, now);
+      triggeredJoujma = res.triggered;
+      message = `مؤثّر التيك توك صوّر ستوري عالمية للحومة ! شهرة نار (+${reward} د.ت)`;
+    } else if (vipType === 'express_scooter') {
+      reward = Math.max(20.0, Math.floor(ratePerSec * 30));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
+      this.speedBoostEndsAt = Math.max(now, this.speedBoostEndsAt) + 25000;
+      this.speedBoostMultiplier = Math.max(this.speedBoostMultiplier || 1.0, 2.5);
+      const res = this.addJoujmaHeat(25, now);
+      triggeredJoujma = res.triggered;
+      message = `توصيل إكسبريس بالموتور ! تيربو x2.5 لمدّة 25 ثانية (+${reward} د.ت)`;
     } else {
       reward = Math.max(10.0, Math.floor(ratePerSec * 10));
       this.dinars += reward;
@@ -2109,6 +2271,8 @@ export class TycoonEngine {
       this.addJoujmaHeat(10, now);
       message = `حريف وفي عطاك بركة وتفتوفة سمحة ! (+${reward} د.ت)`;
     }
+
+    this.recordChallengeProgress('vip_claims', 1);
 
     if (this.currentCityId) {
       if (!this.cityBalances) this.cityBalances = {};

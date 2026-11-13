@@ -1,4 +1,18 @@
-﻿## [1.41.0] - 2026-11-11
+﻿## [1.42.0] - 2026-11-13
+### Added, Animated & Cleaned
+- **Nouvelles Épreuves Tycoon & Événements Dynamiques** (`engine.js`) :
+  - 4 nouveaux événements tunisiens : `festival_carthage` (🎭 مهرجان قرطاج الدولي), `saison_zitouna` (🫒 موسم جني الزيتون), `sahriyet_ramadan` (🌙 سهريات المدينة والمولد), `panne_steg` (⚡ قصّان ضو مفاجئ في الحومة).
+  - 2 nouvelles synergies Combos : `combo_sahriya_folla` (`bar_cha3bi` + `boite_de_nuit`, x2.5) et `combo_terroir_zitouna` (`huilerie_olive` + `usine_conserves`, x2.4).
+  - 4 nouveaux dilemmes de gestion : `dil_coupure_steg`, `dil_influenceur_food`, `dil_commande_mariage`, `dil_festival_stand`.
+  - 2 nouveaux défis quotidiens (`dc_vip`, `dc_dilemma`) et 2 nouveaux VIPs de rue (`influencer` TikTok +50 Joujma, `express_scooter` Speed Boost x2.5).
+- **Nouveaux Effets Visuels & Animations Rue** (`store_animator.js`) :
+  - Superposition atmosphérique temps réel `drawEventAtmosphereOverlay()` : vagues de chaleur dorées Chheli, projecteurs de scène Festival/Derby, feuilles d'olivier flottantes, guirlandes lumineuses Ramadan, et grésillement électrique STEG.
+  - Rendu vectoriel animé des VIPs `influencer` (smartphone + Ring-Light cyan pulsante) et `express_scooter` (scooter rouge/or avec caisson livraison).
+  - Notes de musique flottantes (`🎵`, `🎶`, `🎷`) sur `bar_cha3bi` et `boite_de_nuit`, et badge doré `🔗 كومبو` sur les commerces en synergie active.
+  - Correction du bug où `this.tapRipples` et `this.buildingSquash` étaient réinitialisés au début de `render()`, restaurant les ondes de choc au tap et le rebond élastique des bâtiments.
+  - Suppression de 405 lignes (12.4 Ko) de code mort inatteignable dans `TunisiaMapEngine.drawNeighboringCountries`.
+
+## [1.41.0] - 2026-11-11
 ### Added & Improved
 - **Suppression de la liste des pays & recentrage 100% Tunisie** (`store_animator.js` & `index.html`) :
   - Suppression intégrale des pays voisins (Algérie, Maroc, Libye, Égypte, Mauritanie) et de leurs capitales.
@@ -288,6 +302,10 @@
 - Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
 
 # CHANGELOG
+
+## 2026-11-13
+- feat(gameplay,fx): nouvelles epreuves tycoon, evenements, combos, vips et effets visuels animes
+- feat(gameplay,fx): nouvelles epreuves tycoon, evenements, combos, vips et effets visuels animes
 
 ## 2026-11-11
 - feat(map): focus exclusif Tunisie, suppression pays etrangers, routes realistes et 26 villes tunisiennes

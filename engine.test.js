@@ -723,6 +723,56 @@ test('Événements graphistes/gaming appliquent les multiplicateurs studio', () 
   gamingEvents.forEach(e => assert.ok(e.durationMs > 0, `${e.id} has positive duration`));
 });
 
+test('Nouvelles épreuves Tycoon : événements, combos, dilemmes, défis et VIPs', () => {
+  // 1. Nouveaux événements tunisiens
+  const newEventIds = ['festival_carthage', 'saison_zitouna', 'sahriyet_ramadan', 'panne_steg'];
+  newEventIds.forEach(evId => {
+    const ev = TUNISIAN_EVENTS.find(e => e.id === evId);
+    assert.ok(ev, `Event ${evId} doit exister`);
+    assert.ok(ev.durationMs >= 20000, `Event ${evId} a une durée valide`);
+  });
+
+  // 2. Nouveaux combos de synergie (Vie nocturne & Or vert)
+  const engine = new TycoonEngine();
+  engine.dinars = 10000000;
+  engine.buyBusiness('bar_cha3bi');
+  engine.buyBusiness('boite_de_nuit');
+  assert.ok(engine.getComboMultiplier('bar_cha3bi') >= 2.5, 'Combo vie nocturne x2.5 actif');
+  assert.ok(engine.getComboMultiplier('boite_de_nuit') >= 2.5, 'Combo boite de nuit x2.5 actif');
+
+  // 3. Nouveaux dilemmes interactifs et progression défi quotidien
+  const dilemmas = engine.getDilemmas();
+  assert.ok(dilemmas.some(d => d.id === 'dil_coupure_steg'), 'Dilemme STEG présent');
+  assert.ok(dilemmas.some(d => d.id === 'dil_influenceur_food'), 'Dilemme Influenceur TikTok présent');
+  assert.ok(dilemmas.some(d => d.id === 'dil_commande_mariage'), 'Dilemme Mariage 300 invités présent');
+  assert.ok(dilemmas.some(d => d.id === 'dil_festival_stand'), 'Dilemme Stand VIP Festival présent');
+
+  engine.dailyChallenge = {
+    dateKey: new Date().toISOString().slice(0, 10),
+    challenges: [
+      { id: 'dc_vip', title: 'VIP', icon: '🌟', type: 'vip_claims', target: 2, current: 0, completed: false, rewardDinars: 1800, rewardPrestige: 4, claimed: false },
+      { id: 'dc_dilemma', title: 'Dilemme', icon: '⚖️', type: 'dilemmas_resolved', target: 1, current: 0, completed: false, rewardDinars: 1500, rewardPrestige: 3, claimed: false }
+    ]
+  };
+
+  // Test VIP Influencer & Express Scooter
+  const infRes = engine.claimStreetVip('influencer', 1000);
+  assert.ok(infRes && infRes.rewardDinars >= 35, 'VIP influencer donne un bonus substantiel');
+  assert.ok(engine.joujmaGauge >= 50, 'VIP influencer augmente la jauge Joujma de +50');
+
+  const scootRes = engine.claimStreetVip('express_scooter', 1000);
+  assert.ok(scootRes && scootRes.rewardDinars >= 28, 'VIP scooter donne un bonus');
+  assert.equal(engine.speedBoostMultiplier, 2.5, 'VIP scooter active un Speed Boost x2.5');
+  assert.equal(engine.dailyChallenge.challenges[0].current, 2, 'Le défi quotidien dc_vip a progressé à 2/2');
+
+  // Test résolution nouveau dilemme et progression défi
+  engine.activeDilemma = dilemmas.find(d => d.id === 'dil_influenceur_food');
+  const dilRes = engine.resolveDilemma('A', 1000);
+  assert.ok(dilRes && dilRes.success, 'Le dilemme influenceur se résout avec succès');
+  assert.equal(engine.dailyChallenge.challenges[1].current, 1, 'Le défi quotidien dc_dilemma a progressé à 1/1');
+});
+
+
 
 
 

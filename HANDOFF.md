@@ -1,5 +1,10 @@
 ﻿# HANDOFF - Tounes Tycoon
-MAJ: 2026-11-11 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-11-13 - etat = HEAD de main (voir git log -n1)
+
+## État en 3 lignes (v168)
+1. **Nouvelles Épreuves Tycoon, Événements, Combos, Dilemmes & VIPs** (`engine.js`) : ajout de 4 événements tunisiens (`festival_carthage`, `saison_zitouna`, `sahriyet_ramadan`, `panne_steg`), 2 combos de synergie (`combo_sahriya_folla` x2.5, `combo_terroir_zitouna` x2.4), 4 dilemmes interactifs (`dil_coupure_steg`, `dil_influenceur_food`, `dil_commande_mariage`, `dil_festival_stand`), 2 défis quotidiens (`dc_vip`, `dc_dilemma`) et 2 VIPs de rue (`influencer`, `express_scooter`).
+2. **Animations, Effets Atmosphériques & Clean Code** (`store_animator.js`) : ajout de `drawEventAtmosphereOverlay()` (vagues chaleur Chheli, faisceaux projecteurs Festival/Derby, feuilles d'olivier, lanternes Ramadan, tension STEG), rendu vectoriel des nouveaux VIPs (Ring-Light TikTok, Scooter livraison express), notes musicales nocturnes (`🎵🎶`) et badge `🔗 كومبو` sur les toits, correction du bug de reset `tapRipples`/`buildingSquash` dans `render()`, et purge de 12.4 Ko de code mort dans `drawNeighboringCountries`.
+3. **Tests & Intégrité** : 151/151 tests au vert (`npm test`), sandbox VM `node scripts/test_index_html.mjs` 100% OK, zéro fuite mémoire, zéro régression.
 
 ## État en 3 lignes (v167)
 1. **Suppression pays étrangers & focus 100% Tunisie** (`store_animator.js` & `index.html`) : suppression de la liste des pays voisins (pilules et silhouettes Maroc, Algérie, Libye, Égypte, Mauritanie supprimées). Carte et titre unifiés : `خريطة تونس الخضراء 🇹🇳`.
