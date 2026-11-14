@@ -772,6 +772,61 @@ test('Nouvelles épreuves Tycoon : événements, combos, dilemmes, défis et VIP
   assert.equal(engine.dailyChallenge.challenges[1].current, 1, 'Le défi quotidien dc_dilemma a progressé à 1/1');
 });
 
+test('Révolution Tycoon : Talent Tree, Synergies Inter-Villes & Contrats Municipaux', () => {
+  const engine = new TycoonEngine();
+
+  // 1. شجرة النفوذ والمصالح (Talent Tree)
+  const tree = engine.getTalentTree();
+  assert.ok(Array.isArray(tree) && tree.length >= 9, 'Au moins 9 talents disponibles');
+  assert.ok(tree.some(t => t.id === 'tap_master'), 'Talent tap_master présent');
+  assert.ok(tree.some(t => t.id === 'bank_interest'), 'Talent bank_interest présent');
+  assert.ok(tree.some(t => t.id === 'supply_chain_synergy'), 'Talent supply_chain_synergy présent');
+
+  // Attribution de points de talent pour test
+  engine.talentPoints = 5;
+  assert.equal(engine.getTalentLevel('tap_master'), 0);
+  const unlockRes = engine.unlockTalent('tap_master');
+  assert.ok(unlockRes && unlockRes.success, 'Déblocage du talent tap_master réussi');
+  assert.equal(engine.getTalentLevel('tap_master'), 1);
+  assert.equal(engine.talentPoints, 4);
+
+  // 2. Synergies régionales et chaînes logistiques (Supply Chain)
+  const routes = engine.getSupplyRoutesStatus();
+  assert.ok(Array.isArray(routes) && routes.length >= 4, 'Au moins 4 routes logistiques inter-régionales');
+  // Initialement seule Tunis est débloquée, route Béja->Tunis non active
+  const initialWheatMult = engine.getSupplyChainMultiplier('kaskrout', 'tunis');
+  assert.equal(initialWheatMult, 1.0, 'Multiplicateur 1.0 tant que la ville source Béja n\'est pas débloquée');
+
+  // Débloquons Béja et son industrie
+  engine.unlockedCityIds.push('beja');
+  engine.initCityBusinesses('beja');
+  const bejaBiz = engine.cityBusinesses['beja'].find(b => b.id === 'produits_laitiers');
+  if (bejaBiz) bejaBiz.level = 1;
+  const tunisKaskrout = engine.cityBusinesses['tunis'].find(b => b.id === 'kaskrout');
+  if (tunisKaskrout) tunisKaskrout.level = 1;
+  const activeWheatMult = engine.getSupplyChainMultiplier('kaskrout', 'tunis');
+  assert.ok(activeWheatMult > 1.0, 'Route logistique activée : multiplicateurs de chaîne d\'approvisionnement > 1.0');
+
+  // 3. Contrats et commandes municipales
+  const contracts = engine.getMunicipalContracts();
+  assert.ok(Array.isArray(contracts) && contracts.length >= 4, 'Au moins 4 contrats municipaux');
+  const tunisContract = contracts.find(c => c.id === 'contract_tunis_festival');
+  assert.ok(tunisContract, 'Contrat municipal Tunis festival présent');
+
+  // Monter le niveau pour satisfaire le contrat
+  const kaskrout = engine.businesses.find(b => b.id === 'kaskrout');
+  kaskrout.level = 25;
+  const claimContractRes = engine.claimMunicipalContract('contract_tunis_festival');
+  assert.ok(claimContractRes && claimContractRes.success, 'Contrat municipal réclamé avec succès');
+  assert.ok(claimContractRes.dinarsEarned > 0, 'Récompense en dinars accordée');
+  assert.ok(claimContractRes.talentPointsEarned > 0, 'Points de talents accordés');
+
+  // 4. Vendeur de jasmin (Machmoum)
+  const jasmineRes = engine.claimStreetVip('machmoum', 1000);
+  assert.ok(jasmineRes && jasmineRes.success, 'VIP machmoum réclamé avec succès');
+  assert.ok(engine.jasmineBoostEndsAt >= 1000 + 30000, 'Boost de jasmin actif pour 30s');
+});
+
 
 
 

@@ -1,5 +1,16 @@
 ﻿# HANDOFF - Tounes Tycoon
-MAJ: 2026-11-13 - etat = HEAD de main (voir git log -n1)
+MAJ: 2026-11-14 - etat = HEAD de main (voir git log -n1)
+
+## État en 3 lignes (v170)
+1. **Révolution Gameplay : Arbre de Talents, Supply Chain Inter-Villes & Contrats Municipaux** (`engine.js` & `index.html`) :
+   - Ajout de « شجرة النفوذ والمصالح » avec 3 branches (الصنعة والتكتكة, إدارة الأعمال والبنك, اللوجستيك وسلاسل التوريد) et 9 perks progressifs alimentés par les points de prestige/contrats.
+   - Ajout du réseau logistique inter-villes (`TUNISIAN_SUPPLY_ROUTES`) reliant les productions des 14 gouvernorats tunisiens (blé de Béja vers street-food de Tunis, huile de Sfax vers Gabès...).
+   - Ajout des contrats municipaux (`MUNICIPAL_CONTRACTS_POOL`) avec récompenses en dinars et points de talents.
+2. **Graphismes, Animations & Immersion Rue Tunisienne** (`store_animator.js` & `index.html`) :
+   - Ajout de la Mobylette Peugeot 103 bleue tunisienne de livraison avec son cageot de légumes et bouffées de fumée d'échappement vintage.
+   - Ajout du personnage VIP « بيّاع المشموم والفل » (`machmoum`) avec costume traditionnel, chéchia rouge, corbeille de jasmin et boost olfactif +25% de 30 secondes.
+   - Onglet « التطويرات والتكتكة » enrichi avec 3 sous-onglets ultra-compacts (أسرار الصنعة, شجرة النفوذ, عقود البلديات).
+3. **Tests & Intégrité** : 154/154 tests au vert (`npm test`), VM sandbox `node scripts/test_index_html.mjs` validée 100% sans régression ni écran blanc.
 
 ## État en 3 lignes (v169)
 1. **Suppression des boutons « شارع المشاريع » et « الخريطة » de la barre d'onglets** (`index.html`) : retrait des onglets `#tabBtnBusinesses` et `#tabBtnZones` de `.header-nav-switcher` (accès carte via `#openMapBtn` en haut à côté de بريم, et retour rue via `#returnToStreetBtn` / `#closeTacticsPanelBtn` / toggle `#tabBtnTactics`).

@@ -3082,11 +3082,11 @@
         </div>
       </div>
 
-      <!-- BARRE DE NAVIGATION PRINCIPALE (التطويرات) -->
+      <!-- BARRE DE NAVIGATION PRINCIPALE (التطويرات والنفوذ) -->
       <div class="header-nav-switcher">
         <button class="nav-segmented-btn" id="tabBtnTactics" data-tab="tactics">
           <span class="nav-seg-icon">⚡</span>
-          <span>التطويرات</span>
+          <span>التطويرات والتكتكة</span>
         </button>
       </div>
 
@@ -3149,15 +3149,55 @@
       <div class="business-list" id="businessList"></div>
     </div>
 
-    <!-- PANNEAU 2 : AMÉLIORATIONS TACTIQUES DU QUARTIER -->
+    <!-- PANNEAU 2 : AMÉLIORATIONS TACTIQUES DU QUARTIER & TALENTS D'ASCENSION -->
     <div class="tab-content-panel" id="panelTactics">
-      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #94a3b8; text-align: right;">
-        <span>💡 <b>أسرار وتكتيكات تونسية :</b> اشري خلطات ونيونات وموتورات باش تضاعف مداخيل مشاريعك للأبد !</span>
-        <button class="return-street-btn" id="closeTacticsPanelBtn" title="الرجوع إلى شارع المشاريع" style="flex-shrink: 0;">
-          <span>🏪</span><span>رجوع للشارع ←</span>
+      <!-- Sous-onglets internes : أسرار الصنعة / شجرة النفوذ / عقود البلديات -->
+      <div style="display: flex; gap: 6px; width: 100%; margin-bottom: 8px;">
+        <button id="subTabTacticsUpg" style="flex: 1; padding: 7px; background: rgba(245, 158, 11, 0.2); border: 1.5px solid #f59e0b; border-radius: 10px; color: #fef08a; font-weight: 900; font-size: 11px; cursor: pointer;">
+          ⚡ أسرار الصنعة
+        </button>
+        <button id="subTabTacticsTalents" style="flex: 1; padding: 7px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; color: #cbd5e1; font-weight: 800; font-size: 11px; cursor: pointer;">
+          🌳 شجرة النفوذ (<span id="tacticsTalentPtsBadge">0</span>)
+        </button>
+        <button id="subTabTacticsContracts" style="flex: 1; padding: 7px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; color: #cbd5e1; font-weight: 800; font-size: 11px; cursor: pointer;">
+          📜 عقود البلديات
+        </button>
+        <button class="return-street-btn" id="closeTacticsPanelBtn" title="الرجوع إلى شارع المشاريع" style="flex-shrink: 0; padding: 7px 10px;">
+          <span>🏪</span><span>رجوع ←</span>
         </button>
       </div>
-      <div id="tacticalUpgradesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+      <!-- SECTION 1 : AMÉLIORATIONS TACTIQUES CLASSIQUES -->
+      <div id="tacticsSectionUpgrades" style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); font-size: 11.5px; color: #94a3b8; text-align: right;">
+          <span>💡 <b>أسرar وتكتيكات تونسية :</b> اشري خلطات ونيونات وموتورات باش تضاعف مداخيل مشاريعك للأبد !</span>
+        </div>
+        <div id="tacticalUpgradesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+
+      <!-- SECTION 2 : شجرة النفوذ والمصالح (TALENT TREE) -->
+      <div id="tacticsSectionTalents" style="display: none; flex-direction: column; gap: 8px;">
+        <div style="background: linear-gradient(135deg, rgba(30, 27, 75, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); padding: 10px 12px; border-radius: 12px; border: 1.5px solid #818cf8; text-align: right; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 900; color: #fde047; font-size: 13.5px;">🌳 شجرة النفوذ والمصالح التونسية</div>
+            <div style="font-size: 10.5px; color: #c7d2fe;">طوّر فروع الصنعة، البنك وإدارة الأعمال، واللوجستيك الجهوي</div>
+          </div>
+          <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; border-radius: 10px; padding: 4px 10px; text-align: center;">
+            <div style="font-size: 9.5px; color: #fcd34d;">نقاط النفوذ</div>
+            <div style="font-size: 14px; font-weight: 950; color: #ffffff;" id="talentPointsDisplay">0</div>
+          </div>
+        </div>
+        <div id="talentTreeContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+
+      <!-- SECTION 3 : عقود البلديات وسلاسل التوريد (CONTRACTS & SUPPLY CHAIN) -->
+      <div id="tacticsSectionContracts" style="display: none; flex-direction: column; gap: 8px;">
+        <div style="background: linear-gradient(135deg, rgba(6, 78, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%); padding: 10px 12px; border-radius: 12px; border: 1.5px solid #34d399; text-align: right;">
+          <div style="font-weight: 900; color: #6ee7b7; font-size: 13.5px;">📜 طلبيات وعقود البلديات الكبرى</div>
+          <div style="font-size: 10.5px; color: #a7f3d0;">وفّر طلبيات الولايات التونسية باش تكسب كاش ضخم ونقاط نفوذ دائمة !</div>
+        </div>
+        <div id="municipalContractsContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
     </div>
 
     <!-- PANNEAU 3 : CONQUÊTE DES QUARTIERS ET VILLES TUNISIENNES -->
@@ -4949,6 +4989,184 @@
           </div>
         `;
         container.appendChild(row);
+      });
+    }
+
+    // --- GESTION DES SOUS-ONGLETS DU PANNEAU TACTIQUES ---
+    const subTabTacticsUpg = document.getElementById('subTabTacticsUpg');
+    const subTabTacticsTalents = document.getElementById('subTabTacticsTalents');
+    const subTabTacticsContracts = document.getElementById('subTabTacticsContracts');
+    const tacticsSectionUpgrades = document.getElementById('tacticsSectionUpgrades');
+    const tacticsSectionTalents = document.getElementById('tacticsSectionTalents');
+    const tacticsSectionContracts = document.getElementById('tacticsSectionContracts');
+    const tacticsTalentPtsBadge = document.getElementById('tacticsTalentPtsBadge');
+    const talentPointsDisplay = document.getElementById('talentPointsDisplay');
+
+    function switchTacticsSubTab(subTab) {
+      if (tacticsSectionUpgrades) tacticsSectionUpgrades.style.display = subTab === 'upgrades' ? 'flex' : 'none';
+      if (tacticsSectionTalents) tacticsSectionTalents.style.display = subTab === 'talents' ? 'flex' : 'none';
+      if (tacticsSectionContracts) tacticsSectionContracts.style.display = subTab === 'contracts' ? 'flex' : 'none';
+
+      if (subTabTacticsUpg) {
+        subTabTacticsUpg.style.background = subTab === 'upgrades' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)';
+        subTabTacticsUpg.style.borderColor = subTab === 'upgrades' ? '#f59e0b' : 'rgba(255, 255, 255, 0.15)';
+        subTabTacticsUpg.style.color = subTab === 'upgrades' ? '#fef08a' : '#cbd5e1';
+      }
+      if (subTabTacticsTalents) {
+        subTabTacticsTalents.style.background = subTab === 'talents' ? 'rgba(129, 140, 248, 0.25)' : 'rgba(255, 255, 255, 0.05)';
+        subTabTacticsTalents.style.borderColor = subTab === 'talents' ? '#818cf8' : 'rgba(255, 255, 255, 0.15)';
+        subTabTacticsTalents.style.color = subTab === 'talents' ? '#c7d2fe' : '#cbd5e1';
+      }
+      if (subTabTacticsContracts) {
+        subTabTacticsContracts.style.background = subTab === 'contracts' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.05)';
+        subTabTacticsContracts.style.borderColor = subTab === 'contracts' ? '#10b981' : 'rgba(255, 255, 255, 0.15)';
+        subTabTacticsContracts.style.color = subTab === 'contracts' ? '#a7f3d0' : '#cbd5e1';
+      }
+
+      if (subTab === 'upgrades') renderTacticalUpgradesUI();
+      if (subTab === 'talents') renderTalentTreeUI();
+      if (subTab === 'contracts') renderMunicipalContractsUI();
+    }
+
+    if (subTabTacticsUpg) subTabTacticsUpg.onclick = () => switchTacticsSubTab('upgrades');
+    if (subTabTacticsTalents) subTabTacticsTalents.onclick = () => switchTacticsSubTab('talents');
+    if (subTabTacticsContracts) subTabTacticsContracts.onclick = () => switchTacticsSubTab('contracts');
+
+    // --- RENDU DE LA SHADJARAT EN-NOFOUD (TALENT TREE) ---
+    const talentTreeContainer = document.getElementById('talentTreeContainer');
+    function renderTalentTreeUI() {
+      if (!talentTreeContainer) return;
+      talentTreeContainer.innerHTML = '';
+      const talents = engine.getTalentTree();
+      const currentPts = engine.talentPoints || 0;
+      if (tacticsTalentPtsBadge) tacticsTalentPtsBadge.innerText = currentPts;
+      if (talentPointsDisplay) talentPointsDisplay.innerText = currentPts;
+
+      // Grouper par branche
+      const branches = {
+        craft: { name: '⚡ فرع الصنعة والتكتكة الحامية', items: [] },
+        corp: { name: '👔 فرع إدارة الأعمال والبنك', items: [] },
+        logistics: { name: '🚚 فرع اللوجستيك وسلاسل التوريد', items: [] }
+      };
+      talents.forEach(t => {
+        if (branches[t.branch]) branches[t.branch].items.push(t);
+      });
+
+      for (const [bKey, branchData] of Object.entries(branches)) {
+        const branchBox = document.createElement('div');
+        branchBox.style.cssText = 'background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; text-align: right;';
+        
+        const branchHeader = document.createElement('div');
+        branchHeader.style.cssText = 'font-weight: 900; font-size: 12.5px; color: #fbbf24; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 4px;';
+        branchHeader.innerText = branchData.name;
+        branchBox.appendChild(branchHeader);
+
+        branchData.items.forEach(t => {
+          const isMax = t.isMaxed;
+          const canUnlock = t.canUnlock;
+          const itemCard = document.createElement('div');
+          itemCard.style.cssText = `background: ${isMax ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255, 255, 255, 0.03)'}; border: 1px solid ${isMax ? '#10b981' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 10px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;`;
+          
+          itemCard.innerHTML = `
+            <div style="font-size: 22px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); border-radius: 8px; flex-shrink: 0;">${t.icon}</div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-weight: 900; font-size: 12.5px; color: #f8fafc;">${t.name}</span>
+                <span style="font-size: 10px; padding: 1px 6px; border-radius: 6px; background: rgba(245, 158, 11, 0.2); color: #fde047; font-weight: 800;">مستوى ${t.currentLevel}/${t.maxLevel}</span>
+              </div>
+              <div style="font-size: 10.5px; color: #94a3b8; margin-top: 2px;">${t.tagline}</div>
+            </div>
+            <div>
+              ${isMax ? `
+                <div style="font-size: 10.5px; font-weight: 900; color: #34d399; background: rgba(16,185,129,0.15); padding: 4px 8px; border-radius: 8px; border: 1px solid #10b981; white-space: nowrap;">
+                  أقصى حد ⭐
+                </div>
+              ` : `
+                <button class="upg-buy-btn" id="talent-btn-${t.id}" ${canUnlock ? '' : 'disabled'} style="font-size: 10.5px; padding: 5px 8px; white-space: nowrap;">
+                  ⚡ طوّر (${t.nextCost} نقطة)
+                </button>
+              `}
+            </div>
+          `;
+
+          branchBox.appendChild(itemCard);
+
+          if (!isMax) {
+            const btn = itemCard.querySelector(`#talent-btn-${t.id}`);
+            if (btn) {
+              btn.onclick = () => {
+                const res = engine.unlockTalent(t.id);
+                if (res && res.success) {
+                  soundEngine.playUpgrade();
+                  showRewardModalUI(t.icon, 'طوّرت نفوذك بنجاح !', `${t.name} (المستوى ${res.newLevel})`, 'صنعة وبركة 🌳');
+                  renderTalentTreeUI();
+                  renderDOM();
+                } else {
+                  triggerBalanceAlert('ما عندكش نقاط نفوذ كافية ! بيع واخرج مستثمر في البرستيج باش تكسب نقاط');
+                }
+              };
+            }
+          }
+        });
+
+        talentTreeContainer.appendChild(branchBox);
+      }
+    }
+
+    // --- RENDU DES CONTRATS ET COMMANDES MUNICIPALES ---
+    const municipalContractsContainer = document.getElementById('municipalContractsContainer');
+    function renderMunicipalContractsUI() {
+      if (!municipalContractsContainer) return;
+      municipalContractsContainer.innerHTML = '';
+      const contracts = engine.getMunicipalContracts();
+
+      contracts.forEach(c => {
+        const card = document.createElement('div');
+        card.style.cssText = `background: ${c.completed ? 'rgba(16, 185, 129, 0.08)' : 'rgba(15, 23, 42, 0.7)'}; border: 1.5px solid ${c.completed ? '#10b981' : (c.canClaim ? '#f59e0b' : 'rgba(255,255,255,0.08)')}; border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; text-align: right;`;
+        
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">📜</span>
+              <span style="font-weight: 900; font-size: 13px; color: #f8fafc;">${c.title}</span>
+            </div>
+            <span style="font-size: 11px; padding: 2px 8px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); color: #7dd3fc; font-weight: 800;">
+              المستوى ${c.currentBizLevel}/${c.targetLevel}
+            </span>
+          </div>
+          <div style="font-size: 11px; color: #94a3b8;">${c.desc}</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 11px; font-weight: 800; color: #fbbf24;">
+              المكافأة : +${formatCurrency(c.effectiveRewardDinars, 0)} د.ت و +${c.effectiveRewardTalentPoints} نقاط نفوذ
+            </div>
+            <div>
+              ${c.completed ? `
+                <span style="font-size: 11px; font-weight: 900; color: #34d399;">تمّ الإنجاز بنجاح ✓</span>
+              ` : `
+                <button class="upg-buy-btn" id="contract-btn-${c.id}" ${c.canClaim ? '' : 'disabled'} style="font-size: 11px; padding: 5px 10px;">
+                  ${c.canClaim ? '🎁 اقبض المكافأة' : '🔒 الشروط ما كملتش'}
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+
+        municipalContractsContainer.appendChild(card);
+
+        if (!c.completed && c.canClaim) {
+          const btn = card.querySelector(`#contract-btn-${c.id}`);
+          if (btn) {
+            btn.onclick = () => {
+              const res = engine.claimMunicipalContract(c.id);
+              if (res && res.success) {
+                soundEngine.playChkobbaWin();
+                showRewardModalUI('📜', 'مبروك تنفيذ العقد البلدي !', `غنمت ${formatCurrencyPlain(res.dinarsEarned)} د.ت و +${res.talentPointsEarned} نقاط نفوذ دائمة !`, res.title);
+                renderMunicipalContractsUI();
+                renderDOM();
+              }
+            };
+          }
+        }
       });
     }
 

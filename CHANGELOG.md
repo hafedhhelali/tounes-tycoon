@@ -1,4 +1,22 @@
-﻿## [1.42.1] - 2026-11-13
+﻿## [1.43.0] - 2026-11-14
+### Added, Animated & Improved
+- **Révolution Tycoon : Arbre de Talents d'Ascension & Négociation** (`engine.js` & `index.html`) :
+  - Intégration de « شجرة النفوذ والمصالح » avec 3 branches distinctes :
+    - *الصنعة والتكتكة* (Active / Tap / Joujma) : `tap_master` (+50% tap manuel), `joujma_frenzy` (+50% jauge Joujma), `vip_magnet` (+60% pourboires VIP).
+    - *إدارة الأعمال والبنك* (Corporate / Passive) : `manager_synergy` (-10% temps cycle auto), `tax_relief` (-25% impôts et charges), `bank_interest` (+2% intérêts par minute sur solde bancaire).
+    - *اللوجستيك وسلاسل التوريد* (Logistics & Supply) : `supply_chain_synergy` (+35% sur routes inter-villes), `city_conquest` (-30% coût d'ouverture des villes), `municipal_dealmaker` (+100% récompenses contrats municipaux).
+  - Gain de points de talents lors de l'ascension Prestige et lors de l'exécution des contrats de municipalités.
+- **Réseau Logistique & Synergies Inter-Villes Tunisiennes** (`engine.js`) :
+  - Routes d'approvisionnement (`TUNISIAN_SUPPLY_ROUTES`) reliant les ressources locales entre gouvernorats débloqués (Béja blé/lait ➔ Tunis sandwich/kaskrout, Sfax huile ➔ Gabès conserves, Tozeur dattes ➔ Sousse tourisme...).
+- **Contrats et Commandes Municipales** (`engine.js` & `index.html`) :
+  - Système de commandes publiques des municipalités tunisiennes (`MUNICIPAL_CONTRACTS_POOL`) pour dynamiser l'expansion économique territoriale.
+- **Animations & Atmosphère Tunisienne** (`store_animator.js`) :
+  - Mobylette bleue Peugeot 103 vintage de livraison avec cageot de légumes et volutes de fumée d'échappement.
+  - Personnage VIP ambulant « بيّاع المشموم والفل » (`machmoum`) habillé en djebba blanche/bleue et chéchia, diffusant le boost parfum de jasmin (+25% de production pendant 30s).
+- **Navigation et Sous-onglets Modernes** (`index.html`) :
+  - Sous-navigation intuitive dans l'onglet des améliorations : `⚡ أسرار الصنعة`, `🌳 شجرة النفوذ`, `📜 عقود البلديات`.
+
+## [1.42.1] - 2026-11-13
 ### Fixed & Improved
 - **Épuration de la barre d'onglets supérieure** (`index.html`) :
   - Suppression des boutons `🏘️ شارع المشاريع` (`#tabBtnBusinesses`) et `🗺️ الخريطة` (`#tabBtnZones`) de `.header-nav-switcher` (le bouton `🗺️ الخريطة` tout en haut à côté de `بريم` est conservé).
@@ -308,6 +326,9 @@
 - Audio : coupure automatique du son sur mise en veille (visibilitychange) et sortie de l'application.
 
 # CHANGELOG
+
+## 2026-11-14
+- feat(tycoon): master revolution talent tree, inter-city supply routes, municipal contracts and peugeot 103 mobylette
 
 ## 2026-11-13
 - fix(ui): suppression boutons chara3 et kharita de la barre d'onglets

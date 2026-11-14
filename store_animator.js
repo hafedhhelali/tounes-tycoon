@@ -6857,6 +6857,14 @@ export class QuartierAnimator {
     this.tapRipples = [];
     this.buildingSquash = {};
 
+    // Mobylette bleue Peugeot 103 tunisienne de livraison de quartier
+    this.mobylette = {
+      x: -120,
+      speed: 95,
+      dir: 1,
+      exhaustPuffs: [],
+      nextSpawnTimer: 12
+    };
     // Personnages VIP & Joujma Mania
     this.streetVips = [];
     this.vipSpawnTimer = 8;
@@ -8063,6 +8071,43 @@ export class QuartierAnimator {
       if (c.x > this.worldWidth - 20) { c.x = this.worldWidth - 20; c.dir = -1; }
     });
 
+    // --- GESTION DE LA MOBYLETTE BLEUE PEUGEOT 103 ---
+    if (this.mobylette) {
+      if (this.mobylette.x < -200 || this.mobylette.x > this.worldWidth + 200) {
+        this.mobylette.nextSpawnTimer = (this.mobylette.nextSpawnTimer || 12) - dt;
+        if (this.mobylette.nextSpawnTimer <= 0) {
+          const fromLeft = Math.random() > 0.4;
+          this.mobylette.dir = fromLeft ? 1 : -1;
+          this.mobylette.x = fromLeft ? -100 : (this.worldWidth + 100);
+          this.mobylette.speed = 85 + Math.random() * 30;
+          this.mobylette.nextSpawnTimer = 18 + Math.random() * 20;
+        }
+      } else {
+        this.mobylette.x += this.mobylette.speed * this.mobylette.dir * dt;
+        // Puffs de fumée d'échappement vintage
+        if (Math.random() < 0.45 && (this.mobylette.exhaustPuffs.length < 25)) {
+          this.mobylette.exhaustPuffs.push({
+            x: this.mobylette.x - (this.mobylette.dir * 18),
+            y: 0,
+            radius: 2.5 + Math.random() * 3,
+            alpha: 0.65,
+            vx: -this.mobylette.dir * (10 + Math.random() * 15),
+            vy: -8 - Math.random() * 12
+          });
+        }
+      }
+      for (let ep = this.mobylette.exhaustPuffs.length - 1; ep >= 0; ep--) {
+        const puff = this.mobylette.exhaustPuffs[ep];
+        puff.x += puff.vx * dt;
+        puff.y += puff.vy * dt;
+        puff.radius += 8 * dt;
+        puff.alpha -= 0.85 * dt;
+        if (puff.alpha <= 0) {
+          this.mobylette.exhaustPuffs.splice(ep, 1);
+        }
+      }
+    }
+
     // --- GESTION DES VIPs DE LA RUE ---
     this.vipSpawnTimer -= dt;
     if (this.vipSpawnTimer <= 0 && this.streetVips.length < 2) {
@@ -8073,7 +8118,8 @@ export class QuartierAnimator {
         { type: 'wedding', name: 'كرهبة العروسة', icon: '👰', badge: 'كلولولوش 💍', speed: 28 },
         { type: 'artisan', name: 'صنايعي الحومة', icon: '🧰', badge: 'تيربو 🧰', speed: 22 },
         { type: 'influencer', name: 'مؤثّر تيك توك', icon: '📱', badge: 'لايف تيربو 📱', speed: 20 },
-        { type: 'express_scooter', name: 'توصيل فيسع', icon: '🛵', badge: 'تيربو x2.5 🛵', speed: 34 }
+        { type: 'express_scooter', name: 'توصيل فيسع', icon: '🛵', badge: 'تيربو x2.5 🛵', speed: 34 },
+        { type: 'machmoum', name: 'بيّاع المشموم والفل', icon: '🌸', badge: 'مشموم فل 🌸', speed: 17 }
       ];
       const proto = vipPrototypes[Math.floor(Math.random() * vipPrototypes.length)];
       const fromLeft = Math.random() > 0.5;
@@ -8577,6 +8623,9 @@ export class QuartierAnimator {
         this.drawCat(ctx, screenX, groundY + 14, c, timestamp);
       }
     });
+
+    // Dessin de la Mobylette Peugeot 103 bleue tunisienne
+    this.drawMobylette(ctx, camX, groundY + 16, timestamp);
 
     // Dessin des VIPs de rue avec badges interactifs
     this.drawStreetVips(ctx, camX, groundY + 12, timestamp);
@@ -11367,6 +11416,109 @@ export class QuartierAnimator {
     ctx.restore();
   }
 
+  drawMobylette(ctx, camX, groundY, timestamp) {
+    if (!this.mobylette) return;
+    const screenX = this.mobylette.x - camX;
+    if (screenX < -150 || screenX > this.width + 150) return;
+
+    const dir = this.mobylette.dir || 1;
+    const y = groundY;
+
+    // Fumée d'échappement vintage
+    if (this.mobylette.exhaustPuffs && this.mobylette.exhaustPuffs.length > 0) {
+      ctx.save();
+      for (const puff of this.mobylette.exhaustPuffs) {
+        const puffScreenX = puff.x - camX;
+        ctx.fillStyle = `rgba(148, 163, 184, ${Math.max(0, puff.alpha)})`;
+        ctx.beginPath();
+        ctx.arc(puffScreenX, y - 2 + puff.y, puff.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.translate(screenX, y);
+    if (dir < 0) ctx.scale(-1, 1);
+
+    // Ombre sous la mobylette
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.beginPath();
+    ctx.ellipse(0, 6, 22, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Roues à rayons (jantes rétro)
+    const wheelAngle = (this.mobylette.x * 0.15);
+    [-13, 13].forEach(wx => {
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(wx, 2, 7.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.arc(wx, 2, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(wx + Math.cos(wheelAngle) * 5, 2 + Math.sin(wheelAngle) * 5);
+      ctx.lineTo(wx - Math.cos(wheelAngle) * 5, 2 - Math.sin(wheelAngle) * 5);
+      ctx.moveTo(wx + Math.sin(wheelAngle) * 5, 2 - Math.cos(wheelAngle) * 5);
+      ctx.lineTo(wx - Math.sin(wheelAngle) * 5, 2 + Math.cos(wheelAngle) * 5);
+      ctx.stroke();
+    });
+
+    // Cadre Peugeot 103 bleu ciel métallisé
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-13, 2);
+    ctx.lineTo(-2, -6);
+    ctx.lineTo(8, -6);
+    ctx.lineTo(13, 2);
+    ctx.moveTo(-2, -6);
+    ctx.lineTo(0, 2);
+    ctx.lineTo(8, -6);
+    ctx.stroke();
+
+    // Guidon et phare chromé
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(8, -6);
+    ctx.lineTo(11, -15);
+    ctx.lineTo(9, -17);
+    ctx.stroke();
+
+    // Phare avant allumé
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(12, -14, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Selle noire et porte-bagages avec cageot de légumes
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-7, -9, 8, 3.5);
+
+    // Cageot de livraison tunisien en plastique rouge/orange
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(-17, -13, 9, 7);
+    ctx.fillStyle = '#16a34a'; // Légumes / persil
+    ctx.fillRect(-16, -15, 7, 2.5);
+
+    // Conducteur tunisien avec chèche/casquette
+    ctx.fillStyle = '#0369a1'; // Veste bleue
+    ctx.fillRect(-3, -19, 7, 11);
+    ctx.fillStyle = '#fde68a'; // Tête
+    ctx.beginPath();
+    ctx.arc(1, -22, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#dc2626'; // Chéchia / casquette rouge
+    ctx.fillRect(-1, -26, 5, 3);
+
+    ctx.restore();
+  }
+
   drawStreetVips(ctx, camX, groundY, timestamp) {
     if (!this.streetVips || this.streetVips.length === 0) return;
 
@@ -11546,6 +11698,41 @@ export class QuartierAnimator {
         ctx.beginPath();
         ctx.arc(1, -17, 4, 0, Math.PI * 2);
         ctx.fill();
+      } else if (vip.type === 'machmoum') {
+        // بيّاع المشموم التونسي الأصيل مع سلة ومشموم الفل الفواح
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-1, -4); ctx.lineTo(-1 - stride * 0.7, 5);
+        ctx.moveTo(1, -4); ctx.lineTo(1 + stride * 0.7, 5);
+        ctx.stroke();
+
+        // جبّة تونسية تقليدية بيضاء وزرقاء
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.roundRect(-5, -14, 10, 12, 3);
+        ctx.fill();
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-1.5, -14, 3, 10);
+
+        // وجه وشاشية حمراء
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.arc(0, -18, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#dc2626'; // شاشية
+        ctx.fillRect(-3, -22, 6, 3);
+        ctx.fillStyle = '#0f172a'; // كبوس الشاشية
+        ctx.fillRect(1, -21, 2, 1);
+
+        // طبق / مشموم فل على الرأس واليدين
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(6, -12, 3, 0, Math.PI * 2); // مشموم في اليد
+        ctx.arc(0, -24, 3.5, 0, Math.PI * 2); // مشاميم الفل
+        ctx.fill();
+        ctx.fillStyle = '#10b981'; // عود المشموم
+        ctx.fillRect(5, -9, 2, 4);
       } else {
         ctx.strokeStyle = '#1d4ed8';
         ctx.lineWidth = 3;

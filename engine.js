@@ -1063,6 +1063,199 @@ export const CITY_BUSINESS_MAP = {
   tripoli: ['showroom_auto', 'supermarche', 'promoteur_immobilier', 'hotel']
 };
 
+export const TALENT_TREE_CONFIGS = [
+  // الفرع 1 : الصنعة والتكتكة (Active / Tap / Joujma)
+  {
+    id: 'tap_master',
+    name: 'يد المعلّم الحامية',
+    tagline: 'كل ضغطة يدوية أو خدمة سريعة تعطي +50% مداخيل إضافية',
+    icon: '⚡',
+    branch: 'craft',
+    branchName: 'الصنعة والتكتكة',
+    maxLevel: 5,
+    costs: [1, 2, 3, 5, 8],
+    multiplierPerLevel: 0.50
+  },
+  {
+    id: 'joujma_frenzy',
+    name: 'حرارة الجوجمة',
+    tagline: 'شارج الجوجمة يتعمر 50% أسرع والوقت يزيد +5 ثواني في الفرحة',
+    icon: '🌶️',
+    branch: 'craft',
+    branchName: 'الصنعة والتكتكة',
+    maxLevel: 3,
+    costs: [2, 4, 7],
+    multiplierPerLevel: 0.50
+  },
+  {
+    id: 'vip_magnet',
+    name: 'مغناطيس الدوفيز والشخصيات',
+    tagline: 'السياح والشخصيات المهمة في الشارع يعطيو +60% فلوس وبوربوار',
+    icon: '📸',
+    branch: 'craft',
+    branchName: 'الصنعة والتكتكة',
+    maxLevel: 3,
+    costs: [1, 3, 6],
+    multiplierPerLevel: 0.60
+  },
+
+  // الفرع 2 : إدارة الإمبراطورية والبنك (Corporate / Passive)
+  {
+    id: 'manager_synergy',
+    name: 'كفاءة الإطارات والشيفات',
+    tagline: 'الخدامة والمديرين يسرّعو دورة الإنتاج الآلي بنسبة 10%',
+    icon: '👔',
+    branch: 'corp',
+    branchName: 'إدارة الأعمال والبنك',
+    maxLevel: 5,
+    costs: [1, 2, 3, 5, 8],
+    multiplierPerLevel: 0.10
+  },
+  {
+    id: 'tax_relief',
+    name: 'امتيازات وتخفيض أداءات',
+    tagline: 'تخفيض المصاريف والأداءات والقباضة بنسبة 25%',
+    icon: '🏛️',
+    branch: 'corp',
+    branchName: 'إدارة الأعمال والبنك',
+    maxLevel: 3,
+    costs: [2, 4, 7],
+    multiplierPerLevel: 0.25
+  },
+  {
+    id: 'bank_interest',
+    name: 'أرباح وفوائض البنك',
+    tagline: 'رصيد البنك يولد أرباح سلبية دورية بنسبة 2% كل دقيقة',
+    icon: '🏦',
+    branch: 'corp',
+    branchName: 'إدارة الأعمال والبنك',
+    maxLevel: 3,
+    costs: [1, 3, 5],
+    multiplierPerLevel: 0.02
+  },
+
+  // الفرع 3 : اللوجستيك وسلاسل التوريد (Logistics & Supply Chain)
+  {
+    id: 'supply_chain_synergy',
+    name: 'طريق الخير وسلاسل التوريد',
+    tagline: 'ربط السلع والمواد الخام بين الولايات التونسية يعطي +35% مداخيل',
+    icon: '🚚',
+    branch: 'logistics',
+    branchName: 'اللوجستيك وسلاسل التوريد',
+    maxLevel: 5,
+    costs: [1, 2, 4, 6, 10],
+    multiplierPerLevel: 0.35
+  },
+  {
+    id: 'city_conquest',
+    name: 'توسع جهوي ميسّر',
+    tagline: 'تخفيض كلفة فتح الولايات والمدن التونسية الجديدة بنسبة 30%',
+    icon: '🗺️',
+    branch: 'logistics',
+    branchName: 'اللوجستيك وسلاسل التوريد',
+    maxLevel: 3,
+    costs: [2, 4, 6],
+    multiplierPerLevel: 0.30
+  },
+  {
+    id: 'municipal_dealmaker',
+    name: 'صفقات البلديات الكبرى',
+    tagline: 'مكافآت مضاعفة من العقود والطلبيات البلدية الدورية بنسبة 100%',
+    icon: '📜',
+    branch: 'logistics',
+    branchName: 'اللوجستيك وسلاسل التوريد',
+    maxLevel: 3,
+    costs: [2, 5, 8],
+    multiplierPerLevel: 1.0
+  }
+];
+
+export const TUNISIAN_SUPPLY_ROUTES = [
+  {
+    id: 'route_wheat_bread',
+    name: 'قمح باجة 🌾 ➔ كسكروت وفريكاسي تونس',
+    desc: 'القمح والفرينة الباجية ترفع مداخيل المأكولات الشعبية في العاصمة',
+    fromCity: 'beja',
+    fromBiz: 'produits_laitiers',
+    toCity: 'tunis',
+    toBiz: 'kaskrout',
+    baseMultiplier: 1.35
+  },
+  {
+    id: 'route_olive_sfax',
+    name: 'زيت صفاقس 🫒 ➔ مصانع ومعلبات قابس',
+    desc: 'زيت زيتونة صفاقس يرفع كفاءة المصانع ومصبرات الجنوب',
+    fromCity: 'sfax',
+    fromBiz: 'huilerie_olive',
+    toCity: 'gabes',
+    toBiz: 'usine_conserves',
+    baseMultiplier: 1.40
+  },
+  {
+    id: 'route_dates_tozeur',
+    name: 'دقلة توزر 🌴 ➔ حلويات ومقروض القيروان',
+    desc: 'تمور الجريد الفاخرة تضاعف أرباح المقروض والحلويات التقليدية',
+    fromCity: 'tozeur',
+    fromBiz: 'hotel',
+    toCity: 'kairouan',
+    toBiz: 'patisserie',
+    baseMultiplier: 1.45
+  },
+  {
+    id: 'route_seafood_bizerte',
+    name: 'حوت وبحر بنزرت 🐟 ➔ سياحة وفنادق سوسة',
+    desc: 'صيد القنال وميناء بنزرت يغذي سياحة ومطاعم الساحل الفاخرة',
+    fromCity: 'bizerte',
+    fromBiz: 'fruits_de_mer',
+    toCity: 'sousse',
+    toBiz: 'hotel',
+    baseMultiplier: 1.35
+  }
+];
+
+export const MUNICIPAL_CONTRACTS_POOL = [
+  {
+    id: 'contract_tunis_festival',
+    city: 'tunis',
+    title: 'بلدية تونس : تموين مهرجان المدينة 🎭',
+    reqDesc: 'وصّل كسكروت عياري لمستوى 15+',
+    reqBiz: 'kaskrout',
+    reqLevel: 15,
+    rewardDinars: 15000,
+    rewardTalentPoints: 2
+  },
+  {
+    id: 'contract_beja_schools',
+    city: 'beja',
+    title: 'بلدية باجة : صفقة حليب وأجبان للمدارس 🥛',
+    reqDesc: 'وصّل أجبان باجة لمستوى 15+',
+    reqBiz: 'produits_laitiers',
+    reqLevel: 15,
+    rewardDinars: 35000,
+    rewardTalentPoints: 3
+  },
+  {
+    id: 'contract_sfax_export',
+    city: 'sfax',
+    title: 'بلدية صفاقس : تزويد أسطول النقل البحري 🚢',
+    reqDesc: 'افتح صفاقس ووصّل معصرة الزيتون لمستوى 10+',
+    reqBiz: 'huilerie_olive',
+    reqLevel: 10,
+    rewardDinars: 80000,
+    rewardTalentPoints: 4
+  },
+  {
+    id: 'contract_djerba_summit',
+    city: 'djerba_holding',
+    title: 'بلدية جربة : قمة الاستثمار والسياحة العالمية 👑',
+    reqDesc: 'افتح جربة ووصّل النزل التونسي لمستوى 10+',
+    reqBiz: 'hotel',
+    reqLevel: 10,
+    rewardDinars: 250000,
+    rewardTalentPoints: 5
+  }
+];
+
 export class TycoonEngine {
   constructor(initialState = null) {
     this.BUSINESS_CONFIGS = BUSINESS_CONFIGS;
@@ -1167,6 +1360,14 @@ export class TycoonEngine {
       total: 0,
       effectiveRatePct: 12
     };
+
+    // شجرة النفوذ والمصالح (Talents & Perks) وسلاسل التوريد
+    this.talentPoints = 0;
+    this.spentTalentPoints = 0;
+    this.unlockedTalents = {}; // { [talentId]: level }
+    this.completedContracts = [];
+    this.jasmineBoostEndsAt = 0;
+    this.lastBankInterestAt = Date.now();
 
     if (initialState) {
       this.loadState(initialState);
@@ -1388,9 +1589,11 @@ export class TycoonEngine {
     // Vérification stricte des critères
     if (!this.checkCityUnlockCriteria(city)) return false;
 
-    // Prélèvement du coût d'ouverture si > 0
+    // Prélèvement du coût d'ouverture si > 0 avec réduction talent city_conquest
     if (city.costDinars > 0) {
-      this.dinars -= city.costDinars;
+      const discount = 1.0 - (this.getTalentLevel('city_conquest') * 0.30);
+      const effectiveCost = Math.max(0, Math.round(city.costDinars * discount));
+      this.dinars -= effectiveCost;
     }
 
     this.unlockedCityIds.push(city.id);
@@ -1925,6 +2128,7 @@ export class TycoonEngine {
     if (!this.canPrestige()) return false;
     const gainedPoints = this.calculatePendingPrestigePoints();
     this.prestigePoints += gainedPoints;
+    this.talentPoints = (this.talentPoints || 0) + gainedPoints;
     this.prestigeLevel += 1;
 
     // Reset des commerces et du cash courant
@@ -1960,6 +2164,130 @@ export class TycoonEngine {
       newMultiplier: this.getPrestigeMultiplier(),
       title: this.playerTitle
     };
+  }
+
+  // --- شجرة النفوذ والمصالح (TALENT TREE & PERKS) ---
+  getTalentTree() {
+    return TALENT_TREE_CONFIGS.map(t => {
+      const currentLevel = this.getTalentLevel(t.id);
+      const isMax = currentLevel >= t.maxLevel;
+      const nextCost = isMax ? null : t.costs[currentLevel];
+      return {
+        ...t,
+        currentLevel,
+        isMax,
+        nextCost,
+        canAfford: !isMax && ((this.talentPoints || 0) >= nextCost)
+      };
+    });
+  }
+
+  getTalentLevel(talentId) {
+    return (this.unlockedTalents && this.unlockedTalents[talentId]) || 0;
+  }
+
+  unlockTalent(talentId) {
+    const config = TALENT_TREE_CONFIGS.find(t => t.id === talentId);
+    if (!config) return { success: false, reason: 'talent_not_found' };
+    const currentLevel = this.getTalentLevel(talentId);
+    if (currentLevel >= config.maxLevel) return { success: false, reason: 'already_max' };
+    const cost = config.costs[currentLevel];
+    if ((this.talentPoints || 0) < cost) return { success: false, reason: 'not_enough_points' };
+
+    this.talentPoints -= cost;
+    this.spentTalentPoints = (this.spentTalentPoints || 0) + cost;
+    if (!this.unlockedTalents) this.unlockedTalents = {};
+    this.unlockedTalents[talentId] = currentLevel + 1;
+
+    return {
+      success: true,
+      talentId,
+      newLevel: this.unlockedTalents[talentId],
+      remainingPoints: this.talentPoints
+    };
+  }
+
+  // --- سلاسل التوريد واللوجستيك بين الولايات (SUPPLY CHAIN) ---
+  getSupplyRoutesStatus() {
+    return TUNISIAN_SUPPLY_ROUTES.map(route => {
+      const fromUnlocked = (this.unlockedCityIds || []).includes(route.fromCity);
+      const toUnlocked = (this.unlockedCityIds || []).includes(route.toCity);
+      const fromBizLvl = this.getBusinessLevel(route.fromBiz, route.fromCity);
+      const toBizLvl = this.getBusinessLevel(route.toBiz, route.toCity);
+      const active = fromUnlocked && toUnlocked && fromBizLvl > 0 && toBizLvl > 0;
+      const talentBonus = 1.0 + (this.getTalentLevel('supply_chain_synergy') * 0.35);
+      const effectiveMultiplier = active ? (1.0 + (route.baseMultiplier - 1.0) * talentBonus) : 1.0;
+      return {
+        ...route,
+        active,
+        fromUnlocked,
+        toUnlocked,
+        fromBizLvl,
+        toBizLvl,
+        effectiveMultiplier
+      };
+    });
+  }
+
+  getSupplyChainMultiplier(bizId, cityId = null) {
+    let mult = 1.0;
+    const targetCity = cityId || this.currentCityId;
+    const routes = this.getSupplyRoutesStatus();
+    for (const r of routes) {
+      if (r.active && ((r.toBiz === bizId && r.toCity === targetCity) || (r.fromBiz === bizId && r.fromCity === targetCity))) {
+        mult *= r.effectiveMultiplier;
+      }
+    }
+    return mult;
+  }
+
+  // --- صفقات وعقود البلديات الدورية (MUNICIPAL CONTRACTS) ---
+  getMunicipalContracts() {
+    return MUNICIPAL_CONTRACTS_POOL.map(contract => {
+      const isCompleted = (this.completedContracts || []).includes(contract.id);
+      const bizLvl = this.getBusinessLevel(contract.reqBiz, contract.city);
+      const cityUnlocked = (this.unlockedCityIds || []).includes(contract.city);
+      const isAchieved = cityUnlocked && bizLvl >= contract.reqLevel;
+      const dealmakerMult = 1.0 + (this.getTalentLevel('municipal_dealmaker') * 1.0);
+      return {
+        ...contract,
+        isCompleted,
+        currentLevel: bizLvl,
+        isAchieved: !isCompleted && isAchieved,
+        effectiveRewardDinars: Math.round(contract.rewardDinars * dealmakerMult),
+        effectiveRewardTalentPoints: contract.rewardTalentPoints
+      };
+    });
+  }
+
+  claimMunicipalContract(contractId) {
+    const contracts = this.getMunicipalContracts();
+    const c = contracts.find(item => item.id === contractId);
+    if (!c || c.isCompleted || !c.isAchieved) return false;
+
+    if (!this.completedContracts) this.completedContracts = [];
+    this.completedContracts.push(contractId);
+
+    this.dinars += c.effectiveRewardDinars;
+    this.totalDinarsEarned += c.effectiveRewardDinars;
+    this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + c.effectiveRewardDinars;
+    this.talentPoints = (this.talentPoints || 0) + c.effectiveRewardTalentPoints;
+
+    return {
+      success: true,
+      contractId,
+      dinarsEarned: c.effectiveRewardDinars,
+      talentPointsEarned: c.effectiveRewardTalentPoints,
+      title: c.title
+    };
+  }
+
+  getBusinessLevel(bizId, targetCity = null) {
+    const cId = targetCity || this.currentCityId;
+    const bList = this.cityBusinesses[cId];
+    if (!bList) return 0;
+    const b = bList.find(item => item.id === bizId);
+    return b ? (b.level || 0) : 0;
   }
 
   getPlayerLevel() {
@@ -2209,7 +2537,8 @@ export class TycoonEngine {
 
   // --- PERSONNAGES VIP DE LA RUE (شخصيات الشارع التونسية) ---
   claimStreetVip(vipType = 'tourist', now = Date.now()) {
-    const ratePerSec = this.getTotalDinarsPerSecond(now);
+    const vipMultiplier = 1.0 + (this.getTalentLevel('vip_magnet') * 0.60);
+    const ratePerSec = this.getTotalDinarsPerSecond(now) * vipMultiplier;
     let reward = 0;
     let message = '';
     let triggeredJoujma = false;
@@ -2264,6 +2593,15 @@ export class TycoonEngine {
       const res = this.addJoujmaHeat(25, now);
       triggeredJoujma = res.triggered;
       message = `توصيل إكسبريس بالموتور ! تيربو x2.5 لمدّة 25 ثانية (+${reward} د.ت)`;
+    } else if (vipType === 'machmoum') {
+      reward = Math.max(30.0, Math.floor(ratePerSec * 45));
+      this.dinars += reward;
+      this.totalDinarsEarned += reward;
+      this.lifetimeDinarsEarned = (this.lifetimeDinarsEarned || 0) + reward;
+      this.jasmineBoostEndsAt = Math.max(now, this.jasmineBoostEndsAt || 0) + 30000;
+      const res = this.addJoujmaHeat(30, now);
+      triggeredJoujma = res.triggered;
+      message = `بيّاع المشموم والفل عطّر الأجواء ! +25% مداخيل فواحة لمدّة 30 ثانية (+${reward} د.ت)`;
     } else {
       reward = Math.max(10.0, Math.floor(ratePerSec * 10));
       this.dinars += reward;
@@ -2753,10 +3091,15 @@ export class TycoonEngine {
     // Multiplicateur Joujma Time (Fever Mode x3)
     const joujmaMultiplier = this.isJoujmaActive(now) ? (this.joujmaMultiplier || 3.0) : 1.0;
 
+    // Multiplicateur Supply Chain & Synergies Inter-Villes
+    const supplyMultiplier = this.getSupplyChainMultiplier ? this.getSupplyChainMultiplier(business.id, targetCity) : 1.0;
+    // Multiplicateur Parfum de Jasmin (Vendeur ambulant de jasmin)
+    const jasmineMultiplier = (this.jasmineBoostEndsAt && now < this.jasmineBoostEndsAt) ? 1.25 : 1.0;
+
     // Progression progressive et équilibrée des gains par niveau :
     // Au lieu d'une explosion astronomique, montée calibrée pour préserver la valeur de la monnaie
     const levelMultiplier = 1.0 + ((business.level - 1) * 0.40);
-    const rawRevenue = business.baseRevenue * levelMultiplier * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier * joujmaMultiplier;
+    const rawRevenue = business.baseRevenue * levelMultiplier * prestigeMultiplier * eventMultiplier * adMultiplier * staffMultiplier * comboMultiplier * luckySpeedMultiplier * zoneMultiplier * upgradeMultiplier * milestoneMultiplier * joujmaMultiplier * supplyMultiplier * jasmineMultiplier;
 
     // Équilibrage macro-économique tunisien : au-delà de 2 millions DT / cycle,
     // amortissement d'échelle (loi des rendements décroissants réaliste)
@@ -2862,7 +3205,8 @@ export class TycoonEngine {
     if (!biz || biz.level === 0 || biz.isProducing) return false;
     biz.isProducing = true;
     this.manualServesCount += 1;
-    this.addJoujmaHeat(8);
+    const joujmaRate = 1.0 + (this.getTalentLevel('joujma_frenzy') * 0.50);
+    this.addJoujmaHeat(8 * joujmaRate);
     return true;
   }
 
@@ -2915,6 +3259,16 @@ export class TycoonEngine {
       this.triggerRandomDilemma(now);
     }
 
+    // Intérêts bancaires passifs (Talent bank_interest) toutes les 60 secondes
+    if (now - (this.lastBankInterestAt || 0) >= 60000) {
+      this.lastBankInterestAt = now;
+      const interestRate = this.getTalentLevel('bank_interest') * 0.02;
+      if (interestRate > 0 && this.bankBalance > 0) {
+        const interestEarned = Math.round(this.bankBalance * interestRate * 100) / 100;
+        this.bankBalance += interestEarned;
+      }
+    }
+
     let revenueEarned = 0;
 
     for (const [cId, bList] of Object.entries(this.cityBusinesses)) {
@@ -2925,21 +3279,24 @@ export class TycoonEngine {
         if (biz.level === 0) continue;
 
         if (biz.hasManager) {
-          // Mode passif auto : calcul continu sans perte
+          // Mode passif auto : calcul continu sans perte avec réduction de cycle si talent actif
+          const cycleReduction = 1.0 - (this.getTalentLevel('manager_synergy') * 0.10);
+          const effectiveCycleMs = Math.max(200, (biz.cycleDurationMs || 1000) * cycleReduction);
           const totalMs = biz.progressMs + deltaMs;
-          const cycles = Math.floor(totalMs / biz.cycleDurationMs);
+          const cycles = Math.floor(totalMs / effectiveCycleMs);
           if (cycles > 0) {
             const rev = cycles * this.getRevenue(biz, now, cId);
             cityRev += rev;
-            biz.progressMs = totalMs % biz.cycleDurationMs;
+            biz.progressMs = totalMs % effectiveCycleMs;
           } else {
             biz.progressMs = totalMs;
           }
         } else if (isCurrentCity && biz.isProducing) {
-          // Mode manuel (tap) pour la ville où se trouve le joueur
+          // Mode manuel (tap) pour la ville où se trouve le joueur avec bonus tap_master
           biz.progressMs += deltaMs;
           if (biz.progressMs >= biz.cycleDurationMs) {
-            cityRev += this.getRevenue(biz, now, cId);
+            const tapBonus = 1.0 + (this.getTalentLevel('tap_master') * 0.50);
+            cityRev += this.getRevenue(biz, now, cId) * tapBonus;
             biz.progressMs = 0;
             biz.isProducing = false;
           }
@@ -3037,10 +3394,11 @@ export class TycoonEngine {
     }
 
     const baseRev = grossRevenue;
+    const taxDiscount = 1.0 - (this.getTalentLevel('tax_relief') * 0.25);
     const salaries = Math.round(baseRev * 0.04 * 100) / 100;
     const maintenance = Math.round(baseRev * 0.03 * 100) / 100;
     const utilities = Math.round(baseRev * 0.025 * 100) / 100;
-    const taxes = Math.round(baseRev * 0.025 * 100) / 100;
+    const taxes = Math.round(baseRev * 0.025 * taxDiscount * 100) / 100;
     const total = Math.round((salaries + maintenance + utilities + taxes) * 100) / 100;
 
     return {
@@ -3239,6 +3597,11 @@ export class TycoonEngine {
     this.currentZoneId = 'tunis';
     this.unlockedCityIds = ['tunis'];
     this.purchasedUpgrades = [];
+    this.talentPoints = 0;
+    this.spentTalentPoints = 0;
+    this.unlockedTalents = {};
+    this.completedContracts = [];
+    this.jasmineBoostEndsAt = 0;
     this.lastFreeWheelSpin = 0;
     this.resolvedDilemmas = [];
     this.nextDilemmaCheck = Date.now() + 25000;
@@ -3308,6 +3671,11 @@ export class TycoonEngine {
       unlockedCityIds: this.unlockedCityIds || ['tunis'],
       soldBusinesses: this.soldBusinesses || [],
       purchasedUpgrades: this.purchasedUpgrades || [],
+      talentPoints: this.talentPoints || 0,
+      spentTalentPoints: this.spentTalentPoints || 0,
+      unlockedTalents: this.unlockedTalents || {},
+      completedContracts: this.completedContracts || [],
+      jasmineBoostEndsAt: this.jasmineBoostEndsAt || 0,
       lastFreeWheelSpin: this.lastFreeWheelSpin || 0,
       dailyLogin: this.dailyLogin || { lastClaimDate: null, currentStreak: 0 },
       league: this.league || { tierIndex: 0, seasonEnd: Date.now() + 7 * 86400000 },
@@ -3389,6 +3757,11 @@ export class TycoonEngine {
     }
     this.soldBusinesses = Array.isArray(state.soldBusinesses) ? state.soldBusinesses : [];
     this.purchasedUpgrades = Array.isArray(state.purchasedUpgrades) ? state.purchasedUpgrades : [];
+    this.talentPoints = typeof state.talentPoints === 'number' ? state.talentPoints : 0;
+    this.spentTalentPoints = typeof state.spentTalentPoints === 'number' ? state.spentTalentPoints : 0;
+    this.unlockedTalents = (state.unlockedTalents && typeof state.unlockedTalents === 'object') ? state.unlockedTalents : {};
+    this.completedContracts = Array.isArray(state.completedContracts) ? state.completedContracts : [];
+    this.jasmineBoostEndsAt = typeof state.jasmineBoostEndsAt === 'number' ? state.jasmineBoostEndsAt : 0;
     this.lastFreeWheelSpin = state.lastFreeWheelSpin ?? 0;
     this.dailyLogin = state.dailyLogin ?? { lastClaimDate: null, currentStreak: 0 };
     this.league = state.league ?? { tierIndex: 0, seasonEnd: Date.now() + 7 * 86400000 };
